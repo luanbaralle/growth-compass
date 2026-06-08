@@ -32,6 +32,8 @@
   --color-surface-elevated: var(--surface-elevated);
   --color-brand: var(--brand);
   --color-brand-soft: var(--brand-soft);
+  --color-segment: var(--segment-accent, var(--brand));
+  --color-segment-soft: var(--segment-accent-soft, var(--brand-soft));
   --font-sans: "Inter", system-ui, sans-serif;
   --font-display: "Inter Tight", "Inter", system-ui, sans-serif;
 }
@@ -82,7 +84,10 @@
     -webkit-font-smoothing: antialiased;
     font-feature-settings: "cv11", "ss01";
   }
-  h1, h2, h3, h4 {
+  h1,
+  h2,
+  h3,
+  h4 {
     font-family: var(--font-display);
     letter-spacing: -0.02em;
   }
@@ -104,18 +109,67 @@
 }
 
 @keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.15); }
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.15);
+  }
 }
 @keyframes flow {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 @keyframes fade-up {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes nudge-down {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateY(8px);
+    opacity: 1;
+  }
 }
 
-.animate-pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
-.animate-flow { animation: flow 3s ease-in-out infinite; }
-.animate-fade-up { animation: fade-up 0.7s ease-out both; }
+.animate-pulse-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+.animate-flow {
+  animation: flow 3s ease-in-out infinite;
+}
+.animate-fade-up {
+  animation: fade-up 0.7s ease-out both;
+}
+.animate-nudge-down {
+  animation: nudge-down 1.8s ease-in-out infinite;
+}
+
+@utility shadow-brand {
+  box-shadow:
+    0 0 0 1px var(--brand),
+    0 10px 40px -10px color-mix(in oklch, var(--brand) 60%, transparent);
+}
+
+@utility shadow-brand-lg {
+  box-shadow:
+    0 0 0 1px var(--brand),
+    0 15px 50px -10px color-mix(in oklch, var(--brand) 80%, transparent);
+}
