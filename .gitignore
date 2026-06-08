@@ -12,12 +12,12 @@ dist
 dist-ssr
 .output
 .vinxi
+.vercel
 .tanstack/**
 .nitro
 *.local
 .env
-data/leads.json
-data/
+/data/
 
 # Wrangler / Cloudflare
 .wrangler/
