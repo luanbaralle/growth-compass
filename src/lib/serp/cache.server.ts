@@ -1,10 +1,10 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { getDataDir } from "@/lib/data-dir.server";
 import { getSerpPrefer } from "./serper.server";
 import type { SerpFetchResult } from "./types";
 
-const CACHE_DIR = path.join(process.cwd(), "data");
-const CACHE_FILE = path.join(CACHE_DIR, "serp-cache.json");
+const CACHE_FILE = path.join(getDataDir(), "serp-cache.json");
 const TTL_MS = 48 * 60 * 60 * 1000;
 
 interface SerpCacheStore {
@@ -15,7 +15,7 @@ interface SerpCacheStore {
 }
 
 async function readStore(): Promise<SerpCacheStore> {
-  await mkdir(CACHE_DIR, { recursive: true });
+  await mkdir(path.dirname(CACHE_FILE), { recursive: true });
   try {
     const raw = await readFile(CACHE_FILE, "utf-8");
     return JSON.parse(raw) as SerpCacheStore;
@@ -25,7 +25,7 @@ async function readStore(): Promise<SerpCacheStore> {
 }
 
 async function writeStore(store: SerpCacheStore): Promise<void> {
-  await mkdir(CACHE_DIR, { recursive: true });
+  await mkdir(path.dirname(CACHE_FILE), { recursive: true });
   await writeFile(CACHE_FILE, JSON.stringify(store, null, 2), "utf-8");
 }
 

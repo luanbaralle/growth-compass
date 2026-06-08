@@ -1,14 +1,13 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import process from "node:process";
 import { randomUUID } from "node:crypto";
+import { getDataDir } from "@/lib/data-dir.server";
 import type { Lead, LeadStatus, SubmitLeadInput } from "./types";
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const LEADS_FILE = path.join(DATA_DIR, "leads.json");
+const LEADS_FILE = path.join(getDataDir(), "leads.json");
 
 async function ensureStore(): Promise<Lead[]> {
-  await mkdir(DATA_DIR, { recursive: true });
+  await mkdir(path.dirname(LEADS_FILE), { recursive: true });
   try {
     const raw = await readFile(LEADS_FILE, "utf-8");
     return JSON.parse(raw) as Lead[];
@@ -19,7 +18,7 @@ async function ensureStore(): Promise<Lead[]> {
 }
 
 async function saveLeads(leads: Lead[]): Promise<void> {
-  await mkdir(DATA_DIR, { recursive: true });
+  await mkdir(path.dirname(LEADS_FILE), { recursive: true });
   await writeFile(LEADS_FILE, JSON.stringify(leads, null, 2), "utf-8");
 }
 

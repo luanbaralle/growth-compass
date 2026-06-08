@@ -2,6 +2,7 @@ import { createFileRoute, notFound } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { LandingPage } from "@/components/landing/LandingPage";
 import { getSegment, isValidSegment } from "@/config/segments";
+import type { SegmentSEO } from "@/config/segments/types";
 import { buildPersonalization, matchBusiness } from "@/lib/business-match";
 import { captureUtmFromUrl } from "@/lib/utm";
 
@@ -17,6 +18,12 @@ type SegmentSearch = {
   utm_term?: string;
 };
 
+/** Apenas dados serializáveis — SegmentConfig inclui ícones React (Lucide). */
+interface SegmentLoaderData {
+  slug: string;
+  seo: SegmentSEO;
+}
+
 export const Route = createFileRoute("/$segment")({
   validateSearch: (search: Record<string, unknown>): SegmentSearch => ({
     cidade: typeof search.cidade === "string" ? search.cidade : undefined,
@@ -29,11 +36,12 @@ export const Route = createFileRoute("/$segment")({
     utm_content: typeof search.utm_content === "string" ? search.utm_content : undefined,
     utm_term: typeof search.utm_term === "string" ? search.utm_term : undefined,
   }),
-  loader: ({ params }) => {
+  loader: ({ params }): SegmentLoaderData => {
     if (!isValidSegment(params.segment)) {
       throw notFound();
     }
-    return getSegment(params.segment)!;
+    const segment = getSegment(params.segment)!;
+    return { slug: segment.slug, seo: segment.seo };
   },
   head: ({ loaderData }) => ({
     meta: [
@@ -54,7 +62,8 @@ export const Route = createFileRoute("/$segment")({
 });
 
 function SegmentPage() {
-  const config = Route.useLoaderData();
+  const { segment: segmentSlug } = Route.useParams();
+  const config = getSegment(segmentSlug)!;
   const { cidade, uf, servicos, negocio } = Route.useSearch();
 
   useEffect(() => {
