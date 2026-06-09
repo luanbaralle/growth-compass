@@ -70,21 +70,14 @@ function pruneTimestamps(timestamps: number[], now: number): number[] {
 }
 
 export function resolveClientIp(): string {
-  try {
-    const forwarded = getRequestIP({ xForwardedFor: true });
-    if (forwarded) return forwarded;
+  const forwarded = getRequestIP({ xForwardedFor: true });
+  if (forwarded) return forwarded;
 
-    const vercelForwarded = getRequestHeader("x-vercel-forwarded-for");
-    if (vercelForwarded) return vercelForwarded.split(",")[0]?.trim() ?? vercelForwarded;
+  const realIp = getRequestHeader("x-real-ip");
+  if (realIp) return realIp;
 
-    const realIp = getRequestHeader("x-real-ip");
-    if (realIp) return realIp;
-
-    const cfIp = getRequestHeader("cf-connecting-ip");
-    if (cfIp) return cfIp;
-  } catch {
-    // Server fn fora de contexto HTTP — não bloquear SERP por isso
-  }
+  const cfIp = getRequestHeader("cf-connecting-ip");
+  if (cfIp) return cfIp;
 
   return "unknown";
 }
@@ -104,7 +97,7 @@ export async function checkSerpRateLimit(ip: string): Promise<SerpRateLimitStatu
   const maxDay = getMaxDay();
   const bypassed = isSerpRateLimitBypassed(ip);
 
-  if (bypassed || ip === "unknown") {
+  if (bypassed) {
     return {
       allowed: true,
       bypassed: true,
@@ -115,10 +108,9 @@ export async function checkSerpRateLimit(ip: string): Promise<SerpRateLimitStatu
     };
   }
 
-  try {
-    const now = Date.now();
-    const hourCutoff = now - HOUR_MS;
-    const store = await readStore();
+  const now = Date.now();
+  const hourCutoff = now - HOUR_MS;
+  const store = await readStore();
   const entry = store[ip] ?? { timestamps: [] };
   const dayTimestamps = pruneTimestamps(entry.timestamps, now);
   const hourTimestamps = dayTimestamps.filter((ts) => ts > hourCutoff);
@@ -159,26 +151,14 @@ export async function checkSerpRateLimit(ip: string): Promise<SerpRateLimitStatu
     maxHour,
     maxDay,
   };
-  } catch {
-    // Filesystem indisponível (serverless) — não bloquear chamadas live
-    return {
-      allowed: true,
-      bypassed: true,
-      hourCount: 0,
-      dayCount: 0,
-      maxHour,
-      maxDay,
-    };
-  }
 }
 
 /** Registra uma chamada live ao Serper/CSE (cache não passa por aqui). */
 export async function recordSerpLiveRequest(ip: string): Promise<void> {
-  if (isSerpRateLimitBypassed(ip) || ip === "unknown") return;
+  if (isSerpRateLimitBypassed(ip)) return;
 
-  try {
-    const now = Date.now();
-    const store = await readStore();
+  const now = Date.now();
+  const store = await readStore();
   const entry = store[ip] ?? { timestamps: [] };
   entry.timestamps = pruneTimestamps([...entry.timestamps, now], now);
   store[ip] = entry;
@@ -191,9 +171,6 @@ export async function recordSerpLiveRequest(ip: string): Promise<void> {
   }
 
   await writeStore(store);
-  } catch {
-    // Ignora falha de persistência — quota in-memory nesta invocação apenas
-  }
 }
 
 /** Verifica limite e consome 1 slot antes de uma chamada live ao Serper/CSE. */

@@ -10,6 +10,8 @@ export type MacroCategory =
   | "servicos"
   | "educacao"
   | "automotivo"
+  | "alimentacao"
+  | "pets"
   | "geral";
 
 export type MatchTier = "exact" | "related" | "dynamic";
@@ -21,9 +23,14 @@ export type TemplateSlug =
   | "advogado"
   | "imobiliaria"
   | "contabilidade"
+  | "financeiro"
   | "energia-solar"
   | "construcao"
   | "servicos-locais"
+  | "automotivo"
+  | "educacao"
+  | "alimentacao"
+  | "pets"
   | "outro";
 
 export interface MicroverticalDefinition {

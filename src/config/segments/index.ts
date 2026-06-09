@@ -2,13 +2,18 @@ import type { HubSegmentCard, SegmentConfig } from "./types";
 import { esteticaSegment } from "./estetica";
 import {
   advogadoSegment,
+  alimentacaoSegment,
+  automotivoSegment,
   clinicaSegment,
   construcaoSegment,
   contabilidadeSegment,
   dentistaSegment,
+  educacaoSegment,
   energiaSolarSegment,
+  financeiroSegment,
   imobiliariaSegment,
   outroSegment,
+  petsSegment,
   servicosLocaisSegment,
 } from "./verticals";
 
@@ -19,9 +24,14 @@ export const SEGMENTS: Record<string, SegmentConfig> = {
   advogado: advogadoSegment,
   imobiliaria: imobiliariaSegment,
   contabilidade: contabilidadeSegment,
+  financeiro: financeiroSegment,
   "energia-solar": energiaSolarSegment,
   construcao: construcaoSegment,
   "servicos-locais": servicosLocaisSegment,
+  automotivo: automotivoSegment,
+  educacao: educacaoSegment,
+  alimentacao: alimentacaoSegment,
+  pets: petsSegment,
   outro: outroSegment,
 };
 
@@ -80,6 +90,13 @@ export const HUB_SEGMENTS: HubSegmentCard[] = [
     accentColor: contabilidadeSegment.accentColor,
   },
   {
+    slug: "financeiro",
+    label: financeiroSegment.hubLabel,
+    description: "Seguros, crédito e planejamento financeiro",
+    icon: financeiroSegment.icon,
+    accentColor: financeiroSegment.accentColor,
+  },
+  {
     slug: "energia-solar",
     label: energiaSolarSegment.hubLabel,
     description: "Energia solar e fotovoltaica",
@@ -99,6 +116,34 @@ export const HUB_SEGMENTS: HubSegmentCard[] = [
     description: "Prestadores de serviços locais",
     icon: servicosLocaisSegment.icon,
     accentColor: servicosLocaisSegment.accentColor,
+  },
+  {
+    slug: "automotivo",
+    label: automotivoSegment.hubLabel,
+    description: "Oficinas, auto centers e serviços automotivos",
+    icon: automotivoSegment.icon,
+    accentColor: automotivoSegment.accentColor,
+  },
+  {
+    slug: "educacao",
+    label: educacaoSegment.hubLabel,
+    description: "Escolas, cursos e autoescolas",
+    icon: educacaoSegment.icon,
+    accentColor: educacaoSegment.accentColor,
+  },
+  {
+    slug: "alimentacao",
+    label: alimentacaoSegment.hubLabel,
+    description: "Restaurantes, delivery e food service",
+    icon: alimentacaoSegment.icon,
+    accentColor: alimentacaoSegment.accentColor,
+  },
+  {
+    slug: "pets",
+    label: petsSegment.hubLabel,
+    description: "Pet shops, veterinários e banho e tosa",
+    icon: petsSegment.icon,
+    accentColor: petsSegment.accentColor,
   },
   {
     slug: "outro",

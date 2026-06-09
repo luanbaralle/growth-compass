@@ -8,6 +8,11 @@ import {
   Hammer,
   Wrench,
   HelpCircle,
+  Car,
+  GraduationCap,
+  UtensilsCrossed,
+  Landmark,
+  PawPrint,
 } from "lucide-react";
 import { createSegmentConfig } from "./base";
 
@@ -726,6 +731,261 @@ export const servicosLocaisSegment = createSegmentConfig({
       "Solicite gratuitamente uma análise da sua região e descubra como potenciais clientes estão encontrando seus concorrentes.",
     submitLabel: "Quero analisar meu mercado",
     footerNote: "Sem compromisso · Retorno em até 24 horas",
+  },
+});
+
+export const financeiroSegment = createSegmentConfig({
+  slug: "financeiro",
+  name: "Financeiro",
+  hubLabel: "Serviços Financeiros",
+  icon: Landmark,
+  accentColor: "oklch(0.64 0.12 160)",
+  accentSoft: "oklch(0.64 0.12 160 / 0.12)",
+  seo: {
+    title: "Raise One — Seu negócio financeiro deveria estar recebendo mais clientes",
+    description:
+      "Diagnóstico gratuito para corretoras, consultorias e empresas do setor financeiro. Descubra quantos clientes em potencial estão indo para a concorrência.",
+  },
+  hero: {
+    title: "Sua empresa financeira deveria estar",
+    titleHighlight: "recebendo mais clientes.",
+    subtitle:
+      "Pessoas da sua região pesquisam no Google por seguros, crédito e planejamento financeiro. Se você não aparece, esses clientes fecham com a concorrência.",
+    monthlySearches: "+1.200",
+  },
+  visibility: {
+    searchExamples: [
+      "Corretor de seguros",
+      "Empréstimo consignado",
+      "Planejamento financeiro",
+      "Financiamento imobiliário",
+      "Consórcio",
+    ],
+    ctaQuestion: "Quando pesquisam, sua empresa aparece?",
+    businessType: "empresa",
+  },
+  invisibleClient: { searchQuery: "corretor de seguros perto de mim" },
+  demand: {
+    bars: [
+      { label: "Seguros", value: 78 },
+      { label: "Crédito", value: 65 },
+      { label: "Consórcio", value: 52 },
+      { label: "Consultoria", value: 40 },
+    ],
+    totalSearches: "+1.200",
+  },
+  fomo: {
+    searchQuery: "corretor de seguros",
+    competitors: sharedCompetitors,
+    yourBusinessLabel: "Sua empresa",
+    notFoundLabel: "não aparece",
+  },
+  form: {
+    businessFieldLabel: "Empresa ou Serviço Financeiro",
+  },
+});
+
+export const automotivoSegment = createSegmentConfig({
+  slug: "automotivo",
+  name: "Automotivo",
+  hubLabel: "Automotivo",
+  icon: Car,
+  accentColor: "oklch(0.58 0.14 250)",
+  accentSoft: "oklch(0.58 0.14 250 / 0.12)",
+  seo: {
+    title: "Raise One — Sua oficina deveria estar recebendo mais clientes",
+    description:
+      "Diagnóstico gratuito para oficinas, auto centers e serviços automotivos. Descubra quantos clientes em potencial estão indo para a concorrência.",
+  },
+  hero: {
+    title: "Seu negócio automotivo deveria estar",
+    titleHighlight: "recebendo mais clientes.",
+    subtitle:
+      "Motoristas da sua região pesquisam no Google por oficinas, funilaria e serviços automotivos. Se você não aparece, eles levam o carro para outro lugar.",
+    monthlySearches: "+1.600",
+  },
+  visibility: {
+    searchExamples: [
+      "Oficina mecânica",
+      "Funilaria e pintura",
+      "Estética automotiva",
+      "Guincho 24 horas",
+      "Auto elétrica",
+    ],
+    ctaQuestion: "Quando pesquisam, sua oficina aparece?",
+    businessType: "oficina",
+  },
+  invisibleClient: { searchQuery: "oficina mecânica perto de mim" },
+  demand: {
+    bars: [
+      { label: "Mecânica", value: 86 },
+      { label: "Funilaria", value: 62 },
+      { label: "Estética auto", value: 54 },
+      { label: "Guincho", value: 48 },
+    ],
+    totalSearches: "+1.600",
+  },
+  fomo: {
+    searchQuery: "oficina mecânica",
+    competitors: sharedCompetitors,
+    yourBusinessLabel: "Sua oficina",
+    notFoundLabel: "não aparece",
+  },
+  form: {
+    businessFieldLabel: "Oficina ou Serviço Automotivo",
+  },
+});
+
+export const educacaoSegment = createSegmentConfig({
+  slug: "educacao",
+  name: "Educação",
+  hubLabel: "Educação",
+  icon: GraduationCap,
+  accentColor: "oklch(0.62 0.14 300)",
+  accentSoft: "oklch(0.62 0.14 300 / 0.12)",
+  seo: {
+    title: "Raise One — Sua escola deveria estar recebendo mais matrículas",
+    description:
+      "Diagnóstico gratuito para escolas, cursos e autoescolas. Descubra quantas famílias em potencial estão escolhendo a concorrência na sua região.",
+  },
+  hero: {
+    title: "Sua escola deveria estar",
+    titleHighlight: "recebendo mais matrículas.",
+    subtitle:
+      "Famílias da sua região pesquisam no Google por escolas, cursos e reforço escolar. Se você não aparece, essas matrículas vão para outro lugar.",
+    monthlySearches: "+1.300",
+  },
+  visibility: {
+    searchExamples: [
+      "Escola particular",
+      "Curso de inglês",
+      "Reforço escolar",
+      "Autoescola",
+      "Curso preparatório",
+    ],
+    ctaQuestion: "Quando pesquisam, sua escola aparece?",
+    businessType: "escola",
+  },
+  invisibleClient: { searchQuery: "escola particular perto de mim" },
+  demand: {
+    bars: [
+      { label: "Escolas", value: 80 },
+      { label: "Cursos", value: 68 },
+      { label: "Reforço", value: 55 },
+      { label: "Autoescola", value: 42 },
+    ],
+    totalSearches: "+1.300",
+  },
+  fomo: {
+    searchQuery: "escola particular",
+    competitors: sharedCompetitors,
+    yourBusinessLabel: "Sua escola",
+    notFoundLabel: "não aparece",
+  },
+  form: {
+    businessFieldLabel: "Escola ou Curso",
+  },
+});
+
+export const alimentacaoSegment = createSegmentConfig({
+  slug: "alimentacao",
+  name: "Alimentação",
+  hubLabel: "Alimentação",
+  icon: UtensilsCrossed,
+  accentColor: "oklch(0.68 0.16 45)",
+  accentSoft: "oklch(0.68 0.16 45 / 0.12)",
+  seo: {
+    title: "Raise One — Seu restaurante deveria estar recebendo mais pedidos",
+    description:
+      "Diagnóstico gratuito para restaurantes, delivery e food service. Descubra quantos clientes em potencial estão pedindo da concorrência na sua região.",
+  },
+  hero: {
+    title: "Seu negócio de alimentação deveria estar",
+    titleHighlight: "recebendo mais pedidos.",
+    subtitle:
+      "Pessoas da sua região pesquisam no Google por restaurantes, delivery e opções para comer. Se você não aparece, esses pedidos vão para a concorrência.",
+    monthlySearches: "+2.100",
+  },
+  visibility: {
+    searchExamples: [
+      "Restaurante perto de mim",
+      "Delivery de comida",
+      "Hamburgueria",
+      "Pizzaria delivery",
+      "Marmitaria",
+    ],
+    ctaQuestion: "Quando pesquisam, seu restaurante aparece?",
+    businessType: "restaurante",
+  },
+  invisibleClient: { searchQuery: "restaurante perto de mim" },
+  demand: {
+    bars: [
+      { label: "Delivery", value: 92 },
+      { label: "Restaurantes", value: 85 },
+      { label: "Lanches", value: 72 },
+      { label: "Marmitas", value: 58 },
+    ],
+    totalSearches: "+2.100",
+  },
+  fomo: {
+    searchQuery: "restaurante",
+    competitors: sharedCompetitors,
+    yourBusinessLabel: "Seu restaurante",
+    notFoundLabel: "não aparece",
+  },
+  form: {
+    businessFieldLabel: "Restaurante ou Tipo de Comida",
+  },
+});
+
+export const petsSegment = createSegmentConfig({
+  slug: "pets",
+  name: "Pets",
+  hubLabel: "Pets",
+  icon: PawPrint,
+  accentColor: "oklch(0.66 0.14 145)",
+  accentSoft: "oklch(0.66 0.14 145 / 0.12)",
+  seo: {
+    title: "Raise One — Seu pet shop deveria estar recebendo mais clientes",
+    description:
+      "Diagnóstico gratuito para pet shops, clínicas veterinárias e banho e tosa. Descubra quantos tutores em potencial estão indo para a concorrência na sua região.",
+  },
+  hero: {
+    title: "Seu negócio pet deveria estar",
+    titleHighlight: "recebendo mais clientes.",
+    subtitle:
+      "Todos os dias, tutores da sua região pesquisam no Google por pet shop, veterinário e banho e tosa. Se você não aparece, esses clientes vão para outro lugar.",
+    monthlySearches: "+1.400",
+  },
+  visibility: {
+    searchExamples: [
+      "Pet shop perto de mim",
+      "Veterinário 24 horas",
+      "Banho e tosa",
+      "Ração e acessórios",
+      "Clínica veterinária",
+    ],
+    ctaQuestion: "Quando pesquisam, seu pet shop aparece?",
+    businessType: "pet shop",
+  },
+  invisibleClient: { searchQuery: "pet shop perto de mim" },
+  demand: {
+    bars: [
+      { label: "Pet shop", value: 82 },
+      { label: "Veterinário", value: 74 },
+      { label: "Banho e tosa", value: 65 },
+      { label: "Ração", value: 52 },
+    ],
+    totalSearches: "+1.400",
+  },
+  fomo: {
+    searchQuery: "pet shop",
+    competitors: sharedCompetitors,
+    yourBusinessLabel: "Seu pet shop",
+    notFoundLabel: "não aparece",
+  },
+  form: {
+    businessFieldLabel: "Pet Shop ou Serviço Pet",
   },
 });
 

@@ -65,7 +65,7 @@ export function BusinessInput({ id, value, onChange }: BusinessInputProps) {
         }}
         onFocus={() => setOpen(true)}
         onKeyDown={handleKeyDown}
-        placeholder="Ex: Pet Shop, Barbearia, Clínica Estética..."
+        placeholder="Ex: Dentista, Hamburgueria, Oficina, Dermatologista..."
         autoComplete="off"
         role="combobox"
         aria-expanded={showList}
