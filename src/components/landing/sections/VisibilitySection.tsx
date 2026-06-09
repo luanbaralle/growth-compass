@@ -1,5 +1,6 @@
 import type { BusinessPersonalization } from "@/config/microverticals/types";
 import type { SegmentConfig } from "@/config/segments/types";
+import { visibilityClosingLine, visibilityCtaQuestion } from "@/lib/personalization";
 import { ChevronRight, Search } from "lucide-react";
 import { Eyebrow } from "../shared/Eyebrow";
 import { SectionWrap } from "../shared/SectionWrap";
@@ -17,11 +18,11 @@ export function VisibilitySection({
     : visibility.searchExamples;
 
   const ctaQuestion = personalization
-    ? `Quando pesquisam, sua ${personalization.businessType} aparece?`
+    ? visibilityCtaQuestion(personalization.yourBusinessLabel)
     : visibility.ctaQuestion;
 
   const closingLine = personalization
-    ? `Mas nada disso importa para quem nunca encontrou sua ${personalization.businessType}.`
+    ? visibilityClosingLine(personalization.yourBusinessLabel)
     : visibility.closingLine;
 
   return (

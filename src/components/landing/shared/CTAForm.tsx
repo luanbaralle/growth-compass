@@ -1,6 +1,7 @@
 import type { SegmentConfig } from "@/config/segments/types";
 import { submitLead } from "@/lib/api/leads.functions";
 import { buildLeadConfirmationSummary, saveLeadSummary } from "@/lib/lead-summary";
+import { formOpportunityTitle } from "@/lib/personalization";
 import type { LeadSource } from "@/lib/leads/types";
 import { readPersistedUtm } from "@/lib/utm";
 import { useNavigate } from "@tanstack/react-router";
@@ -63,6 +64,7 @@ export interface LeadFormContext {
   source: LeadSource;
   fromHub?: boolean;
   searchExamples?: string[];
+  yourBusinessLabel?: string;
 }
 
 interface CTAFormProps {
@@ -77,6 +79,10 @@ export function CTAForm({ config, leadContext }: CTAFormProps) {
   const [error, setError] = useState("");
 
   const compact = leadContext.fromHub && !!leadContext.city && !!leadContext.defaultBusiness;
+
+  const formHeadline = leadContext.yourBusinessLabel
+    ? formOpportunityTitle(leadContext.yourBusinessLabel)
+    : { title: form.title, titleHighlight: form.titleHighlight };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -155,7 +161,8 @@ export function CTAForm({ config, leadContext }: CTAFormProps) {
         <div className="mx-auto max-w-3xl text-center">
           <Eyebrow>{form.eyebrow}</Eyebrow>
           <h2 className="text-3xl font-bold leading-[1.1] text-balance sm:text-4xl lg:text-5xl">
-            {form.title} <span className="text-brand">{form.titleHighlight}</span>
+            {formHeadline.title}{" "}
+            <span className="text-brand">{formHeadline.titleHighlight}</span>
           </h2>
           <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground text-balance sm:text-lg">
             {compact

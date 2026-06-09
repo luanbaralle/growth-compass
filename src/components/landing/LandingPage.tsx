@@ -50,6 +50,7 @@ function buildLeadContext(
     source: context?.fromHub ? "hub" : "lp",
     fromHub: context?.fromHub,
     searchExamples: p?.searchExamples,
+    yourBusinessLabel: p?.yourBusinessLabel ?? m?.yourBusinessLabel,
   };
 }
 
