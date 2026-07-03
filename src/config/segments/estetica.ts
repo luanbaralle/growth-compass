@@ -1,4 +1,13 @@
-import { Sparkles } from "lucide-react";
+import {
+  CalendarCheck,
+  Globe,
+  MessageSquare,
+  MousePointerClick,
+  ScanSearch,
+  Search,
+  Sparkles,
+  UserCheck,
+} from "lucide-react";
 import { createSegmentConfig } from "./base";
 
 export const esteticaSegment = createSegmentConfig({
@@ -19,17 +28,17 @@ export const esteticaSegment = createSegmentConfig({
   },
 
   hero: {
-    badge: "Especialistas em crescimento para negócios locais",
+    badge: "Especialistas em identificar oportunidades de aquisição para negócios locais",
     title: "Sua clínica de estética deveria estar",
-    titleHighlight: "recebendo mais contatos.",
+    titleHighlight: "capturando mais demanda local.",
     subtitle:
-      "Todos os dias, pessoas da sua região pesquisam no Google por procedimentos estéticos que você já oferece. Se sua clínica não aparece nos primeiros resultados, esses contatos estão indo para outra clínica.",
-    ctaLabel: "Quero analisar meu mercado",
+      "Todos os dias, pessoas da sua região pesquisam no Google por procedimentos estéticos que você já oferece. Se sua clínica não aparece nos primeiros resultados, essa demanda está indo para quem aparece.",
+    ctaLabel: "Quero minha análise de mercado",
     trustItems: [
       "Sem compromisso",
-      "Sem contrato",
-      "Análise personalizada da sua região",
+      "Análise personalizada",
       "Retorno em até 24 horas",
+      "Sem linguagem técnica",
     ],
     monthlySearches: "+2.400",
   },
@@ -72,23 +81,35 @@ export const esteticaSegment = createSegmentConfig({
 
   journey: {
     eyebrow: "03 — A Jornada",
-    title: "Como novos pacientes",
-    titleHighlight: "encontram clínicas no Google",
+    title: "Como novas clientes",
+    titleHighlight: "encontram clínicas estéticas no Google",
     steps: [
-      "Pessoa procura procedimento",
-      "Google mostra resultados",
-      "Paciente acessa uma clínica",
-      "Analisa rapidamente",
-      "Entra em contato",
-      "Agenda avaliação",
-      "Torna-se paciente",
+      { label: "Pessoa busca procedimento estético", icon: ScanSearch },
+      { label: "Pesquisa no Google", icon: Search },
+      { label: "Google mostra clínicas", icon: Globe },
+      { label: "Analisa resultados e avaliações", icon: MousePointerClick },
+      { label: "Entra em contato", icon: MessageSquare },
+      { label: "Agenda avaliação", icon: CalendarCheck },
+      { label: "Torna-se paciente", icon: UserCheck },
     ],
     instagramNote: "A maioria das clínicas tenta competir apenas no Instagram.",
-    googleNote: "Mas a maioria dos clientes inicia sua jornada de compra no Google.",
+    googleNote: "Mas a maioria das clientes inicia sua jornada de compra no Google.",
+  },
+
+  ahaMoment: {
+    eyebrow: "04 — O Insight",
+    title: "A maioria acredita que precisa de",
+    titleHighlight: "mais divulgação.",
+    subtitle:
+      "Mas muitas vezes o problema é apenas não aparecer no momento certo — quando a cliente já está pronta para agendar.",
+    winFlow: ["Cliente pronta para agendar", "Pesquisa procedimento", "Encontra sua clínica"],
+    loseFlow: ["Cliente pronta para agendar", "Pesquisa procedimento", "Encontra concorrente"],
+    winOutcome: "Você captura a oportunidade",
+    loseOutcome: "A oportunidade vai embora",
   },
 
   demand: {
-    eyebrow: "04 — A Oportunidade",
+    eyebrow: "05 — A Oportunidade",
     title: "Existe demanda na sua região.",
     titleMuted: "A questão é quem está capturando essa demanda.",
     paragraphs: [
@@ -114,23 +135,44 @@ export const esteticaSegment = createSegmentConfig({
       "Enquanto você lê esta página, clínicas da sua região estão aparecendo exatamente quando clientes procuram pelos mesmos serviços que você oferece.",
     searchQuery: "botox santos",
     competitors: [
-      { name: "Clínica Estética Santos", isAd: true },
-      { name: "Harmonize Face", isAd: true },
-      { name: "Studio Beleza Premium", isAd: true },
+      {
+        name: "Clínica Estética Santos — Harmonização & Botox",
+        isAd: true,
+        url: "https://www.clinicaesteticasantos.com.br",
+        snippet: "Procedimentos estéticos com profissionais certificados. Avaliação gratuita disponível.",
+      },
+      {
+        name: "Harmonize Face — Centro de Estética",
+        isAd: true,
+        url: "https://www.harmonizeface.com.br",
+        snippet: "Harmonização facial, botox e preenchimento. Agende sua consulta online.",
+      },
+      {
+        name: "Studio Beleza Premium",
+        isAd: false,
+        url: "https://www.studiobelezapremium.com.br",
+        snippet: "Referência em estética avançada na região. Veja avaliações e procedimentos.",
+      },
     ],
     yourBusinessLabel: "Sua clínica",
     notFoundLabel: "não aparece",
   },
 
   form: {
-    eyebrow: "Diagnóstico Gratuito",
-    title: "Quantas oportunidades sua clínica está",
-    titleHighlight: "deixando passar hoje?",
+    eyebrow: "Análise Gratuita",
+    title: "Descubra quantas pessoas estão procurando",
+    titleHighlight: "procedimentos estéticos na sua região.",
     subtitle:
-      "Solicite gratuitamente uma análise da sua região e descubra como potenciais clientes estão encontrando seus concorrentes.",
-    submitLabel: "Quero analisar meu mercado",
+      "Receba uma análise personalizada da demanda local — e entenda se sua clínica está aparecendo no momento certo.",
+    submitLabel: "Quero minha análise de mercado",
     businessFieldLabel: "Clínica ou Segmento",
     footerNote: "Sem compromisso · Retorno em até 24 horas",
+    trustItems: [
+      "Sem compromisso",
+      "Análise personalizada",
+      "Retorno em até 24 horas",
+      "Sem linguagem técnica",
+    ],
   },
 
   mission: {

@@ -1,5 +1,5 @@
 import type { Lead, LeadStatus } from "@/lib/leads/types";
-import { adminLogout, deleteLead, getLeads, updateLead } from "@/lib/api/leads.functions";
+import { deleteLead, getLeads, updateLead } from "@/lib/api/leads.functions";
 import { buildClientWhatsAppUrl } from "@/lib/whatsapp";
 import {
   AlertDialog,
@@ -33,7 +33,6 @@ import {
   Copy,
   ExternalLink,
   Loader2,
-  LogOut,
   MessageCircle,
   RefreshCw,
   Trash2,
@@ -250,11 +249,6 @@ export function AdminPanel() {
     load();
   }, [load]);
 
-  const handleLogout = async () => {
-    await adminLogout();
-    navigate({ to: "/admin/login" });
-  };
-
   const handleUpdate = (id: string, status: LeadStatus) => {
     setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, status } : l)));
   };
@@ -274,29 +268,21 @@ export function AdminPanel() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-border/60 bg-surface/30">
-        <div className="mx-auto flex max-w-[1400px] items-center justify-between px-5 py-4 sm:px-8">
-          <div>
-            <h1 className="text-lg font-bold">Raise One — Leads</h1>
-            <p className="text-sm text-muted-foreground">
-              Formulários recebidos com contexto completo
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={load} disabled={loading}>
-              <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-              Atualizar
-            </Button>
-            <Button variant="ghost" size="sm" onClick={handleLogout}>
-              <LogOut className="h-4 w-4" />
-              Sair
-            </Button>
-          </div>
+    <div>
+      <header className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="font-display text-2xl font-bold">Leads</h1>
+          <p className="text-sm text-muted-foreground">
+            Formulários recebidos com contexto completo
+          </p>
         </div>
+        <Button variant="outline" size="sm" onClick={load} disabled={loading}>
+          <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+          Atualizar
+        </Button>
       </header>
 
-      <main className="mx-auto max-w-[1400px] px-5 py-8 sm:px-8">
+      <div>
         <div className="mb-6 flex flex-wrap gap-2">
           {(["all", "new", "contacted", "converted", "lost"] as const).map((key) => (
             <button
@@ -353,7 +339,7 @@ export function AdminPanel() {
             </Table>
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
 }

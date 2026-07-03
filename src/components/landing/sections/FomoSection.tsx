@@ -20,7 +20,7 @@ export function FomoSection({
   const yourBusinessLabel = personalization?.yourBusinessLabel ?? fomo.yourBusinessLabel;
 
   return (
-    <SectionWrap>
+    <SectionWrap techGlow>
       <div className="mx-auto max-w-3xl text-center">
         <h2 className="text-3xl font-bold leading-[1.1] text-balance sm:text-4xl lg:text-5xl">
           {fomo.title}
@@ -30,7 +30,7 @@ export function FomoSection({
         </p>
       </div>
 
-      <div className="mx-auto mt-14 max-w-2xl">
+      <div className="mx-auto mt-14 max-w-3xl">
         <SerpPreview
           searchQuery={searchQuery}
           mockCompetitors={fomo.competitors}

@@ -18,8 +18,8 @@ export function formOpportunityTitle(yourBusinessLabel: string): {
   titleHighlight: string;
 } {
   return {
-    title: `Quantas oportunidades ${toLowerPossessive(yourBusinessLabel)} está`,
-    titleHighlight: "deixando passar hoje?",
+    title: `Descubra se ${toLowerPossessive(yourBusinessLabel)} está aparecendo`,
+    titleHighlight: "no momento certo.",
   };
 }
 

@@ -2,6 +2,7 @@ import type { BusinessMatch } from "@/config/microverticals/types";
 import type { BusinessPersonalization } from "@/config/microverticals/types";
 import type { SegmentConfig } from "@/config/segments/types";
 import type { LeadFormContext } from "./shared/CTAForm";
+import { AhaMomentSection } from "./sections/AhaMomentSection";
 import { AnalysisSection } from "./sections/AnalysisSection";
 import { CTAForm } from "./shared/CTAForm";
 import { DemandSection } from "./sections/DemandSection";
@@ -10,7 +11,6 @@ import { Footer } from "./shared/Footer";
 import { HeroSection } from "./sections/HeroSection";
 import { InvisibleClientSection } from "./sections/InvisibleClientSection";
 import { JourneySection } from "./sections/JourneySection";
-import { MissedOpportunitySection } from "./sections/MissedOpportunitySection";
 import { MissionSection } from "./sections/MissionSection";
 import { Nav } from "./shared/Nav";
 import { SegmentTheme } from "./shared/SegmentTheme";
@@ -67,9 +67,9 @@ export function LandingPage({ config, context }: LandingPageProps) {
       <VisibilitySection config={config} personalization={personalization} />
       <InvisibleClientSection config={config} city={city} personalization={personalization} />
       <JourneySection config={config} />
+      <AhaMomentSection config={config} />
       <DemandSection config={config} city={city} personalization={personalization} />
       <FomoSection config={config} city={city} personalization={personalization} />
-      <MissedOpportunitySection config={config} />
       <AnalysisSection config={config} />
       <MissionSection config={config} />
       <SolutionsSection config={config} />

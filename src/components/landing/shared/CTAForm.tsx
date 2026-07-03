@@ -5,7 +5,7 @@ import { formOpportunityTitle } from "@/lib/personalization";
 import type { LeadSource } from "@/lib/leads/types";
 import { readPersistedUtm } from "@/lib/utm";
 import { useNavigate } from "@tanstack/react-router";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { ArrowRight, Check, Loader2 } from "lucide-react";
 import { type FormEvent, useState } from "react";
 import { Eyebrow } from "../shared/Eyebrow";
 
@@ -244,7 +244,19 @@ export function CTAForm({ config, leadContext }: CTAFormProps) {
                 </>
               )}
             </button>
-            <p className="mt-4 text-center text-xs text-muted-foreground">{form.footerNote}</p>
+
+            <ul className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
+              {form.trustItems.map((item) => (
+                <li
+                  key={item}
+                  className="flex items-center justify-center gap-1.5 text-center text-[11px] text-muted-foreground"
+                >
+                  <Check className="h-3 w-3 shrink-0 text-brand" strokeWidth={3} />
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-3 text-center text-xs text-muted-foreground">{form.footerNote}</p>
           </form>
         </div>
       </div>

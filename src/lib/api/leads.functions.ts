@@ -2,9 +2,12 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import {
   clearAdminSession,
+  getActivePerson,
   isAdminAuthenticated,
+  setActivePerson,
   setAdminSession,
   verifyAdminPassword,
+  verifyPersonPin,
 } from "@/lib/admin-auth.server";
 import { createLead, deleteLead as deleteLeadFromStore, listLeads, updateLeadStatus } from "@/lib/leads/store.server";
 import { buildLeadWhatsAppMessage, buildWhatsAppUrl } from "@/lib/whatsapp";
@@ -57,7 +60,13 @@ export const submitLead = createServerFn({ method: "POST" })
   });
 
 export const adminLogin = createServerFn({ method: "POST" })
-  .validator(z.object({ password: z.string().min(1) }))
+  .validator(
+    z.object({
+      password: z.string().min(1),
+      person: z.enum(["luan", "vini", "caio"]),
+      pin: z.string().optional(),
+    }),
+  )
   .handler(async ({ data }) => {
     if (!process.env.ADMIN_PASSWORD) {
       throw new Error("Painel admin não configurado. Defina ADMIN_PASSWORD no servidor.");
@@ -65,8 +74,29 @@ export const adminLogin = createServerFn({ method: "POST" })
     if (!verifyAdminPassword(data.password)) {
       throw new Error("Senha incorreta.");
     }
-    setAdminSession();
-    return { ok: true };
+    if (!verifyPersonPin(data.person, data.pin ?? "")) {
+      throw new Error("PIN incorreto para esta pessoa.");
+    }
+    setAdminSession(data.person);
+    return { ok: true, activePerson: data.person };
+  });
+
+export const switchAdminPerson = createServerFn({ method: "POST" })
+  .validator(
+    z.object({
+      person: z.enum(["luan", "vini", "caio"]),
+      pin: z.string().optional(),
+    }),
+  )
+  .handler(async ({ data }) => {
+    if (!isAdminAuthenticated()) {
+      throw new Error("Não autorizado.");
+    }
+    if (!verifyPersonPin(data.person, data.pin ?? "")) {
+      throw new Error("PIN incorreto.");
+    }
+    setActivePerson(data.person);
+    return { ok: true, activePerson: data.person };
   });
 
 export const adminLogout = createServerFn({ method: "POST" }).handler(async () => {
@@ -75,7 +105,10 @@ export const adminLogout = createServerFn({ method: "POST" }).handler(async () =
 });
 
 export const checkAdminAuth = createServerFn({ method: "GET" }).handler(async () => {
-  return { authenticated: isAdminAuthenticated() };
+  return {
+    authenticated: isAdminAuthenticated(),
+    activePerson: getActivePerson(),
+  };
 });
 
 export const getLeads = createServerFn({ method: "GET" }).handler(async () => {

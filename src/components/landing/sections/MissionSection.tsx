@@ -52,15 +52,15 @@ export function MissionSection({ config }: { config: SegmentConfig }) {
               <div>
                 <div className="text-lg font-semibold">Raise One</div>
                 <div className="text-xs text-muted-foreground">
-                  Crescimento para negócios locais
+                  Especialistas em aquisição local
                 </div>
               </div>
             </div>
 
             <div className="mt-10 grid grid-cols-3 gap-4 border-y border-border py-6">
               <Stat label="Foco" value="Local" />
-              <Stat label="Mercado" value="B2B" />
               <Stat label="Método" value="Dados" />
+              <Stat label="Especialidade" value="Aquisição" />
             </div>
 
             <p className="mt-6 text-sm leading-relaxed text-muted-foreground">

@@ -149,6 +149,24 @@
   }
 }
 
+@keyframes glow-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
 .animate-pulse-dot {
   animation: pulse-dot 2s ease-in-out infinite;
 }
@@ -161,6 +179,9 @@
 .animate-nudge-down {
   animation: nudge-down 1.8s ease-in-out infinite;
 }
+.animate-glow-pulse {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
 
 @utility shadow-brand {
   box-shadow:
@@ -172,4 +193,24 @@
   box-shadow:
     0 0 0 1px var(--brand),
     0 15px 50px -10px color-mix(in oklch, var(--brand) 80%, transparent);
+}
+
+/* ── Admin panel utilities ─────────────────────────────────── */
+
+@utility admin-card {
+  border-radius: var(--radius-xl);
+  border: 1px solid oklch(1 0 0 / 0.08);
+  background: oklch(0.18 0.005 60 / 0.5);
+  box-shadow: 0 1px 2px oklch(0 0 0 / 0.2);
+}
+
+@utility admin-sidebar {
+  background: oklch(0.16 0.004 60 / 0.95);
+  backdrop-filter: blur(12px);
+}
+
+@utility admin-nav-active {
+  background: oklch(0.72 0.19 48 / 0.14);
+  color: var(--brand);
+  box-shadow: inset 2px 0 0 var(--brand);
 }

@@ -11,9 +11,22 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ObrigadoRouteImport } from './routes/obrigado'
 import { Route as SegmentRouteImport } from './routes/$segment'
+import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as ProjetosGabrielfrancaRouteImport } from './routes/projetos/gabrielfranca'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as AdminLeadsRouteImport } from './routes/admin/leads'
+import { Route as AdminExecucaoReferenciaRouteImport } from './routes/admin/execucao/referencia'
+import { Route as AdminExecucaoProducaoRouteImport } from './routes/admin/execucao/producao'
+import { Route as AdminExecucaoPlanejamentoRouteImport } from './routes/admin/execucao/planejamento'
+import { Route as AdminExecucaoHojeRouteImport } from './routes/admin/execucao/hoje'
+import { Route as AdminExecucaoClientesRouteImport } from './routes/admin/execucao/clientes'
+import { Route as AdminExecucaoCapacidadeRouteImport } from './routes/admin/execucao/capacidade'
+import { Route as AdminExecucaoRituaisIndexRouteImport } from './routes/admin/execucao/rituais/index'
+import { Route as AdminExecucaoRituaisReviewRouteImport } from './routes/admin/execucao/rituais/review'
+import { Route as AdminExecucaoRituaisPlanningRouteImport } from './routes/admin/execucao/rituais/planning'
+import { Route as AdminExecucaoRituaisCheckinRouteImport } from './routes/admin/execucao/rituais/checkin'
 
 const ObrigadoRoute = ObrigadoRouteImport.update({
   id: '/obrigado',
@@ -25,58 +38,220 @@ const SegmentRoute = SegmentRouteImport.update({
   path: '/$segment',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRouteRoute = AdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/admin/',
-  path: '/admin/',
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const ProjetosGabrielfrancaRoute = ProjetosGabrielfrancaRouteImport.update({
+  id: '/projetos/gabrielfranca',
+  path: '/projetos/gabrielfranca',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
-  id: '/admin/login',
-  path: '/admin/login',
-  getParentRoute: () => rootRouteImport,
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminLeadsRoute = AdminLeadsRouteImport.update({
+  id: '/leads',
+  path: '/leads',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminExecucaoReferenciaRoute = AdminExecucaoReferenciaRouteImport.update({
+  id: '/execucao/referencia',
+  path: '/execucao/referencia',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminExecucaoProducaoRoute = AdminExecucaoProducaoRouteImport.update({
+  id: '/execucao/producao',
+  path: '/execucao/producao',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminExecucaoPlanejamentoRoute =
+  AdminExecucaoPlanejamentoRouteImport.update({
+    id: '/execucao/planejamento',
+    path: '/execucao/planejamento',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
+const AdminExecucaoHojeRoute = AdminExecucaoHojeRouteImport.update({
+  id: '/execucao/hoje',
+  path: '/execucao/hoje',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminExecucaoClientesRoute = AdminExecucaoClientesRouteImport.update({
+  id: '/execucao/clientes',
+  path: '/execucao/clientes',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminExecucaoCapacidadeRoute = AdminExecucaoCapacidadeRouteImport.update({
+  id: '/execucao/capacidade',
+  path: '/execucao/capacidade',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminExecucaoRituaisIndexRoute =
+  AdminExecucaoRituaisIndexRouteImport.update({
+    id: '/execucao/rituais/',
+    path: '/execucao/rituais/',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
+const AdminExecucaoRituaisReviewRoute =
+  AdminExecucaoRituaisReviewRouteImport.update({
+    id: '/execucao/rituais/review',
+    path: '/execucao/rituais/review',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
+const AdminExecucaoRituaisPlanningRoute =
+  AdminExecucaoRituaisPlanningRouteImport.update({
+    id: '/execucao/rituais/planning',
+    path: '/execucao/rituais/planning',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
+const AdminExecucaoRituaisCheckinRoute =
+  AdminExecucaoRituaisCheckinRouteImport.update({
+    id: '/execucao/rituais/checkin',
+    path: '/execucao/rituais/checkin',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/$segment': typeof SegmentRoute
   '/obrigado': typeof ObrigadoRoute
+  '/admin/leads': typeof AdminLeadsRoute
   '/admin/login': typeof AdminLoginRoute
+  '/projetos/gabrielfranca': typeof ProjetosGabrielfrancaRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/execucao/capacidade': typeof AdminExecucaoCapacidadeRoute
+  '/admin/execucao/clientes': typeof AdminExecucaoClientesRoute
+  '/admin/execucao/hoje': typeof AdminExecucaoHojeRoute
+  '/admin/execucao/planejamento': typeof AdminExecucaoPlanejamentoRoute
+  '/admin/execucao/producao': typeof AdminExecucaoProducaoRoute
+  '/admin/execucao/referencia': typeof AdminExecucaoReferenciaRoute
+  '/admin/execucao/rituais/checkin': typeof AdminExecucaoRituaisCheckinRoute
+  '/admin/execucao/rituais/planning': typeof AdminExecucaoRituaisPlanningRoute
+  '/admin/execucao/rituais/review': typeof AdminExecucaoRituaisReviewRoute
+  '/admin/execucao/rituais/': typeof AdminExecucaoRituaisIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$segment': typeof SegmentRoute
   '/obrigado': typeof ObrigadoRoute
+  '/admin/leads': typeof AdminLeadsRoute
   '/admin/login': typeof AdminLoginRoute
+  '/projetos/gabrielfranca': typeof ProjetosGabrielfrancaRoute
   '/admin': typeof AdminIndexRoute
+  '/admin/execucao/capacidade': typeof AdminExecucaoCapacidadeRoute
+  '/admin/execucao/clientes': typeof AdminExecucaoClientesRoute
+  '/admin/execucao/hoje': typeof AdminExecucaoHojeRoute
+  '/admin/execucao/planejamento': typeof AdminExecucaoPlanejamentoRoute
+  '/admin/execucao/producao': typeof AdminExecucaoProducaoRoute
+  '/admin/execucao/referencia': typeof AdminExecucaoReferenciaRoute
+  '/admin/execucao/rituais/checkin': typeof AdminExecucaoRituaisCheckinRoute
+  '/admin/execucao/rituais/planning': typeof AdminExecucaoRituaisPlanningRoute
+  '/admin/execucao/rituais/review': typeof AdminExecucaoRituaisReviewRoute
+  '/admin/execucao/rituais': typeof AdminExecucaoRituaisIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
   '/$segment': typeof SegmentRoute
   '/obrigado': typeof ObrigadoRoute
+  '/admin/leads': typeof AdminLeadsRoute
   '/admin/login': typeof AdminLoginRoute
+  '/projetos/gabrielfranca': typeof ProjetosGabrielfrancaRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/execucao/capacidade': typeof AdminExecucaoCapacidadeRoute
+  '/admin/execucao/clientes': typeof AdminExecucaoClientesRoute
+  '/admin/execucao/hoje': typeof AdminExecucaoHojeRoute
+  '/admin/execucao/planejamento': typeof AdminExecucaoPlanejamentoRoute
+  '/admin/execucao/producao': typeof AdminExecucaoProducaoRoute
+  '/admin/execucao/referencia': typeof AdminExecucaoReferenciaRoute
+  '/admin/execucao/rituais/checkin': typeof AdminExecucaoRituaisCheckinRoute
+  '/admin/execucao/rituais/planning': typeof AdminExecucaoRituaisPlanningRoute
+  '/admin/execucao/rituais/review': typeof AdminExecucaoRituaisReviewRoute
+  '/admin/execucao/rituais/': typeof AdminExecucaoRituaisIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/$segment' | '/obrigado' | '/admin/login' | '/admin/'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/$segment'
+    | '/obrigado'
+    | '/admin/leads'
+    | '/admin/login'
+    | '/projetos/gabrielfranca'
+    | '/admin/'
+    | '/admin/execucao/capacidade'
+    | '/admin/execucao/clientes'
+    | '/admin/execucao/hoje'
+    | '/admin/execucao/planejamento'
+    | '/admin/execucao/producao'
+    | '/admin/execucao/referencia'
+    | '/admin/execucao/rituais/checkin'
+    | '/admin/execucao/rituais/planning'
+    | '/admin/execucao/rituais/review'
+    | '/admin/execucao/rituais/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/$segment' | '/obrigado' | '/admin/login' | '/admin'
-  id: '__root__' | '/' | '/$segment' | '/obrigado' | '/admin/login' | '/admin/'
+  to:
+    | '/'
+    | '/$segment'
+    | '/obrigado'
+    | '/admin/leads'
+    | '/admin/login'
+    | '/projetos/gabrielfranca'
+    | '/admin'
+    | '/admin/execucao/capacidade'
+    | '/admin/execucao/clientes'
+    | '/admin/execucao/hoje'
+    | '/admin/execucao/planejamento'
+    | '/admin/execucao/producao'
+    | '/admin/execucao/referencia'
+    | '/admin/execucao/rituais/checkin'
+    | '/admin/execucao/rituais/planning'
+    | '/admin/execucao/rituais/review'
+    | '/admin/execucao/rituais'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/$segment'
+    | '/obrigado'
+    | '/admin/leads'
+    | '/admin/login'
+    | '/projetos/gabrielfranca'
+    | '/admin/'
+    | '/admin/execucao/capacidade'
+    | '/admin/execucao/clientes'
+    | '/admin/execucao/hoje'
+    | '/admin/execucao/planejamento'
+    | '/admin/execucao/producao'
+    | '/admin/execucao/referencia'
+    | '/admin/execucao/rituais/checkin'
+    | '/admin/execucao/rituais/planning'
+    | '/admin/execucao/rituais/review'
+    | '/admin/execucao/rituais/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRouteRoute: typeof AdminRouteRouteWithChildren
   SegmentRoute: typeof SegmentRoute
   ObrigadoRoute: typeof ObrigadoRoute
-  AdminLoginRoute: typeof AdminLoginRoute
-  AdminIndexRoute: typeof AdminIndexRoute
+  ProjetosGabrielfrancaRoute: typeof ProjetosGabrielfrancaRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -95,6 +270,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SegmentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -104,27 +286,147 @@ declare module '@tanstack/react-router' {
     }
     '/admin/': {
       id: '/admin/'
-      path: '/admin'
+      path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/projetos/gabrielfranca': {
+      id: '/projetos/gabrielfranca'
+      path: '/projetos/gabrielfranca'
+      fullPath: '/projetos/gabrielfranca'
+      preLoaderRoute: typeof ProjetosGabrielfrancaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/login': {
       id: '/admin/login'
-      path: '/admin/login'
+      path: '/login'
       fullPath: '/admin/login'
       preLoaderRoute: typeof AdminLoginRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/leads': {
+      id: '/admin/leads'
+      path: '/leads'
+      fullPath: '/admin/leads'
+      preLoaderRoute: typeof AdminLeadsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/execucao/referencia': {
+      id: '/admin/execucao/referencia'
+      path: '/execucao/referencia'
+      fullPath: '/admin/execucao/referencia'
+      preLoaderRoute: typeof AdminExecucaoReferenciaRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/execucao/producao': {
+      id: '/admin/execucao/producao'
+      path: '/execucao/producao'
+      fullPath: '/admin/execucao/producao'
+      preLoaderRoute: typeof AdminExecucaoProducaoRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/execucao/planejamento': {
+      id: '/admin/execucao/planejamento'
+      path: '/execucao/planejamento'
+      fullPath: '/admin/execucao/planejamento'
+      preLoaderRoute: typeof AdminExecucaoPlanejamentoRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/execucao/hoje': {
+      id: '/admin/execucao/hoje'
+      path: '/execucao/hoje'
+      fullPath: '/admin/execucao/hoje'
+      preLoaderRoute: typeof AdminExecucaoHojeRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/execucao/clientes': {
+      id: '/admin/execucao/clientes'
+      path: '/execucao/clientes'
+      fullPath: '/admin/execucao/clientes'
+      preLoaderRoute: typeof AdminExecucaoClientesRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/execucao/capacidade': {
+      id: '/admin/execucao/capacidade'
+      path: '/execucao/capacidade'
+      fullPath: '/admin/execucao/capacidade'
+      preLoaderRoute: typeof AdminExecucaoCapacidadeRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/execucao/rituais/': {
+      id: '/admin/execucao/rituais/'
+      path: '/execucao/rituais'
+      fullPath: '/admin/execucao/rituais/'
+      preLoaderRoute: typeof AdminExecucaoRituaisIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/execucao/rituais/review': {
+      id: '/admin/execucao/rituais/review'
+      path: '/execucao/rituais/review'
+      fullPath: '/admin/execucao/rituais/review'
+      preLoaderRoute: typeof AdminExecucaoRituaisReviewRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/execucao/rituais/planning': {
+      id: '/admin/execucao/rituais/planning'
+      path: '/execucao/rituais/planning'
+      fullPath: '/admin/execucao/rituais/planning'
+      preLoaderRoute: typeof AdminExecucaoRituaisPlanningRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/execucao/rituais/checkin': {
+      id: '/admin/execucao/rituais/checkin'
+      path: '/execucao/rituais/checkin'
+      fullPath: '/admin/execucao/rituais/checkin'
+      preLoaderRoute: typeof AdminExecucaoRituaisCheckinRouteImport
+      parentRoute: typeof AdminRouteRoute
     }
   }
 }
 
-const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  SegmentRoute: SegmentRoute,
-  ObrigadoRoute: ObrigadoRoute,
+interface AdminRouteRouteChildren {
+  AdminLeadsRoute: typeof AdminLeadsRoute
+  AdminLoginRoute: typeof AdminLoginRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+  AdminExecucaoCapacidadeRoute: typeof AdminExecucaoCapacidadeRoute
+  AdminExecucaoClientesRoute: typeof AdminExecucaoClientesRoute
+  AdminExecucaoHojeRoute: typeof AdminExecucaoHojeRoute
+  AdminExecucaoPlanejamentoRoute: typeof AdminExecucaoPlanejamentoRoute
+  AdminExecucaoProducaoRoute: typeof AdminExecucaoProducaoRoute
+  AdminExecucaoReferenciaRoute: typeof AdminExecucaoReferenciaRoute
+  AdminExecucaoRituaisCheckinRoute: typeof AdminExecucaoRituaisCheckinRoute
+  AdminExecucaoRituaisPlanningRoute: typeof AdminExecucaoRituaisPlanningRoute
+  AdminExecucaoRituaisReviewRoute: typeof AdminExecucaoRituaisReviewRoute
+  AdminExecucaoRituaisIndexRoute: typeof AdminExecucaoRituaisIndexRoute
+}
+
+const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminLeadsRoute: AdminLeadsRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminIndexRoute: AdminIndexRoute,
+  AdminExecucaoCapacidadeRoute: AdminExecucaoCapacidadeRoute,
+  AdminExecucaoClientesRoute: AdminExecucaoClientesRoute,
+  AdminExecucaoHojeRoute: AdminExecucaoHojeRoute,
+  AdminExecucaoPlanejamentoRoute: AdminExecucaoPlanejamentoRoute,
+  AdminExecucaoProducaoRoute: AdminExecucaoProducaoRoute,
+  AdminExecucaoReferenciaRoute: AdminExecucaoReferenciaRoute,
+  AdminExecucaoRituaisCheckinRoute: AdminExecucaoRituaisCheckinRoute,
+  AdminExecucaoRituaisPlanningRoute: AdminExecucaoRituaisPlanningRoute,
+  AdminExecucaoRituaisReviewRoute: AdminExecucaoRituaisReviewRoute,
+  AdminExecucaoRituaisIndexRoute: AdminExecucaoRituaisIndexRoute,
+}
+
+const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
+  AdminRouteRouteChildren,
+)
+
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  AdminRouteRoute: AdminRouteRouteWithChildren,
+  SegmentRoute: SegmentRoute,
+  ObrigadoRoute: ObrigadoRoute,
+  ProjetosGabrielfrancaRoute: ProjetosGabrielfrancaRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

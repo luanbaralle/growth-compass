@@ -1,5 +1,16 @@
 import type { LucideIcon } from "lucide-react";
 
+export interface SegmentVisual {
+  heroImage: string;
+  heroImageAlt: string;
+  overlayLabel: string;
+}
+
+export interface JourneyStep {
+  label: string;
+  icon: LucideIcon;
+}
+
 export interface SearchResultItem {
   /** Nome exibido no resultado simulado */
   name: string;
@@ -82,9 +93,20 @@ export interface SegmentConfig {
     eyebrow: string;
     title: string;
     titleHighlight: string;
-    steps: string[];
+    steps: JourneyStep[];
     instagramNote: string;
     googleNote: string;
+  };
+
+  ahaMoment: {
+    eyebrow: string;
+    title: string;
+    titleHighlight: string;
+    subtitle: string;
+    winFlow: string[];
+    loseFlow: string[];
+    winOutcome: string;
+    loseOutcome: string;
   };
 
   demand: {
@@ -119,6 +141,7 @@ export interface SegmentConfig {
     eyebrow: string;
     title: string;
     titleHighlight: string;
+    checklist: string[];
     cards: AnalysisCard[];
     footerLine: string;
     footerSub: string;
@@ -150,6 +173,7 @@ export interface SegmentConfig {
     submitLabel: string;
     businessFieldLabel: string;
     footerNote: string;
+    trustItems: string[];
   };
 }
 

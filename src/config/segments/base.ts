@@ -1,3 +1,13 @@
+import {
+  CalendarCheck,
+  Globe,
+  MousePointerClick,
+  Phone,
+  ScanSearch,
+  Search,
+  UserCheck,
+  UserRound,
+} from "lucide-react";
 import type { SegmentConfig } from "./types";
 
 /** Template base reutilizado por todas as verticais */
@@ -6,17 +16,17 @@ export const BASE_SEGMENT: Omit<
   "slug" | "name" | "hubLabel" | "icon" | "accentColor" | "accentSoft" | "seo"
 > = {
   hero: {
-    badge: "Especialistas em crescimento para negócios locais",
+    badge: "Especialistas em identificar oportunidades de aquisição para negócios locais",
     title: "Seu negócio deveria estar",
-    titleHighlight: "recebendo mais clientes.",
+    titleHighlight: "capturando mais demanda local.",
     subtitle:
-      "Todos os dias, pessoas da sua região pesquisam no Google por produtos e serviços que você já oferece. Se sua empresa não aparece nos primeiros resultados, esses contatos estão indo para a concorrência.",
-    ctaLabel: "Quero analisar meu mercado",
+      "Todos os dias, pessoas da sua região pesquisam no Google por produtos e serviços que você já oferece. Se sua empresa não aparece nos primeiros resultados, essa demanda está indo para quem aparece.",
+    ctaLabel: "Quero minha análise de mercado",
     trustItems: [
       "Sem compromisso",
-      "Sem contrato",
-      "Análise personalizada da sua região",
+      "Análise personalizada",
       "Retorno em até 24 horas",
+      "Sem linguagem técnica",
     ],
     monthlySearches: "+2.400",
   },
@@ -56,20 +66,32 @@ export const BASE_SEGMENT: Omit<
     title: "Como novos clientes",
     titleHighlight: "encontram negócios no Google",
     steps: [
-      "Pessoa procura serviço",
-      "Google mostra resultados",
-      "Cliente acessa uma empresa",
-      "Analisa rapidamente",
-      "Entra em contato",
-      "Agenda atendimento",
-      "Torna-se cliente",
+      { label: "Pessoa procura serviço", icon: ScanSearch },
+      { label: "Google mostra resultados", icon: Search },
+      { label: "Cliente acessa uma empresa", icon: Globe },
+      { label: "Analisa rapidamente", icon: MousePointerClick },
+      { label: "Entra em contato", icon: Phone },
+      { label: "Agenda atendimento", icon: CalendarCheck },
+      { label: "Torna-se cliente", icon: UserCheck },
     ],
     instagramNote: "A maioria dos negócios tenta competir apenas no Instagram.",
     googleNote: "Mas a maioria dos clientes inicia sua jornada de compra no Google.",
   },
 
+  ahaMoment: {
+    eyebrow: "04 — O Insight",
+    title: "A maioria acredita que precisa de",
+    titleHighlight: "mais divulgação.",
+    subtitle:
+      "Mas muitas vezes o problema é apenas não aparecer no momento certo — quando a pessoa já está pronta para contratar.",
+    winFlow: ["Pessoa pronta para contratar", "Pesquisa no Google", "Encontra você"],
+    loseFlow: ["Pessoa pronta para contratar", "Pesquisa no Google", "Encontra concorrente"],
+    winOutcome: "Você captura a oportunidade",
+    loseOutcome: "A oportunidade vai embora",
+  },
+
   demand: {
-    eyebrow: "04 — A Oportunidade",
+    eyebrow: "05 — A Oportunidade",
     title: "Existe demanda na sua região.",
     titleMuted: "A questão é quem está capturando essa demanda.",
     paragraphs: [
@@ -113,25 +135,33 @@ export const BASE_SEGMENT: Omit<
   },
 
   analysis: {
-    eyebrow: "05 — Diagnóstico",
-    title: "O que analisamos",
-    titleHighlight: "gratuitamente",
+    eyebrow: "Como analisamos seu mercado",
+    title: "Especialistas em",
+    titleHighlight: "análise de aquisição local",
+    checklist: [
+      "Volume de buscas",
+      "Concorrência local",
+      "Oportunidades de aquisição",
+      "Presença digital atual",
+      "Intenção de compra",
+      "Potencial de crescimento",
+    ],
     cards: [
       {
-        title: "Mercado Local",
-        description: "Quem procura pelos seus serviços na sua região.",
+        title: "Demanda Local",
+        description: "Quem procura pelos seus serviços na sua região e com que frequência.",
       },
       {
         title: "Concorrência",
-        description: "Quem está aparecendo hoje.",
+        description: "Quem está aparecendo hoje e capturando essa demanda.",
       },
       {
         title: "Presença Digital",
-        description: "Como sua empresa está posicionada atualmente.",
+        description: "Como sua empresa está posicionada no momento da busca.",
       },
       {
         title: "Oportunidades",
-        description: "Onde existem chances reais de captar novos clientes.",
+        description: "Onde existem chances reais de crescimento na sua região.",
       },
     ],
     footerLine: "Você recebe um parecer simples e objetivo.",
@@ -140,12 +170,12 @@ export const BASE_SEGMENT: Omit<
 
   mission: {
     eyebrow: "06 — Nossa Missão",
-    title: "Nosso trabalho não é vender anúncios.",
-    titleHighlight: "É ajudar negócios locais a serem encontrados.",
+    title: "Não somos uma agência.",
+    titleHighlight: "Somos especialistas em aquisição local.",
     paragraphs: [
       "Muitas empresas excelentes deixam de crescer porque dependem exclusivamente de:",
       "Enquanto isso, pessoas interessadas continuam pesquisando seus serviços todos os dias no Google.",
-      "Nosso papel é mostrar onde estão essas oportunidades e como captá-las.",
+      "Nosso papel é identificar onde está a demanda e mostrar como capturá-la.",
     ],
     dependencyTags: ["indicação", "Instagram", "boca a boca"],
     cardDescription:
@@ -155,37 +185,43 @@ export const BASE_SEGMENT: Omit<
   solutions: {
     eyebrow: "07 — Como Resolvemos",
     title: "Como normalmente",
-    titleHighlight: "resolvemos esse problema",
+    titleHighlight: "capturamos essa demanda",
     cards: [
       {
         tag: "01",
+        title: "Presença na Busca",
+        description: "Para aparecer quando alguém procura pelo serviço oferecido.",
+      },
+      {
+        tag: "02",
         title: "Página de Conversão",
         description: "Uma página focada em transformar visitantes em contatos.",
       },
       {
-        tag: "02",
-        title: "Posicionamento no Google",
-        description: "Para aparecer quando alguém procura pelo serviço oferecido.",
-      },
-      {
         tag: "03",
-        title: "Gestão e Otimização",
-        description: "Para melhorar continuamente os resultados.",
+        title: "Otimização Contínua",
+        description: "Para melhorar continuamente a captura de oportunidades.",
       },
     ],
     footerLine: "Mas isso só faz sentido depois que entendemos a realidade do seu mercado.",
-    footerHighlight: "Por isso o diagnóstico vem primeiro.",
+    footerHighlight: "Por isso a análise vem primeiro.",
   },
 
   form: {
-    eyebrow: "Diagnóstico Gratuito",
-    title: "Quantas oportunidades sua empresa está",
-    titleHighlight: "deixando passar hoje?",
+    eyebrow: "Análise Gratuita",
+    title: "Descubra quantas pessoas estão procurando",
+    titleHighlight: "por você agora.",
     subtitle:
-      "Solicite gratuitamente uma análise da sua região e descubra como potenciais clientes estão encontrando seus concorrentes.",
-    submitLabel: "Quero analisar meu mercado",
+      "Receba uma análise personalizada da demanda na sua região — e entenda se você está aparecendo no momento certo.",
+    submitLabel: "Quero minha análise de mercado",
     businessFieldLabel: "Empresa ou Segmento",
     footerNote: "Sem compromisso · Retorno em até 24 horas",
+    trustItems: [
+      "Sem compromisso",
+      "Análise personalizada",
+      "Retorno em até 24 horas",
+      "Sem linguagem técnica",
+    ],
   },
 };
 
@@ -206,6 +242,7 @@ export function createSegmentConfig(
       ...overrides.invisibleClient,
     },
     journey: { ...BASE_SEGMENT.journey, ...overrides.journey },
+    ahaMoment: { ...BASE_SEGMENT.ahaMoment, ...overrides.ahaMoment },
     demand: { ...BASE_SEGMENT.demand, ...overrides.demand },
     fomo: { ...BASE_SEGMENT.fomo, ...overrides.fomo },
     missedOpportunity: {
