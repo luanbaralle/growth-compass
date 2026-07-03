@@ -233,30 +233,38 @@ const assetsMapped: AssetGroup[] = [
   {
     title: "Empreendimentos",
     items: [
+      "Revista digital dos 5 empreendimentos",
       "Renders 3D",
       "Plantas",
       "Logos dos empreendimentos",
       "Fotos institucionais",
-      "Imagens aereas (drone)",
-      "Informacoes dos empreendimentos",
+      "Localizacao e ficha tecnica",
+      "Informacoes completas dos empreendimentos",
       "Material utilizado atualmente pela Frizon",
     ],
   },
   {
     title: "Prova social",
-    items: [
-      "6 videos de entrega de chaves do Bella Frizon",
-      "Fotos de entregas",
-      "Alguns videos institucionais",
-    ],
+    items: ["Fotos de entregas de chave", "Fotos do Gabriel com premiacoes"],
   },
   {
     title: "Gabriel",
-    items: ["Algumas fotos profissionais", "Historico de premiacoes", "Material pessoal"],
+    items: ["Varias fotos profissionais", "CRECI"],
+  },
+  {
+    title: "Autoridade",
+    items: [
+      "Mais de R$ 30 milhoes em apartamentos vendidos em Itanhaem e Mongagua",
+      "Exclusivo Frizon Construtora",
+    ],
   },
   {
     title: "Marca Frizon",
     items: ["Identidade visual consolidada", "Logo", "Cores", "Material institucional"],
+  },
+  {
+    title: "Drive compartilhado",
+    items: ["Drive com informacoes complementares em validacao de acesso"],
   },
 ];
 
@@ -267,7 +275,6 @@ const assetsRequested: AssetGroup[] = [
       "Foto profissional em alta resolucao",
       "Outras fotos (atendimento, stand, etc.)",
       "Video de apresentacao",
-      "CRECI",
       "Mini biografia",
       "Redes sociais",
       "WhatsApp",
@@ -351,20 +358,20 @@ const highImpactAssets: AssetGroup[] = [
 
 const assetChecklist: AssetChecklistItem[] = [
   { label: "Logo Frizon", status: "done" },
-  { label: "Fotos Gabriel", status: "pending" },
-  { label: "CRECI", status: "pending" },
+  { label: "Fotos Gabriel", status: "done" },
+  { label: "CRECI", status: "done" },
   { label: "Mini Bio", status: "pending" },
   { label: "WhatsApp", status: "pending" },
   { label: "Instagram", status: "done" },
   { label: "Fotos/Videos drone", status: "pending" },
-  { label: "Renders", status: "pending" },
-  { label: "Plantas", status: "pending" },
+  { label: "Renders", status: "done" },
+  { label: "Plantas", status: "done" },
   { label: "PDFs Comerciais", status: "pending" },
   { label: "Videos Entrega de Chaves", status: "pending" },
   { label: "Depoimentos", status: "pending" },
-  { label: "Premiacoes", status: "pending" },
+  { label: "Premiacoes", status: "done" },
   { label: "Material Institucional Frizon", status: "done" },
-  { label: "Informacoes completas dos 5 empreendimentos", status: "pending" },
+  { label: "Informacoes completas dos 5 empreendimentos", status: "done" },
 ];
 
 const essentialDeliverables: EssentialDeliverable[] = [
@@ -460,7 +467,8 @@ const roadmap: BoardColumn[] = [
 const nextSteps = [
   "Arquitetura da plataforma",
   "Coleta da identidade visual",
-  "Organizacao dos materiais",
+  "Curadoria dos materiais recebidos",
+  "Validacao do drive compartilhado",
   "Desenvolvimento da estrutura principal",
 ];
 
@@ -1397,10 +1405,10 @@ export function ProjectsPage() {
                   Resumo executivo
                 </p>
                 <p className="mt-4 text-base leading-relaxed text-white/70">
-                  Apos o kickoff, a operacao entra em uma fase de consolidacao de planejamento e
-                  arquitetura. O objetivo desta etapa e fechar a estrutura central da plataforma,
-                  organizar os materiais e preparar a base ideal para design, desenvolvimento e
-                  campanhas futuras.
+                  Ja recebemos uma base relevante de materiais, incluindo revista digital dos 5
+                  empreendimentos, fotos profissionais do Gabriel, fotos de entregas, premiacoes e
+                  CRECI. O foco agora e consolidar a arquitetura, validar o conteudo do drive
+                  compartilhado e transformar esse acervo em uma experiencia premium na plataforma.
                 </p>
               </div>
             </SurfaceCard>
