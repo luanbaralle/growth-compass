@@ -104,12 +104,12 @@ const timeline: StageItem[] = [
   {
     title: "Planejamento",
     description: "Consolidacao de escopo, materiais e prioridades imediatas.",
-    status: "active",
+    status: "done",
   },
   {
     title: "Arquitetura",
     description: "Estruturacao da jornada, paginas e fluxos de conversao.",
-    status: "todo",
+    status: "active",
   },
   {
     title: "Design",
@@ -145,8 +145,13 @@ const projectMilestones: StageItem[] = [
     status: "done",
   },
   {
-    title: "Planejamento e arquitetura em andamento",
-    description: "Escopo inicial e estrutura da plataforma sendo consolidados.",
+    title: "Planejamento concluido",
+    description: "Escopo, materiais e prioridades consolidados apos recebimento da base editorial.",
+    status: "done",
+  },
+  {
+    title: "Arquitetura em andamento",
+    description: "Estrutura da jornada, paginas e fluxos de conversao sendo definidos.",
     status: "active",
   },
   {
@@ -478,7 +483,7 @@ const heroStats = [
   { label: "Etapas mapeadas", value: "08" },
   { label: "Pilares estrategicos", value: "04" },
   { label: "Frentes do roadmap", value: "04" },
-  { label: "Atualizacao", value: "03/07" },
+  { label: "Atualizacao", value: "06/07" },
 ];
 
 function statusMeta(status: StageStatus) {
@@ -815,7 +820,7 @@ export function ProjectsPage() {
                     </h2>
                   </div>
                   <div className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/62">
-                    Ultima atualizacao 03/07/2026
+                    Ultima atualizacao 06/07/2026
                   </div>
                 </div>
 
@@ -1398,17 +1403,16 @@ export function ProjectsPage() {
             </SurfaceCard>
 
             <SurfaceCard className="p-7 sm:p-8">
-              <IconHeader icon={CalendarClock} eyebrow="Status da atualizacao" title="03/07/2026" />
+              <IconHeader icon={CalendarClock} eyebrow="Status da atualizacao" title="06/07/2026" />
 
               <div className={cn(insetCardClass, "mt-7 p-5")}>
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/52">
                   Resumo executivo
                 </p>
                 <p className="mt-4 text-base leading-relaxed text-white/70">
-                  Ja recebemos uma base relevante de materiais, incluindo revista digital dos 5
-                  empreendimentos, fotos profissionais do Gabriel, fotos de entregas, premiacoes e
-                  CRECI. O foco agora e consolidar a arquitetura, validar o conteudo do drive
-                  compartilhado e transformar esse acervo em uma experiencia premium na plataforma.
+                  Com a base de materiais recebida, o projeto avanca para a etapa de arquitetura.
+                  O foco agora e definir a estrutura da jornada, organizar as paginas e validar o
+                  conteudo do drive compartilhado antes do design e desenvolvimento.
                 </p>
               </div>
             </SurfaceCard>
