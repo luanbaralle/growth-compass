@@ -109,12 +109,12 @@ const timeline: StageItem[] = [
   {
     title: "Arquitetura",
     description: "Estruturacao da jornada, paginas e fluxos de conversao.",
-    status: "active",
+    status: "done",
   },
   {
     title: "Design",
     description: "Direcao visual premium baseada na autoridade da Frizon.",
-    status: "todo",
+    status: "active",
   },
   {
     title: "Desenvolvimento",
@@ -150,8 +150,13 @@ const projectMilestones: StageItem[] = [
     status: "done",
   },
   {
-    title: "Arquitetura em andamento",
-    description: "Estrutura da jornada, paginas e fluxos de conversao sendo definidos.",
+    title: "Arquitetura concluida",
+    description: "Jornada, paginas e fluxos de conversao definidos e validados.",
+    status: "done",
+  },
+  {
+    title: "Design em andamento",
+    description: "Direcao visual premium e identidade da plataforma em construcao.",
     status: "active",
   },
   {
@@ -470,11 +475,11 @@ const roadmap: BoardColumn[] = [
 ];
 
 const nextSteps = [
-  "Arquitetura da plataforma",
-  "Coleta da identidade visual",
+  "Definicao da identidade visual",
+  "Direcao de design da plataforma",
   "Curadoria dos materiais recebidos",
   "Validacao do drive compartilhado",
-  "Desenvolvimento da estrutura principal",
+  "Preparacao para desenvolvimento",
 ];
 
 const team = ["Raise One", "Luan", "Vinicius", "Caio"];
@@ -483,7 +488,7 @@ const heroStats = [
   { label: "Etapas mapeadas", value: "08" },
   { label: "Pilares estrategicos", value: "04" },
   { label: "Frentes do roadmap", value: "04" },
-  { label: "Atualizacao", value: "06/07" },
+  { label: "Atualizacao", value: "09/07" },
 ];
 
 function statusMeta(status: StageStatus) {
@@ -820,7 +825,7 @@ export function ProjectsPage() {
                     </h2>
                   </div>
                   <div className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/62">
-                    Ultima atualizacao 06/07/2026
+                    Ultima atualizacao 09/07/2026
                   </div>
                 </div>
 
@@ -1403,16 +1408,16 @@ export function ProjectsPage() {
             </SurfaceCard>
 
             <SurfaceCard className="p-7 sm:p-8">
-              <IconHeader icon={CalendarClock} eyebrow="Status da atualizacao" title="06/07/2026" />
+              <IconHeader icon={CalendarClock} eyebrow="Status da atualizacao" title="09/07/2026" />
 
               <div className={cn(insetCardClass, "mt-7 p-5")}>
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-white/52">
                   Resumo executivo
                 </p>
                 <p className="mt-4 text-base leading-relaxed text-white/70">
-                  Com a base de materiais recebida, o projeto avanca para a etapa de arquitetura.
-                  O foco agora e definir a estrutura da jornada, organizar as paginas e validar o
-                  conteudo do drive compartilhado antes do design e desenvolvimento.
+                  Com a arquitetura concluida, o projeto entra na etapa de design. O foco agora e
+                  definir a identidade visual, consolidar a direcao premium da plataforma e
+                  preparar a base para o desenvolvimento.
                 </p>
               </div>
             </SurfaceCard>
