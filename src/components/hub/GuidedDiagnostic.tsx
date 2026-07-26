@@ -10,7 +10,12 @@ import { BusinessSuggestions } from "./BusinessSuggestions";
 
 type Step = "form" | "loading" | "result";
 
-export function GuidedDiagnostic() {
+interface GuidedDiagnosticProps {
+  variant?: "default" | "home";
+}
+
+export function GuidedDiagnostic({ variant = "default" }: GuidedDiagnosticProps) {
+  const isHome = variant === "home";
   const navigate = useNavigate();
 
   const [step, setStep] = useState<Step>("form");
@@ -68,21 +73,43 @@ export function GuidedDiagnostic() {
   const businessLabel = businessMatch?.displayLabel ?? "";
 
   return (
-    <section id="diagnostico" className="relative border-t border-border/60 bg-surface/20">
-      <div className="mx-auto max-w-xl px-5 py-16 sm:px-8 sm:py-24">
-        <div className="mb-8 text-center">
-          <p className="mb-3 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.18em] text-brand">
-            <span className="h-px w-6 bg-brand" />
-            Diagnóstico
-          </p>
-          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-            Descubra sua oportunidade de mercado
-          </h2>
-        </div>
+    <section
+      id="diagnostico"
+      className={
+        isHome
+          ? "relative border-t border-border/60 bg-surface/20 pb-16 sm:pb-24"
+          : "relative border-t border-border/60 bg-surface/20"
+      }
+    >
+      <div
+        className={
+          isHome
+            ? "mx-auto max-w-5xl px-5 sm:px-8"
+            : "mx-auto max-w-xl px-5 py-16 sm:px-8 sm:py-24"
+        }
+      >
+        {!isHome && (
+          <div className="mb-8 text-center">
+            <p className="mb-3 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.18em] text-brand">
+              <span className="h-px w-6 bg-brand" />
+              Diagnóstico
+            </p>
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+              Descubra sua oportunidade de mercado
+            </h2>
+          </div>
+        )}
 
         <div className="overflow-hidden rounded-2xl border border-border bg-background/80 shadow-2xl backdrop-blur-xl">
           {step === "form" && (
-            <form onSubmit={handleAnalyze} className="space-y-6 p-6 sm:p-8">
+            <form
+              onSubmit={handleAnalyze}
+              className={
+                isHome
+                  ? "grid gap-4 p-4 sm:p-6 lg:grid-cols-[1fr_1fr_auto] lg:items-end"
+                  : "space-y-6 p-6 sm:p-8"
+              }
+            >
               <div>
                 <label
                   htmlFor="business-input"
@@ -95,7 +122,9 @@ export function GuidedDiagnostic() {
                   value={businessInput}
                   onChange={setBusinessInput}
                 />
-                <BusinessSuggestions value={businessInput} onSelect={setBusinessInput} />
+                {!isHome && (
+                  <BusinessSuggestions value={businessInput} onSelect={setBusinessInput} />
+                )}
               </div>
 
               <div>
@@ -115,9 +144,13 @@ export function GuidedDiagnostic() {
               <button
                 type="submit"
                 disabled={!businessInput.trim()}
-                className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand px-5 py-3.5 text-sm font-semibold text-primary-foreground shadow-brand transition-all hover:scale-[1.01] disabled:opacity-50"
+                className={
+                  isHome
+                    ? "group inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand px-5 py-3.5 text-sm font-semibold text-primary-foreground shadow-brand transition-all hover:scale-[1.01] disabled:opacity-50 lg:w-auto lg:whitespace-nowrap"
+                    : "group inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand px-5 py-3.5 text-sm font-semibold text-primary-foreground shadow-brand transition-all hover:scale-[1.01] disabled:opacity-50"
+                }
               >
-                Analisar meu mercado
+                {isHome ? "Analisar meu mercado gratuitamente" : "Analisar meu mercado"}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </button>
             </form>

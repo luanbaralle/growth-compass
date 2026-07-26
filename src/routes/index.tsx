@@ -1,28 +1,28 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { HubPage } from "@/components/hub/HubPage";
+import { HomePage } from "@/components/home/HomePage";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       {
-        title: "Raise One — Seu negócio deveria estar recebendo mais clientes",
+        title: "Raise One — Marketing, Tecnologia e Crescimento",
       },
       {
         name: "description",
         content:
-          "Descubra se você está capturando a demanda do seu mercado ou deixando clientes para seus concorrentes. Análise gratuita para negócios locais.",
+          "Construímos o próximo passo do crescimento da sua empresa. Estratégia, tecnologia e execução — do marketing à plataforma.",
       },
       {
         property: "og:title",
-        content: "Raise One — Especialistas em crescimento para negócios locais",
+        content: "Raise One — Marketing, Tecnologia e Crescimento",
       },
       {
         property: "og:description",
         content:
-          "Todos os dias pessoas pesquisam no Google por serviços que empresas como a sua oferecem. Descubra se você está capturando essa demanda.",
+          "Parceiros de crescimento digital. Google Ads, conteúdo, IA, automações, portais e soluções sob medida.",
       },
       { property: "og:type", content: "website" },
     ],
   }),
-  component: HubPage,
+  component: HomePage,
 });

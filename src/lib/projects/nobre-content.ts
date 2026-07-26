@@ -32,8 +32,13 @@ export const heroContent = {
   exclusive: "Solução desenvolvida sob medida para a Nobre Imóveis.",
 } as const;
 
+export const projectPricing = {
+  installments: "12x de R$ 889,93",
+  cash: "R$ 8.900 à vista",
+} as const;
+
 export const projectBrief = {
-  investment: "R$ 8.900,00",
+  investment: `${projectPricing.installments} ou ${projectPricing.cash}`,
   deadline: "15 a 20 dias úteis",
   client: "Nobre Imóveis",
   status: "Projeto Sob Medida",
@@ -441,7 +446,7 @@ export const investmentContent = {
     title: "Projeto sob medida",
     description: "Desenvolvimento dedicado à Nobre Imóveis. Não se trata de software pronto ou licença.",
   },
-  price: "R$ 8.900,00",
+  pricing: projectPricing,
   description: "Desenvolvimento da solução completa conforme escopo apresentado nesta proposta.",
   includes: [
     "Desenvolvimento completo",

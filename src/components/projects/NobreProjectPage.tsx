@@ -33,6 +33,7 @@ import {
   outOfScope,
   premises,
   projectBrief,
+  projectPricing,
   solutionSummary,
   systemResponsibilities,
   teamResponsibilities,
@@ -417,7 +418,7 @@ export function NobreProjectPage() {
 
             <div className="mt-6 grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-white/[0.08] bg-white/[0.08] sm:mt-8 sm:grid-cols-2 lg:grid-cols-[1.2fr_repeat(4,minmax(0,1fr))]">
               {[
-                { label: "Investimento", value: projectBrief.investment, highlight: true },
+                { label: "Investimento", highlight: true, pricing: true as const },
                 { label: "Prazo", value: projectBrief.deadline },
                 { label: "Cliente", value: projectBrief.client },
                 { label: "Status", value: projectBrief.status },
@@ -433,16 +434,25 @@ export function NobreProjectPage() {
                   <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/35 sm:tracking-[0.2em]">
                     {field.label}
                   </p>
-                  <p
-                    className={cn(
-                      "mt-2 font-semibold tracking-tight text-white",
-                      field.highlight
-                        ? "text-xl tabular-nums sm:text-2xl"
-                        : "text-[14px] sm:text-[15px]",
-                    )}
-                  >
-                    {field.value}
-                  </p>
+                  {"pricing" in field && field.pricing ? (
+                    <div className="mt-2">
+                      <p className="text-lg font-semibold tracking-tight text-white tabular-nums sm:text-xl">
+                        {projectPricing.installments}
+                      </p>
+                      <p className="mt-1.5 text-[13px] text-white/50">
+                        ou <span className="font-medium text-white/75">{projectPricing.cash}</span>
+                      </p>
+                    </div>
+                  ) : (
+                    <p
+                      className={cn(
+                        "mt-2 font-semibold tracking-tight text-white",
+                        field.highlight ? "text-xl tabular-nums sm:text-2xl" : "text-[14px] sm:text-[15px]",
+                      )}
+                    >
+                      {"value" in field ? field.value : null}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>
@@ -751,9 +761,15 @@ export function NobreProjectPage() {
               <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/35">
                 {investmentContent.title}
               </p>
-              <p className="mt-3 text-[1.85rem] font-semibold leading-none tracking-tight text-white sm:mt-4 sm:text-[2.25rem] lg:text-[2.5rem]">
-                {investmentContent.price}
-              </p>
+              <div className="mt-3 sm:mt-4">
+                <p className="text-[1.85rem] font-semibold leading-none tracking-tight text-white tabular-nums sm:text-[2.25rem] lg:text-[2.5rem]">
+                  {investmentContent.pricing.installments}
+                </p>
+                <p className="mt-3 text-[15px] text-white/50 sm:text-[16px]">
+                  ou{" "}
+                  <span className="font-semibold text-white/80">{investmentContent.pricing.cash}</span>
+                </p>
+              </div>
               <p className="mt-4 max-w-xl text-[14px] leading-relaxed text-white/55">
                 {investmentContent.description}
               </p>
