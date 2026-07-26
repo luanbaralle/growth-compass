@@ -470,18 +470,23 @@ export const investmentContent = {
     items: ["Google Cloud", "WhatsApp Business", "Google Gemini"],
   },
   evolutionPlan: {
-    title: "Plano de evolução",
+    title: "Plano de evolução e suporte operacional",
     optionalLabel: "Opcional",
     intro:
-      "Caso a Nobre Imóveis deseje acompanhar a evolução da solução após a implantação, poderá ser contratado um plano mensal contemplando:",
+      "Após a implantação, a Nobre Imóveis poderá optar pela contratação de um plano de acompanhamento contínuo, contemplando monitoramento, suporte técnico, correções, atualizações de compatibilidade e pequenos ajustes operacionais, garantindo a estabilidade e a evolução da solução ao longo do tempo.",
+    investmentLabel: "Investimento:",
+    price: "R$ 890,00/mês",
+    includesLabel: "Inclui:",
     items: [
-      "Monitoramento",
-      "Suporte técnico",
-      "Melhorias",
-      "Novas funcionalidades",
-      "Acompanhamento operacional",
+      "Monitoramento contínuo da aplicação",
+      "Correções de falhas identificadas",
+      "Atualizações de compatibilidade com integrações",
+      "Acompanhamento da infraestrutura em produção",
+      "Suporte técnico remoto",
+      "Pequenos ajustes operacionais",
+      "Atualizações preventivas de segurança",
+      "Orientação para utilização da plataforma",
     ],
-    suggestedInvestment: "Investimento sugerido: R$ 490,00/mês",
   },
   guarantees: {
     title: "Garantias do projeto",
@@ -509,6 +514,38 @@ export const investmentContent = {
     text: "Após a aprovação, será iniciado o kickoff técnico e a configuração dos ambientes.",
   },
 } as const;
+
+export const closingContent = {
+  nextSteps: {
+    title: "Próximos passos",
+    intro: "Após a aprovação da proposta, o projeto seguirá as seguintes etapas:",
+    steps: [
+      "Reunião de kickoff",
+      "Configuração dos acessos",
+      "Desenvolvimento",
+      "Validação",
+      "Implantação",
+      "Treinamento da equipe",
+      "Entrada em operação",
+    ],
+  },
+  summaryLabel: "Resumo da solução",
+  summary:
+    "Solução desenvolvida sob medida para atualização periódica de proprietários, integrada ao Imoview, com comunicação via WhatsApp, interpretação de respostas e painel operacional para gestão de exceções.",
+  projectLead: {
+    title: "Responsável pela execução",
+    name: "Luan Baralle",
+    subtitle: "Product Engineer",
+    role: "Responsável pela arquitetura, desenvolvimento, implantação e acompanhamento técnico deste projeto.",
+  },
+  brand: {
+    name: "Raise One Soluções",
+    tagline: "Transformando processos em tecnologia.",
+  },
+  signature: "Nobre Imóveis × Raise One Soluções",
+} as const;
+
+export const footerContent = closingContent;
 
 export const platformMockups = {
   disclaimer:
@@ -689,22 +726,4 @@ export const aiFlowDiagram = {
     "Decisão operacional",
   ],
   outcomes: ["Atualizar histórico", "Gerar pendência"],
-} as const;
-
-export const cloudIntegrationDiagram = {
-  title: "Integração Google Cloud",
-  layers: ["Usuário", "Aplicação", "Google Cloud", "Banco de Dados"],
-  integrationsLabel: "Integrações",
-  integrations: ["Imoview", "WhatsApp", "Gemini"],
-} as const;
-
-export const footerContent = {
-  summary:
-    "Solução desenvolvida sob medida para atualização periódica de proprietários, integrada ao Imoview, com comunicação via WhatsApp, interpretação de respostas e painel operacional para gestão de exceções.",
-  projectLead: {
-    title: "Responsável pela execução",
-    name: "Luan Baralle",
-    role: "Responsável pela arquitetura, desenvolvimento, implantação e acompanhamento técnico deste projeto.",
-  },
-  signature: "Nobre Imóveis × Raise One Soluções",
 } as const;

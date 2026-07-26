@@ -1,22 +1,23 @@
 import { Footer } from "@/components/landing/shared/Footer";
+import { Logo } from "@/components/landing/shared/Logo";
 import { Nav } from "@/components/landing/shared/Nav";
 import {
   AiFlowDiagram,
-  CloudIntegrationDiagram,
   OperationalFlowDiagram,
   SolutionArchitectureDiagram,
 } from "@/components/projects/NobreDiagrams";
+import projectLeadPhoto from "@/assets/luan-baralle.png";
 import { PlatformMockupsSection } from "@/components/projects/NobreMockups";
 import {
   acceptanceCriteria,
   architectureNote,
+  closingContent,
   cycleDemonstration,
   deliverables,
   dependencies,
   developmentPlan,
   executiveScope,
   executiveSummary,
-  footerContent,
   futureEvolution,
   ownershipContent,
   platformMockups,
@@ -96,6 +97,78 @@ function Section({
 
 function SectionLabel({ children }: { children: ReactNode }) {
   return <p className={labelClass}>{children}</p>;
+}
+
+const listCardClass = "rounded-xl border border-white/[0.06] bg-white/[0.015] p-6 sm:p-7";
+
+function DotListItem({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <li className={cn("flex items-start gap-2.5 leading-relaxed", className)}>
+      <span className="mt-[0.45rem] h-1 w-1 shrink-0 rounded-full bg-white/30" aria-hidden />
+      {children}
+    </li>
+  );
+}
+
+function CheckListItem({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <li className={cn("flex items-start gap-2.5 leading-relaxed", className)}>
+      <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400/55" strokeWidth={2} aria-hidden />
+      {children}
+    </li>
+  );
+}
+
+function DotList({
+  items,
+  className,
+  itemClassName,
+}: {
+  items: readonly string[];
+  className?: string;
+  itemClassName?: string;
+}) {
+  return (
+    <ul className={cn("space-y-3", className)}>
+      {items.map((item) => (
+        <DotListItem key={item} className={itemClassName}>
+          {item}
+        </DotListItem>
+      ))}
+    </ul>
+  );
+}
+
+function CheckList({
+  items,
+  className,
+  itemClassName,
+}: {
+  items: readonly string[];
+  className?: string;
+  itemClassName?: string;
+}) {
+  return (
+    <ul className={cn("space-y-3", className)}>
+      {items.map((item) => (
+        <CheckListItem key={item} className={itemClassName}>
+          {item}
+        </CheckListItem>
+      ))}
+    </ul>
+  );
 }
 
 
@@ -433,11 +506,11 @@ export function NobreProjectPage() {
                 </div>
                 <div>
                   <p className="text-[14px] leading-relaxed text-white/65">{phase.objective}</p>
-                  <ul className="mt-5 space-y-2">
+                  <ul className="mt-5 space-y-2.5">
                     {phase.activities.map((activity) => (
-                      <li key={activity} className="text-[13px] text-white/50">
-                        — {activity}
-                      </li>
+                      <DotListItem key={activity} className="text-[13px] text-white/50">
+                        {activity}
+                      </DotListItem>
                     ))}
                   </ul>
                   <div className="mt-6 grid gap-4 sm:grid-cols-2">
@@ -535,48 +608,28 @@ export function NobreProjectPage() {
 
         {/* REGRAS + RESPONSABILIDADES */}
         <Section className={cn(divider, "border-t", sectionPy)}>
-          <div className="grid gap-10 sm:gap-16 lg:grid-cols-3">
-            <div className="lg:col-span-1">
+          <div className="grid gap-6 sm:gap-8 lg:grid-cols-3">
+            <div className={listCardClass}>
               <SectionLabel>Regras operacionais</SectionLabel>
-              <ul className="mt-8 space-y-3">
-                {operationalRules.map((rule) => (
-                  <li key={rule} className="text-[13px] leading-relaxed text-white/60">
-                    {rule}
-                  </li>
-                ))}
-              </ul>
+              <DotList items={operationalRules} className="mt-6" itemClassName="text-[13px] text-white/60" />
             </div>
-            <div>
+            <div className={listCardClass}>
               <SectionLabel>Sistema</SectionLabel>
-              <ul className="mt-8 space-y-2.5">
-                {systemResponsibilities.map((item) => (
-                  <li key={item} className="text-[13px] text-white/55">
-                    {item}
-                  </li>
-                ))}
-              </ul>
+              <DotList items={systemResponsibilities} className="mt-6" itemClassName="text-[13px] text-white/55" />
             </div>
-            <div>
+            <div className={listCardClass}>
               <SectionLabel>Equipe</SectionLabel>
-              <ul className="mt-8 space-y-2.5">
-                {teamResponsibilities.map((item) => (
-                  <li key={item} className="text-[13px] text-white/55">
-                    {item}
-                  </li>
-                ))}
-              </ul>
+              <DotList items={teamResponsibilities} className="mt-6" itemClassName="text-[13px] text-white/55" />
             </div>
           </div>
 
-          <div className="mt-12 rounded-xl border border-white/[0.06] bg-white/[0.01] p-6">
+          <div className="mt-8 rounded-xl border border-white/[0.06] bg-white/[0.01] p-6 sm:p-7">
             <p className="text-[11px] uppercase tracking-[0.16em] text-white/30">Pós-ciclo</p>
-            <ul className="mt-4 grid gap-2 sm:grid-cols-2">
-              {postCycleRules.map((rule) => (
-                <li key={rule} className="text-[13px] text-white/50">
-                  {rule}
-                </li>
-              ))}
-            </ul>
+            <DotList
+              items={postCycleRules}
+              className="mt-4 grid gap-3 sm:grid-cols-2 sm:space-y-0"
+              itemClassName="text-[13px] text-white/50"
+            />
           </div>
         </Section>
 
@@ -613,46 +666,22 @@ export function NobreProjectPage() {
           <div className="mt-8 grid gap-8 rounded-xl border border-white/[0.05] bg-white/[0.01] p-6 sm:grid-cols-2 sm:p-8">
             <div>
               <p className="text-[12px] uppercase tracking-[0.16em] text-white/30">Premissas</p>
-              <ul className="mt-4 space-y-2">
-                {premises.map((item) => (
-                  <li key={item} className="text-[13px] text-white/45">
-                    {item}
-                  </li>
-                ))}
-              </ul>
+              <DotList items={premises} className="mt-4" itemClassName="text-[13px] text-white/45" />
             </div>
             <div>
               <p className="text-[12px] uppercase tracking-[0.16em] text-white/30">Dependências</p>
-              <ul className="mt-4 space-y-2">
-                {dependencies.map((item) => (
-                  <li key={item} className="text-[13px] text-white/45">
-                    {item}
-                  </li>
-                ))}
-              </ul>
+              <DotList items={dependencies} className="mt-4" itemClassName="text-[13px] text-white/45" />
             </div>
           </div>
           <div className="mt-8 grid gap-6 sm:grid-cols-2">
             <div className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-6 sm:p-8">
               <p className="text-[14px] font-semibold text-white/85">{ownershipContent.title}</p>
-              <ul className="mt-4 space-y-3">
-                {ownershipContent.points.map((point) => (
-                  <li key={point} className="text-[13px] leading-relaxed text-white/60">
-                    {point}
-                  </li>
-                ))}
-              </ul>
+              <DotList items={ownershipContent.points} className="mt-4" itemClassName="text-[13px] text-white/60" />
             </div>
             <div className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-6 sm:p-8">
               <p className="text-[14px] font-semibold text-white/85">{futureEvolution.title}</p>
               <p className="mt-2 text-[13px] text-white/45">{futureEvolution.intro}</p>
-              <ul className="mt-4 space-y-2">
-                {futureEvolution.items.map((item) => (
-                  <li key={item} className="text-[13px] text-white/55">
-                    {item}
-                  </li>
-                ))}
-              </ul>
+              <DotList items={futureEvolution.items} className="mt-4" itemClassName="text-[13px] text-white/55" />
             </div>
           </div>
         </Section>
@@ -662,13 +691,11 @@ export function NobreProjectPage() {
           <div className="grid gap-10 sm:gap-16 lg:grid-cols-2">
             <div>
               <SectionLabel>Entregáveis</SectionLabel>
-              <ul className="mt-8 space-y-2.5">
-                {deliverables.map((item) => (
-                  <li key={item} className="text-[14px] text-white/60">
-                    {item}
-                  </li>
-                ))}
-              </ul>
+              <CheckList
+                items={deliverables}
+                className="mt-8 sm:grid sm:grid-cols-2 sm:gap-x-8 sm:gap-y-3 sm:space-y-0"
+                itemClassName="text-[13px] text-white/60 sm:text-[14px]"
+              />
             </div>
             <div>
               <SectionLabel>{technologyPlatform.title}</SectionLabel>
@@ -707,10 +734,6 @@ export function NobreProjectPage() {
                 ))}
               </div>
             </div>
-          </div>
-
-          <div className="mx-auto mt-12 max-w-md sm:mt-20">
-            <CloudIntegrationDiagram />
           </div>
         </Section>
 
@@ -766,13 +789,11 @@ export function NobreProjectPage() {
                   {investmentContent.operationalCosts.title}
                 </p>
                 <p className="mt-3 text-[13px] text-white/45">{investmentContent.operationalCosts.note}</p>
-                <ul className="mt-5 space-y-2">
-                  {investmentContent.operationalCosts.items.map((item) => (
-                    <li key={item} className="text-[13px] text-white/60">
-                      {item}
-                    </li>
-                  ))}
-                </ul>
+                <DotList
+                  items={investmentContent.operationalCosts.items}
+                  className="mt-5"
+                  itemClassName="text-[13px] text-white/60"
+                />
               </div>
 
               <div className="px-4 py-8 sm:px-10 sm:py-10">
@@ -799,19 +820,24 @@ export function NobreProjectPage() {
                   {investmentContent.evolutionPlan.optionalLabel}
                 </span>
               </div>
-              <p className="mt-3 max-w-2xl text-[13px] leading-relaxed text-white/40">
+              <p className="mt-4 max-w-2xl text-[13px] leading-relaxed text-white/40">
                 {investmentContent.evolutionPlan.intro}
               </p>
-              <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-1.5">
+              <p className="mt-5 text-[13px] text-white/50">
+                <span className="text-white/35">{investmentContent.evolutionPlan.investmentLabel}</span>{" "}
+                <span className="font-semibold text-white/75">{investmentContent.evolutionPlan.price}</span>
+              </p>
+              <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/30">
+                {investmentContent.evolutionPlan.includesLabel}
+              </p>
+              <ul className="mt-3 space-y-2">
                 {investmentContent.evolutionPlan.items.map((item) => (
-                  <li key={item} className="text-[12px] text-white/35">
+                  <li key={item} className="flex items-start gap-2 text-[13px] text-white/45">
+                    <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-white/25" />
                     {item}
                   </li>
                 ))}
               </ul>
-              <p className="mt-4 text-[12px] text-white/30">
-                {investmentContent.evolutionPlan.suggestedInvestment}
-              </p>
             </div>
 
             <div className="border-t border-white/[0.08] bg-white/[0.015] px-4 py-6 sm:px-10 sm:py-8">
@@ -829,17 +855,11 @@ export function NobreProjectPage() {
             </div>
 
             <div className="border-t border-white/[0.08] px-4 py-8 sm:px-10 sm:py-10">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/35">
-                {investmentContent.nextStep.title}
-              </p>
-              <p className="mt-3 max-w-lg text-[14px] leading-relaxed text-white/55">
-                {investmentContent.nextStep.text}
-              </p>
               <a
                 href={ctaHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-white px-6 py-3 text-[14px] font-medium text-black transition-opacity hover:opacity-90 sm:mt-8 sm:inline-flex sm:w-auto sm:justify-start"
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-white px-6 py-3 text-[14px] font-medium text-black transition-opacity hover:opacity-90 sm:inline-flex sm:w-auto sm:justify-start"
               >
                 {nobreProject.cta.label}
                 <ArrowRight className="h-4 w-4" />
@@ -848,28 +868,85 @@ export function NobreProjectPage() {
           </div>
         </Section>
 
-        {/* RODAPÉ */}
+        {/* FECHAMENTO */}
         <Section className={cn(divider, "border-t", sectionPy)}>
-          <p className="max-w-2xl text-[14px] leading-relaxed text-white/50">{footerContent.summary}</p>
-
-          <div className="mt-8 max-w-md rounded-xl border border-white/[0.06] bg-white/[0.015] px-5 py-5 sm:mt-10 sm:px-6">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/35">
-              {footerContent.projectLead.title}
+          <div className="max-w-3xl">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/38">
+              {closingContent.nextSteps.title}
             </p>
-            <p className="mt-3 text-[15px] font-medium text-white/85">{footerContent.projectLead.name}</p>
-            <p className="mt-2 text-[13px] leading-relaxed text-white/45">{footerContent.projectLead.role}</p>
+            <p className="mt-3 text-[14px] leading-relaxed text-white/50">{closingContent.nextSteps.intro}</p>
+            <ol className="mt-8 space-y-0">
+              {closingContent.nextSteps.steps.map((step, i) => (
+                <Fragment key={step}>
+                  <li className="flex items-center gap-4">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.02] text-[11px] tabular-nums text-white/45">
+                      {i + 1}
+                    </span>
+                    <span className="text-[14px] text-white/75">{step}</span>
+                  </li>
+                  {i < closingContent.nextSteps.steps.length - 1 ? (
+                    <div className="ml-3.5 flex justify-start py-2">
+                      <div className="h-4 w-px bg-white/10" />
+                    </div>
+                  ) : null}
+                </Fragment>
+              ))}
+            </ol>
           </div>
 
-          <p className="mt-8 text-[13px] text-white/30">{footerContent.signature}</p>
-          <a
-            href={ctaHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-8 flex w-full items-center justify-center gap-2 rounded-lg bg-white px-5 py-3 text-[13px] font-medium text-black transition-opacity hover:opacity-90 sm:mt-10 sm:inline-flex sm:w-auto sm:justify-start sm:py-2.5"
-          >
-            {nobreProject.cta.label}
-            <ArrowRight className="h-3.5 w-3.5" />
-          </a>
+          <div className="mt-14 overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.02] sm:mt-20">
+            <div className="border-b border-white/[0.06] px-5 py-8 sm:px-10 sm:py-10">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/35">
+                {closingContent.summaryLabel}
+              </p>
+              <blockquote className="mt-5 border-l border-white/15 pl-5 sm:pl-6">
+                <p className="text-[15px] leading-[1.75] text-white/60 sm:text-[16px]">{closingContent.summary}</p>
+              </blockquote>
+            </div>
+
+            <div className="grid lg:grid-cols-[minmax(0,1fr)_auto]">
+              <div className="border-b border-white/[0.06] px-5 py-8 sm:px-10 sm:py-9 lg:border-b-0 lg:border-r">
+                <div className="flex items-start gap-5">
+                  <div className="h-14 w-14 shrink-0 overflow-hidden rounded-full border border-white/[0.08] sm:h-16 sm:w-16">
+                    <img
+                      src={projectLeadPhoto}
+                      alt={closingContent.projectLead.name}
+                      className="h-full w-full scale-[1.1] object-cover object-[center_18%]"
+                    />
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/35">
+                      {closingContent.projectLead.title}
+                    </p>
+                    <p className="mt-2 text-[16px] font-medium tracking-tight text-white/90">
+                      {closingContent.projectLead.name}
+                    </p>
+                    <p className="mt-1 text-[13px] text-white/50">{closingContent.projectLead.subtitle}</p>
+                    <p className="mt-2 max-w-md text-[13px] leading-relaxed text-white/45">
+                      {closingContent.projectLead.role}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center px-5 py-8 sm:px-10 sm:py-9 lg:justify-end lg:px-12">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/[0.06] bg-white/[0.02]">
+                    <Logo className="h-7 w-7" />
+                  </div>
+                  <div>
+                    <p className="text-[15px] font-semibold tracking-tight text-white/90">{closingContent.brand.name}</p>
+                    <p className="mt-1.5 text-[13px] leading-snug text-white/40">{closingContent.brand.tagline}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3 border-t border-white/[0.06] bg-white/[0.015] px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-10">
+              <p className="text-[12px] tracking-[0.06em] text-white/35">{closingContent.signature}</p>
+              <p className="text-[11px] uppercase tracking-[0.18em] text-white/22">Proposta comercial</p>
+            </div>
+          </div>
         </Section>
       </main>
 

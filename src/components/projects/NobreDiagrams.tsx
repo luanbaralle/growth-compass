@@ -1,6 +1,5 @@
 import {
   aiFlowDiagram,
-  cloudIntegrationDiagram,
   operationalFlowDiagram,
   solutionArchitectureDiagram,
 } from "@/lib/projects/nobre-content";
@@ -10,11 +9,9 @@ import {
   ChevronDown,
   Cloud,
   Database,
-  Globe,
   LayoutDashboard,
   MessageCircle,
   Sparkles,
-  User,
   Workflow,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -258,44 +255,6 @@ export function AiFlowDiagram() {
         </div>
       </div>
       <DiagramCaption>{aiFlowDiagram.caption}</DiagramCaption>
-    </DiagramSection>
-  );
-}
-
-export function CloudIntegrationDiagram() {
-  const icons: LucideIcon[] = [User, LayoutDashboard, Cloud, Database];
-
-  return (
-    <DiagramSection title={cloudIntegrationDiagram.title}>
-      <div className={diagramShell}>
-        <div className="mx-auto flex max-w-sm flex-col items-stretch">
-          {cloudIntegrationDiagram.layers.map((layer, i) => (
-            <Fragment key={layer}>
-              <DiagramNode label={layer} icon={icons[i]} />
-              {i < cloudIntegrationDiagram.layers.length - 1 ? <DiagramConnector /> : null}
-            </Fragment>
-          ))}
-
-          <DiagramConnector />
-
-          <div className="rounded-xl border border-white/[0.08] bg-white/[0.015] px-4 py-4 text-center">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/30">
-              {cloudIntegrationDiagram.integrationsLabel}
-            </p>
-            <div className="mt-3 flex flex-wrap justify-center gap-2">
-              {cloudIntegrationDiagram.integrations.map((item) => (
-                <span
-                  key={item}
-                  className="inline-flex items-center gap-1.5 rounded-md border border-white/[0.08] px-3 py-1.5 text-[12px] text-white/55"
-                >
-                  <Globe className="h-3 w-3 text-white/30" strokeWidth={1.5} />
-                  {item}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
     </DiagramSection>
   );
 }
