@@ -14,6 +14,8 @@ import { Route as SegmentRouteImport } from './routes/$segment'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as ProjetosPousadaRouteImport } from './routes/projetos/pousada'
+import { Route as ProjetosNobreRouteImport } from './routes/projetos/nobre'
 import { Route as ProjetosGabrielfrancaRouteImport } from './routes/projetos/gabrielfranca'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminLeadsRouteImport } from './routes/admin/leads'
@@ -52,6 +54,16 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRouteRoute,
+} as any)
+const ProjetosPousadaRoute = ProjetosPousadaRouteImport.update({
+  id: '/projetos/pousada',
+  path: '/projetos/pousada',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjetosNobreRoute = ProjetosNobreRouteImport.update({
+  id: '/projetos/nobre',
+  path: '/projetos/nobre',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ProjetosGabrielfrancaRoute = ProjetosGabrielfrancaRouteImport.update({
   id: '/projetos/gabrielfranca',
@@ -132,6 +144,8 @@ export interface FileRoutesByFullPath {
   '/admin/leads': typeof AdminLeadsRoute
   '/admin/login': typeof AdminLoginRoute
   '/projetos/gabrielfranca': typeof ProjetosGabrielfrancaRoute
+  '/projetos/nobre': typeof ProjetosNobreRoute
+  '/projetos/pousada': typeof ProjetosPousadaRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/execucao/capacidade': typeof AdminExecucaoCapacidadeRoute
   '/admin/execucao/clientes': typeof AdminExecucaoClientesRoute
@@ -151,6 +165,8 @@ export interface FileRoutesByTo {
   '/admin/leads': typeof AdminLeadsRoute
   '/admin/login': typeof AdminLoginRoute
   '/projetos/gabrielfranca': typeof ProjetosGabrielfrancaRoute
+  '/projetos/nobre': typeof ProjetosNobreRoute
+  '/projetos/pousada': typeof ProjetosPousadaRoute
   '/admin': typeof AdminIndexRoute
   '/admin/execucao/capacidade': typeof AdminExecucaoCapacidadeRoute
   '/admin/execucao/clientes': typeof AdminExecucaoClientesRoute
@@ -172,6 +188,8 @@ export interface FileRoutesById {
   '/admin/leads': typeof AdminLeadsRoute
   '/admin/login': typeof AdminLoginRoute
   '/projetos/gabrielfranca': typeof ProjetosGabrielfrancaRoute
+  '/projetos/nobre': typeof ProjetosNobreRoute
+  '/projetos/pousada': typeof ProjetosPousadaRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/execucao/capacidade': typeof AdminExecucaoCapacidadeRoute
   '/admin/execucao/clientes': typeof AdminExecucaoClientesRoute
@@ -194,6 +212,8 @@ export interface FileRouteTypes {
     | '/admin/leads'
     | '/admin/login'
     | '/projetos/gabrielfranca'
+    | '/projetos/nobre'
+    | '/projetos/pousada'
     | '/admin/'
     | '/admin/execucao/capacidade'
     | '/admin/execucao/clientes'
@@ -213,6 +233,8 @@ export interface FileRouteTypes {
     | '/admin/leads'
     | '/admin/login'
     | '/projetos/gabrielfranca'
+    | '/projetos/nobre'
+    | '/projetos/pousada'
     | '/admin'
     | '/admin/execucao/capacidade'
     | '/admin/execucao/clientes'
@@ -233,6 +255,8 @@ export interface FileRouteTypes {
     | '/admin/leads'
     | '/admin/login'
     | '/projetos/gabrielfranca'
+    | '/projetos/nobre'
+    | '/projetos/pousada'
     | '/admin/'
     | '/admin/execucao/capacidade'
     | '/admin/execucao/clientes'
@@ -252,6 +276,8 @@ export interface RootRouteChildren {
   SegmentRoute: typeof SegmentRoute
   ObrigadoRoute: typeof ObrigadoRoute
   ProjetosGabrielfrancaRoute: typeof ProjetosGabrielfrancaRoute
+  ProjetosNobreRoute: typeof ProjetosNobreRoute
+  ProjetosPousadaRoute: typeof ProjetosPousadaRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -290,6 +316,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRouteRoute
+    }
+    '/projetos/pousada': {
+      id: '/projetos/pousada'
+      path: '/projetos/pousada'
+      fullPath: '/projetos/pousada'
+      preLoaderRoute: typeof ProjetosPousadaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projetos/nobre': {
+      id: '/projetos/nobre'
+      path: '/projetos/nobre'
+      fullPath: '/projetos/nobre'
+      preLoaderRoute: typeof ProjetosNobreRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/projetos/gabrielfranca': {
       id: '/projetos/gabrielfranca'
@@ -427,6 +467,8 @@ const rootRouteChildren: RootRouteChildren = {
   SegmentRoute: SegmentRoute,
   ObrigadoRoute: ObrigadoRoute,
   ProjetosGabrielfrancaRoute: ProjetosGabrielfrancaRoute,
+  ProjetosNobreRoute: ProjetosNobreRoute,
+  ProjetosPousadaRoute: ProjetosPousadaRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
