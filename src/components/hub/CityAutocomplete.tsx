@@ -132,7 +132,7 @@ export function CityAutocomplete({ value, onChange, disabled, error }: CityAutoc
         <ul
           id={listId}
           role="listbox"
-          className="absolute z-50 mt-1.5 max-h-56 w-full overflow-auto rounded-xl border border-border bg-surface py-1 shadow-xl"
+          className="absolute z-[120] mt-1.5 max-h-56 w-full overflow-auto rounded-xl border border-border bg-surface py-1 shadow-xl"
         >
           {suggestions.map((city, i) => {
             const selected = value && citiesMatch(value, city);

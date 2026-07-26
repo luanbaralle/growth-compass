@@ -4,7 +4,7 @@ export function HomeDiagnosticSection() {
   return (
     <div className="relative">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand/30 to-transparent" />
-      <div className="mx-auto max-w-4xl px-5 pb-4 pt-16 text-center sm:px-8 sm:pt-20">
+      <div className="mx-auto max-w-4xl px-5 pb-2 pt-16 text-center sm:px-8 sm:pt-20">
         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-brand/80">
           Diagnóstico Inteligente
         </p>

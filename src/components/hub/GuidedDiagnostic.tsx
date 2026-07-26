@@ -77,7 +77,7 @@ export function GuidedDiagnostic({ variant = "default" }: GuidedDiagnosticProps)
       id="diagnostico"
       className={
         isHome
-          ? "relative border-t border-border/60 bg-surface/20 pb-16 sm:pb-24"
+          ? "relative z-10 border-t border-border/60 bg-surface/20 pb-20 sm:pb-28"
           : "relative border-t border-border/60 bg-surface/20"
       }
     >
@@ -100,17 +100,23 @@ export function GuidedDiagnostic({ variant = "default" }: GuidedDiagnosticProps)
           </div>
         )}
 
-        <div className="overflow-hidden rounded-2xl border border-border bg-background/80 shadow-2xl backdrop-blur-xl">
+        <div
+          className={
+            isHome
+              ? "mt-8 overflow-visible rounded-2xl border border-border bg-background/80 shadow-2xl backdrop-blur-xl sm:mt-10"
+              : "overflow-visible rounded-2xl border border-border bg-background/80 shadow-2xl backdrop-blur-xl"
+          }
+        >
           {step === "form" && (
             <form
               onSubmit={handleAnalyze}
               className={
                 isHome
-                  ? "grid gap-4 p-4 sm:p-6 lg:grid-cols-[1fr_1fr_auto] lg:items-end"
-                  : "space-y-6 p-6 sm:p-8"
+                  ? "grid gap-5 overflow-visible p-5 sm:p-7 lg:grid-cols-[1fr_1fr_auto] lg:items-end lg:gap-6 lg:p-8"
+                  : "space-y-6 overflow-visible p-6 sm:p-8"
               }
             >
-              <div>
+              <div className="relative overflow-visible">
                 <label
                   htmlFor="business-input"
                   className="mb-2 block text-sm font-medium text-foreground"
@@ -127,7 +133,7 @@ export function GuidedDiagnostic({ variant = "default" }: GuidedDiagnosticProps)
                 )}
               </div>
 
-              <div>
+              <div className="relative overflow-visible">
                 <label className="mb-2 block text-sm font-medium text-foreground">
                   Em qual cidade você atende?
                 </label>

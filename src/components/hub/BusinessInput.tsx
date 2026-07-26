@@ -79,7 +79,7 @@ export function BusinessInput({ id, value, onChange }: BusinessInputProps) {
         <ul
           id={listId}
           role="listbox"
-          className="absolute z-50 mt-1.5 max-h-56 w-full overflow-auto rounded-xl border border-border bg-surface py-1 shadow-xl"
+          className="absolute z-[120] mt-1.5 max-h-56 w-full overflow-auto rounded-xl border border-border bg-surface py-1 shadow-xl"
         >
           {suggestions.map((item, i) => (
             <li key={item.label} role="option" aria-selected={i === highlight}>
