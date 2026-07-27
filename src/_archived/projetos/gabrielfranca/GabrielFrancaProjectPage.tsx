@@ -720,7 +720,7 @@ function ProjectMilestoneList() {
   );
 }
 
-export function ProjectsPage() {
+export function GabrielFrancaProjectPage() {
   useEffect(() => {
     captureUtmFromUrl();
   }, []);

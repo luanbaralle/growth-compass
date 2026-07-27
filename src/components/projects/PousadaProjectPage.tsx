@@ -632,7 +632,7 @@ export function PousadaProjectPage() {
                   Esta pagina apresenta a metodologia de aquisicao para hotelaria e pode ser
                   adaptada para outros segmentos — imobiliarias, clinicas, educacao e mais — como em{" "}
                   <code className="rounded bg-black/25 px-1.5 py-0.5 text-sm text-white">
-                    /projetos/gabrielfranca
+                    /projetos/nobre
                   </code>
                   .
                 </p>

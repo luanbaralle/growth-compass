@@ -16,7 +16,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as ProjetosPousadaRouteImport } from './routes/projetos/pousada'
 import { Route as ProjetosNobreRouteImport } from './routes/projetos/nobre'
-import { Route as ProjetosGabrielfrancaRouteImport } from './routes/projetos/gabrielfranca'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminLeadsRouteImport } from './routes/admin/leads'
 import { Route as AdminExecucaoReferenciaRouteImport } from './routes/admin/execucao/referencia'
@@ -63,11 +62,6 @@ const ProjetosPousadaRoute = ProjetosPousadaRouteImport.update({
 const ProjetosNobreRoute = ProjetosNobreRouteImport.update({
   id: '/projetos/nobre',
   path: '/projetos/nobre',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProjetosGabrielfrancaRoute = ProjetosGabrielfrancaRouteImport.update({
-  id: '/projetos/gabrielfranca',
-  path: '/projetos/gabrielfranca',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
@@ -143,7 +137,6 @@ export interface FileRoutesByFullPath {
   '/obrigado': typeof ObrigadoRoute
   '/admin/leads': typeof AdminLeadsRoute
   '/admin/login': typeof AdminLoginRoute
-  '/projetos/gabrielfranca': typeof ProjetosGabrielfrancaRoute
   '/projetos/nobre': typeof ProjetosNobreRoute
   '/projetos/pousada': typeof ProjetosPousadaRoute
   '/admin/': typeof AdminIndexRoute
@@ -164,7 +157,6 @@ export interface FileRoutesByTo {
   '/obrigado': typeof ObrigadoRoute
   '/admin/leads': typeof AdminLeadsRoute
   '/admin/login': typeof AdminLoginRoute
-  '/projetos/gabrielfranca': typeof ProjetosGabrielfrancaRoute
   '/projetos/nobre': typeof ProjetosNobreRoute
   '/projetos/pousada': typeof ProjetosPousadaRoute
   '/admin': typeof AdminIndexRoute
@@ -187,7 +179,6 @@ export interface FileRoutesById {
   '/obrigado': typeof ObrigadoRoute
   '/admin/leads': typeof AdminLeadsRoute
   '/admin/login': typeof AdminLoginRoute
-  '/projetos/gabrielfranca': typeof ProjetosGabrielfrancaRoute
   '/projetos/nobre': typeof ProjetosNobreRoute
   '/projetos/pousada': typeof ProjetosPousadaRoute
   '/admin/': typeof AdminIndexRoute
@@ -211,7 +202,6 @@ export interface FileRouteTypes {
     | '/obrigado'
     | '/admin/leads'
     | '/admin/login'
-    | '/projetos/gabrielfranca'
     | '/projetos/nobre'
     | '/projetos/pousada'
     | '/admin/'
@@ -232,7 +222,6 @@ export interface FileRouteTypes {
     | '/obrigado'
     | '/admin/leads'
     | '/admin/login'
-    | '/projetos/gabrielfranca'
     | '/projetos/nobre'
     | '/projetos/pousada'
     | '/admin'
@@ -254,7 +243,6 @@ export interface FileRouteTypes {
     | '/obrigado'
     | '/admin/leads'
     | '/admin/login'
-    | '/projetos/gabrielfranca'
     | '/projetos/nobre'
     | '/projetos/pousada'
     | '/admin/'
@@ -275,7 +263,6 @@ export interface RootRouteChildren {
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
   SegmentRoute: typeof SegmentRoute
   ObrigadoRoute: typeof ObrigadoRoute
-  ProjetosGabrielfrancaRoute: typeof ProjetosGabrielfrancaRoute
   ProjetosNobreRoute: typeof ProjetosNobreRoute
   ProjetosPousadaRoute: typeof ProjetosPousadaRoute
 }
@@ -329,13 +316,6 @@ declare module '@tanstack/react-router' {
       path: '/projetos/nobre'
       fullPath: '/projetos/nobre'
       preLoaderRoute: typeof ProjetosNobreRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/projetos/gabrielfranca': {
-      id: '/projetos/gabrielfranca'
-      path: '/projetos/gabrielfranca'
-      fullPath: '/projetos/gabrielfranca'
-      preLoaderRoute: typeof ProjetosGabrielfrancaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/login': {
@@ -466,7 +446,6 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRouteRoute: AdminRouteRouteWithChildren,
   SegmentRoute: SegmentRoute,
   ObrigadoRoute: ObrigadoRoute,
-  ProjetosGabrielfrancaRoute: ProjetosGabrielfrancaRoute,
   ProjetosNobreRoute: ProjetosNobreRoute,
   ProjetosPousadaRoute: ProjetosPousadaRoute,
 }
