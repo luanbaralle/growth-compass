@@ -78,6 +78,20 @@ const archIcons: Record<string, LucideIcon> = {
   dashboard: LayoutDashboard,
 };
 
+function InstallmentPrice({ className }: { className?: string }) {
+  return (
+    <p
+      className={cn(
+        "whitespace-nowrap font-semibold tracking-tight text-white tabular-nums",
+        className,
+      )}
+    >
+      <span className="text-[0.68em] font-semibold">{projectPricing.installmentsCount}</span>{" "}
+      {projectPricing.installmentsAmount}
+    </p>
+  );
+}
+
 function Section({
   id,
   className,
@@ -383,31 +397,15 @@ export function NobreProjectPage() {
         <Section id="escopo-executivo" className="py-10 sm:py-12 lg:py-16">
           <div className="rounded-2xl border border-white/[0.14] bg-white/[0.04] p-5 sm:p-8 lg:p-10">
             <p className="text-[15px] font-semibold text-white">{executiveScope.title}</p>
-            <p className="mt-2 text-[13px] text-white/40">O que está incluso e o que não está.</p>
-            <div className="mt-6 overflow-x-auto rounded-xl border border-white/[0.08] sm:mt-8">
-              <table className="w-full min-w-[280px] text-left text-[13px] sm:text-[14px]">
-                <thead>
-                  <tr className="border-b border-white/[0.06] bg-white/[0.03]">
-                    <th className="px-4 py-3 font-medium text-white/50 sm:px-5 sm:py-3.5">Item</th>
-                    <th className="px-4 py-3 text-right font-medium text-white/50 sm:px-5 sm:py-3.5">Incluído</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {executiveScope.items.map((row) => (
-                    <tr key={row.item} className="border-b border-white/[0.04] last:border-0">
-                      <td className="px-4 py-3.5 text-white/75 sm:px-5 sm:py-4">{row.item}</td>
-                      <td className="px-4 py-3.5 text-right sm:px-5 sm:py-4">
-                        {row.included ? (
-                          <Check className="ml-auto h-4 w-4 text-emerald-400/80" strokeWidth={2} />
-                        ) : (
-                          <X className="ml-auto h-4 w-4 text-white/25" strokeWidth={2} />
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <p className="mt-2 text-[13px] text-white/40">{executiveScope.subtitle}</p>
+            <ul className="mt-6 space-y-3 sm:mt-8 sm:columns-2 sm:gap-x-10">
+              {executiveScope.items.map((item) => (
+                <li key={item} className="flex gap-3 break-inside-avoid text-[13px] text-white/75 sm:text-[14px]">
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400/80" strokeWidth={2} />
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
         </Section>
 
@@ -436,9 +434,7 @@ export function NobreProjectPage() {
                   </p>
                   {"pricing" in field && field.pricing ? (
                     <div className="mt-2">
-                      <p className="text-lg font-semibold tracking-tight text-white tabular-nums sm:text-xl">
-                        {projectPricing.installments}
-                      </p>
+                      <InstallmentPrice className="text-lg sm:text-xl" />
                       <p className="mt-1.5 text-[13px] text-white/50">
                         ou <span className="font-medium text-white/75">{projectPricing.cash}</span>
                       </p>
@@ -749,7 +745,12 @@ export function NobreProjectPage() {
 
         {/* INVESTIMENTO */}
         <Section id="investimento" className={cn(divider, "border-t", sectionPy)}>
-          <div className="overflow-hidden rounded-2xl border border-white/[0.12] bg-white/[0.025]">
+          <SectionLabel>{investmentContent.title}</SectionLabel>
+          <p className="mt-3 max-w-2xl text-[14px] leading-relaxed text-white/45 sm:mt-4">
+            {investmentContent.description}
+          </p>
+
+          <div className="mt-8 overflow-hidden rounded-2xl border border-white/[0.12] bg-white/[0.025] sm:mt-10">
             <div className="border-b border-white/[0.08] bg-white/[0.02] px-4 py-4 sm:px-10">
               <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/45">
                 {investmentContent.badge.title}
@@ -757,29 +758,26 @@ export function NobreProjectPage() {
               <p className="mt-1 text-[13px] text-white/55">{investmentContent.badge.description}</p>
             </div>
 
+            <div className="border-b border-white/[0.08] bg-[linear-gradient(135deg,rgba(255,255,255,0.04),transparent)] px-4 py-8 sm:px-10 sm:py-10">
+              <InstallmentPrice className="text-[1.85rem] leading-none sm:text-[2.25rem] lg:text-[2.5rem]" />
+              <p className="mt-3 text-[15px] text-white/50 sm:text-[16px]">
+                ou{" "}
+                <span className="font-semibold text-white/80">{investmentContent.pricing.cash}</span>
+              </p>
+              <p className="mt-4 max-w-lg text-[12px] leading-relaxed text-white/40">
+                {investmentContent.pricingNote}
+              </p>
+            </div>
+
             <div className="px-4 py-8 sm:px-10 sm:py-10">
               <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/35">
-                {investmentContent.title}
+                {investmentContent.includesLabel}
               </p>
-              <div className="mt-3 sm:mt-4">
-                <p className="text-[1.85rem] font-semibold leading-none tracking-tight text-white tabular-nums sm:text-[2.25rem] lg:text-[2.5rem]">
-                  {investmentContent.pricing.installments}
-                </p>
-                <p className="mt-3 text-[15px] text-white/50 sm:text-[16px]">
-                  ou{" "}
-                  <span className="font-semibold text-white/80">{investmentContent.pricing.cash}</span>
-                </p>
-              </div>
-              <p className="mt-4 max-w-xl text-[14px] leading-relaxed text-white/55">
-                {investmentContent.description}
-              </p>
-
-              <ul className="mt-8 grid gap-2.5 sm:grid-cols-2">
+              <ul className="mt-6 grid gap-2.5 sm:grid-cols-2">
                 {investmentContent.includes.map((item) => (
-                  <li key={item} className="flex items-start gap-2.5 text-[13px] text-white/65">
-                    <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400/70" strokeWidth={2} />
+                  <CheckListItem key={item} className="text-[13px] text-white/65">
                     {item}
-                  </li>
+                  </CheckListItem>
                 ))}
               </ul>
             </div>
@@ -791,10 +789,10 @@ export function NobreProjectPage() {
               <p className="mt-4 text-2xl font-semibold tracking-tight text-white">
                 {investmentContent.deadline.value}
               </p>
-              <p className="mt-4 max-w-xl text-[13px] leading-relaxed text-white/50">
+              <p className="mt-4 max-w-2xl text-[13px] leading-relaxed text-white/50">
                 {investmentContent.deadline.note}
               </p>
-              <p className="mt-3 max-w-xl text-[13px] leading-relaxed text-white/40">
+              <p className="mt-3 max-w-2xl text-[13px] leading-relaxed text-white/40">
                 {investmentContent.deadline.startNote}
               </p>
             </div>
@@ -818,56 +816,12 @@ export function NobreProjectPage() {
                 </p>
                 <ul className="mt-6 space-y-2.5">
                   {investmentContent.guarantees.items.map((item) => (
-                    <li key={item} className="flex items-start gap-2.5 text-[13px] text-white/60">
-                      <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400/60" strokeWidth={2} />
+                    <CheckListItem key={item} className="text-[13px] text-white/60">
                       {item}
-                    </li>
+                    </CheckListItem>
                   ))}
                 </ul>
               </div>
-            </div>
-
-            <div className="border-t border-white/[0.08] px-4 py-6 sm:px-10 sm:py-8">
-              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/30">
-                  {investmentContent.evolutionPlan.title}
-                </p>
-                <span className="text-[10px] uppercase tracking-[0.14em] text-white/25">
-                  {investmentContent.evolutionPlan.optionalLabel}
-                </span>
-              </div>
-              <p className="mt-4 max-w-2xl text-[13px] leading-relaxed text-white/40">
-                {investmentContent.evolutionPlan.intro}
-              </p>
-              <p className="mt-5 text-[13px] text-white/50">
-                <span className="text-white/35">{investmentContent.evolutionPlan.investmentLabel}</span>{" "}
-                <span className="font-semibold text-white/75">{investmentContent.evolutionPlan.price}</span>
-              </p>
-              <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/30">
-                {investmentContent.evolutionPlan.includesLabel}
-              </p>
-              <ul className="mt-3 space-y-2">
-                {investmentContent.evolutionPlan.items.map((item) => (
-                  <li key={item} className="flex items-start gap-2 text-[13px] text-white/45">
-                    <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-white/25" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="border-t border-white/[0.08] bg-white/[0.015] px-4 py-6 sm:px-10 sm:py-8">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/35">
-                {investmentContent.packageSummary.title}
-              </p>
-              <ul className="mt-5 flex flex-wrap gap-x-6 gap-y-2">
-                {investmentContent.packageSummary.items.map((item) => (
-                  <li key={item} className="flex items-center gap-2 text-[13px] text-white/60">
-                    <Check className="h-3 w-3 shrink-0 text-emerald-400/55" strokeWidth={2} />
-                    {item}
-                  </li>
-                ))}
-              </ul>
             </div>
 
             <div className="border-t border-white/[0.08] px-4 py-8 sm:px-10 sm:py-10">
@@ -875,42 +829,110 @@ export function NobreProjectPage() {
                 href={ctaHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex w-full items-center justify-center gap-2 rounded-lg bg-white px-6 py-3 text-[14px] font-medium text-black transition-opacity hover:opacity-90 sm:inline-flex sm:w-auto sm:justify-start"
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-white px-6 py-3.5 text-[14px] font-medium text-black transition-opacity hover:opacity-90 sm:inline-flex sm:w-auto sm:justify-start"
               >
                 {nobreProject.cta.label}
                 <ArrowRight className="h-4 w-4" />
               </a>
+              <p className="mt-4 text-[12px] text-white/40">{investmentContent.nextStep.text}</p>
             </div>
+          </div>
+
+          <div className="mt-6 rounded-2xl border border-emerald-400/15 bg-emerald-400/[0.03] px-5 py-5 sm:px-8">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-200/80">
+              {investmentContent.includedSupport.badge}
+            </p>
+            <p className="mt-2 text-[15px] font-semibold text-white/90">
+              {investmentContent.includedSupport.title}
+            </p>
+            <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-white/50 sm:text-[14px]">
+              {investmentContent.includedSupport.description}
+            </p>
+          </div>
+
+          <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-stretch lg:gap-5">
+            <div className="rounded-2xl border border-white/[0.08] bg-white/[0.015] p-5 sm:p-8">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/35">
+                  {investmentContent.evolutionPlan.title}
+                </p>
+                <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-white/45">
+                  {investmentContent.evolutionPlan.optionalLabel}
+                </span>
+              </div>
+              <p className="mt-4 max-w-2xl text-[13px] leading-relaxed text-white/50 sm:text-[14px]">
+                {investmentContent.evolutionPlan.intro}
+              </p>
+              <p className="mt-6 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/35">
+                {investmentContent.evolutionPlan.includesLabel}
+              </p>
+              <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+                {investmentContent.evolutionPlan.items.map((item) => (
+                  <CheckListItem key={item} className="text-[13px] text-white/55">
+                    {item}
+                  </CheckListItem>
+                ))}
+              </ul>
+            </div>
+
+            <aside className="flex flex-col justify-between rounded-2xl border border-white/[0.1] bg-[#0d0d0d] p-5 sm:p-6">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/35">
+                  {investmentContent.evolutionPlan.investmentLabel.replace(":", "")}
+                </p>
+                <p className="mt-3 font-semibold tracking-tight text-white tabular-nums">
+                  <span className="text-[1.75rem] leading-none sm:text-[2rem]">
+                    {investmentContent.evolutionPlan.price}
+                  </span>
+                  <span className="ml-1 text-[1rem] font-medium text-white/45 sm:text-[1.1rem]">
+                    {investmentContent.evolutionPlan.priceSuffix}
+                  </span>
+                </p>
+              </div>
+              <p className="mt-6 border-t border-white/[0.08] pt-4 text-[12px] leading-relaxed text-white/42">
+                {investmentContent.evolutionPlan.note}
+              </p>
+            </aside>
           </div>
         </Section>
 
         {/* FECHAMENTO */}
         <Section className={cn(divider, "border-t", sectionPy)}>
-          <div className="max-w-3xl">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/38">
-              {closingContent.nextSteps.title}
-            </p>
-            <p className="mt-3 text-[14px] leading-relaxed text-white/50">{closingContent.nextSteps.intro}</p>
-            <ol className="mt-8 space-y-0">
-              {closingContent.nextSteps.steps.map((step, i) => (
-                <Fragment key={step}>
-                  <li className="flex items-center gap-4">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.02] text-[11px] tabular-nums text-white/45">
-                      {i + 1}
+          <SectionLabel>{closingContent.nextSteps.title}</SectionLabel>
+          <p className="mt-3 max-w-2xl text-[14px] leading-relaxed text-white/45 sm:mt-4">
+            {closingContent.nextSteps.intro}
+          </p>
+
+          <div className="mt-8 overflow-hidden rounded-2xl border border-white/[0.1] bg-white/[0.02] sm:mt-10">
+            <div className="border-b border-white/[0.06] bg-white/[0.02] px-5 py-4 sm:px-8">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/45">
+                Da aprovação ao go-live
+              </p>
+            </div>
+
+            <div className="grid gap-px bg-white/[0.06] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {closingContent.nextSteps.steps.map((step, index) => (
+                <article
+                  key={step.title}
+                  className="bg-[#0a0a0a] px-5 py-5 sm:px-6 sm:py-6"
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-[11px] font-mono tabular-nums text-white/45">
+                      {String(index + 1).padStart(2, "0")}
                     </span>
-                    <span className="text-[14px] text-white/75">{step}</span>
-                  </li>
-                  {i < closingContent.nextSteps.steps.length - 1 ? (
-                    <div className="ml-3.5 flex justify-start py-2">
-                      <div className="h-4 w-px bg-white/10" />
+                    <div className="min-w-0">
+                      <p className="text-[14px] font-medium leading-snug text-white/85">{step.title}</p>
+                      <p className="mt-1.5 text-[12px] leading-relaxed text-white/45 sm:text-[13px]">
+                        {step.description}
+                      </p>
                     </div>
-                  ) : null}
-                </Fragment>
+                  </div>
+                </article>
               ))}
-            </ol>
+            </div>
           </div>
 
-          <div className="mt-14 overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.02] sm:mt-20">
+          <div className="mt-14 overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.02] sm:mt-16">
             <div className="border-b border-white/[0.06] px-5 py-8 sm:px-10 sm:py-10">
               <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/35">
                 {closingContent.summaryLabel}
@@ -958,9 +980,20 @@ export function NobreProjectPage() {
               </div>
             </div>
 
-            <div className="flex flex-col gap-3 border-t border-white/[0.06] bg-white/[0.015] px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-10">
-              <p className="text-[12px] tracking-[0.06em] text-white/35">{closingContent.signature}</p>
-              <p className="text-[11px] uppercase tracking-[0.18em] text-white/22">Proposta comercial</p>
+            <div className="flex flex-col gap-4 border-t border-white/[0.06] bg-white/[0.015] px-5 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-10">
+              <div>
+                <p className="text-[12px] tracking-[0.06em] text-white/35">{closingContent.signature}</p>
+                <p className="mt-1 text-[11px] uppercase tracking-[0.18em] text-white/22">Proposta comercial</p>
+              </div>
+              <a
+                href={ctaHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-white px-5 py-2.5 text-[13px] font-medium text-black transition-opacity hover:opacity-90"
+              >
+                {nobreProject.cta.label}
+                <ArrowRight className="h-3.5 w-3.5" />
+              </a>
             </div>
           </div>
         </Section>

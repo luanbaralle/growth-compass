@@ -33,7 +33,9 @@ export const heroContent = {
 } as const;
 
 export const projectPricing = {
-  installments: "12x de R$ 889,93",
+  installmentsCount: "12x",
+  installmentsAmount: "R$ 889,93",
+  installments: "12x R$ 889,93",
   cash: "R$ 8.900 à vista",
 } as const;
 
@@ -57,19 +59,17 @@ export const developmentPlan = {
 
 export const executiveScope = {
   title: "Escopo executivo",
+  subtitle: "O que está incluso nesta proposta.",
   items: [
-    { item: "Integração com Imoview", included: true },
-    { item: "WhatsApp Business", included: true },
-    { item: "Google Cloud", included: true },
-    { item: "Interpretação de respostas", included: true },
-    { item: "Painel operacional", included: true },
-    { item: "Histórico de interações", included: true },
-    { item: "Agendamento automático", included: true },
-    { item: "Implantação assistida", included: true },
-    { item: "Treinamento da equipe", included: true },
-    { item: "CRM próprio", included: false },
-    { item: "Alteração automática no Imoview", included: false },
-    { item: "Atendimento conversacional automatizado", included: false },
+    "Integração com Imoview",
+    "WhatsApp Business",
+    "Google Cloud",
+    "Interpretação de respostas",
+    "Painel operacional",
+    "Histórico de interações",
+    "Agendamento automático",
+    "Implantação assistida",
+    "Treinamento da equipe",
   ],
 } as const;
 
@@ -447,15 +447,20 @@ export const investmentContent = {
     description: "Desenvolvimento dedicado à Nobre Imóveis. Não se trata de software pronto ou licença.",
   },
   pricing: projectPricing,
+  pricingNote:
+    "Valores para desenvolvimento, implantação e entrega conforme escopo desta proposta.",
   description: "Desenvolvimento da solução completa conforme escopo apresentado nesta proposta.",
+  includesLabel: "O que está incluso",
   includes: [
     "Desenvolvimento completo",
     "Integração Imoview",
     "Integração WhatsApp",
     "Interpretação de respostas",
     "Painel operacional",
-    "Implantação",
-    "Treinamento",
+    "Implantação e homologação",
+    "Treinamento da equipe",
+    "Entrada em produção",
+    "Suporte técnico por 30 dias após o go-live",
     "Documentação da arquitetura da solução",
     "Guia de instalação e implantação",
     "Documentação das integrações",
@@ -474,13 +479,21 @@ export const investmentContent = {
     note: "Contratados diretamente pela Nobre Imóveis, conforme utilização:",
     items: ["Google Cloud", "WhatsApp Business", "Google Gemini"],
   },
+  includedSupport: {
+    badge: "Incluso no projeto",
+    title: "Suporte técnico por 30 dias após o go-live",
+    description:
+      "Correções, orientação de uso e acompanhamento técnico durante a estabilização inicial da solução em produção.",
+  },
   evolutionPlan: {
-    title: "Plano de evolução e suporte operacional",
-    optionalLabel: "Opcional",
+    title: "Suporte Técnico e Operacional",
+    optionalLabel: "Opcional após 30 dias",
     intro:
-      "Após a implantação, a Nobre Imóveis poderá optar pela contratação de um plano de acompanhamento contínuo, contemplando monitoramento, suporte técnico, correções, atualizações de compatibilidade e pequenos ajustes operacionais, garantindo a estabilidade e a evolução da solução ao longo do tempo.",
+      "Encerrado o período de suporte incluso, a Nobre Imóveis poderá contratar um plano de acompanhamento contínuo — com monitoramento, correções, atualizações de compatibilidade e pequenos ajustes operacionais para manter estabilidade e evolução da solução.",
     investmentLabel: "Investimento:",
-    price: "R$ 890,00/mês",
+    price: "R$ 790,00",
+    priceSuffix: "/mês",
+    note: "Contratação opcional, iniciada após os 30 dias de suporte inclusos no projeto.",
     includesLabel: "Inclui:",
     items: [
       "Monitoramento contínuo da aplicação",
@@ -501,17 +514,7 @@ export const investmentContent = {
       "Código desenvolvido sob medida para a Nobre Imóveis",
       "Ambiente em infraestrutura própria",
       "Documentação completa entregue ao final",
-    ],
-  },
-  packageSummary: {
-    title: "O investimento contempla",
-    items: [
-      "Desenvolvimento",
-      "Implantação",
-      "Homologação",
-      "Documentação completa",
-      "Treinamento",
-      "Entrada em produção",
+      "Suporte técnico por 30 dias após o go-live",
     ],
   },
   nextStep: {
@@ -523,15 +526,36 @@ export const investmentContent = {
 export const closingContent = {
   nextSteps: {
     title: "Próximos passos",
-    intro: "Após a aprovação da proposta, o projeto seguirá as seguintes etapas:",
+    intro: "Após a aprovação da proposta, o projeto seguirá as etapas abaixo — da preparação ao go-live.",
     steps: [
-      "Reunião de kickoff",
-      "Configuração dos acessos",
-      "Desenvolvimento",
-      "Validação",
-      "Implantação",
-      "Treinamento da equipe",
-      "Entrada em operação",
+      {
+        title: "Reunião de kickoff",
+        description: "Alinhamento final de escopo, premissas e cronograma de execução.",
+      },
+      {
+        title: "Configuração dos acessos",
+        description: "Liberação e validação de Imoview, WhatsApp Business e Google Cloud.",
+      },
+      {
+        title: "Desenvolvimento",
+        description: "Execução das fases do plano: integração, automação, interpretação e painel.",
+      },
+      {
+        title: "Validação",
+        description: "Testes com dados reais e ajustes de interpretação com a operação.",
+      },
+      {
+        title: "Implantação",
+        description: "Publicação do ambiente de produção e ativação das integrações.",
+      },
+      {
+        title: "Treinamento da equipe",
+        description: "Capacitação prática para uso do painel e rotinas operacionais.",
+      },
+      {
+        title: "Entrada em operação",
+        description: "Go-live e início do suporte técnico incluso por 30 dias.",
+      },
     ],
   },
   summaryLabel: "Resumo da solução",
