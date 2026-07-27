@@ -1,17 +1,14 @@
 import { heroManifestoItems } from "@/lib/home/content";
 
-function MarqueeTrack() {
+function MarqueeGroup({ suffix }: { suffix: string }) {
   return (
-    <div
-      className="flex shrink-0 items-center gap-10 pr-10 sm:gap-14 sm:pr-14 lg:gap-16 lg:pr-16"
-      aria-hidden
-    >
+    <div className="hero-marquee__group">
       {heroManifestoItems.map((item) => (
-        <span key={item} className="inline-flex shrink-0 items-center gap-10 sm:gap-14 lg:gap-16">
-          <span className="text-sm font-semibold uppercase tracking-[0.32em] text-foreground sm:text-base lg:text-lg">
-            {item}
+        <span key={`${item}-${suffix}`} className="hero-marquee__item">
+          <span className="hero-marquee__label">{item}</span>
+          <span className="hero-marquee__dot" aria-hidden>
+            •
           </span>
-          <span className="text-brand/55">•</span>
         </span>
       ))}
     </div>
@@ -20,23 +17,19 @@ function MarqueeTrack() {
 
 export function HeroManifestoMarquee() {
   return (
-    <div className="relative border-t border-border/60 bg-background/90 backdrop-blur-sm">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand/30 to-transparent"
-      />
+    <div className="hero-marquee">
+      <div aria-hidden className="hero-marquee__rule hero-marquee__rule--top" />
+      <div aria-hidden className="hero-marquee__fade hero-marquee__fade--left" />
+      <div aria-hidden className="hero-marquee__fade hero-marquee__fade--right" />
 
-      <div className="hero-marquee overflow-hidden py-5 sm:py-6">
-        <div className="hero-marquee__track animate-marquee flex w-max">
-          <MarqueeTrack />
-          <MarqueeTrack />
+      <div className="hero-marquee__viewport">
+        <div className="hero-marquee__track" aria-hidden>
+          <MarqueeGroup suffix="a" />
+          <MarqueeGroup suffix="b" />
         </div>
       </div>
 
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-brand/30 to-transparent"
-      />
+      <div aria-hidden className="hero-marquee__rule hero-marquee__rule--bottom" />
     </div>
   );
 }
