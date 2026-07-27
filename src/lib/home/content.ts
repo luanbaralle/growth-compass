@@ -67,11 +67,12 @@ export interface HomeNavGroup {
   links: { label: string; href: string }[];
 }
 
-export const heroStats: HomeStat[] = [
-  { value: "+120", label: "Projetos entregues" },
-  { value: "+8M", label: "Em investimento gerenciado" },
-  { value: "+3M", label: "Leads gerados" },
-  { value: "+30", label: "Segmentos atendidos" },
+export const heroManifestoItems = [
+  "Estratégia",
+  "Tecnologia",
+  "Execução",
+  "Otimização",
+  "Escala",
 ];
 
 export const growthFlow = [

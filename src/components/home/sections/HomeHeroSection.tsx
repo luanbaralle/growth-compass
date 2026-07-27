@@ -1,12 +1,12 @@
-import { AnimatedStat } from "@/components/home/shared/AnimatedStat";
+import { HeroManifestoMarquee } from "@/components/home/shared/HeroManifestoMarquee";
 import heroVisual from "@/assets/hero-visual.png";
-import { heroChecklist, heroStats } from "@/lib/home/content";
+import { heroChecklist } from "@/lib/home/content";
 import { ArrowRight, Check } from "lucide-react";
 
 export function HomeHeroSection() {
   return (
     <section id="top" className="relative overflow-hidden border-b border-border/60">
-      <div className="relative min-h-[min(920px,92vh)]">
+      <div className="relative sm:min-h-[min(920px,92vh)]">
         <div className="absolute inset-0">
           <img
             src={heroVisual}
@@ -16,56 +16,70 @@ export function HomeHeroSection() {
             decoding="async"
             fetchPriority="high"
             draggable={false}
-            className="h-full w-full object-cover object-[72%_46%] sm:object-[74%_44%] lg:object-[76%_42%]"
+            className="h-full w-full object-cover object-[50%_72%] sm:object-[50%_44%]"
           />
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,oklch(0.145_0_0)_0%,oklch(0.145_0_0_/_0.94)_38%,oklch(0.145_0_0_/_0.72)_52%,oklch(0.145_0_0_/_0.28)_68%,transparent_100%)]" />
-          <div className="absolute inset-0 bg-[linear-gradient(to_top,oklch(0.145_0_0_/_0.55),transparent_42%)]" />
+          <div className="absolute inset-0 bg-background/55 sm:bg-transparent" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_100%_80%_at_50%_28%,oklch(0.145_0_0_/_0.92),oklch(0.145_0_0_/_0.72)_48%,transparent_100%)] sm:bg-[radial-gradient(ellipse_90%_70%_at_50%_42%,oklch(0.145_0_0_/_0.78),oklch(0.145_0_0_/_0.42)_55%,transparent_100%)]" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_top,oklch(0.145_0_0_/_0.72),transparent_55%)] sm:bg-[linear-gradient(to_top,oklch(0.145_0_0_/_0.55),transparent_42%)]" />
         </div>
 
-        <div className="relative mx-auto flex min-h-[min(920px,92vh)] max-w-7xl items-center px-5 py-16 sm:px-8 lg:py-20">
-          <div className="max-w-2xl">
-            <div className="animate-fade-up inline-flex items-center gap-2 rounded-full border border-brand/20 bg-brand-soft px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-brand">
-              Raise One • Marketing + Tecnologia + IA
+        <div className="relative mx-auto flex max-w-7xl flex-col justify-start px-5 pb-14 pt-[4.75rem] text-center sm:min-h-[min(920px,92vh)] sm:justify-center sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+          <div className="mx-auto w-full max-w-3xl lg:max-w-4xl">
+            <div className="animate-fade-up inline-flex max-w-full items-center gap-2 rounded-full border border-brand/20 bg-brand-soft/90 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-brand backdrop-blur-sm sm:px-3.5 sm:py-1.5 sm:text-[11px] sm:tracking-[0.2em]">
+              <span className="sm:hidden">Raise One • Growth + Tech</span>
+              <span className="hidden sm:inline">Raise One • Marketing + Tecnologia + IA</span>
             </div>
 
-            <h1 className="animate-fade-up mt-6 text-4xl font-bold leading-[1.04] tracking-tight text-balance sm:text-5xl lg:text-[3.35rem] [animation-delay:80ms]">
-              Construímos o próximo passo do{" "}
-              <span className="text-brand">crescimento</span> da sua empresa.
+            <h1 className="animate-fade-up mt-4 text-[1.75rem] font-bold leading-[1.16] tracking-tight text-pretty sm:mt-6 sm:text-4xl sm:leading-[1.04] sm:text-balance md:text-5xl lg:text-[3.35rem] [animation-delay:80ms]">
+              Construímos o próximo
+              <br className="sm:hidden" />
+              passo do <span className="text-brand">crescimento</span>
+              <br className="sm:hidden" />
+              da sua empresa.
             </h1>
 
-            <p className="animate-fade-up mt-6 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg [animation-delay:140ms]">
-              Não importa se o desafio é conquistar clientes, lançar um empreendimento,
-              automatizar processos ou desenvolver uma plataforma.
+            <p className="animate-fade-up mx-auto mt-4 max-w-md text-[0.9375rem] leading-[1.65] text-muted-foreground sm:mt-6 sm:max-w-xl sm:text-base sm:leading-relaxed md:text-lg [animation-delay:140ms]">
+              <span className="sm:hidden">
+                Estratégia, tecnologia e execução para conquistar clientes, lançar
+                empreendimentos e escalar operações.
+              </span>
+              <span className="hidden sm:inline">
+                Não importa se o desafio é conquistar clientes, lançar um empreendimento,
+                automatizar processos ou desenvolver uma plataforma.
+              </span>
             </p>
 
-            <div className="animate-fade-up mt-5 space-y-1 text-sm font-medium text-foreground sm:text-base [animation-delay:180ms]">
+            <div className="animate-fade-up mt-5 hidden space-y-1 text-sm font-medium text-foreground sm:block sm:text-base [animation-delay:180ms]">
               <p>Criamos a estratégia.</p>
               <p>Desenvolvemos a tecnologia.</p>
               <p>Executamos o crescimento.</p>
             </div>
 
-            <ul className="animate-fade-up mt-7 flex flex-wrap gap-x-5 gap-y-2 [animation-delay:220ms]">
+            <ul className="animate-fade-up mt-5 flex flex-wrap justify-center gap-2 sm:mt-7 sm:gap-x-5 sm:gap-y-2 [animation-delay:220ms]">
               {heroChecklist.map((item) => (
-                <li key={item} className="inline-flex items-center gap-2 text-sm text-foreground">
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand/15 text-brand">
-                    <Check className="h-3 w-3" strokeWidth={3} />
+                <li
+                  key={item}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-border/70 bg-surface/50 px-3 py-1.5 text-xs text-foreground backdrop-blur-sm sm:border-transparent sm:bg-transparent sm:px-0 sm:py-0 sm:text-sm"
+                >
+                  <span className="flex h-4 w-4 items-center justify-center rounded-full bg-brand/15 text-brand sm:h-5 sm:w-5">
+                    <Check className="h-2.5 w-2.5 sm:h-3 sm:w-3" strokeWidth={3} />
                   </span>
                   {item}
                 </li>
               ))}
             </ul>
 
-            <div className="animate-fade-up mt-9 flex flex-col gap-3 sm:flex-row [animation-delay:260ms]">
+            <div className="animate-fade-up mx-auto mt-6 flex w-full max-w-sm flex-col gap-2.5 sm:mt-9 sm:max-w-none sm:flex-row sm:justify-center sm:gap-3 [animation-delay:260ms]">
               <a
                 href="#solucoes"
-                className="group inline-flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3.5 text-sm font-semibold text-primary-foreground shadow-brand transition-transform hover:scale-[1.01]"
+                className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand px-6 py-3.5 text-sm font-semibold text-primary-foreground shadow-brand transition-transform hover:scale-[1.01] sm:w-auto"
               >
                 Conhecer a Raise One
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </a>
               <a
                 href="#diagnostico"
-                className="inline-flex items-center justify-center rounded-full border border-border bg-surface/60 px-6 py-3.5 text-sm font-semibold text-foreground backdrop-blur-sm transition-colors hover:border-brand/40 hover:text-brand"
+                className="inline-flex w-full items-center justify-center rounded-full border border-border bg-surface/70 px-6 py-3.5 text-sm font-semibold text-foreground backdrop-blur-sm transition-colors hover:border-brand/40 hover:text-brand sm:w-auto"
               >
                 Analisar meu mercado
               </a>
@@ -74,13 +88,7 @@ export function HomeHeroSection() {
         </div>
       </div>
 
-      <div className="relative border-t border-border/60 bg-background/85 backdrop-blur-sm">
-        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-5 py-8 sm:grid-cols-4 sm:px-8 sm:py-10">
-          {heroStats.map((stat) => (
-            <AnimatedStat key={stat.label} {...stat} />
-          ))}
-        </div>
-      </div>
+      <HeroManifestoMarquee />
     </section>
   );
 }
