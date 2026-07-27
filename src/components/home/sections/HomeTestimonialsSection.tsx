@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/accordion";
 import { SectionShell, SectionTitle } from "@/components/home/shared/SectionShell";
 import { faqItems } from "@/lib/home/content";
-import testimonialPhoto from "@/assets/luan-baralle.png";
+import testimonialPhoto from "@/assets/juliana-martins.png";
 
 export function HomeTestimonialsSection() {
   return (
