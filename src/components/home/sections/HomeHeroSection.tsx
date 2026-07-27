@@ -34,9 +34,9 @@ export function HomeHeroSection() {
             </div>
 
             <h1 className="animate-fade-up mt-4 text-[1.75rem] font-bold leading-[1.16] tracking-tight text-pretty sm:mt-6 sm:text-4xl sm:leading-[1.04] sm:text-balance md:text-5xl lg:text-[3.35rem] [animation-delay:80ms]">
-              Construímos o próximo
+              Construímos o próximo{" "}
               <br className="sm:hidden" />
-              passo do <span className="text-brand">crescimento</span>
+              passo do <span className="text-brand">crescimento</span>{" "}
               <br className="sm:hidden" />
               da sua empresa.
             </h1>
