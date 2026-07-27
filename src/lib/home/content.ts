@@ -5,8 +5,6 @@ import {
   Building2,
   Clapperboard,
   Code2,
-  Globe,
-  Layers,
   LineChart,
   Megaphone,
   Rocket,
@@ -39,12 +37,6 @@ export interface HomeProject {
   href?: string;
 }
 
-export interface HomeChallenge {
-  problem: string;
-  solution: string;
-  icon: LucideIcon;
-}
-
 export interface HomeProcessStep {
   number: string;
   title: string;
@@ -68,10 +60,18 @@ export interface HomeNavGroup {
 }
 
 export const heroManifestoItems = [
+  "Google Ads",
+  "Meta Ads",
+  "Landing Pages",
+  "Sistemas Web",
+  "Automações",
+  "Inteligência Artificial",
+  "SEO",
   "Estratégia",
   "Tecnologia",
   "Execução",
   "Otimização",
+  "Performance",
   "Escala",
 ];
 
@@ -153,34 +153,6 @@ export const projects: HomeProject[] = [
     tag: "Tecnologia",
     tagTone: "blue",
     gradient: "from-neutral-950 via-zinc-900 to-orange-900/30",
-  },
-];
-
-export const challenges: HomeChallenge[] = [
-  {
-    problem: "Poucos clientes?",
-    solution: "Google Ads",
-    icon: Users,
-  },
-  {
-    problem: "Equipe sobrecarregada?",
-    solution: "Automações",
-    icon: Workflow,
-  },
-  {
-    problem: "Site antigo?",
-    solution: "Novo portal",
-    icon: Globe,
-  },
-  {
-    problem: "Processos manuais?",
-    solution: "Sistema",
-    icon: Layers,
-  },
-  {
-    problem: "Baixa conversão?",
-    solution: "Landing Page",
-    icon: Target,
   },
 ];
 

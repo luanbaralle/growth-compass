@@ -103,7 +103,7 @@ export function GuidedDiagnostic({ variant = "default" }: GuidedDiagnosticProps)
         <div
           className={
             isHome
-              ? "mt-8 overflow-visible rounded-2xl border border-border bg-background/80 shadow-2xl backdrop-blur-xl sm:mt-10"
+              ? "mt-6 overflow-visible rounded-2xl border border-border bg-background/80 shadow-2xl backdrop-blur-xl sm:mt-8"
               : "overflow-visible rounded-2xl border border-border bg-background/80 shadow-2xl backdrop-blur-xl"
           }
         >

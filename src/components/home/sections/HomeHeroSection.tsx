@@ -5,8 +5,11 @@ import { ArrowRight, Check } from "lucide-react";
 
 export function HomeHeroSection() {
   return (
-    <section id="top" className="relative overflow-hidden border-b border-border/60">
-      <div className="relative sm:min-h-[min(920px,92vh)]">
+    <section
+      id="top"
+      className="relative flex min-h-[calc(100svh-4rem)] flex-col overflow-hidden border-b border-border/60"
+    >
+      <div className="relative flex min-h-0 flex-1 flex-col">
         <div className="absolute inset-0">
           <img
             src={heroVisual}
@@ -23,7 +26,7 @@ export function HomeHeroSection() {
           <div className="absolute inset-0 bg-[linear-gradient(to_top,oklch(0.145_0_0_/_0.72),transparent_55%)] sm:bg-[linear-gradient(to_top,oklch(0.145_0_0_/_0.55),transparent_42%)]" />
         </div>
 
-        <div className="relative mx-auto flex max-w-7xl flex-col justify-start px-5 pb-14 pt-[4.75rem] text-center sm:min-h-[min(920px,92vh)] sm:justify-center sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+        <div className="relative mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-5 py-8 text-center sm:px-6 sm:py-10 lg:px-8 lg:py-12">
           <div className="mx-auto w-full max-w-3xl lg:max-w-4xl">
             <div className="animate-fade-up inline-flex max-w-full items-center gap-2 rounded-full border border-brand/20 bg-brand-soft/90 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-brand backdrop-blur-sm sm:px-3.5 sm:py-1.5 sm:text-[11px] sm:tracking-[0.2em]">
               <span className="sm:hidden">Raise One • Growth + Tech</span>
@@ -69,7 +72,7 @@ export function HomeHeroSection() {
               ))}
             </ul>
 
-            <div className="animate-fade-up mx-auto mt-6 flex w-full max-w-sm flex-col gap-2.5 sm:mt-9 sm:max-w-none sm:flex-row sm:justify-center sm:gap-3 [animation-delay:260ms]">
+            <div className="animate-fade-up mx-auto mt-6 flex w-full max-w-sm flex-col gap-2.5 sm:mt-8 sm:max-w-none sm:flex-row sm:justify-center sm:gap-3 [animation-delay:260ms]">
               <a
                 href="#solucoes"
                 className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand px-6 py-3.5 text-sm font-semibold text-primary-foreground shadow-brand transition-transform hover:scale-[1.01] sm:w-auto"

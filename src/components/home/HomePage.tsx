@@ -1,6 +1,5 @@
 import { HomeFooter } from "@/components/home/HomeFooter";
 import { HomeNav } from "@/components/home/HomeNav";
-import { HomeChallengesSection } from "@/components/home/sections/HomeChallengesSection";
 import { HomeDiagnosticSection } from "@/components/home/sections/HomeDiagnosticSection";
 import { HomeFinalCTASection } from "@/components/home/sections/HomeFinalCTASection";
 import { HomeHeroSection } from "@/components/home/sections/HomeHeroSection";
@@ -26,7 +25,6 @@ export function HomePage() {
         <HomePhilosophySection />
         <HomeSolutionsSection />
         <HomeProjectsSection />
-        <HomeChallengesSection />
         <HomeProcessSection />
         <HomeTechnologySection />
         <HomeDiagnosticSection />

@@ -1,8 +1,8 @@
 import { heroManifestoItems } from "@/lib/home/content";
 
-function MarqueeGroup({ suffix }: { suffix: string }) {
+function MarqueeSegment({ suffix }: { suffix: string }) {
   return (
-    <div className="hero-marquee__group">
+    <div className="hero-marquee__segment">
       {heroManifestoItems.map((item) => (
         <span key={`${item}-${suffix}`} className="hero-marquee__item">
           <span className="hero-marquee__label">{item}</span>
@@ -24,8 +24,10 @@ export function HeroManifestoMarquee() {
 
       <div className="hero-marquee__viewport">
         <div className="hero-marquee__track" aria-hidden>
-          <MarqueeGroup suffix="a" />
-          <MarqueeGroup suffix="b" />
+          <MarqueeSegment suffix="a" />
+          <MarqueeSegment suffix="b" />
+          <MarqueeSegment suffix="c" />
+          <MarqueeSegment suffix="d" />
         </div>
       </div>
 
