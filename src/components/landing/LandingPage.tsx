@@ -1,3 +1,5 @@
+import { JsonLd } from "@/components/seo/JsonLd";
+import { segmentSchemas } from "@/lib/seo/pages";
 import type { BusinessMatch } from "@/config/microverticals/types";
 import type { BusinessPersonalization } from "@/config/microverticals/types";
 import type { SegmentConfig } from "@/config/segments/types";
@@ -62,6 +64,13 @@ export function LandingPage({ config, context }: LandingPageProps) {
 
   return (
     <SegmentTheme accentColor={config.accentColor} accentSoft={config.accentSoft}>
+      <JsonLd
+        data={segmentSchemas({
+          title: config.seo.title,
+          description: config.seo.description,
+          slug: config.slug,
+        })}
+      />
       <Nav homeHref="/" />
       <HeroSection config={config} city={city} personalization={personalization} />
       <VisibilitySection config={config} personalization={personalization} />

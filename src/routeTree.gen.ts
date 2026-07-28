@@ -9,15 +9,29 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TecnologiaRouteImport } from './routes/tecnologia'
+import { Route as ProgramaDeCrescimentoRouteImport } from './routes/programa-de-crescimento'
 import { Route as ObrigadoRouteImport } from './routes/obrigado'
+import { Route as MetodologiaRouteImport } from './routes/metodologia'
+import { Route as DiagnosticoRouteImport } from './routes/diagnostico'
 import { Route as SegmentRouteImport } from './routes/$segment'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SolucoesIndexRouteImport } from './routes/solucoes/index'
+import { Route as CasesIndexRouteImport } from './routes/cases/index'
+import { Route as BlogIndexRouteImport } from './routes/blog/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as SolucoesProducaoDeConteudoRouteImport } from './routes/solucoes/producao-de-conteudo'
+import { Route as SolucoesMetaAdsRouteImport } from './routes/solucoes/meta-ads'
+import { Route as SolucoesLandingPagesRouteImport } from './routes/solucoes/landing-pages'
+import { Route as SolucoesGoogleAdsRouteImport } from './routes/solucoes/google-ads'
 import { Route as ProjetosPousadaRouteImport } from './routes/projetos/pousada'
 import { Route as ProjetosNobreRouteImport } from './routes/projetos/nobre'
+import { Route as CasesSlugRouteImport } from './routes/cases/$slug'
+import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminLeadsRouteImport } from './routes/admin/leads'
+import { Route as BlogCategoriaCategoryRouteImport } from './routes/blog/categoria/$category'
 import { Route as AdminExecucaoReferenciaRouteImport } from './routes/admin/execucao/referencia'
 import { Route as AdminExecucaoProducaoRouteImport } from './routes/admin/execucao/producao'
 import { Route as AdminExecucaoPlanejamentoRouteImport } from './routes/admin/execucao/planejamento'
@@ -29,9 +43,29 @@ import { Route as AdminExecucaoRituaisReviewRouteImport } from './routes/admin/e
 import { Route as AdminExecucaoRituaisPlanningRouteImport } from './routes/admin/execucao/rituais/planning'
 import { Route as AdminExecucaoRituaisCheckinRouteImport } from './routes/admin/execucao/rituais/checkin'
 
+const TecnologiaRoute = TecnologiaRouteImport.update({
+  id: '/tecnologia',
+  path: '/tecnologia',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProgramaDeCrescimentoRoute = ProgramaDeCrescimentoRouteImport.update({
+  id: '/programa-de-crescimento',
+  path: '/programa-de-crescimento',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ObrigadoRoute = ObrigadoRouteImport.update({
   id: '/obrigado',
   path: '/obrigado',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MetodologiaRoute = MetodologiaRouteImport.update({
+  id: '/metodologia',
+  path: '/metodologia',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiagnosticoRoute = DiagnosticoRouteImport.update({
+  id: '/diagnostico',
+  path: '/diagnostico',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SegmentRoute = SegmentRouteImport.update({
@@ -49,10 +83,46 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SolucoesIndexRoute = SolucoesIndexRouteImport.update({
+  id: '/solucoes/',
+  path: '/solucoes/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CasesIndexRoute = CasesIndexRouteImport.update({
+  id: '/cases/',
+  path: '/cases/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogIndexRoute = BlogIndexRouteImport.update({
+  id: '/blog/',
+  path: '/blog/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRouteRoute,
+} as any)
+const SolucoesProducaoDeConteudoRoute =
+  SolucoesProducaoDeConteudoRouteImport.update({
+    id: '/solucoes/producao-de-conteudo',
+    path: '/solucoes/producao-de-conteudo',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const SolucoesMetaAdsRoute = SolucoesMetaAdsRouteImport.update({
+  id: '/solucoes/meta-ads',
+  path: '/solucoes/meta-ads',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SolucoesLandingPagesRoute = SolucoesLandingPagesRouteImport.update({
+  id: '/solucoes/landing-pages',
+  path: '/solucoes/landing-pages',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SolucoesGoogleAdsRoute = SolucoesGoogleAdsRouteImport.update({
+  id: '/solucoes/google-ads',
+  path: '/solucoes/google-ads',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ProjetosPousadaRoute = ProjetosPousadaRouteImport.update({
   id: '/projetos/pousada',
@@ -64,6 +134,16 @@ const ProjetosNobreRoute = ProjetosNobreRouteImport.update({
   path: '/projetos/nobre',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CasesSlugRoute = CasesSlugRouteImport.update({
+  id: '/cases/$slug',
+  path: '/cases/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/blog/$slug',
+  path: '/blog/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -73,6 +153,11 @@ const AdminLeadsRoute = AdminLeadsRouteImport.update({
   id: '/leads',
   path: '/leads',
   getParentRoute: () => AdminRouteRoute,
+} as any)
+const BlogCategoriaCategoryRoute = BlogCategoriaCategoryRouteImport.update({
+  id: '/blog/categoria/$category',
+  path: '/blog/categoria/$category',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminExecucaoReferenciaRoute = AdminExecucaoReferenciaRouteImport.update({
   id: '/execucao/referencia',
@@ -134,18 +219,32 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
   '/$segment': typeof SegmentRoute
+  '/diagnostico': typeof DiagnosticoRoute
+  '/metodologia': typeof MetodologiaRoute
   '/obrigado': typeof ObrigadoRoute
+  '/programa-de-crescimento': typeof ProgramaDeCrescimentoRoute
+  '/tecnologia': typeof TecnologiaRoute
   '/admin/leads': typeof AdminLeadsRoute
   '/admin/login': typeof AdminLoginRoute
+  '/blog/$slug': typeof BlogSlugRoute
+  '/cases/$slug': typeof CasesSlugRoute
   '/projetos/nobre': typeof ProjetosNobreRoute
   '/projetos/pousada': typeof ProjetosPousadaRoute
+  '/solucoes/google-ads': typeof SolucoesGoogleAdsRoute
+  '/solucoes/landing-pages': typeof SolucoesLandingPagesRoute
+  '/solucoes/meta-ads': typeof SolucoesMetaAdsRoute
+  '/solucoes/producao-de-conteudo': typeof SolucoesProducaoDeConteudoRoute
   '/admin/': typeof AdminIndexRoute
+  '/blog/': typeof BlogIndexRoute
+  '/cases/': typeof CasesIndexRoute
+  '/solucoes/': typeof SolucoesIndexRoute
   '/admin/execucao/capacidade': typeof AdminExecucaoCapacidadeRoute
   '/admin/execucao/clientes': typeof AdminExecucaoClientesRoute
   '/admin/execucao/hoje': typeof AdminExecucaoHojeRoute
   '/admin/execucao/planejamento': typeof AdminExecucaoPlanejamentoRoute
   '/admin/execucao/producao': typeof AdminExecucaoProducaoRoute
   '/admin/execucao/referencia': typeof AdminExecucaoReferenciaRoute
+  '/blog/categoria/$category': typeof BlogCategoriaCategoryRoute
   '/admin/execucao/rituais/checkin': typeof AdminExecucaoRituaisCheckinRoute
   '/admin/execucao/rituais/planning': typeof AdminExecucaoRituaisPlanningRoute
   '/admin/execucao/rituais/review': typeof AdminExecucaoRituaisReviewRoute
@@ -154,18 +253,32 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$segment': typeof SegmentRoute
+  '/diagnostico': typeof DiagnosticoRoute
+  '/metodologia': typeof MetodologiaRoute
   '/obrigado': typeof ObrigadoRoute
+  '/programa-de-crescimento': typeof ProgramaDeCrescimentoRoute
+  '/tecnologia': typeof TecnologiaRoute
   '/admin/leads': typeof AdminLeadsRoute
   '/admin/login': typeof AdminLoginRoute
+  '/blog/$slug': typeof BlogSlugRoute
+  '/cases/$slug': typeof CasesSlugRoute
   '/projetos/nobre': typeof ProjetosNobreRoute
   '/projetos/pousada': typeof ProjetosPousadaRoute
+  '/solucoes/google-ads': typeof SolucoesGoogleAdsRoute
+  '/solucoes/landing-pages': typeof SolucoesLandingPagesRoute
+  '/solucoes/meta-ads': typeof SolucoesMetaAdsRoute
+  '/solucoes/producao-de-conteudo': typeof SolucoesProducaoDeConteudoRoute
   '/admin': typeof AdminIndexRoute
+  '/blog': typeof BlogIndexRoute
+  '/cases': typeof CasesIndexRoute
+  '/solucoes': typeof SolucoesIndexRoute
   '/admin/execucao/capacidade': typeof AdminExecucaoCapacidadeRoute
   '/admin/execucao/clientes': typeof AdminExecucaoClientesRoute
   '/admin/execucao/hoje': typeof AdminExecucaoHojeRoute
   '/admin/execucao/planejamento': typeof AdminExecucaoPlanejamentoRoute
   '/admin/execucao/producao': typeof AdminExecucaoProducaoRoute
   '/admin/execucao/referencia': typeof AdminExecucaoReferenciaRoute
+  '/blog/categoria/$category': typeof BlogCategoriaCategoryRoute
   '/admin/execucao/rituais/checkin': typeof AdminExecucaoRituaisCheckinRoute
   '/admin/execucao/rituais/planning': typeof AdminExecucaoRituaisPlanningRoute
   '/admin/execucao/rituais/review': typeof AdminExecucaoRituaisReviewRoute
@@ -176,18 +289,32 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
   '/$segment': typeof SegmentRoute
+  '/diagnostico': typeof DiagnosticoRoute
+  '/metodologia': typeof MetodologiaRoute
   '/obrigado': typeof ObrigadoRoute
+  '/programa-de-crescimento': typeof ProgramaDeCrescimentoRoute
+  '/tecnologia': typeof TecnologiaRoute
   '/admin/leads': typeof AdminLeadsRoute
   '/admin/login': typeof AdminLoginRoute
+  '/blog/$slug': typeof BlogSlugRoute
+  '/cases/$slug': typeof CasesSlugRoute
   '/projetos/nobre': typeof ProjetosNobreRoute
   '/projetos/pousada': typeof ProjetosPousadaRoute
+  '/solucoes/google-ads': typeof SolucoesGoogleAdsRoute
+  '/solucoes/landing-pages': typeof SolucoesLandingPagesRoute
+  '/solucoes/meta-ads': typeof SolucoesMetaAdsRoute
+  '/solucoes/producao-de-conteudo': typeof SolucoesProducaoDeConteudoRoute
   '/admin/': typeof AdminIndexRoute
+  '/blog/': typeof BlogIndexRoute
+  '/cases/': typeof CasesIndexRoute
+  '/solucoes/': typeof SolucoesIndexRoute
   '/admin/execucao/capacidade': typeof AdminExecucaoCapacidadeRoute
   '/admin/execucao/clientes': typeof AdminExecucaoClientesRoute
   '/admin/execucao/hoje': typeof AdminExecucaoHojeRoute
   '/admin/execucao/planejamento': typeof AdminExecucaoPlanejamentoRoute
   '/admin/execucao/producao': typeof AdminExecucaoProducaoRoute
   '/admin/execucao/referencia': typeof AdminExecucaoReferenciaRoute
+  '/blog/categoria/$category': typeof BlogCategoriaCategoryRoute
   '/admin/execucao/rituais/checkin': typeof AdminExecucaoRituaisCheckinRoute
   '/admin/execucao/rituais/planning': typeof AdminExecucaoRituaisPlanningRoute
   '/admin/execucao/rituais/review': typeof AdminExecucaoRituaisReviewRoute
@@ -199,18 +326,32 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/$segment'
+    | '/diagnostico'
+    | '/metodologia'
     | '/obrigado'
+    | '/programa-de-crescimento'
+    | '/tecnologia'
     | '/admin/leads'
     | '/admin/login'
+    | '/blog/$slug'
+    | '/cases/$slug'
     | '/projetos/nobre'
     | '/projetos/pousada'
+    | '/solucoes/google-ads'
+    | '/solucoes/landing-pages'
+    | '/solucoes/meta-ads'
+    | '/solucoes/producao-de-conteudo'
     | '/admin/'
+    | '/blog/'
+    | '/cases/'
+    | '/solucoes/'
     | '/admin/execucao/capacidade'
     | '/admin/execucao/clientes'
     | '/admin/execucao/hoje'
     | '/admin/execucao/planejamento'
     | '/admin/execucao/producao'
     | '/admin/execucao/referencia'
+    | '/blog/categoria/$category'
     | '/admin/execucao/rituais/checkin'
     | '/admin/execucao/rituais/planning'
     | '/admin/execucao/rituais/review'
@@ -219,18 +360,32 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/$segment'
+    | '/diagnostico'
+    | '/metodologia'
     | '/obrigado'
+    | '/programa-de-crescimento'
+    | '/tecnologia'
     | '/admin/leads'
     | '/admin/login'
+    | '/blog/$slug'
+    | '/cases/$slug'
     | '/projetos/nobre'
     | '/projetos/pousada'
+    | '/solucoes/google-ads'
+    | '/solucoes/landing-pages'
+    | '/solucoes/meta-ads'
+    | '/solucoes/producao-de-conteudo'
     | '/admin'
+    | '/blog'
+    | '/cases'
+    | '/solucoes'
     | '/admin/execucao/capacidade'
     | '/admin/execucao/clientes'
     | '/admin/execucao/hoje'
     | '/admin/execucao/planejamento'
     | '/admin/execucao/producao'
     | '/admin/execucao/referencia'
+    | '/blog/categoria/$category'
     | '/admin/execucao/rituais/checkin'
     | '/admin/execucao/rituais/planning'
     | '/admin/execucao/rituais/review'
@@ -240,18 +395,32 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/$segment'
+    | '/diagnostico'
+    | '/metodologia'
     | '/obrigado'
+    | '/programa-de-crescimento'
+    | '/tecnologia'
     | '/admin/leads'
     | '/admin/login'
+    | '/blog/$slug'
+    | '/cases/$slug'
     | '/projetos/nobre'
     | '/projetos/pousada'
+    | '/solucoes/google-ads'
+    | '/solucoes/landing-pages'
+    | '/solucoes/meta-ads'
+    | '/solucoes/producao-de-conteudo'
     | '/admin/'
+    | '/blog/'
+    | '/cases/'
+    | '/solucoes/'
     | '/admin/execucao/capacidade'
     | '/admin/execucao/clientes'
     | '/admin/execucao/hoje'
     | '/admin/execucao/planejamento'
     | '/admin/execucao/producao'
     | '/admin/execucao/referencia'
+    | '/blog/categoria/$category'
     | '/admin/execucao/rituais/checkin'
     | '/admin/execucao/rituais/planning'
     | '/admin/execucao/rituais/review'
@@ -262,18 +431,60 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
   SegmentRoute: typeof SegmentRoute
+  DiagnosticoRoute: typeof DiagnosticoRoute
+  MetodologiaRoute: typeof MetodologiaRoute
   ObrigadoRoute: typeof ObrigadoRoute
+  ProgramaDeCrescimentoRoute: typeof ProgramaDeCrescimentoRoute
+  TecnologiaRoute: typeof TecnologiaRoute
+  BlogSlugRoute: typeof BlogSlugRoute
+  CasesSlugRoute: typeof CasesSlugRoute
   ProjetosNobreRoute: typeof ProjetosNobreRoute
   ProjetosPousadaRoute: typeof ProjetosPousadaRoute
+  SolucoesGoogleAdsRoute: typeof SolucoesGoogleAdsRoute
+  SolucoesLandingPagesRoute: typeof SolucoesLandingPagesRoute
+  SolucoesMetaAdsRoute: typeof SolucoesMetaAdsRoute
+  SolucoesProducaoDeConteudoRoute: typeof SolucoesProducaoDeConteudoRoute
+  BlogIndexRoute: typeof BlogIndexRoute
+  CasesIndexRoute: typeof CasesIndexRoute
+  SolucoesIndexRoute: typeof SolucoesIndexRoute
+  BlogCategoriaCategoryRoute: typeof BlogCategoriaCategoryRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tecnologia': {
+      id: '/tecnologia'
+      path: '/tecnologia'
+      fullPath: '/tecnologia'
+      preLoaderRoute: typeof TecnologiaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/programa-de-crescimento': {
+      id: '/programa-de-crescimento'
+      path: '/programa-de-crescimento'
+      fullPath: '/programa-de-crescimento'
+      preLoaderRoute: typeof ProgramaDeCrescimentoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/obrigado': {
       id: '/obrigado'
       path: '/obrigado'
       fullPath: '/obrigado'
       preLoaderRoute: typeof ObrigadoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/metodologia': {
+      id: '/metodologia'
+      path: '/metodologia'
+      fullPath: '/metodologia'
+      preLoaderRoute: typeof MetodologiaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/diagnostico': {
+      id: '/diagnostico'
+      path: '/diagnostico'
+      fullPath: '/diagnostico'
+      preLoaderRoute: typeof DiagnosticoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$segment': {
@@ -297,12 +508,61 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/solucoes/': {
+      id: '/solucoes/'
+      path: '/solucoes'
+      fullPath: '/solucoes/'
+      preLoaderRoute: typeof SolucoesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cases/': {
+      id: '/cases/'
+      path: '/cases'
+      fullPath: '/cases/'
+      preLoaderRoute: typeof CasesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/': {
+      id: '/blog/'
+      path: '/blog'
+      fullPath: '/blog/'
+      preLoaderRoute: typeof BlogIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/': {
       id: '/admin/'
       path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRouteRoute
+    }
+    '/solucoes/producao-de-conteudo': {
+      id: '/solucoes/producao-de-conteudo'
+      path: '/solucoes/producao-de-conteudo'
+      fullPath: '/solucoes/producao-de-conteudo'
+      preLoaderRoute: typeof SolucoesProducaoDeConteudoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/solucoes/meta-ads': {
+      id: '/solucoes/meta-ads'
+      path: '/solucoes/meta-ads'
+      fullPath: '/solucoes/meta-ads'
+      preLoaderRoute: typeof SolucoesMetaAdsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/solucoes/landing-pages': {
+      id: '/solucoes/landing-pages'
+      path: '/solucoes/landing-pages'
+      fullPath: '/solucoes/landing-pages'
+      preLoaderRoute: typeof SolucoesLandingPagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/solucoes/google-ads': {
+      id: '/solucoes/google-ads'
+      path: '/solucoes/google-ads'
+      fullPath: '/solucoes/google-ads'
+      preLoaderRoute: typeof SolucoesGoogleAdsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/projetos/pousada': {
       id: '/projetos/pousada'
@@ -318,6 +578,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjetosNobreRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cases/$slug': {
+      id: '/cases/$slug'
+      path: '/cases/$slug'
+      fullPath: '/cases/$slug'
+      preLoaderRoute: typeof CasesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/blog/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/login': {
       id: '/admin/login'
       path: '/login'
@@ -331,6 +605,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/leads'
       preLoaderRoute: typeof AdminLeadsRouteImport
       parentRoute: typeof AdminRouteRoute
+    }
+    '/blog/categoria/$category': {
+      id: '/blog/categoria/$category'
+      path: '/blog/categoria/$category'
+      fullPath: '/blog/categoria/$category'
+      preLoaderRoute: typeof BlogCategoriaCategoryRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/admin/execucao/referencia': {
       id: '/admin/execucao/referencia'
@@ -445,9 +726,23 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRouteRoute: AdminRouteRouteWithChildren,
   SegmentRoute: SegmentRoute,
+  DiagnosticoRoute: DiagnosticoRoute,
+  MetodologiaRoute: MetodologiaRoute,
   ObrigadoRoute: ObrigadoRoute,
+  ProgramaDeCrescimentoRoute: ProgramaDeCrescimentoRoute,
+  TecnologiaRoute: TecnologiaRoute,
+  BlogSlugRoute: BlogSlugRoute,
+  CasesSlugRoute: CasesSlugRoute,
   ProjetosNobreRoute: ProjetosNobreRoute,
   ProjetosPousadaRoute: ProjetosPousadaRoute,
+  SolucoesGoogleAdsRoute: SolucoesGoogleAdsRoute,
+  SolucoesLandingPagesRoute: SolucoesLandingPagesRoute,
+  SolucoesMetaAdsRoute: SolucoesMetaAdsRoute,
+  SolucoesProducaoDeConteudoRoute: SolucoesProducaoDeConteudoRoute,
+  BlogIndexRoute: BlogIndexRoute,
+  CasesIndexRoute: CasesIndexRoute,
+  SolucoesIndexRoute: SolucoesIndexRoute,
+  BlogCategoriaCategoryRoute: BlogCategoriaCategoryRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

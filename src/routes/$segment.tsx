@@ -4,6 +4,7 @@ import { LandingPage } from "@/components/landing/LandingPage";
 import { getSegment, isValidSegment } from "@/config/segments";
 import type { SegmentSEO } from "@/config/segments/types";
 import { buildPersonalization, matchBusiness } from "@/lib/business-match";
+import { segmentSchemas, segmentSeoHead } from "@/lib/seo/pages";
 import { captureUtmFromUrl } from "@/lib/utm";
 
 type SegmentSearch = {
@@ -43,21 +44,12 @@ export const Route = createFileRoute("/$segment")({
     const segment = getSegment(params.segment)!;
     return { slug: segment.slug, seo: segment.seo };
   },
-  head: ({ loaderData }) => ({
-    meta: [
-      { title: loaderData.seo.title },
-      { name: "description", content: loaderData.seo.description },
-      {
-        property: "og:title",
-        content: loaderData.seo.ogTitle ?? loaderData.seo.title,
-      },
-      {
-        property: "og:description",
-        content: loaderData.seo.ogDescription ?? loaderData.seo.description,
-      },
-      { property: "og:type", content: "website" },
-    ],
-  }),
+  head: ({ loaderData }) =>
+    segmentSeoHead({
+      title: loaderData.seo.title,
+      description: loaderData.seo.description,
+      slug: loaderData.slug,
+    }),
   component: SegmentPage,
 });
 

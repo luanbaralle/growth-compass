@@ -2,7 +2,7 @@ import {
   aiFlowDiagram,
   operationalFlowDiagram,
   solutionArchitectureDiagram,
-} from "@/lib/projects/nobre-content";
+} from "./nobre-content";
 import { cn } from "@/lib/utils";
 import {
   ArrowRight,

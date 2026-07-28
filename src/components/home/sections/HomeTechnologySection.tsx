@@ -6,6 +6,8 @@ import {
   SectionTitle,
 } from "@/components/home/shared/SectionShell";
 import { techProducts, techStats } from "@/lib/home/content";
+import { Link } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
 
 export function HomeTechnologySection() {
   return (
@@ -17,6 +19,13 @@ export function HomeTechnologySection() {
           Não apenas usamos ferramentas — construímos produtos e sistemas que aceleram o
           crescimento dos nossos clientes.
         </SectionDescription>
+        <Link
+          to="/tecnologia"
+          className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-brand transition-colors hover:text-brand/80"
+        >
+          Conhecer nossa tecnologia
+          <ArrowRight className="h-3.5 w-3.5" />
+        </Link>
       </div>
 
       <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

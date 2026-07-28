@@ -1,5 +1,7 @@
 import { GuidedDiagnostic } from "@/components/hub/GuidedDiagnostic";
 import { DiagnosticMascot } from "@/components/home/shared/DiagnosticMascot";
+import { Link } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
 
 export function HomeDiagnosticSection() {
   return (
@@ -21,6 +23,13 @@ export function HomeDiagnosticSection() {
               Em menos de um minuto analisamos seu mercado e mostramos as principais oportunidades
               para crescer.
             </p>
+            <Link
+              to="/diagnostico"
+              className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-brand transition-colors hover:text-brand/80"
+            >
+              Conhecer o Diagnóstico Inteligente
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
           </div>
         </div>
       </div>

@@ -1,3 +1,4 @@
+import { JsonLd } from "@/components/seo/JsonLd";
 import { HomeFooter } from "@/components/home/HomeFooter";
 import { HomeNav } from "@/components/home/HomeNav";
 import { HomeDiagnosticSection } from "@/components/home/sections/HomeDiagnosticSection";
@@ -9,6 +10,7 @@ import { HomeProjectsSection } from "@/components/home/sections/HomeProjectsSect
 import { HomeSolutionsSection } from "@/components/home/sections/HomeSolutionsSection";
 import { HomeTechnologySection } from "@/components/home/sections/HomeTechnologySection";
 import { HomeTestimonialsSection } from "@/components/home/sections/HomeTestimonialsSection";
+import { homeSchemas } from "@/lib/seo/pages";
 import { captureUtmFromUrl } from "@/lib/utm";
 import { useEffect } from "react";
 
@@ -19,8 +21,9 @@ export function HomePage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground antialiased">
+      <JsonLd data={homeSchemas()} />
       <HomeNav />
-      <main>
+      <main id="main-content">
         <HomeHeroSection />
         <HomePhilosophySection />
         <HomeSolutionsSection />

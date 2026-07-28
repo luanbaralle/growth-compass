@@ -5,7 +5,17 @@ import {
   SectionTitle,
 } from "@/components/home/shared/SectionShell";
 import { solutions } from "@/lib/home/content";
+import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
+
+const solutionLinks: Record<string, string> = {
+  "Aquisição de Clientes": "/solucoes",
+  "Conteúdo que conecta": "/solucoes/producao-de-conteudo",
+  "Tecnologia sob medida": "/#tecnologia",
+  "Inteligência Artificial": "/solucoes",
+  "Mercado Imobiliário": "/solucoes",
+  "Estratégia & Growth": "/programa-de-crescimento",
+};
 
 export function HomeSolutionsSection() {
   return (
@@ -17,11 +27,19 @@ export function HomeSolutionsSection() {
           Não listamos serviços — construímos soluções completas de crescimento, do marketing
           à tecnologia.
         </SectionDescription>
+        <Link
+          to="/solucoes"
+          className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-brand transition-colors hover:text-brand/80"
+        >
+          Ver catálogo completo
+          <ArrowRight className="h-3.5 w-3.5" />
+        </Link>
       </div>
 
       <div className="mt-12 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {solutions.map((solution) => {
           const Icon = solution.icon;
+          const href = solutionLinks[solution.title] ?? "/solucoes";
 
           return (
             <article
@@ -39,13 +57,23 @@ export function HomeSolutionsSection() {
                   </li>
                 ))}
               </ul>
-              <a
-                href="#contato"
-                className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-brand transition-colors hover:text-brand/80"
-              >
-                Saiba mais
-                <ArrowRight className="h-3.5 w-3.5" />
-              </a>
+              {href.startsWith("/#") ? (
+                <a
+                  href={href}
+                  className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-brand transition-colors hover:text-brand/80"
+                >
+                  Saiba mais
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </a>
+              ) : (
+                <Link
+                  to={href}
+                  className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-brand transition-colors hover:text-brand/80"
+                >
+                  Saiba mais
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              )}
             </article>
           );
         })}

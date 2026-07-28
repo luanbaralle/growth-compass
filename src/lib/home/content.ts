@@ -255,62 +255,62 @@ export const faqItems: HomeFaqItem[] = [
 
 export const solutionsMenu: HomeNavGroup[] = [
   {
-    title: "Quero mais clientes",
+    title: "Programa",
     links: [
-      { label: "Google Ads", href: "#solucoes" },
-      { label: "Landing Pages", href: "#solucoes" },
-      { label: "SEO", href: "#solucoes" },
+      { label: "Programa de Crescimento ⭐", href: "/programa-de-crescimento" },
+      { label: "Todas as soluções", href: "/solucoes" },
     ],
   },
   {
-    title: "Quero vender mais",
+    title: "Aquisição",
     links: [
-      { label: "CRM", href: "#solucoes" },
-      { label: "Automações", href: "#solucoes" },
-      { label: "IA", href: "#solucoes" },
+      { label: "Google Ads", href: "/solucoes/google-ads" },
+      { label: "Meta Ads", href: "/solucoes/meta-ads" },
+      { label: "Landing Pages", href: "/solucoes/landing-pages" },
     ],
   },
   {
-    title: "Quero modernizar meu negócio",
+    title: "Conteúdo & Growth",
     links: [
-      { label: "Sistemas", href: "#solucoes" },
-      { label: "Sites", href: "#solucoes" },
-      { label: "Integrações", href: "#solucoes" },
+      { label: "Produção de Conteúdo", href: "/solucoes/producao-de-conteudo" },
+      { label: "CRM", href: "/solucoes" },
+      { label: "Consultoria Growth", href: "/solucoes" },
     ],
   },
   {
-    title: "Sou do mercado imobiliário",
+    title: "Mercado Imobiliário",
     links: [
-      { label: "Lançamentos", href: "#solucoes" },
-      { label: "Portais", href: "#solucoes" },
-      { label: "Atlas", href: "#tecnologia" },
+      { label: "Soluções imobiliárias", href: "/solucoes" },
+      { label: "Atlas", href: "/#tecnologia" },
     ],
   },
 ];
 
 export const footerLinks = {
   empresa: [
-    { label: "Sobre", href: "#" },
-    { label: "Portfólio", href: "#casos" },
-    { label: "Cases", href: "#casos" },
-    { label: "Blog", href: "#" },
-    { label: "Contato", href: "#contato" },
+    { label: "Programa de Crescimento", href: "/programa-de-crescimento" },
+    { label: "Metodologia", href: "/metodologia" },
+    { label: "Cases", href: "/cases" },
+    { label: "Blog", href: "/blog" },
+    { label: "Contato", href: "/#contato" },
     { label: "Carreiras", href: "#" },
   ],
   solucoes: [
-    { label: "Marketing", href: "#solucoes" },
-    { label: "Tecnologia", href: "#solucoes" },
-    { label: "IA", href: "#solucoes" },
-    { label: "Conteúdo", href: "#solucoes" },
-    { label: "Mercado Imobiliário", href: "#solucoes" },
+    { label: "Google Ads", href: "/solucoes/google-ads" },
+    { label: "Meta Ads", href: "/solucoes/meta-ads" },
+    { label: "Landing Pages", href: "/solucoes/landing-pages" },
+    { label: "Produção de Conteúdo", href: "/solucoes/producao-de-conteudo" },
+    { label: "Ver todas", href: "/solucoes" },
   ],
   produtos: [
-    { label: "Atlas", href: "#tecnologia" },
-    { label: "Diagnóstico Inteligente", href: "#diagnostico" },
+    { label: "Atlas", href: "/cases/atlas" },
+    { label: "Tecnologia", href: "/tecnologia" },
+    { label: "Diagnóstico Inteligente", href: "/diagnostico" },
   ],
   recursos: [
-    { label: "Cases", href: "#casos" },
-    { label: "Blog", href: "#" },
+    { label: "Cases", href: "/cases" },
+    { label: "Metodologia", href: "/metodologia" },
+    { label: "Blog", href: "/blog" },
     { label: "Política de Privacidade", href: "#" },
     { label: "Termos de Uso", href: "#" },
   ],

@@ -1,4 +1,4 @@
-import { platformMockups } from "@/lib/projects/nobre-content";
+import { platformMockups } from "./nobre-content";
 import { cn } from "@/lib/utils";
 import {
   Building2,

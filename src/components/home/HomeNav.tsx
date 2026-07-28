@@ -14,14 +14,34 @@ import { ArrowRight, Menu, X } from "lucide-react";
 import { useState } from "react";
 
 const navLinks = [
-  { label: "Casos", href: "#casos" },
-  { label: "Tecnologia", href: "#tecnologia" },
-  { label: "Empresa", href: "#processo" },
-  { label: "Contato", href: "#contato" },
+  { label: "Metodologia", href: "/metodologia" },
+  { label: "Cases", href: "/cases" },
+  { label: "Blog", href: "/blog" },
+  { label: "Tecnologia", href: "/tecnologia" },
+  { label: "Contato", href: "/#contato" },
 ];
+
+function isInternalRoute(href: string) {
+  return href.startsWith("/") && !href.startsWith("/#");
+}
 
 export function HomeNav() {
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const renderNavLink = (href: string, label: string, className?: string) => {
+    if (isInternalRoute(href)) {
+      return (
+        <Link to={href} className={className} onClick={() => setMobileOpen(false)}>
+          {label}
+        </Link>
+      );
+    }
+    return (
+      <a href={href} className={className} onClick={() => setMobileOpen(false)}>
+        {label}
+      </a>
+    );
+  };
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur-xl">
@@ -48,12 +68,21 @@ export function HomeNav() {
                         {group.links.map((link) => (
                           <li key={link.label}>
                             <NavigationMenuLink asChild>
-                              <a
-                                href={link.href}
-                                className="block rounded-lg px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
-                              >
-                                {link.label}
-                              </a>
+                              {isInternalRoute(link.href) ? (
+                                <Link
+                                  to={link.href}
+                                  className="block rounded-lg px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
+                                >
+                                  {link.label}
+                                </Link>
+                              ) : (
+                                <a
+                                  href={link.href}
+                                  className="block rounded-lg px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
+                                >
+                                  {link.label}
+                                </a>
+                              )}
                             </NavigationMenuLink>
                           </li>
                         ))}
@@ -67,14 +96,25 @@ export function HomeNav() {
             {navLinks.map((link) => (
               <NavigationMenuItem key={link.label}>
                 <NavigationMenuLink asChild>
-                  <a
-                    href={link.href}
-                    className={cn(
-                      "inline-flex h-9 items-center rounded-md px-3 text-sm text-muted-foreground transition-colors hover:bg-surface hover:text-foreground",
-                    )}
-                  >
-                    {link.label}
-                  </a>
+                  {isInternalRoute(link.href) ? (
+                    <Link
+                      to={link.href}
+                      className={cn(
+                        "inline-flex h-9 items-center rounded-md px-3 text-sm text-muted-foreground transition-colors hover:bg-surface hover:text-foreground",
+                      )}
+                    >
+                      {link.label}
+                    </Link>
+                  ) : (
+                    <a
+                      href={link.href}
+                      className={cn(
+                        "inline-flex h-9 items-center rounded-md px-3 text-sm text-muted-foreground transition-colors hover:bg-surface hover:text-foreground",
+                      )}
+                    >
+                      {link.label}
+                    </a>
+                  )}
                 </NavigationMenuLink>
               </NavigationMenuItem>
             ))}
@@ -82,13 +122,13 @@ export function HomeNav() {
         </NavigationMenu>
 
         <div className="flex items-center gap-2">
-          <a
-            href="#diagnostico"
+          <Link
+            to="/diagnostico"
             className="group hidden items-center gap-1.5 rounded-full bg-brand px-4 py-2 text-sm font-semibold text-primary-foreground shadow-brand transition-transform hover:scale-[1.01] sm:inline-flex"
           >
             Analisar meu mercado
             <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-          </a>
+          </Link>
 
           <button
             type="button"
@@ -103,30 +143,28 @@ export function HomeNav() {
 
       {mobileOpen && (
         <div className="border-t border-border/60 bg-background px-4 py-4 lg:hidden">
-          <a
-            href="#solucoes"
-            className="block rounded-lg px-3 py-2.5 text-sm font-medium"
-            onClick={() => setMobileOpen(false)}
-          >
-            Soluções
-          </a>
-          {navLinks.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              className="block rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground"
-              onClick={() => setMobileOpen(false)}
-            >
-              {link.label}
-            </a>
-          ))}
-          <a
-            href="#diagnostico"
-            className="mt-3 inline-flex w-full items-center justify-center rounded-full bg-brand px-4 py-3 text-sm font-semibold text-primary-foreground"
-            onClick={() => setMobileOpen(false)}
-          >
-            Analisar meu mercado
-          </a>
+          {renderNavLink(
+            "/solucoes",
+            "Soluções",
+            "block rounded-lg px-3 py-2.5 text-sm font-medium",
+          )}
+          {renderNavLink(
+            "/programa-de-crescimento",
+            "Programa de Crescimento",
+            "block rounded-lg px-3 py-2.5 text-sm font-medium text-brand",
+          )}
+          {navLinks.map((link) =>
+            renderNavLink(
+              link.href,
+              link.label,
+              "block rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground",
+            ),
+          )}
+          {renderNavLink(
+            "/diagnostico",
+            "Analisar meu mercado",
+            "mt-3 inline-flex w-full items-center justify-center rounded-full bg-brand px-4 py-3 text-sm font-semibold text-primary-foreground",
+          )}
         </div>
       )}
     </header>

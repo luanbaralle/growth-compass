@@ -5,12 +5,15 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { SectionShell, SectionTitle } from "@/components/home/shared/SectionShell";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { faqSchema } from "@/lib/seo/schema";
 import { faqItems } from "@/lib/home/content";
 import testimonialPhoto from "@/assets/juliana-martins.png";
 
 export function HomeTestimonialsSection() {
   return (
     <SectionShell className="border-t border-border/60 py-20 lg:py-28">
+      <JsonLd data={faqSchema(faqItems)} />
       <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
         <div>
           <SectionTitle className="mt-0">O que nossos clientes dizem</SectionTitle>

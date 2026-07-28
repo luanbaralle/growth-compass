@@ -5,6 +5,7 @@ import {
   SectionTitle,
 } from "@/components/home/shared/SectionShell";
 import { growthFlow, philosophyBullets } from "@/lib/home/content";
+import { Link } from "@tanstack/react-router";
 import { ArrowRight, ChevronDown } from "lucide-react";
 
 export function HomePhilosophySection() {
@@ -41,13 +42,13 @@ export function HomePhilosophySection() {
             })}
           </ul>
 
-          <a
-            href="#processo"
+          <Link
+            to="/programa-de-crescimento"
             className="group mt-8 inline-flex items-center gap-2 text-sm font-semibold text-brand transition-colors hover:text-brand/80"
           >
-            Conhecer nossa jornada
+            Conhecer o Programa de Crescimento
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-          </a>
+          </Link>
         </div>
 
         <div className="relative rounded-[1.75rem] border border-border bg-surface/40 p-6 sm:p-8">

@@ -5,9 +5,9 @@ import {
   AiFlowDiagram,
   OperationalFlowDiagram,
   SolutionArchitectureDiagram,
-} from "@/components/projects/NobreDiagrams";
+} from "./NobreDiagrams";
 import projectLeadPhoto from "@/assets/luan-baralle.png";
-import { PlatformMockupsSection } from "@/components/projects/NobreMockups";
+import { PlatformMockupsSection } from "./NobreMockups";
 import {
   acceptanceCriteria,
   architectureNote,
@@ -40,13 +40,14 @@ import {
   technologyPlatform,
   timeline,
   useCases,
-} from "@/lib/projects/nobre-content";
+} from "./nobre-content";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import { captureUtmFromUrl } from "@/lib/utm";
 import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowRight,
+  Archive,
   CalendarClock,
   Check,
   ChevronDown,
@@ -362,6 +363,22 @@ function BpmUseCase({
   );
 }
 
+function ArchivedBanner() {
+  return (
+    <div className="border-b border-amber-500/20 bg-amber-500/[0.08]">
+      <div className={cn(shell, "flex items-center justify-center gap-2.5 py-3 sm:gap-3 sm:py-3.5")}>
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-500/15 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-amber-200 sm:text-[11px] sm:tracking-[0.22em]">
+          <Archive className="h-3.5 w-3.5" strokeWidth={2} />
+          Arquivado
+        </span>
+        <p className="text-[12px] text-amber-100/70 sm:text-[13px]">
+          Esta proposta não está mais ativa e permanece disponível apenas para consulta.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export function NobreProjectPage() {
   const ctaHref = useMemo(
     () => buildWhatsAppUrl(nobreProject.cta.message) ?? nobreProject.cta.fallbackHref,
@@ -375,14 +392,21 @@ export function NobreProjectPage() {
   return (
     <div className="min-h-screen bg-[#090909] text-white antialiased">
       <Nav ctaHref={ctaHref} ctaLabel={nobreProject.cta.label} homeHref="/" />
+      <ArchivedBanner />
 
       <main id="top">
         {/* HERO */}
         <header className={cn(shell, scrollAnchor, "border-b border-white/[0.06] pb-10 pt-12 sm:pb-12 sm:pt-16 lg:pb-16 lg:pt-24")}>
-          <div className="flex flex-col gap-1 text-[11px] text-white/35 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-4 sm:text-[12px]">
-            <span>{nobreProject.preparedFor}</span>
-            <span>
-              {nobreProject.date} · v{nobreProject.documentVersion}
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-4">
+            <div className="flex flex-col gap-1 text-[11px] text-white/35 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4 sm:text-[12px]">
+              <span>{nobreProject.preparedFor}</span>
+              <span>
+                {nobreProject.date} · v{nobreProject.documentVersion}
+              </span>
+            </div>
+            <span className="inline-flex w-fit items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[10px] font-medium uppercase tracking-[0.16em] text-white/45">
+              <Archive className="h-3 w-3" strokeWidth={2} />
+              Documento arquivado
             </span>
           </div>
 
