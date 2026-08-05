@@ -1,8 +1,9 @@
-import { ArticleBody } from "@/components/marketing/blog/ArticleBody";
-import {
-  SectionShell,
-  SectionTitle,
-} from "@/components/home/shared/SectionShell";
+import { ArticleBody, extractTableOfContents } from "@/components/marketing/blog/ArticleBody";
+import { ArticleFAQ } from "@/components/marketing/blog/ArticleFAQ";
+import { ArticleRelatedLinks } from "@/components/marketing/blog/ArticleRelatedLinks";
+import { ArticleTOC } from "@/components/marketing/blog/ArticleTOC";
+import { BlogArticleHero } from "@/components/marketing/blog/BlogArticleHero";
+import { SectionShell, SectionTitle } from "@/components/home/shared/SectionShell";
 import { MarketingLayout } from "@/components/marketing/MarketingLayout";
 import { NextSteps } from "@/components/marketing/shared/NextSteps";
 import { PageCTA } from "@/components/marketing/shared/PageCTA";
@@ -15,8 +16,9 @@ import {
   getRelatedArticles,
   type BlogArticle,
 } from "@/lib/blog/content";
+import { blogImageAlt } from "@/lib/blog/images";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Clock } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 interface BlogArticlePageProps {
   article: BlogArticle;
@@ -34,60 +36,56 @@ export function BlogArticlePage({ article }: BlogArticlePageProps) {
   const related = getRelatedArticles(article.relatedSlugs);
   const categoryLabel =
     blogCategories.find((c) => c.id === article.category)?.label ?? article.category;
+  const toc = extractTableOfContents(article.sections);
+  const showToc = toc.filter((item) => item.level === 2).length >= 4;
+  const modifiedLabel =
+    article.modifiedAt && article.modifiedAt !== article.publishedAt
+      ? formatDate(article.modifiedAt)
+      : null;
 
   return (
     <MarketingLayout schemas={blogArticleSchemas(article.slug)}>
       <article itemScope itemType="https://schema.org/Article">
-        {/* Header */}
-        <header className="border-b border-border/60">
-          <div className="mx-auto max-w-3xl px-5 py-16 sm:px-8 lg:py-24">
+        <BlogArticleHero
+          breadcrumbs={
             <Breadcrumbs
               items={[
                 { name: "Home", path: "/" },
                 { name: "Blog", path: "/blog" },
-                ...(categoryLabel
-                  ? [{ name: categoryLabel, path: `/blog/categoria/${article.category}` }]
-                  : []),
+                { name: categoryLabel, path: `/blog/categoria/${article.category}` },
                 { name: article.title, path: `/blog/${article.slug}` },
               ]}
             />
+          }
+          categoryLabel={categoryLabel}
+          typeLabel={blogTypeLabels[article.type]}
+          title={<span itemProp="headline">{article.title}</span>}
+          excerpt={article.excerpt}
+          author={article.author}
+          publishedAt={article.publishedAt}
+          publishedLabel={formatDate(article.publishedAt)}
+          modifiedLabel={modifiedLabel}
+          readTime={article.readTime}
+          imageSrc={article.featuredImage}
+          imageAlt={blogImageAlt(article.slug)}
+        />
 
-            <div className="mt-2 flex flex-wrap items-center gap-2 sm:mt-0">
-              <span className="rounded-full border border-border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                {categoryLabel}
-              </span>
-              <span className="rounded-full border border-brand/30 bg-brand-soft px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand">
-                {blogTypeLabels[article.type]}
-              </span>
-            </div>
-
-            <h1 className="mt-5 text-3xl font-bold tracking-tight text-balance sm:text-4xl lg:text-5xl" itemProp="headline">
-              {article.title}
-            </h1>
-
-            <p className="mt-5 text-lg leading-relaxed text-muted-foreground">
-              {article.excerpt}
-            </p>
-
-            <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-              <span>{article.author}</span>
-              <span>·</span>
-              <span>{formatDate(article.publishedAt)}</span>
-              <span>·</span>
-              <span className="inline-flex items-center gap-1">
-                <Clock className="h-3.5 w-3.5" />
-                {article.readTime} de leitura
-              </span>
-            </div>
+        <SectionShell className="py-12 sm:py-16 lg:py-20">
+          <div className="mx-auto max-w-3xl">
+            {showToc && <ArticleTOC items={toc} />}
+            <ArticleBody sections={article.sections} />
+            {article.faq && article.faq.length > 0 && <ArticleFAQ items={article.faq} />}
           </div>
-        </header>
+        </SectionShell>
 
-        {/* Body */}
-        <div className="mx-auto max-w-3xl px-5 py-12 sm:px-8 sm:py-16">
-          <ArticleBody sections={article.sections} />
-        </div>
+        {article.relatedLinks && article.relatedLinks.length > 0 && (
+          <SectionShell className="border-y border-border/60 py-12">
+            <div className="mx-auto max-w-3xl">
+              <ArticleRelatedLinks links={article.relatedLinks} />
+            </div>
+          </SectionShell>
+        )}
 
-        {/* Inline CTA */}
         <SectionShell className="border-y border-border/60 py-12">
           <div className="mx-auto max-w-3xl rounded-[1.35rem] border border-brand/25 bg-brand-soft/30 p-6 text-center sm:p-8">
             <SectionTitle className="text-2xl sm:text-3xl">
@@ -114,7 +112,6 @@ export function BlogArticlePage({ article }: BlogArticlePageProps) {
           </div>
         </SectionShell>
 
-        {/* Related */}
         {related.length > 0 && (
           <SectionShell className="py-16 lg:py-20">
             <h2 className="text-xl font-bold tracking-tight">Conteúdos relacionados</h2>
@@ -124,14 +121,24 @@ export function BlogArticlePage({ article }: BlogArticlePageProps) {
                   key={relatedArticle.slug}
                   to="/blog/$slug"
                   params={{ slug: relatedArticle.slug }}
-                  className="group rounded-[1.25rem] border border-border bg-surface/30 p-4 transition-all hover:border-brand/25"
+                  className="group overflow-hidden rounded-[1.25rem] border border-border bg-surface/30 transition-all hover:border-brand/25"
                 >
-                  <span className="text-[10px] font-semibold uppercase tracking-wider text-brand">
-                    {blogTypeLabels[relatedArticle.type]}
-                  </span>
-                  <h3 className="mt-2 text-sm font-semibold leading-snug group-hover:text-brand">
-                    {relatedArticle.title}
-                  </h3>
+                  {relatedArticle.featuredImage && (
+                    <img
+                      src={relatedArticle.featuredImage.replace(/w=\d+&h=\d+/, "w=400&h=225")}
+                      alt=""
+                      className="aspect-[16/9] w-full object-cover"
+                      loading="lazy"
+                    />
+                  )}
+                  <div className="p-4">
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-brand">
+                      {blogTypeLabels[relatedArticle.type]}
+                    </span>
+                    <h3 className="mt-2 text-sm font-semibold leading-snug group-hover:text-brand">
+                      {relatedArticle.title}
+                    </h3>
+                  </div>
                 </Link>
               ))}
             </div>

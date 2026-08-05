@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { BlogArticleCard } from "@/components/marketing/blog/BlogArticleCard";
 import {
   SectionDescription,
   SectionEyebrow,
@@ -22,21 +23,6 @@ import {
 } from "@/lib/blog/content";
 import { cn } from "@/lib/utils";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, BookOpen, GitCompare, Newspaper } from "lucide-react";
-
-const typeIcons: Record<BlogType, typeof Newspaper> = {
-  artigo: Newspaper,
-  guia: BookOpen,
-  comparativo: GitCompare,
-};
-
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString("pt-BR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
 
 export function BlogPage() {
   const [category, setCategory] = useState<BlogCategory | "all">("all");
@@ -78,26 +64,7 @@ export function BlogPage() {
         </div>
         <div className="mt-10 grid gap-4 sm:grid-cols-3">
           {guias.map((article) => (
-            <Link
-              key={article.slug}
-              to="/blog/$slug"
-              params={{ slug: article.slug }}
-              className="group flex flex-col rounded-[1.35rem] border border-border bg-surface/40 p-5 transition-all hover:-translate-y-0.5 hover:border-brand/25"
-            >
-              <span className="inline-flex w-fit rounded-full border border-brand/20 bg-brand-soft px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand">
-                Guia
-              </span>
-              <h3 className="mt-3 flex-1 font-semibold tracking-tight group-hover:text-brand">
-                {article.title}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground line-clamp-2">
-                {article.excerpt}
-              </p>
-              <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-brand">
-                Ler guia
-                <ArrowRight className="h-3.5 w-3.5" />
-              </span>
-            </Link>
+            <BlogArticleCard key={article.slug} article={article} variant="grid" />
           ))}
         </div>
       </SectionShell>
@@ -114,22 +81,7 @@ export function BlogPage() {
           </div>
           <div className="mt-10 grid gap-4 sm:grid-cols-2">
             {comparativos.map((article) => (
-              <Link
-                key={article.slug}
-                to="/blog/$slug"
-                params={{ slug: article.slug }}
-                className="group flex flex-col rounded-[1.35rem] border border-border bg-surface/40 p-6 transition-all hover:-translate-y-0.5 hover:border-brand/25"
-              >
-                <span className="inline-flex w-fit rounded-full border border-violet-500/30 bg-violet-500/10 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-violet-300">
-                  Comparativo
-                </span>
-                <h3 className="mt-3 flex-1 text-lg font-semibold tracking-tight group-hover:text-brand">
-                  {article.title}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  {article.excerpt}
-                </p>
-              </Link>
+              <BlogArticleCard key={article.slug} article={article} variant="comparativo" />
             ))}
           </div>
         </SectionShell>
@@ -199,42 +151,21 @@ export function BlogPage() {
         {/* Lista */}
         <div className="mt-10 space-y-4">
           {filtered.map((article) => {
-            const TypeIcon = typeIcons[article.type];
             const catLabel =
               blogCategories.find((c) => c.id === article.category)?.label ?? article.category;
 
             return (
-              <Link
-                key={article.slug}
-                to="/blog/$slug"
-                params={{ slug: article.slug }}
-                className="group grid gap-4 rounded-[1.25rem] border border-border bg-surface/30 p-5 transition-all hover:border-brand/25 hover:bg-surface/50 sm:grid-cols-[1fr_auto]"
-              >
-                <div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="rounded-full border border-border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                      {catLabel}
-                    </span>
-                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-brand">
-                      <TypeIcon className="h-3 w-3" />
-                      {blogTypeLabels[article.type]}
-                    </span>
-                  </div>
-                  <h3 className="mt-2 text-lg font-semibold tracking-tight group-hover:text-brand">
-                    {article.title}
-                  </h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground line-clamp-2">
-                    {article.excerpt}
-                  </p>
-                </div>
-                <div className="flex flex-col items-start justify-between gap-2 sm:items-end sm:text-right">
-                  <span className="text-xs text-muted-foreground">{article.readTime}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {formatDate(article.publishedAt)}
+              <div key={article.slug} className="relative">
+                <div className="mb-2 flex flex-wrap items-center gap-2 px-1 sm:hidden">
+                  <span className="rounded-full border border-border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    {catLabel}
                   </span>
-                  <ArrowRight className="hidden h-4 w-4 text-brand sm:block" />
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-brand">
+                    {blogTypeLabels[article.type]}
+                  </span>
                 </div>
-              </Link>
+                <BlogArticleCard article={article} variant="list" />
+              </div>
             );
           })}
         </div>

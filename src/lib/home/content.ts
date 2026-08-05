@@ -312,6 +312,19 @@ export const heroTypewriterPhrases = [
 
 export const heroChecklist = ["Estratégia", "Tecnologia", "Execução"];
 
+export const homeBlogSection = {
+  eyebrow: "Conteúdo",
+  title: "Insights para crescer com estratégia",
+  description:
+    "Guias, comparativos e artigos práticos sobre marketing, aquisição e tecnologia — do tráfego pago ao SEO e automações.",
+  featuredSlugs: [
+    "google-ads-vs-seo-qual-usar",
+    "funil-de-aquisicao-guia",
+    "como-estruturar-campanhas-google-ads",
+  ] as const,
+  carouselLimit: 8,
+};
+
 export const philosophyBullets = [
   {
     title: "Parceiro estratégico",

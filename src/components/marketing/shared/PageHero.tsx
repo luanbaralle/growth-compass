@@ -10,6 +10,7 @@ interface PageHeroProps {
   secondaryCta?: { label: string; href: string };
   badge?: string;
   breadcrumbs?: ReactNode;
+  footer?: ReactNode;
   className?: string;
 }
 
@@ -21,6 +22,7 @@ export function PageHero({
   secondaryCta,
   badge,
   breadcrumbs,
+  footer,
   className,
 }: PageHeroProps) {
   return (
@@ -50,6 +52,8 @@ export function PageHero({
           <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
             {description}
           </p>
+
+          {footer && <div className="mt-6">{footer}</div>}
 
           {(primaryCta || secondaryCta) && (
             <div className="mt-9 flex flex-wrap items-center gap-3">

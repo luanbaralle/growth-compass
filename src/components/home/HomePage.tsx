@@ -9,6 +9,7 @@ import { HomeProcessSection } from "@/components/home/sections/HomeProcessSectio
 import { HomeProjectsSection } from "@/components/home/sections/HomeProjectsSection";
 import { HomeSolutionsSection } from "@/components/home/sections/HomeSolutionsSection";
 import { HomeTechnologySection } from "@/components/home/sections/HomeTechnologySection";
+import { HomeBlogSection } from "@/components/home/sections/HomeBlogSection";
 import { HomeTestimonialsSection } from "@/components/home/sections/HomeTestimonialsSection";
 import { homeSchemas } from "@/lib/seo/pages";
 import { captureUtmFromUrl } from "@/lib/utm";
@@ -32,6 +33,7 @@ export function HomePage() {
         <HomeTechnologySection />
         <HomeDiagnosticSection />
         <HomeTestimonialsSection />
+        <HomeBlogSection />
         <HomeFinalCTASection />
       </main>
       <HomeFooter />

@@ -31,7 +31,7 @@ function ProjectCardBackground({ project }: { project: HomeProject }) {
           className="absolute inset-0 opacity-45"
           style={{
             backgroundImage:
-              "radial-gradient(circle at 50% 42%, rgba(255,255,255,0.12), transparent 50%)",
+              "radial-gradient(circle at 50% 45%, rgba(255,255,255,0.12), transparent 52%)",
           }}
           aria-hidden
         />
@@ -39,12 +39,12 @@ function ProjectCardBackground({ project }: { project: HomeProject }) {
           className="absolute inset-0 bg-[linear-gradient(to_right,oklch(1_0_0/0.04)_1px,transparent_1px),linear-gradient(to_bottom,oklch(1_0_0/0.04)_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_at_center,black,transparent_75%)]"
           aria-hidden
         />
-        <div className="absolute inset-x-0 top-12 bottom-[5.5rem] flex -translate-y-1 items-center justify-center px-6">
-          <div className="w-full max-w-[min(92%,11rem)] rounded-xl bg-white p-4 shadow-[0_24px_48px_rgba(0,0,0,0.45)] ring-1 ring-white/80">
+        <div className="absolute inset-x-0 top-12 bottom-[5.5rem] flex -translate-y-2 items-center justify-center px-6">
+          <div className="w-full max-w-[min(88%,10.5rem)] rounded-xl bg-white p-4 shadow-[0_24px_48px_rgba(0,0,0,0.45)] ring-1 ring-white/80">
             <img
               src={nobreLogo}
               alt="Nobre Imóveis"
-              className="h-auto w-full object-contain transition-transform duration-700 group-hover:scale-[1.03]"
+              className="mx-auto h-auto w-full object-contain object-center transition-transform duration-700 group-hover:scale-[1.03]"
               loading="lazy"
             />
           </div>
@@ -67,7 +67,7 @@ function ProjectCardBackground({ project }: { project: HomeProject }) {
           className="absolute inset-0 opacity-40"
           style={{
             backgroundImage:
-              "radial-gradient(circle at 50% 28%, rgba(255,204,0,0.14), transparent 48%)",
+              "radial-gradient(circle at 50% 45%, rgba(255,204,0,0.14), transparent 52%)",
           }}
           aria-hidden
         />
@@ -75,11 +75,11 @@ function ProjectCardBackground({ project }: { project: HomeProject }) {
           className="absolute inset-0 bg-[linear-gradient(to_right,oklch(1_0_0/0.04)_1px,transparent_1px),linear-gradient(to_bottom,oklch(1_0_0/0.04)_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_at_center,black,transparent_75%)]"
           aria-hidden
         />
-        <div className="absolute inset-x-0 top-[10%] flex justify-center px-5 pb-16">
+        <div className="absolute inset-x-0 top-12 bottom-[5.5rem] flex -translate-y-2 items-center justify-center px-6">
           <img
             src={unipLogo}
             alt="UNIP EAD"
-            className="w-full max-w-[min(88%,11rem)] object-contain drop-shadow-[0_24px_48px_rgba(0,0,0,0.55)] transition-transform duration-700 group-hover:scale-[1.04]"
+            className="w-full max-w-[min(88%,10.5rem)] object-contain object-center drop-shadow-[0_24px_48px_rgba(0,0,0,0.55)] transition-transform duration-700 group-hover:scale-[1.04]"
             loading="lazy"
           />
         </div>

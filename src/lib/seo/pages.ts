@@ -1,4 +1,9 @@
-import { getBlogArticle, blogCategories as blogCats, type BlogCategory } from "@/lib/blog/content";
+import {
+  blogArticles,
+  getBlogArticle,
+  blogCategories as blogCats,
+  type BlogCategory,
+} from "@/lib/blog/content";
 import { getCaseStudy } from "@/lib/cases/content";
 import { metodologiaSeo } from "@/lib/metodologia/content";
 import { programaSeo } from "@/lib/programa/content";
@@ -7,10 +12,14 @@ import { casesSeo } from "@/lib/cases/content";
 import { blogSeo } from "@/lib/blog/content";
 import { diagnosticoSeo } from "@/lib/diagnostico/content";
 import { tecnologiaSeo } from "@/lib/tecnologia/content";
+import { estimateWordCount } from "@/lib/blog/helpers";
+import { blogOg } from "@/lib/blog/images";
 import {
   articleSchema,
   buildPageHead,
   caseStudySchema,
+  faqSchema,
+  itemListSchema,
   organizationSchema,
   serviceSchema,
   softwareApplicationSchema,
@@ -203,7 +212,18 @@ export function blogSeoHead() {
 }
 
 export function blogSchemas(): JsonLdObject[] {
-  return [webPageSchema({ title: blogSeo.title, description: blogSeo.description, path: "/blog" })];
+  return [
+    webPageSchema({ title: blogSeo.title, description: blogSeo.description, path: "/blog" }),
+    itemListSchema({
+      name: blogSeo.title,
+      description: blogSeo.description,
+      path: "/blog",
+      items: blogArticles.map((article) => ({
+        name: article.title,
+        path: `/blog/${article.slug}`,
+      })),
+    }),
+  ];
 }
 
 export function blogCategorySeoHead(category: BlogCategory) {
@@ -230,14 +250,22 @@ export function blogCategorySchemas(category: BlogCategory): JsonLdObject[] {
 export function blogArticleSeoHead(slug: string) {
   const article = getBlogArticle(slug)!;
   const catLabel = blogCats.find((c) => c.id === article.category)?.label;
+  const ogImage = blogOg(slug);
   return buildPageHead({
     title: article.seo.title,
     description: article.seo.description,
     path: `/blog/${slug}`,
     ogType: "article",
-    keywords: [article.category, article.type, catLabel ?? ""],
+    ogImage,
+    keywords: [
+      article.category,
+      article.type,
+      catLabel ?? "",
+      ...(article.targetKeywords ?? []),
+    ],
     article: {
       publishedTime: article.publishedAt,
+      modifiedTime: article.modifiedAt,
       author: article.author,
       section: catLabel,
       tags: [article.type, catLabel ?? ""].filter(Boolean),
@@ -248,17 +276,24 @@ export function blogArticleSeoHead(slug: string) {
 export function blogArticleSchemas(slug: string): JsonLdObject[] {
   const article = getBlogArticle(slug)!;
   const catLabel = blogCats.find((c) => c.id === article.category)?.label;
-  return [
+  const schemas: JsonLdObject[] = [
     articleSchema({
       title: article.title,
       description: article.seo.description,
       path: `/blog/${slug}`,
       publishedTime: article.publishedAt,
+      modifiedTime: article.modifiedAt,
       author: article.author,
       section: catLabel,
-      keywords: [article.category, article.type],
+      keywords: [...(article.targetKeywords ?? []), article.category, article.type],
+      image: blogOg(slug),
+      wordCount: estimateWordCount(article.sections),
     }),
   ];
+  if (article.faq && article.faq.length > 0) {
+    schemas.push(faqSchema(article.faq));
+  }
+  return schemas;
 }
 
 export function segmentSeoHead(input: { title: string; description: string; slug: string }) {

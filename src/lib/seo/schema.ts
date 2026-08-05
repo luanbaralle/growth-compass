@@ -175,6 +175,8 @@ export function articleSchema(input: {
   author?: string;
   section?: string;
   keywords?: string[];
+  image?: string;
+  wordCount?: number;
 }) {
   return {
     "@context": "https://schema.org",
@@ -201,6 +203,37 @@ export function articleSchema(input: {
     articleSection: input.section,
     keywords: input.keywords?.join(", "),
     mainEntityOfPage: absoluteUrl(input.path),
+    ...(input.image
+      ? {
+          image: {
+            "@type": "ImageObject",
+            url: absoluteOgImage(input.image),
+          },
+        }
+      : {}),
+    ...(input.wordCount ? { wordCount: input.wordCount } : {}),
+  };
+}
+
+export function itemListSchema(input: {
+  name: string;
+  description: string;
+  path: string;
+  items: { name: string; path: string }[];
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: input.name,
+    description: input.description,
+    url: absoluteUrl(input.path),
+    numberOfItems: input.items.length,
+    itemListElement: input.items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      url: absoluteUrl(item.path),
+    })),
   };
 }
 

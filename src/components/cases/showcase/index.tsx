@@ -325,3 +325,5 @@ export function ShowcaseDetail({ src, alt, label, className }: ShowcaseDetailPro
     </motion.div>
   );
 }
+
+export { ReputationShowcase } from "./ReputationShowcase";

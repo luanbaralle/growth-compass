@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0A0A0A"/>
+      <stop offset="100%" style="stop-color:#1a1a1a"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="48" y="48" width="120" height="4" fill="#F97316" rx="2"/>
+  <text x="48" y="110" fill="#F97316" font-family="system-ui,sans-serif" font-size="14" font-weight="600" letter-spacing="2">SEO</text>
+  <text x="48" y="220" fill="#FAFAFA" font-family="system-ui,sans-serif" font-size="42" font-weight="700">Google Ads vs SEO: qual usar e como dividir o budget</text>
+  <text x="48" y="582" fill="#737373" font-family="system-ui,sans-serif" font-size="18" font-weight="500">Raise One — Blog</text>
+  <circle cx="1136" cy="566" r="24" fill="#F97316" opacity="0.9"/>
+</svg>

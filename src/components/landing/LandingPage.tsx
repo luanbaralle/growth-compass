@@ -3,6 +3,7 @@ import { segmentSchemas } from "@/lib/seo/pages";
 import type { BusinessMatch } from "@/config/microverticals/types";
 import type { BusinessPersonalization } from "@/config/microverticals/types";
 import type { SegmentConfig } from "@/config/segments/types";
+import { getSegmentBlogSlugs } from "@/lib/blog/segment-articles";
 import type { LeadFormContext } from "./shared/CTAForm";
 import { AhaMomentSection } from "./sections/AhaMomentSection";
 import { AnalysisSection } from "./sections/AnalysisSection";
@@ -17,6 +18,7 @@ import { MissionSection } from "./sections/MissionSection";
 import { Nav } from "./shared/Nav";
 import { SegmentTheme } from "./shared/SegmentTheme";
 import { SolutionsSection } from "./sections/SolutionsSection";
+import { SegmentBlogSection } from "./sections/SegmentBlogSection";
 import { StickyCta } from "./shared/StickyCta";
 import { VisibilitySection } from "./sections/VisibilitySection";
 
@@ -82,6 +84,9 @@ export function LandingPage({ config, context }: LandingPageProps) {
       <AnalysisSection config={config} />
       <MissionSection config={config} />
       <SolutionsSection config={config} />
+      {getSegmentBlogSlugs(config.slug).length > 0 && (
+        <SegmentBlogSection segmentSlug={config.slug} />
+      )}
       <CTAForm config={config} leadContext={leadContext} />
       {fromHub && <StickyCta label="Receber análise gratuita" />}
       <Footer />
