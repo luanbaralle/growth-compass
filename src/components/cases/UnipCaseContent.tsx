@@ -1,5 +1,5 @@
 import type { Case } from "@/types/case";
-import { ArrowRight, ArrowUpRight, Check, ClipboardList, LayoutTemplate, LineChart, Megaphone } from "lucide-react";
+import { ArrowRight, ArrowUpRight, ClipboardList, LayoutTemplate, LineChart, Megaphone } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import heroLpMobile from "@/assets/case-unip/hero-lp-mobile.png";
@@ -8,6 +8,7 @@ import lpCompletaDesktop from "@/assets/case-unip/LP-completa-desktop.png";
 import unipLogo from "@/assets/case-unip/Logo.jpg";
 import { CaseCTA } from "./CaseCTA";
 import { CaseHero } from "./CaseHero";
+import { DeliverablesScrollSection } from "./DeliverablesScrollSection";
 import { ProblemScrollSection } from "./ProblemScrollSection";
 import { ProcessTimeline } from "./ProcessTimeline";
 import { ResultsSection } from "./ResultsSection";
@@ -137,32 +138,7 @@ export function UnipCaseContent({ caseData }: UnipCaseContentProps) {
 
       {/* Raise One — autoria discreta */}
       {content?.agencyDeliverables && content.agencyDeliverables.length > 0 && (
-        <CaseSection id="entregaveis" className="border-y border-white/[0.04] py-16 sm:py-20">
-          <CaseReveal className="mx-auto max-w-md text-center">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-muted-foreground/45">
-              Raise One
-            </p>
-            <p className="mt-3 text-sm text-muted-foreground/65">O que entregamos</p>
-            <motion.ul
-              initial="hidden"
-              whileInView="visible"
-              viewport={viewportOnce}
-              variants={staggerContainer}
-              className="mt-8 space-y-2.5"
-            >
-              {content.agencyDeliverables.map((item) => (
-                <motion.li
-                  key={item}
-                  variants={fadeUp}
-                  className="flex items-center justify-center gap-2.5 text-sm text-muted-foreground/75"
-                >
-                  <Check className="h-3.5 w-3.5 shrink-0 text-brand/50" strokeWidth={2.5} />
-                  {item}
-                </motion.li>
-              ))}
-            </motion.ul>
-          </CaseReveal>
-        </CaseSection>
+        <DeliverablesScrollSection id="entregaveis" items={content.agencyDeliverables} />
       )}
 
       {/* Transformação */}

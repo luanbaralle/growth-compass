@@ -1,5 +1,6 @@
 import { GuidedDiagnostic } from "@/components/hub/GuidedDiagnostic";
 import { DiagnosticMascot } from "@/components/home/shared/DiagnosticMascot";
+import { ProcessScrollSection } from "@/components/home/sections/ProcessScrollSection";
 import {
   SectionDescription,
   SectionEyebrow,
@@ -42,33 +43,17 @@ export function DiagnosticoPage() {
         secondaryCta={{ label: "Como funciona", href: "#como-funciona" }}
       />
 
-      {/* Como funciona */}
-      <SectionShell id="como-funciona" className="border-b border-border/60 py-20 lg:py-28">
-        <div className="max-w-2xl">
-          <SectionEyebrow>Processo</SectionEyebrow>
-          <SectionTitle>Como funciona</SectionTitle>
-          <SectionDescription>
-            Quatro passos. Menos de um minuto. Análise personalizada para o seu negócio.
-          </SectionDescription>
-        </div>
-
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {howItWorks.map((step) => (
-            <article
-              key={step.step}
-              className="rounded-[1.35rem] border border-border bg-surface/30 p-5"
-            >
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand">
-                {step.step}
-              </p>
-              <h3 className="mt-3 font-semibold tracking-tight">{step.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                {step.description}
-              </p>
-            </article>
-          ))}
-        </div>
-      </SectionShell>
+      <ProcessScrollSection
+        id="como-funciona"
+        eyebrow="Processo"
+        title="Como funciona"
+        description="Quatro passos. Menos de um minuto. Análise personalizada para o seu negócio."
+        steps={howItWorks.map((step) => ({
+          number: step.step,
+          title: step.title,
+          description: step.description,
+        }))}
+      />
 
       {/* Exemplo */}
       <SectionShell className="border-b border-border/60 py-20 lg:py-28">
