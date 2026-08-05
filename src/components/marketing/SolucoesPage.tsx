@@ -17,15 +17,15 @@ import { ArrowRight } from "lucide-react";
 export function SolucoesPage() {
   return (
     <MarketingLayout schemas={solucoesSchemas()}>
-      <div className="mx-auto max-w-7xl px-5 pt-6 sm:px-8">
-        <Breadcrumbs
-          items={[
-            { name: "Home", path: "/" },
-            { name: "Soluções", path: "/solucoes" },
-          ]}
-        />
-      </div>
       <PageHero
+        breadcrumbs={
+          <Breadcrumbs
+            items={[
+              { name: "Home", path: "/" },
+              { name: "Soluções", path: "/solucoes" },
+            ]}
+          />
+        }
         eyebrow="Ecossistema"
         title="Soluções de crescimento"
         description="Não listamos serviços — construímos soluções completas. Cada frente focada em benefício, integrada ao Programa de Crescimento Raise One."

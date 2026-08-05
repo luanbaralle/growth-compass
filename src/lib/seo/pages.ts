@@ -153,10 +153,10 @@ export function casesSchemas(): JsonLdObject[] {
 export function caseSeoHead(slug: string) {
   const c = getCaseStudy(slug)!;
   return buildPageHead({
-    title: `Case ${c.name} — Raise One`,
-    description: c.summary,
+    title: `Case ${c.title} — Raise One`,
+    description: c.description,
     path: `/cases/${slug}`,
-    keywords: [...c.services, c.tag, "case de sucesso"],
+    keywords: [...c.deliverables, c.category, "case de sucesso"],
   });
 }
 
@@ -164,11 +164,11 @@ export function caseSchemas(slug: string): JsonLdObject[] {
   const c = getCaseStudy(slug)!;
   return [
     caseStudySchema({
-      name: c.name,
-      description: c.summary,
+      name: c.title,
+      description: c.description,
       path: `/cases/${slug}`,
       client: c.client,
-      services: c.services,
+      services: c.deliverables,
     }),
   ];
 }

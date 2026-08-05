@@ -52,7 +52,7 @@ export function BlogArticlePage({ article }: BlogArticlePageProps) {
               ]}
             />
 
-            <div className="mt-6 flex flex-wrap items-center gap-2">
+            <div className="mt-2 flex flex-wrap items-center gap-2 sm:mt-0">
               <span className="rounded-full border border-border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {categoryLabel}
               </span>

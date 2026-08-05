@@ -1,19 +1,19 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { CaseStudyPage } from "@/components/marketing/CaseStudyPage";
-import { getCaseStudy } from "@/lib/cases/content";
+import { CaseLayout } from "@/components/cases/CaseLayout";
+import { getCaseBySlug } from "@/data/cases";
 import { caseSeoHead } from "@/lib/seo/pages";
 
 export const Route = createFileRoute("/cases/$slug")({
   loader: ({ params }) => {
-    const caseStudy = getCaseStudy(params.slug);
-    if (!caseStudy) throw notFound();
-    return { caseStudy };
+    const caseData = getCaseBySlug(params.slug);
+    if (!caseData) throw notFound();
+    return { caseData };
   },
-  head: ({ loaderData }) => caseSeoHead(loaderData.caseStudy.slug),
-  component: CaseStudyRoute,
+  head: ({ loaderData }) => caseSeoHead(loaderData.caseData.slug),
+  component: CaseDetailRoute,
 });
 
-function CaseStudyRoute() {
-  const { caseStudy } = Route.useLoaderData();
-  return <CaseStudyPage caseStudy={caseStudy} />;
+function CaseDetailRoute() {
+  const { caseData } = Route.useLoaderData();
+  return <CaseLayout caseData={caseData} />;
 }

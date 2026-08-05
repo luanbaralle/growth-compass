@@ -25,15 +25,15 @@ import { Search } from "lucide-react";
 export function DiagnosticoPage() {
   return (
     <MarketingLayout schemas={diagnosticoSchemas()}>
-      <div className="mx-auto max-w-7xl px-5 pt-6 sm:px-8">
-        <Breadcrumbs
-          items={[
-            { name: "Home", path: "/" },
-            { name: "Diagnóstico", path: "/diagnostico" },
-          ]}
-        />
-      </div>
       <PageHero
+        breadcrumbs={
+          <Breadcrumbs
+            items={[
+              { name: "Home", path: "/" },
+              { name: "Diagnóstico", path: "/diagnostico" },
+            ]}
+          />
+        }
         eyebrow={diagnosticoHero.eyebrow}
         title={diagnosticoHero.title}
         description={diagnosticoHero.description}

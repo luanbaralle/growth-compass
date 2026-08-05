@@ -47,17 +47,16 @@ export function BlogCategoryPage({ category }: BlogCategoryPageProps) {
 
   return (
     <MarketingLayout schemas={blogCategorySchemas(category)}>
-      <div className="mx-auto max-w-7xl px-5 pt-6 sm:px-8">
-        <Breadcrumbs
-          items={[
-            { name: "Home", path: "/" },
-            { name: "Blog", path: "/blog" },
-            { name: meta.label, path: `/blog/categoria/${category}` },
-          ]}
-        />
-      </div>
-
       <PageHero
+        breadcrumbs={
+          <Breadcrumbs
+            items={[
+              { name: "Home", path: "/" },
+              { name: "Blog", path: "/blog" },
+              { name: meta.label, path: `/blog/categoria/${category}` },
+            ]}
+          />
+        }
         eyebrow="Blog"
         title={meta.label}
         description={meta.description}

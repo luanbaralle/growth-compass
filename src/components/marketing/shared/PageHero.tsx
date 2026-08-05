@@ -9,6 +9,7 @@ interface PageHeroProps {
   primaryCta?: { label: string; href: string; external?: boolean };
   secondaryCta?: { label: string; href: string };
   badge?: string;
+  breadcrumbs?: ReactNode;
   className?: string;
 }
 
@@ -19,6 +20,7 @@ export function PageHero({
   primaryCta,
   secondaryCta,
   badge,
+  breadcrumbs,
   className,
 }: PageHeroProps) {
   return (
@@ -26,7 +28,13 @@ export function PageHero({
       <div className="absolute inset-0 grid-bg opacity-30" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,oklch(0.72_0.19_48_/_0.12),transparent_50%)]" />
 
-      <div className="relative mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:py-28">
+      <div
+        className={cn(
+          "relative mx-auto max-w-7xl px-5 sm:px-8",
+          breadcrumbs ? "pb-20 pt-6 sm:pt-8 lg:pb-28" : "py-20 lg:py-28",
+        )}
+      >
+        {breadcrumbs}
         <div className="max-w-3xl">
           {badge && (
             <span className="mb-4 inline-flex items-center rounded-full border border-brand/30 bg-brand-soft px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-brand">

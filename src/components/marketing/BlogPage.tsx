@@ -51,15 +51,15 @@ export function BlogPage() {
 
   return (
     <MarketingLayout schemas={blogSchemas()}>
-      <div className="mx-auto max-w-7xl px-5 pt-6 sm:px-8">
-        <Breadcrumbs
-          items={[
-            { name: "Home", path: "/" },
-            { name: "Blog", path: "/blog" },
-          ]}
-        />
-      </div>
       <PageHero
+        breadcrumbs={
+          <Breadcrumbs
+            items={[
+              { name: "Home", path: "/" },
+              { name: "Blog", path: "/blog" },
+            ]}
+          />
+        }
         eyebrow="Conteúdo"
         title="Insights de growth, marketing e tecnologia"
         description="Artigos, guias e comparativos práticos — para empresas que querem crescer com estratégia, não com achismo."

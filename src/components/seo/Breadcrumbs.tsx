@@ -1,6 +1,7 @@
 import { JsonLd } from "@/components/seo/JsonLd";
 import type { BreadcrumbItem } from "@/lib/seo/schema";
 import { breadcrumbSchema } from "@/lib/seo/schema";
+import { cn } from "@/lib/utils";
 import { Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 
@@ -15,7 +16,7 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
   return (
     <>
       <JsonLd data={breadcrumbSchema(items)} />
-      <nav aria-label="Breadcrumb" className={className}>
+      <nav aria-label="Breadcrumb" className={cn("mb-6 sm:mb-8", className)}>
         <ol className="flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
           {items.map((item, index) => {
             const isLast = index === items.length - 1;

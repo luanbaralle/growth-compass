@@ -36,15 +36,15 @@ const roadmapStatus = {
 export function TecnologiaPage() {
   return (
     <MarketingLayout schemas={tecnologiaSchemas()}>
-      <div className="mx-auto max-w-7xl px-5 pt-6 sm:px-8">
-        <Breadcrumbs
-          items={[
-            { name: "Home", path: "/" },
-            { name: "Tecnologia", path: "/tecnologia" },
-          ]}
-        />
-      </div>
       <PageHero
+        breadcrumbs={
+          <Breadcrumbs
+            items={[
+              { name: "Home", path: "/" },
+              { name: "Tecnologia", path: "/tecnologia" },
+            ]}
+          />
+        }
         eyebrow="Tecnologia"
         title="Tecnologia que acelera crescimento"
         description="Não apenas usamos ferramentas — construímos produtos e sistemas que transformam marketing em máquinas de aquisição e conversão."

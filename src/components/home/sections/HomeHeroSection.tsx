@@ -1,4 +1,5 @@
 import { HeroManifestoMarquee } from "@/components/home/shared/HeroManifestoMarquee";
+import { HeroTypewriter } from "@/components/home/shared/HeroTypewriter";
 import heroVisual from "@/assets/hero-visual.png";
 import { heroChecklist } from "@/lib/home/content";
 import { ArrowRight, Check } from "lucide-react";
@@ -52,10 +53,8 @@ export function HomeHeroSection() {
               </span>
             </p>
 
-            <div className="animate-fade-up mt-5 hidden space-y-1 text-sm font-medium text-foreground sm:block sm:text-base [animation-delay:180ms]">
-              <p>Criamos a estratégia.</p>
-              <p>Desenvolvemos a tecnologia.</p>
-              <p>Executamos o crescimento.</p>
+            <div className="animate-fade-up mt-5 [animation-delay:180ms]">
+              <HeroTypewriter />
             </div>
 
             <ul className="animate-fade-up mt-5 flex flex-wrap justify-center gap-2 sm:mt-7 sm:gap-x-5 sm:gap-y-2 [animation-delay:220ms]">

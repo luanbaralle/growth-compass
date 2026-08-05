@@ -26,15 +26,15 @@ export function MetodologiaPage() {
 
   return (
     <MarketingLayout schemas={metodologiaSchemas()}>
-      <div className="mx-auto max-w-7xl px-5 pt-6 sm:px-8">
-        <Breadcrumbs
-          items={[
-            { name: "Home", path: "/" },
-            { name: "Metodologia", path: "/metodologia" },
-          ]}
-        />
-      </div>
       <PageHero
+        breadcrumbs={
+          <Breadcrumbs
+            items={[
+              { name: "Home", path: "/" },
+              { name: "Metodologia", path: "/metodologia" },
+            ]}
+          />
+        }
         eyebrow="Framework"
         title="Discover → Strategy → Build → Launch → Optimize → Scale"
         description="O framework que guia cada projeto Raise One — do diagnóstico profundo à escala previsível. Seis fases, uma metodologia integrada."

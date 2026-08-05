@@ -31,6 +31,7 @@ import { Route as CasesSlugRouteImport } from './routes/cases/$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminLeadsRouteImport } from './routes/admin/leads'
+import { Route as PlaygroundCasesDecisionLanguageRouteImport } from './routes/playground/cases/decision-language'
 import { Route as BlogCategoriaCategoryRouteImport } from './routes/blog/categoria/$category'
 import { Route as AdminExecucaoReferenciaRouteImport } from './routes/admin/execucao/referencia'
 import { Route as AdminExecucaoProducaoRouteImport } from './routes/admin/execucao/producao'
@@ -154,6 +155,12 @@ const AdminLeadsRoute = AdminLeadsRouteImport.update({
   path: '/leads',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const PlaygroundCasesDecisionLanguageRoute =
+  PlaygroundCasesDecisionLanguageRouteImport.update({
+    id: '/playground/cases/decision-language',
+    path: '/playground/cases/decision-language',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const BlogCategoriaCategoryRoute = BlogCategoriaCategoryRouteImport.update({
   id: '/blog/categoria/$category',
   path: '/blog/categoria/$category',
@@ -245,6 +252,7 @@ export interface FileRoutesByFullPath {
   '/admin/execucao/producao': typeof AdminExecucaoProducaoRoute
   '/admin/execucao/referencia': typeof AdminExecucaoReferenciaRoute
   '/blog/categoria/$category': typeof BlogCategoriaCategoryRoute
+  '/playground/cases/decision-language': typeof PlaygroundCasesDecisionLanguageRoute
   '/admin/execucao/rituais/checkin': typeof AdminExecucaoRituaisCheckinRoute
   '/admin/execucao/rituais/planning': typeof AdminExecucaoRituaisPlanningRoute
   '/admin/execucao/rituais/review': typeof AdminExecucaoRituaisReviewRoute
@@ -279,6 +287,7 @@ export interface FileRoutesByTo {
   '/admin/execucao/producao': typeof AdminExecucaoProducaoRoute
   '/admin/execucao/referencia': typeof AdminExecucaoReferenciaRoute
   '/blog/categoria/$category': typeof BlogCategoriaCategoryRoute
+  '/playground/cases/decision-language': typeof PlaygroundCasesDecisionLanguageRoute
   '/admin/execucao/rituais/checkin': typeof AdminExecucaoRituaisCheckinRoute
   '/admin/execucao/rituais/planning': typeof AdminExecucaoRituaisPlanningRoute
   '/admin/execucao/rituais/review': typeof AdminExecucaoRituaisReviewRoute
@@ -315,6 +324,7 @@ export interface FileRoutesById {
   '/admin/execucao/producao': typeof AdminExecucaoProducaoRoute
   '/admin/execucao/referencia': typeof AdminExecucaoReferenciaRoute
   '/blog/categoria/$category': typeof BlogCategoriaCategoryRoute
+  '/playground/cases/decision-language': typeof PlaygroundCasesDecisionLanguageRoute
   '/admin/execucao/rituais/checkin': typeof AdminExecucaoRituaisCheckinRoute
   '/admin/execucao/rituais/planning': typeof AdminExecucaoRituaisPlanningRoute
   '/admin/execucao/rituais/review': typeof AdminExecucaoRituaisReviewRoute
@@ -352,6 +362,7 @@ export interface FileRouteTypes {
     | '/admin/execucao/producao'
     | '/admin/execucao/referencia'
     | '/blog/categoria/$category'
+    | '/playground/cases/decision-language'
     | '/admin/execucao/rituais/checkin'
     | '/admin/execucao/rituais/planning'
     | '/admin/execucao/rituais/review'
@@ -386,6 +397,7 @@ export interface FileRouteTypes {
     | '/admin/execucao/producao'
     | '/admin/execucao/referencia'
     | '/blog/categoria/$category'
+    | '/playground/cases/decision-language'
     | '/admin/execucao/rituais/checkin'
     | '/admin/execucao/rituais/planning'
     | '/admin/execucao/rituais/review'
@@ -421,6 +433,7 @@ export interface FileRouteTypes {
     | '/admin/execucao/producao'
     | '/admin/execucao/referencia'
     | '/blog/categoria/$category'
+    | '/playground/cases/decision-language'
     | '/admin/execucao/rituais/checkin'
     | '/admin/execucao/rituais/planning'
     | '/admin/execucao/rituais/review'
@@ -448,6 +461,7 @@ export interface RootRouteChildren {
   CasesIndexRoute: typeof CasesIndexRoute
   SolucoesIndexRoute: typeof SolucoesIndexRoute
   BlogCategoriaCategoryRoute: typeof BlogCategoriaCategoryRoute
+  PlaygroundCasesDecisionLanguageRoute: typeof PlaygroundCasesDecisionLanguageRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -606,6 +620,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLeadsRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/playground/cases/decision-language': {
+      id: '/playground/cases/decision-language'
+      path: '/playground/cases/decision-language'
+      fullPath: '/playground/cases/decision-language'
+      preLoaderRoute: typeof PlaygroundCasesDecisionLanguageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/blog/categoria/$category': {
       id: '/blog/categoria/$category'
       path: '/blog/categoria/$category'
@@ -743,6 +764,7 @@ const rootRouteChildren: RootRouteChildren = {
   CasesIndexRoute: CasesIndexRoute,
   SolucoesIndexRoute: SolucoesIndexRoute,
   BlogCategoriaCategoryRoute: BlogCategoriaCategoryRoute,
+  PlaygroundCasesDecisionLanguageRoute: PlaygroundCasesDecisionLanguageRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -316,6 +316,12 @@ export const footerLinks = {
   ],
 };
 
+export const heroTypewriterPhrases = [
+  "Criamos a estratégia.",
+  "Desenvolvemos a tecnologia.",
+  "Executamos o crescimento.",
+] as const;
+
 export const heroChecklist = ["Estratégia", "Tecnologia", "Execução"];
 
 export const philosophyBullets = [

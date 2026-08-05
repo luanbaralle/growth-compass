@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { CasesPage } from "@/components/marketing/CasesPage";
+import { CasesListingPage } from "@/components/cases/CasesListingPage";
 import { casesSeoHead } from "@/lib/seo/pages";
 
 export const Route = createFileRoute("/cases/")({
   head: () => casesSeoHead(),
-  component: CasesPage,
+  component: CasesListingPage,
 });

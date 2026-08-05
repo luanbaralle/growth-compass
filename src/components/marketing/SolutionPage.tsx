@@ -21,16 +21,16 @@ interface SolutionPageProps {
 export function SolutionPage({ content }: SolutionPageProps) {
   return (
     <MarketingLayout schemas={solutionSchemas(content.slug)}>
-      <div className="mx-auto max-w-7xl px-5 pt-6 sm:px-8">
-        <Breadcrumbs
-          items={[
-            { name: "Home", path: "/" },
-            { name: "Soluções", path: "/solucoes" },
-            { name: content.hero.title, path: `/solucoes/${content.slug}` },
-          ]}
-        />
-      </div>
       <PageHero
+        breadcrumbs={
+          <Breadcrumbs
+            items={[
+              { name: "Home", path: "/" },
+              { name: "Soluções", path: "/solucoes" },
+              { name: content.hero.title, path: `/solucoes/${content.slug}` },
+            ]}
+          />
+        }
         eyebrow={content.hero.eyebrow}
         title={content.hero.title}
         description={content.hero.description}

@@ -28,15 +28,15 @@ import { CheckCircle2, XCircle } from "lucide-react";
 export function ProgramaDeCrescimentoPage() {
   return (
     <MarketingLayout schemas={programaSchemas()}>
-      <div className="mx-auto max-w-7xl px-5 pt-6 sm:px-8">
-        <Breadcrumbs
-          items={[
-            { name: "Home", path: "/" },
-            { name: "Programa de Crescimento", path: "/programa-de-crescimento" },
-          ]}
-        />
-      </div>
       <PageHero
+        breadcrumbs={
+          <Breadcrumbs
+            items={[
+              { name: "Home", path: "/" },
+              { name: "Programa de Crescimento", path: "/programa-de-crescimento" },
+            ]}
+          />
+        }
         eyebrow={programaHero.eyebrow}
         title={programaHero.title}
         description={programaHero.description}
