@@ -314,7 +314,7 @@ export const solutionPages: Record<string, SolutionPageContent> = {
       items: [
         { name: "UNIP", description: "Captação de alunos com Google Ads, landing pages e SEO.", tag: "Educação" },
         { name: "Studio 21", description: "Posicionamento e aquisição com campanhas estratégicas.", tag: "Serviços" },
-        { name: "AMF Imóveis", description: "Campanhas e landing pages para geração de leads imobiliários.", tag: "Imobiliário" },
+        { name: "Nobre Imóveis", description: "Campanhas e landing pages para geração de leads imobiliários.", tag: "Imobiliário" },
       ],
     },
     faq: [
@@ -410,7 +410,7 @@ export const solutionPages: Record<string, SolutionPageContent> = {
       title: "Cases de demanda",
       items: [
         { name: "Studio 21", description: "Posicionamento de marca e geração de demanda via Meta.", tag: "Serviços" },
-        { name: "AMF Imóveis", description: "Campanhas de captação de leads para imóveis.", tag: "Imobiliário" },
+        { name: "Nobre Imóveis", description: "Campanhas de captação de leads para imóveis.", tag: "Imobiliário" },
       ],
     },
     faq: [
@@ -502,7 +502,7 @@ export const solutionPages: Record<string, SolutionPageContent> = {
       title: "Cases de conversão",
       items: [
         { name: "UNIP", description: "Landing pages de captação de alunos com alta taxa de conversão.", tag: "Educação" },
-        { name: "AMF Imóveis", description: "Páginas de empreendimentos com formulário e WhatsApp integrados.", tag: "Imobiliário" },
+        { name: "Nobre Imóveis", description: "Páginas de empreendimentos com formulário e WhatsApp integrados.", tag: "Imobiliário" },
       ],
     },
     faq: [

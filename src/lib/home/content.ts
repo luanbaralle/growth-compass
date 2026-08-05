@@ -119,12 +119,11 @@ export const solutions: HomeSolution[] = [
 
 export const projects: HomeProject[] = [
   {
-    name: "Atlas",
-    description: "Portal imobiliário inteligente com IA, CRM e automação.",
-    tag: "Tecnologia",
+    name: "Nobre Imóveis",
+    description: "Marketing, tecnologia e automação para imobiliárias.",
+    tag: "Imobiliário",
     tagTone: "blue",
-    gradient: "from-slate-900 via-slate-800 to-orange-950/40",
-    href: "#",
+    gradient: "from-stone-900 via-zinc-800 to-orange-950/20",
   },
   {
     name: "UNIP",
@@ -140,21 +139,10 @@ export const projects: HomeProject[] = [
     tagTone: "blue",
     gradient: "from-zinc-900 via-neutral-800 to-amber-950/30",
   },
-  {
-    name: "AMF Imóveis",
-    description: "Campanhas, landing pages e Google Ads para imóveis.",
-    tag: "Marketing",
-    tagTone: "blue",
-    gradient: "from-stone-900 via-zinc-800 to-orange-950/20",
-  },
-  {
-    name: "Raise One",
-    description: "Sistema interno com diagnóstico inteligente de mercado.",
-    tag: "Tecnologia",
-    tagTone: "blue",
-    gradient: "from-neutral-950 via-zinc-900 to-orange-900/30",
-  },
 ];
+
+export const portfolioSectionDescription =
+  "Cases reais de marketing, tecnologia e crescimento — do imobiliário à educação e serviços.";
 
 export const processSteps: HomeProcessStep[] = [
   {
@@ -303,7 +291,7 @@ export const footerLinks = {
     { label: "Ver todas", href: "/solucoes" },
   ],
   produtos: [
-    { label: "Atlas", href: "/cases/atlas" },
+    { label: "Nobre Imóveis", href: "/cases/nobre" },
     { label: "Tecnologia", href: "/tecnologia" },
     { label: "Diagnóstico Inteligente", href: "/diagnostico" },
   ],

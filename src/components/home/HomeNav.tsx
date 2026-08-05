@@ -9,9 +9,15 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Logo } from "@/components/landing/shared/Logo";
 import { solutionsMenu } from "@/lib/home/content";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import { cn } from "@/lib/utils";
-import { ArrowRight, Menu, X } from "lucide-react";
+import { Menu, MessageCircle, X } from "lucide-react";
 import { useState } from "react";
+
+const WHATSAPP_LEAD_URL =
+  buildWhatsAppUrl(
+    "Olá! Vim pelo site da Raise One e gostaria de analisar meu mercado e entender oportunidades de crescimento.",
+  ) ?? "/#contato";
 
 const navLinks = [
   { label: "Metodologia", href: "/metodologia" },
@@ -122,13 +128,15 @@ export function HomeNav() {
         </NavigationMenu>
 
         <div className="flex items-center gap-2">
-          <Link
-            to="/diagnostico"
+          <a
+            href={WHATSAPP_LEAD_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             className="group hidden items-center gap-1.5 rounded-full bg-brand px-4 py-2 text-sm font-semibold text-primary-foreground shadow-brand transition-transform hover:scale-[1.01] sm:inline-flex"
           >
-            Analisar meu mercado
-            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-          </Link>
+            <MessageCircle className="h-3.5 w-3.5" />
+            Falar no WhatsApp
+          </a>
 
           <button
             type="button"
@@ -160,11 +168,16 @@ export function HomeNav() {
               "block rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground",
             ),
           )}
-          {renderNavLink(
-            "/diagnostico",
-            "Analisar meu mercado",
-            "mt-3 inline-flex w-full items-center justify-center rounded-full bg-brand px-4 py-3 text-sm font-semibold text-primary-foreground",
-          )}
+          <a
+            href={WHATSAPP_LEAD_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand px-4 py-3 text-sm font-semibold text-primary-foreground"
+            onClick={() => setMobileOpen(false)}
+          >
+            <MessageCircle className="h-4 w-4" />
+            Falar no WhatsApp
+          </a>
         </div>
       )}
     </header>

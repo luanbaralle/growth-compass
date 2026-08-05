@@ -17,6 +17,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { useMemo, useState } from "react";
 import { CaseImage } from "./CaseImage";
+import nobreLogo from "@/assets/case-nobre/logo.png";
 import heroLpDesktop from "@/assets/case-unip/hero-lp-desktop.png";
 import studio21HeroLp from "@/assets/case-studio21/hero-lp.png";
 import type { Case } from "@/types/case";
@@ -24,6 +25,7 @@ import type { Case } from "@/types/case";
 function getCaseCoverImage(caseItem: Case): string {
   if (caseItem.slug === "unip") return heroLpDesktop;
   if (caseItem.slug === "studio21") return studio21HeroLp;
+  if (caseItem.slug === "nobre") return nobreLogo;
   return caseItem.coverImage;
 }
 
@@ -52,7 +54,7 @@ export function CasesListingPage() {
         }
         eyebrow="Portfólio"
         title="Projetos que geram resultados reais"
-        description="Cases de marketing, tecnologia e crescimento — montados dinamicamente a partir dos dados do portfólio."
+        description="Cases reais de marketing, tecnologia e crescimento — do imobiliário à educação e serviços."
         primaryCta={{ label: "Programa de Crescimento", href: "/programa-de-crescimento" }}
         secondaryCta={{ label: "Fazer diagnóstico", href: "/diagnostico" }}
       />

@@ -130,9 +130,9 @@ export function tecnologiaSchemas(): JsonLdObject[] {
   return [
     webPageSchema({ title: tecnologiaSeo.title, description: tecnologiaSeo.description, path: "/tecnologia" }),
     softwareApplicationSchema({
-      name: "Atlas — Portal Imobiliário Inteligente",
-      description: "Portal imobiliário com IA, CRM e automação desenvolvido pela Raise One.",
-      path: "/cases/atlas",
+      name: "Raise One — Tecnologia para crescimento",
+      description: "CRM, automações, dashboards e produtos sob medida desenvolvidos pela Raise One.",
+      path: "/tecnologia",
     }),
   ];
 }

@@ -88,8 +88,16 @@ export function HomeFooter() {
 
         <div className="mt-12 rounded-[1.25rem] border border-border bg-background/50 p-5 sm:p-6">
           <p className="text-sm font-semibold text-foreground">Fale conosco</p>
-          <div className="mt-3 grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
-            <p>WhatsApp: via botão acima</p>
+          <div className="mt-3 grid gap-3 text-sm text-muted-foreground sm:grid-cols-2">
+            <a
+              href={WHATSAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex w-fit items-center gap-2 rounded-full border border-border bg-background px-4 py-2 font-medium text-foreground transition-colors hover:border-brand/40 hover:text-brand"
+            >
+              <MessageCircle className="h-4 w-4" />
+              Falar no WhatsApp
+            </a>
             <p>E-mail: contato@raiseone.com.br</p>
             <p>Atendimento: Seg–Sex, 9h às 18h</p>
             <p>Brasil — atendimento remoto e presencial</p>

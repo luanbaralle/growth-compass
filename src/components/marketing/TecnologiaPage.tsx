@@ -48,7 +48,7 @@ export function TecnologiaPage() {
         eyebrow="Tecnologia"
         title="Tecnologia que acelera crescimento"
         description="Não apenas usamos ferramentas — construímos produtos e sistemas que transformam marketing em máquinas de aquisição e conversão."
-        primaryCta={{ label: "Ver case Atlas", href: "/cases/atlas" }}
+        primaryCta={{ label: "Ver cases", href: "/cases" }}
         secondaryCta={{ label: "Fazer diagnóstico", href: "/diagnostico" }}
       />
 
@@ -138,10 +138,10 @@ export function TecnologiaPage() {
                   )}
                   {product.title === "Atlas" && (
                     <Link
-                      to="/cases/atlas"
+                      to="/cases"
                       className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:text-brand/80"
                     >
-                      Ver case Atlas →
+                      Ver cases →
                     </Link>
                   )}
                 </div>

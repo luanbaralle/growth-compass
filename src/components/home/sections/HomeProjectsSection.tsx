@@ -4,21 +4,57 @@ import {
   SectionShell,
   SectionTitle,
 } from "@/components/home/shared/SectionShell";
-import { projects, type HomeProject } from "@/lib/home/content";
+import { projects, portfolioSectionDescription, type HomeProject } from "@/lib/home/content";
 import { cn } from "@/lib/utils";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import unipLogo from "@/assets/case-unip/Logo.jpg";
+import nobreLogo from "@/assets/case-nobre/logo.png";
 import studio21Logo from "@/assets/case-studio21/logo metálico.png";
 
 const projectSlugs: Record<string, string> = {
-  Atlas: "atlas",
+  "Nobre Imóveis": "nobre",
   UNIP: "unip",
   "Studio 21": "studio21",
-  "AMF Imóveis": "amf",
 };
 
 function ProjectCardBackground({ project }: { project: HomeProject }) {
+  if (project.name === "Nobre Imóveis") {
+    return (
+      <>
+        <div className="absolute inset-0 bg-[#1a0808]" aria-hidden />
+        <div
+          className="absolute inset-0 bg-gradient-to-b from-[#8f1d1d] via-[#5c1212] to-black"
+          aria-hidden
+        />
+        <div
+          className="absolute inset-0 opacity-45"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 50% 42%, rgba(255,255,255,0.12), transparent 50%)",
+          }}
+          aria-hidden
+        />
+        <div
+          className="absolute inset-0 bg-[linear-gradient(to_right,oklch(1_0_0/0.04)_1px,transparent_1px),linear-gradient(to_bottom,oklch(1_0_0/0.04)_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_at_center,black,transparent_75%)]"
+          aria-hidden
+        />
+        <div className="absolute inset-x-0 top-12 bottom-[5.5rem] flex -translate-y-1 items-center justify-center px-6">
+          <div className="w-full max-w-[min(92%,11rem)] rounded-xl bg-white p-4 shadow-[0_24px_48px_rgba(0,0,0,0.45)] ring-1 ring-white/80">
+            <img
+              src={nobreLogo}
+              alt="Nobre Imóveis"
+              className="h-auto w-full object-contain transition-transform duration-700 group-hover:scale-[1.03]"
+              loading="lazy"
+            />
+          </div>
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent" />
+        <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/[0.06]" />
+      </>
+    );
+  }
+
   if (project.name === "UNIP") {
     return (
       <>
@@ -103,10 +139,7 @@ export function HomeProjectsSection() {
         <div className="max-w-2xl">
           <SectionEyebrow>Portfólio</SectionEyebrow>
           <SectionTitle>Projetos que geram resultados reais</SectionTitle>
-          <SectionDescription>
-            Cases reais de marketing, tecnologia e crescimento — do portal imobiliário ao
-            sistema interno.
-          </SectionDescription>
+          <SectionDescription>{portfolioSectionDescription}</SectionDescription>
         </div>
         <Link
           to="/cases"

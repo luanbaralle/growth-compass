@@ -10,7 +10,7 @@ export type CaseStudy = Case;
 export const casesSeo = {
   title: "Cases — Raise One",
   description:
-    "Resultados reais de marketing, tecnologia e crescimento. Cases de UNIP, Studio 21, AMF Imóveis, Atlas e mais.",
+    "Resultados reais de marketing, tecnologia e crescimento — imobiliário, educação e serviços.",
 };
 
 export const caseCategories: { id: string; label: string }[] = [
