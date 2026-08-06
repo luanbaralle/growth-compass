@@ -4,10 +4,12 @@ import {
   getProspect,
   updateProspect,
 } from "@/domains/prospection/api.server";
+import { ConversationAssistant } from "@/domains/prospection/components/ConversationAssistant";
 import { ProspectChecklist } from "@/domains/prospection/components/ProspectChecklist";
 import { ProspectOpportunities } from "@/domains/prospection/components/ProspectOpportunities";
 import { ProspectTimeline } from "@/domains/prospection/components/ProspectTimeline";
 import type { Prospect, ProspectStatus } from "@/domains/prospection/types";
+import { SEGMENT_OPTIONS } from "@/domains/prospection/copilot/types";
 import {
   PROSPECT_STATUSES,
   STATUS_LABELS,
@@ -203,6 +205,12 @@ export function ProspectDetailPage() {
         </div>
 
         <div className="space-y-6 lg:col-span-2">
+          <Section title="Assistente de Conversa" noPadding>
+            <div className="p-4">
+              <ConversationAssistant prospectId={prospect.id} onUpdated={load} />
+            </div>
+          </Section>
+
           <Tabs defaultValue="diagnostico">
             <TabsList className="w-full justify-start">
               <TabsTrigger value="diagnostico">Diagnóstico</TabsTrigger>
@@ -301,6 +309,7 @@ function ProspectInfoForm({
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [form, setForm] = useState({
     name: prospect.name,
+    segmentSlug: prospect.segment_slug ?? "saloes",
     category: prospect.category ?? "",
     city: prospect.city ?? "",
     state: prospect.state ?? "",
@@ -317,6 +326,7 @@ function ProspectInfoForm({
   useEffect(() => {
     setForm({
       name: prospect.name,
+      segmentSlug: prospect.segment_slug ?? "saloes",
       category: prospect.category ?? "",
       city: prospect.city ?? "",
       state: prospect.state ?? "",
@@ -340,6 +350,7 @@ function ProspectInfoForm({
         data: {
           id: prospect.id,
           name: next.name,
+          segmentSlug: next.segmentSlug || undefined,
           category: next.category || undefined,
           city: next.city || undefined,
           state: next.state || undefined,
@@ -360,7 +371,21 @@ function ProspectInfoForm({
   return (
     <div className="space-y-3 text-sm">
       <Field label="Empresa" value={form.name} onChange={(v) => save({ name: v })} />
-      <Field label="Categoria" value={form.category} onChange={(v) => save({ category: v })} />
+      <div className="space-y-1.5">
+        <Label className="text-xs text-muted-foreground">Segmento</Label>
+        <Select value={form.segmentSlug} onValueChange={(v) => save({ segmentSlug: v })}>
+          <SelectTrigger className="h-8">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {SEGMENT_OPTIONS.map((s) => (
+              <SelectItem key={s.slug} value={s.slug}>
+                {s.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
       <Field label="Cidade" value={form.city} onChange={(v) => save({ city: v })} />
       <Field label="UF" value={form.state} onChange={(v) => save({ state: v })} />
       <Field label="WhatsApp" value={form.whatsapp} onChange={(v) => save({ whatsapp: v })} />

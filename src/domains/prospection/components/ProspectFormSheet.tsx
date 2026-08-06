@@ -1,3 +1,4 @@
+import { SEGMENT_OPTIONS } from "@/domains/prospection/copilot/types";
 import { createProspect } from "@/domains/prospection/api.server";
 import { TEAM_LABELS, TEAM_MEMBERS, type TeamMember } from "@/lib/auth/types";
 import { Button } from "@/components/ui/button";
@@ -23,6 +24,7 @@ import { useState } from "react";
 
 export interface ProspectFormValues {
   name: string;
+  segmentSlug: string;
   category: string;
   city: string;
   state: string;
@@ -38,6 +40,7 @@ export interface ProspectFormValues {
 
 const emptyForm: ProspectFormValues = {
   name: "",
+  segmentSlug: "saloes",
   category: "",
   city: "",
   state: "",
@@ -85,6 +88,7 @@ export function ProspectFormSheet({
       const prospect = await createProspect({
         data: {
           name: form.name.trim(),
+          segmentSlug: form.segmentSlug || undefined,
           category: form.category || undefined,
           city: form.city || undefined,
           state: form.state || undefined,
@@ -128,13 +132,19 @@ export function ProspectFormSheet({
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <Label htmlFor="prospect-category">Categoria</Label>
-              <Input
-                id="prospect-category"
-                value={form.category}
-                onChange={(e) => set("category", e.target.value)}
-                placeholder="Ex: Clínica"
-              />
+              <Label>Segmento</Label>
+              <Select value={form.segmentSlug} onValueChange={(v) => set("segmentSlug", v)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {SEGMENT_OPTIONS.map((s) => (
+                    <SelectItem key={s.slug} value={s.slug}>
+                      {s.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="prospect-source">Origem</Label>

@@ -98,7 +98,9 @@ create table if not exists public.commercial_scripts (
   script_type text not null
     check (script_type in (
       'initial', 'continuation', 'express_diagnosis',
-      'followup_1', 'followup_2', 'followup_3', 'cta'
+      'followup_1', 'followup_2', 'followup_3', 'cta',
+      'segment_overview', 'free_diagnosis', 'products',
+      'opportunity_signals', 'reference_cases', 'best_practices'
     )),
   content text not null default '',
   updated_at timestamptz not null default now(),
@@ -174,14 +176,17 @@ insert into public.commercial_segments (slug, name, sort_order) values
   ('academias', 'Academias', 8)
 on conflict (slug) do nothing;
 
--- Scripts vazios por segmento (preencher na UI)
+-- Scripts vazios por segmento (conteúdo via seed: npm run seed:commercial-library)
 insert into public.commercial_scripts (segment_id, script_type, content)
 select s.id, t.script_type, ''
 from public.commercial_segments s
 cross join (
   values
-    ('initial'), ('continuation'), ('express_diagnosis'),
-    ('followup_1'), ('followup_2'), ('followup_3'), ('cta')
+    ('segment_overview'), ('express_diagnosis'), ('opportunity_signals'),
+    ('initial'), ('continuation'),
+    ('followup_1'), ('followup_2'), ('followup_3'),
+    ('free_diagnosis'), ('cta'),
+    ('products'), ('reference_cases'), ('best_practices')
 ) as t(script_type)
 on conflict (segment_id, script_type) do nothing;
 

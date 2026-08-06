@@ -6,6 +6,7 @@ export const checklistStatusSchema = z.enum(["yes", "no", "partial"]);
 
 export const createProspectSchema = z.object({
   name: z.string().min(1).max(200),
+  segmentSlug: z.string().max(40).optional(),
   category: z.string().max(120).optional(),
   city: z.string().max(120).optional(),
   state: z.string().max(2).optional(),
@@ -111,4 +112,25 @@ export const segmentIdSchema = z.object({ segmentId: z.string().uuid() });
 
 export const filterByOpportunitySchema = z.object({
   opportunityKey: z.string().min(1).max(80),
+});
+
+export const saveAssistantStateSchema = z.object({
+  prospectId: z.string().uuid(),
+  step: z
+    .enum([
+      "observations",
+      "openings",
+      "awaiting_reply",
+      "no_reply",
+      "response_state",
+      "continuation",
+      "done",
+    ])
+    .optional(),
+  selectedObservations: z.array(z.string().max(80)).optional(),
+  selectedOpeningId: z.string().max(80).nullable().optional(),
+  openingText: z.string().max(5000).nullable().optional(),
+  openingUsed: z.boolean().optional(),
+  replyStatus: z.enum(["waiting", "no_reply", "replied"]).nullable().optional(),
+  responseStateKey: z.string().max(80).nullable().optional(),
 });

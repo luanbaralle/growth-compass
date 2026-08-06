@@ -1,11 +1,23 @@
 import * as companyRepo from "@/domains/companies/repository.server";
+import { getSegmentCopilot } from "@/domains/prospection/copilot/data";
+import { resolveSegmentSlug } from "@/domains/prospection/copilot/resolve-segment";
+import type {
+  AssistantStep,
+  CopilotBundle,
+  ProspectAssistantState,
+  ReplyStatus,
+} from "@/domains/prospection/copilot/types";
+import { SEGMENT_OPTIONS } from "@/domains/prospection/copilot/types";
+import { DB_TO_SCRIPT_TYPE, LEGACY_SCRIPT_TYPES } from "@/domains/prospection/content/db-map";
 import type { TeamMember } from "@/lib/auth/types";
 import * as repo from "./repository.server";
 import type {
   ChecklistStatus,
+  CommercialScript,
   InteractionType,
   ProspectStatus,
   ProspectionMetrics,
+  ScriptType,
 } from "./types";
 import { CHECKLIST_ITEMS, OPPORTUNITY_ITEMS } from "./types";
 
@@ -33,6 +45,7 @@ export async function getProspect(id: string) {
 export async function createProspect(
   input: {
     name: string;
+    segmentSlug?: string;
     category?: string;
     city?: string;
     state?: string;
@@ -49,9 +62,14 @@ export async function createProspect(
   authorId: TeamMember | null,
 ) {
   const now = new Date().toISOString();
+  const slug = resolveSegmentSlug(input.segmentSlug, input.category);
+  const segmentLabel =
+    SEGMENT_OPTIONS.find((s) => s.slug === slug)?.name ?? input.category?.trim() ?? null;
+
   const prospect = await repo.insertProspect({
     name: input.name.trim(),
-    category: input.category?.trim() || null,
+    category: segmentLabel,
+    segment_slug: slug,
     city: input.city?.trim() || null,
     state: input.state?.trim() || null,
     phone: input.phone?.trim() || null,
@@ -95,6 +113,7 @@ export async function updateProspect(
   id: string,
   patch: Partial<{
     name: string;
+    segmentSlug: string;
     category: string;
     city: string;
     state: string;
@@ -118,6 +137,12 @@ export async function updateProspect(
 
   const data: Record<string, unknown> = {};
   if (patch.name !== undefined) data.name = patch.name.trim();
+  if (patch.segmentSlug !== undefined) {
+    const slug = patch.segmentSlug.trim();
+    data.segment_slug = slug || null;
+    const label = SEGMENT_OPTIONS.find((s) => s.slug === slug)?.name;
+    if (label) data.category = label;
+  }
   if (patch.category !== undefined) data.category = patch.category.trim() || null;
   if (patch.city !== undefined) data.city = patch.city.trim() || null;
   if (patch.state !== undefined) data.state = patch.state.trim() || null;
@@ -356,12 +381,18 @@ export async function getCommercialLibrary() {
   const segments = await repo.findCommercialSegments();
   const enriched = await Promise.all(
     segments.map(async (segment) => {
-      const [scripts, objections, qualifications, caseItem] = await Promise.all([
+      const [rawScripts, objections, qualifications, caseItem] = await Promise.all([
         repo.findSegmentScripts(segment.id),
         repo.findSegmentObjections(segment.id),
         repo.findSegmentQualifications(segment.id),
         repo.findSegmentCase(segment.id),
       ]);
+      const scripts = rawScripts
+        .filter((s) => !LEGACY_SCRIPT_TYPES.includes(s.script_type as (typeof LEGACY_SCRIPT_TYPES)[number]))
+        .map((s) => ({
+          ...s,
+          script_type: (DB_TO_SCRIPT_TYPE[s.script_type] ?? s.script_type) as ScriptType,
+        })) as CommercialScript[];
       return { segment, scripts, objections, qualifications, case: caseItem };
     }),
   );
@@ -416,6 +447,82 @@ export async function listProspectsWithoutOpportunity(opportunityKey: string) {
   const withOppIds = new Set(withOpp.map((p) => p.id));
   const all = await repo.findProspects();
   return all.filter((p) => !withOppIds.has(p.id) && p.status !== "cliente" && p.status !== "perdido");
+}
+
+function defaultAssistantState(prospectId: string): ProspectAssistantState {
+  return {
+    prospect_id: prospectId,
+    step: "observations",
+    selected_observations: [],
+    selected_opening_id: null,
+    opening_text: null,
+    opening_used: false,
+    reply_status: null,
+    response_state_key: null,
+    updated_at: new Date().toISOString(),
+  };
+}
+
+export async function getCopilotBundle(prospectId: string): Promise<CopilotBundle | null> {
+  const prospect = await repo.findProspectById(prospectId);
+  if (!prospect) return null;
+
+  const slug = resolveSegmentSlug(prospect.segment_slug, prospect.category);
+  const segment = getSegmentCopilot(slug);
+
+  let state: ProspectAssistantState;
+  try {
+    state = (await repo.findAssistantState(prospectId)) ?? defaultAssistantState(prospectId);
+  } catch {
+    state = defaultAssistantState(prospectId);
+  }
+
+  return {
+    segment,
+    segmentSlug: slug,
+    state,
+    prospect: {
+      id: prospect.id,
+      name: prospect.name,
+      city: prospect.city,
+      category: prospect.category,
+      segmentSlug: prospect.segment_slug,
+    },
+  };
+}
+
+export async function saveAssistantState(input: {
+  prospectId: string;
+  step?: AssistantStep;
+  selectedObservations?: string[];
+  selectedOpeningId?: string | null;
+  openingText?: string | null;
+  openingUsed?: boolean;
+  replyStatus?: ReplyStatus | null;
+  responseStateKey?: string | null;
+}): Promise<ProspectAssistantState> {
+  const existing =
+    (await repo.findAssistantState(input.prospectId).catch(() => null)) ??
+    defaultAssistantState(input.prospectId);
+
+  const next: Omit<ProspectAssistantState, "updated_at"> = {
+    prospect_id: input.prospectId,
+    step: input.step ?? existing.step,
+    selected_observations: input.selectedObservations ?? existing.selected_observations,
+    selected_opening_id:
+      input.selectedOpeningId !== undefined ? input.selectedOpeningId : existing.selected_opening_id,
+    opening_text: input.openingText !== undefined ? input.openingText : existing.opening_text,
+    opening_used: input.openingUsed ?? existing.opening_used,
+    reply_status: input.replyStatus !== undefined ? input.replyStatus : existing.reply_status,
+    response_state_key:
+      input.responseStateKey !== undefined ? input.responseStateKey : existing.response_state_key,
+  };
+
+  try {
+    return await repo.upsertAssistantState(next);
+  } catch {
+    return { ...next, updated_at: new Date().toISOString() };
+  }
 }
 
 export { STATUS_LABELS } from "./types";

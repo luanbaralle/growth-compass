@@ -119,7 +119,7 @@ export function ProspectPipelinePage() {
           <>
             <Link to="/os/prospeccao/biblioteca" className="dashboard-btn-ghost">
               <BookOpen className="h-4 w-4" />
-              Biblioteca
+              Copilot
             </Link>
             <OSRefreshButton loading={loading} onClick={load} />
             <button

@@ -325,4 +325,36 @@ export async function upsertCase(
   }
 }
 
+export async function findAssistantState(
+  prospectId: string,
+): Promise<import("./copilot/types").ProspectAssistantState | null> {
+  const rows = await dbSelect<import("./copilot/types").ProspectAssistantState>(
+    "prospect_assistant_state",
+    encodeQuery({ select: "*", prospect_id: `eq.${prospectId}` }),
+  );
+  return rows[0] ?? null;
+}
+
+export async function upsertAssistantState(
+  data: Omit<import("./copilot/types").ProspectAssistantState, "updated_at">,
+): Promise<import("./copilot/types").ProspectAssistantState> {
+  const { url, key } = requireSupabaseConfig();
+  const res = await fetch(`${url}/rest/v1/prospect_assistant_state`, {
+    method: "POST",
+    headers: {
+      apikey: key,
+      Authorization: `Bearer ${key}`,
+      "Content-Type": "application/json",
+      Prefer: "resolution=merge-duplicates,return=representation",
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`UPSERT assistant state: ${res.status} ${text}`);
+  }
+  const rows = await res.json();
+  return Array.isArray(rows) ? rows[0] : rows;
+}
+
 export { PROSPECT_STATUSES };

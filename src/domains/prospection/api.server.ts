@@ -15,6 +15,7 @@ import {
   updateProspectSchema,
   updateQualificationSchema,
   updateScriptSchema,
+  saveAssistantStateSchema,
 } from "@/domains/prospection/schema";
 
 export const listProspects = createServerFn({ method: "GET" })
@@ -184,5 +185,26 @@ export const listProspectsWithoutOpportunity = createServerFn({ method: "GET" })
     return withAuth(async () => {
       const service = await import("@/domains/prospection/service.server");
       return service.listProspectsWithoutOpportunity(data.opportunityKey);
+    });
+  });
+
+export const getCopilotBundle = createServerFn({ method: "GET" })
+  .validator(prospectIdSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const service = await import("@/domains/prospection/service.server");
+      const bundle = await service.getCopilotBundle(data.id);
+      if (!bundle) throw new Error("Prospect não encontrado.");
+      return bundle;
+    });
+  });
+
+export const saveAssistantState = createServerFn({ method: "POST" })
+  .validator(saveAssistantStateSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const service = await import("@/domains/prospection/service.server");
+      const { prospectId, ...patch } = data;
+      return service.saveAssistantState({ prospectId, ...patch });
     });
   });

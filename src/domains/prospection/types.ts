@@ -27,18 +27,21 @@ export type InteractionType =
 export type InteractionDirection = "out" | "in" | "internal";
 
 export type ScriptType =
-  | "initial"
-  | "continuation"
-  | "express_diagnosis"
-  | "followup_1"
-  | "followup_2"
-  | "followup_3"
-  | "cta";
+  | "segment_overview"
+  | "pre_contact_checklist"
+  | "conversation_philosophy"
+  | "first_approach_examples"
+  | "conversation_patterns"
+  | "conversation_questions"
+  | "when_to_present_raise_one"
+  | "how_to_present_raise_one"
+  | "best_practices";
 
 export interface Prospect {
   id: string;
   name: string;
   category: string | null;
+  segment_slug: string | null;
   city: string | null;
   state: string | null;
   phone: string | null;
@@ -225,13 +228,15 @@ export const OPPORTUNITY_ITEMS: { key: string; label: string }[] = [
 ];
 
 export const SCRIPT_TYPE_LABELS: Record<ScriptType, string> = {
-  initial: "Mensagem inicial",
-  continuation: "Mensagem de continuação",
-  express_diagnosis: "Diagnóstico express",
-  followup_1: "Follow-up 1",
-  followup_2: "Follow-up 2",
-  followup_3: "Follow-up 3",
-  cta: "CTA",
+  segment_overview: "Visão geral do segmento",
+  pre_contact_checklist: "O que observar antes do contato",
+  conversation_philosophy: "Filosofia da conversa",
+  first_approach_examples: "Padrões de primeira abordagem",
+  conversation_patterns: "Como reagir às respostas",
+  conversation_questions: "Perguntas que surgem na conversa",
+  when_to_present_raise_one: "Quando faz sentido falar da Raise One",
+  how_to_present_raise_one: "Como falar da Raise One (só se perguntarem)",
+  best_practices: "Boas práticas",
 };
 
 export const INTERACTION_TYPE_LABELS: Record<InteractionType, string> = {
