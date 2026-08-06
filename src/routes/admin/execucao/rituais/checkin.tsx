@@ -1,9 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { CheckinRitualPage } from "@/components/admin/execution/CheckinRitualPage";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/admin/execucao/rituais/checkin")({
-  head: () => ({
-    meta: [{ title: "Raise One — Check-in" }, { name: "robots", content: "noindex" }],
-  }),
-  component: CheckinRitualPage,
+  beforeLoad: () => {
+    throw redirect({ to: "/os" });
+  },
 });

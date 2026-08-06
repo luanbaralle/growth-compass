@@ -1,9 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { AdminPanel } from "@/components/admin/AdminPanel";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/admin/leads")({
-  head: () => ({
-    meta: [{ title: "Raise One — Leads" }, { name: "robots", content: "noindex" }],
-  }),
-  component: AdminPanel,
+  beforeLoad: () => {
+    throw redirect({ to: "/os/empresas" });
+  },
 });

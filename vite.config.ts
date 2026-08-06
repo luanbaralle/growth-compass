@@ -13,4 +13,20 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  vite: {
+    plugins: [
+      {
+        name: "raise-one-server-only",
+        // Só no build client — em dev o SSR precisa carregar *.server.ts
+        apply: "build",
+        enforce: "pre",
+        resolveId(source, _importer, options) {
+          if (options?.ssr) return null;
+          if (source.includes(".server") && !source.includes("node_modules")) {
+            return { id: source, external: true };
+          }
+        },
+      },
+    ],
+  },
 });

@@ -1,9 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { PlanningRitualPage } from "@/components/admin/execution/PlanningRitualPage";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/admin/execucao/rituais/planning")({
-  head: () => ({
-    meta: [{ title: "Raise One — Planning" }, { name: "robots", content: "noindex" }],
-  }),
-  component: PlanningRitualPage,
+  beforeLoad: () => {
+    throw redirect({ to: "/os" });
+  },
 });

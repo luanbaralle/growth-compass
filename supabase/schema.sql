@@ -1,16 +1,7 @@
--- Raise One — Central de Execução (Fase 3)
--- Execute no SQL Editor do Supabase
+-- Raise One OS v2
+-- Execute as migrations em ordem no SQL Editor do Supabase:
+--   1. supabase/migrations/001_os_schema.sql
+--   2. supabase/migrations/002_drop_execution_state.sql (se existir r1_execution_state)
+--   3. supabase/migrations/003_finance_receipts.sql
 
-create table if not exists public.r1_execution_state (
-  id text primary key default 'main',
-  data jsonb not null,
-  updated_at timestamptz not null default now()
-);
-
-alter table public.r1_execution_state enable row level security;
-
--- Acesso apenas via service role (server-side). Anon/authenticated bloqueados.
-create policy "no public access"
-  on public.r1_execution_state
-  for all
-  using (false);
+-- Ver supabase/migrations/ para o schema completo.

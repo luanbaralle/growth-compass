@@ -93,6 +93,7 @@ User-agent: *
 Allow: /
 
 # Admin e páginas internas
+Disallow: /os/
 Disallow: /admin/
 Disallow: /obrigado
 

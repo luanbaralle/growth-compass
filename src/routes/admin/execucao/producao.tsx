@@ -1,9 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { ProducaoPage } from "@/components/admin/execution/ProducaoPage";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/admin/execucao/producao")({
-  head: () => ({
-    meta: [{ title: "Raise One — Produção" }, { name: "robots", content: "noindex" }],
-  }),
-  component: ProducaoPage,
+  beforeLoad: () => {
+    throw redirect({ to: "/os" });
+  },
 });

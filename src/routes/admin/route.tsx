@@ -1,14 +1,13 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { AdminShell } from "@/components/admin/AdminShell";
-import { checkAdminAuth } from "@/lib/api/leads.functions";
 
 export const Route = createFileRoute("/admin")({
-  beforeLoad: async ({ location }) => {
-    if (location.pathname === "/admin/login") return;
-    const { authenticated } = await checkAdminAuth();
-    if (!authenticated) {
-      throw redirect({ to: "/admin/login" });
+  beforeLoad: ({ location }) => {
+    if (location.pathname.startsWith("/admin/login")) {
+      throw redirect({ to: "/os/login" });
     }
+    if (location.pathname.startsWith("/admin/leads")) {
+      throw redirect({ to: "/os/empresas" });
+    }
+    throw redirect({ to: "/os" });
   },
-  component: AdminShell,
 });

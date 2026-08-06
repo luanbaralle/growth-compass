@@ -1,9 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { ReferenciaPage } from "@/components/admin/execution/ReferenciaPage";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/admin/execucao/referencia")({
-  head: () => ({
-    meta: [{ title: "Raise One — Referência" }, { name: "robots", content: "noindex" }],
-  }),
-  component: ReferenciaPage,
+  beforeLoad: () => {
+    throw redirect({ to: "/os" });
+  },
 });

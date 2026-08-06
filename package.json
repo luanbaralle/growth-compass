@@ -9,6 +9,7 @@
     "generate:blog-assets": "echo Blog images use Unsplash registry in src/lib/blog/images.ts",
     "generate:rss": "npx tsx scripts/generate-rss.ts",
     "generate:seo": "npm run generate:rss && npm run generate:sitemap",
+    "migrate:legacy": "npx tsx scripts/migrate-legacy-data.ts",
     "prebuild": "npm run generate:seo",
     "build": "vite build",
     "build:dev": "vite build --mode development",

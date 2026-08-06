@@ -1,116 +1,106 @@
-# Raise One — Aquisição
+# Raise One — Aquisição + Raise One OS v2
 
-Landing pages segmentadas para captação de leads + **Central de Execução** no painel admin. O admin não é só documentação: é o sistema operacional interno da R1 para transformar operação manual em capacidade escalável.
+Site de captação segmentada + **Raise One OS** — sistema operacional interno da agência.
 
-**Stack:** TanStack Start · React 19 · Vite · Nitro (Vercel) · Tailwind CSS 4 · shadcn/ui
+**Stack:** TanStack Start · React 19 · Vite · Nitro (Vercel) · Tailwind CSS 4 · Supabase
 
 ---
 
-## O que este repositório faz
+## Módulos
 
 | Módulo | Rotas | Função |
 |--------|-------|--------|
-| **Hub / LP** | `/`, `/:segment` | Diagnóstico guiado, landing por segmento, formulário de lead |
-| **Admin — Execução** | `/admin/execucao/*` | Central de Execução (planejamento, produção, capacidade, rituais) |
-| **Admin — Leads** | `/admin/leads` | CRM simples de leads recebidos |
+| **Site / LP** | `/`, `/:segment`, `/blog`, etc. | Captação, diagnóstico, conteúdo |
+| **Raise One OS** | `/os/*` | Dashboard, Empresas, Projetos, Marketing, Financeiro, Config |
 
 ---
 
 ## Começando
 
-### Pré-requisitos
-
-- Node.js 22+
-- npm (ou bun)
-
-### Instalação
-
 ```bash
 npm install
 cp .env.example .env
-# Edite .env — ADMIN_PASSWORD e SESSION_SECRET são obrigatórios para o admin
 npm run dev
 ```
 
-App em `http://localhost:3000` (porta pode variar conforme o Vite).
+**Login OS:** `/os/login`  
+**Home após login:** `/os`
 
-### Variáveis essenciais
+---
+
+## Variáveis obrigatórias (OS)
 
 | Variável | Uso |
 |----------|-----|
-| `ADMIN_PASSWORD` | Senha do painel `/admin/login` |
-| `ADMIN_PIN_LUAN` / `VINI` / `CAIO` | PIN opcional por pessoa no login/troca de perfil |
-| `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` | Persistência da Central em produção (opcional) |
-| `SESSION_SECRET` | Assinatura dos cookies de sessão (mín. 32 caracteres) |
-| `VITE_WHATSAPP_NUMBER` | Número usado nos links `wa.me` dos leads |
-
-Demais variáveis (Serper, Google CSE, rate limit SERP) estão documentadas em `.env.example`.
+| `SUPABASE_URL` | URL do projeto Supabase |
+| `SUPABASE_SERVICE_ROLE_KEY` | Chave service role (server-side) |
+| `ADMIN_PASSWORD` | Senha do painel `/os/login` |
+| `SESSION_SECRET` | Assinatura dos cookies (mín. 32 caracteres) |
+| `VITE_WHATSAPP_NUMBER` | Links WhatsApp nos formulários |
 
 ---
 
-## Painel Admin
+## Supabase — Setup
 
-**Login:** `/admin/login`  
-**Home após login:** `/admin/execucao/hoje`
+1. Crie um projeto no [Supabase](https://supabase.com)
+2. Execute no SQL Editor, em ordem:
+   - `supabase/migrations/001_os_schema.sql`
+   - `supabase/migrations/002_drop_execution_state.sql` (se existir tabela legada)
+   - `supabase/migrations/003_finance_receipts.sql` (comprovantes nos lançamentos)
+3. Configure `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` no `.env`
 
-### Central de Execução
+### Migrar dados legados (opcional)
 
-North Star da plataforma: **horas recuperadas + slots de cliente desbloqueados**. Tudo existe para provar, toda semana, que a R1 está saindo da operação manual.
+Se você tinha `data/leads.json` ou `data/execution.json`:
 
-#### Executar
-
-| Seção | Rota | Descrição |
-|-------|------|-----------|
-| **Hoje** | `/admin/execucao/hoje` | Cockpit diário: gargalo, horas recuperadas, 3 prioridades, minhas tarefas |
-| **Planejamento** | `/admin/execucao/planejamento` | Plano 30 dias (4 semanas) + backlog (máx. 3 em "Agora") |
-| **Produção** | `/admin/execucao/producao` | Kanban: Briefing → Editando → Revisão → Aprovado → Agendado → Publicado |
-| **Clientes** | `/admin/execucao/clientes` | Referência + matriz de dependência (hoje vs meta) + capacidade do time |
-| **Capacidade** | `/admin/execucao/capacidade` | Gargalo ativo, Delegação Tracker, horas recuperadas, mapa de gargalos |
-| **Rituais** | `/admin/execucao/rituais` | Hub dos rituais semanais |
-
-#### Referência
-
-| Seção | Rota | Descrição |
-|-------|------|-----------|
-| **Referência** | `/admin/execucao/referencia` | Diagnóstico, RACI, scripts de escopo, SOPs como checklist executável |
-
-#### Comercial
-
-| Seção | Rota | Descrição |
-|-------|------|-----------|
-| **Leads** | `/admin/leads` | Leads captados com status, WhatsApp e filtros |
-
-### Rituais (cadência do time)
-
-| Ritual | Rota | Quando | Duração |
-|--------|------|--------|---------|
-| Planning | `/admin/execucao/rituais/planning` | Segunda | 30 min |
-| Check-in | `/admin/execucao/rituais/checkin` | Quarta | 15 min |
-| Review | `/admin/execucao/rituais/review` | Sexta | 30 min |
-
-Cada ritual gera output formatado para copiar no grupo WhatsApp.
-
-### Divisão Sistema vs Notion
-
-| Sistema (este admin) | Notion (conhecimento) |
-|----------------------|------------------------|
-| Estado mutável: fila, delegação, rituais, checklists | Contratos, playbooks finais, treinamentos |
-| Accountability e métricas de capacidade | Arquivo e referência de longo prazo |
+```bash
+npx tsx scripts/migrate-legacy-data.ts
+```
 
 ---
 
-## Persistência de dados
+## Raise One OS — Navegação
 
-Dados locais em `data/` (gitignored):
+```
+/os                     Dashboard
+/os/empresas            Lista de empresas (leads + clientes unificados)
+/os/empresas/:id        Detalhe com abas (dados, timeline, arquivos, links, serviços, projetos)
+/os/projetos            Lista de projetos (filtros, CRUD)
+/os/projetos/:id        Detalhe (checklist, comentários, status)
+/os/financeiro          Lançamentos (mensalidade, setup, cobranças)
+/os/marketing           Métricas por canal (Google Ads, Meta, SEO...)
+/os/configuracoes       Preferências, equipe, status do sistema
+```
 
-| Arquivo | Conteúdo |
-|---------|----------|
-| `data/leads.json` | Leads do formulário |
-| `data/execution.json` | Estado completo da Central de Execução |
+### Empresas — Estágios
 
-Em deploy serverless (Vercel), os arquivos vão para `/tmp` — adequado para MVP; **Fase 3** prevê Supabase para persistência multi-device.
+`lead` → `contato` → `proposta` → `negociacao` → `ativo` → `pausado` → `encerrado`
 
-**Seed:** na primeira abertura, `execution.json` é criado a partir da [Central de Execução](../Calls/15-06/central-execucao/) (reunião 15/06). Instalações v1 migram automaticamente para v2 (produção, clientes, SOPs, capacidade).
+Formulários públicos criam empresas automaticamente no estágio **lead**.
+
+### Projetos
+
+Tipos: site, landing, tráfego, conteúdo, design, consultoria, outro.  
+Status: pendente → ativo → revisão → concluído (ou bloqueado/cancelado).  
+Criar projeto na lista global ou na aba **Projetos** de uma empresa. Mudanças de status geram atividade na timeline da empresa.
+
+### Financeiro
+
+Tipos: mensalidade, setup, outro. Status: pendente, pago, atrasado, cancelado.  
+Marcar como pago registra atividade na timeline da empresa. Aba **Financeiro** no detalhe da empresa.
+
+### Marketing
+
+Canais: Google Ads, Meta Ads, Landing Page, SEO, Google Meu Negócio.  
+Registro manual de investimento, leads, conversões, CTR, CPC e CPA por período. Aba **Marketing** no detalhe da empresa.
+
+### Dashboard
+
+Visão consolidada: pipeline, leads recentes, projetos/cobranças atrasados, financeiro, marketing e atalhos.
+
+### Configurações
+
+Preferências da agência (nome, WhatsApp interno, notas), status da equipe/PINs, checklist do .env e integrações.
 
 ---
 
@@ -118,86 +108,33 @@ Em deploy serverless (Vercel), os arquivos vão para `/tmp` — adequado para MV
 
 ```
 src/
-├── routes/                    # Rotas file-based (TanStack Router)
-│   ├── index.tsx              # Hub de aquisição
-│   ├── $segment.tsx           # Landing por segmento
-│   └── admin/
-│       ├── route.tsx          # Layout + auth
-│       ├── login.tsx
-│       ├── leads.tsx
-│       └── execucao/          # Central de Execução
-├── components/
-│   ├── landing/               # LP e seções
-│   ├── hub/                   # Diagnóstico guiado
-│   └── admin/
-│       ├── AdminShell.tsx     # Sidebar do admin
-│       └── execution/         # Páginas da Central
+├── domains/companies/     # Empresas (types, schema, repo, service, api, UI)
+├── domains/projects/      # Projetos (types, schema, repo, service, api, UI)
+├── domains/finance/       # Financeiro (types, schema, repo, service, api, UI)
+├── domains/marketing/     # Marketing (types, schema, repo, service, api, UI)
+├── domains/settings/      # Configurações (types, repo, service, api, UI)
+├── os/                    # Shell, dashboard, UI kit
 ├── lib/
-│   ├── execution/             # Types, seed, store, helpers
-│   ├── api/                   # Server functions
-│   └── leads/                 # Store de leads
-└── config/segments/           # Personalização por vertical
+│   ├── supabase/          # Client REST Supabase
+│   └── auth/              # Sessão e tipos do time
+└── routes/
+    ├── os/                # Rotas do OS
+    └── (site público)
 ```
-
-Documentação de convenções de rotas: [`src/routes/README.md`](src/routes/README.md).
 
 ---
 
 ## Scripts
 
 ```bash
-npm run dev       # Desenvolvimento
-npm run build     # Build produção (Vercel/Nitro)
-npm run preview   # Preview do build
-npm run lint      # ESLint
-npm run format    # Prettier
+npm run dev          # Desenvolvimento
+npm run build        # Build produção
+npm run lint         # ESLint
+npx tsx scripts/migrate-legacy-data.ts   # Migração legado → Supabase
 ```
 
 ---
 
-## Roadmap da Central de Execução
+## Redirects legados
 
-### ✅ Fase 1 — MVP executável
-
-- Shell admin com sidebar
-- Hoje, Planejamento, Capacidade, Backlog
-- Ritual Planning
-- Persistência JSON + seed da documentação 15/06
-
-### ✅ Fase 2 — Operação
-
-- Kanban de Produção
-- Clientes + matriz de dependência + capacidade do time
-- Rituais Check-in e Review
-- Referência com SOPs executáveis
-
-### ✅ Fase 3 — Escala
-
-- Auth por pessoa (Luan / Vini / Caio) + PIN opcional
-- Histórico de horas recuperadas (gráfico + snapshot no Review)
-- Export de SOPs validados → markdown para Notion
-- Supabase opcional para persistência em produção (`supabase/schema.sql`)
-
----
-
-## Origem da Central de Execução
-
-Conteúdo estratégico derivado da call de **15/06/2026** (Luan, Vini, Caio), documentado em `Calls/15-06/central-execucao/` (repositório irmão no monorepo local):
-
-- `README.md` — hub e prioridade #1
-- `01-diagnostico.md` … `07-rituais.md` — diagnóstico, RACI, escopo, plano 30d, backlog, SOPs, rituais
-
-O admin implementa a camada **executável** desses documentos. Notion permanece como base de conhecimento permanente.
-
----
-
-## Deploy
-
-Build gera output em `.vercel/output/` (preset Nitro + Vercel). Configure no painel da Vercel:
-
-- `ADMIN_PASSWORD`
-- `SESSION_SECRET`
-- `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` (recomendado em produção)
-- Demais vars de `.env.example` conforme necessário
-
-**Persistência:** com Supabase configurado, o estado da Central vive em `r1_execution_state`. Sem Supabase, `data/execution.json` local (efêmero em serverless).
+Rotas `/admin/*` redirecionam para `/os/*` equivalente.

@@ -1,9 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { CapacidadePage } from "@/components/admin/execution/CapacidadePage";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/admin/execucao/capacidade")({
-  head: () => ({
-    meta: [{ title: "Raise One — Capacidade" }, { name: "robots", content: "noindex" }],
-  }),
-  component: CapacidadePage,
+  beforeLoad: () => {
+    throw redirect({ to: "/os" });
+  },
 });
