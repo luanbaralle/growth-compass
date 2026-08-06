@@ -1,6 +1,6 @@
-import { motion, useReducedMotion, useTransform, type MotionValue } from "framer-motion";
+import { useReducedMotion } from "framer-motion";
+import { mapScrollRange } from "@/components/shared/scrollDrivenUtils";
 import {
-  getItemScrollRange,
   ScrollDrivenSection,
   ScrollProgressBar,
   ScrollSectionBackdrop,
@@ -19,37 +19,80 @@ interface ProblemScrollSectionProps {
   closing?: string;
 }
 
+function ProblemScrollStatic({
+  id,
+  eyebrow,
+  headline,
+  pains,
+  channels,
+  closing,
+}: ProblemScrollSectionProps) {
+  return (
+    <section id={id} className="relative bg-surface/40 py-24 sm:py-32 lg:py-40">
+      <div className="mx-auto max-w-4xl px-5 text-center sm:px-8">
+        <CaseEyebrow>{eyebrow}</CaseEyebrow>
+        <CaseHeading className="mx-auto mt-5">{headline}</CaseHeading>
+
+        <ul className="mt-10 flex flex-wrap justify-center gap-x-5 gap-y-2">
+          {pains.map((pain) => (
+            <li key={pain} className="text-base font-medium text-muted-foreground sm:text-lg">
+              {pain}
+            </li>
+          ))}
+        </ul>
+
+        <div className="mt-16 flex flex-col items-center gap-4 sm:mt-20 sm:gap-6">
+          {channels.map((name) => (
+            <p
+              key={name}
+              className="font-display text-4xl font-bold tracking-[-0.03em] text-foreground/35 sm:text-5xl lg:text-6xl"
+            >
+              {name}
+            </p>
+          ))}
+        </div>
+
+        {closing && (
+          <p className="mx-auto mt-16 max-w-xl text-xl font-medium text-foreground/90 sm:mt-20 sm:text-2xl">
+            {closing}
+          </p>
+        )}
+      </div>
+    </section>
+  );
+}
+
 function ProblemScrollStage({
-  scrollYProgress,
+  progress,
   reduceEffects,
   eyebrow,
   headline,
   pains,
   channels,
   closing,
-}: ProblemScrollSectionProps & {
-  scrollYProgress: MotionValue<number>;
-  reduceEffects: boolean;
-}) {
-  const introOpacity = useTransform(scrollYProgress, [0, 0.08, 0.18, 0.28], [0, 1, 1, 0.45]);
-  const introY = useTransform(scrollYProgress, [0, 0.1], reduceEffects ? [0, 0] : [32, 0]);
-  const painsOpacity = useTransform(scrollYProgress, [0.06, 0.14, 0.24], [0, 1, 0.35]);
-  const closingOpacity = useTransform(scrollYProgress, [0.8, 0.9], [0, 1]);
-  const closingY = useTransform(scrollYProgress, [0.8, 0.9], reduceEffects ? [0, 0] : [28, 0]);
+}: ProblemScrollSectionProps & { progress: number; reduceEffects: boolean }) {
+  const introOpacity = mapScrollRange(progress, [0, 0.08, 0.18, 0.28], [0, 1, 1, 0.45]);
+  const introY = reduceEffects ? 0 : mapScrollRange(progress, [0, 0.1], [32, 0]);
+  const painsOpacity = mapScrollRange(progress, [0.06, 0.14, 0.24], [0, 1, 0.35]);
+  const closingOpacity = mapScrollRange(progress, [0.8, 0.9], [0, 1]);
+  const closingY = reduceEffects ? 0 : mapScrollRange(progress, [0.8, 0.9], [28, 0]);
 
   return (
-    <div className="relative flex h-[100dvh] min-h-[100svh] items-center justify-center overflow-hidden">
+    <div className="relative flex flex-1 items-center justify-center">
       <ScrollSectionBackdrop />
 
       <div className="relative mx-auto w-full max-w-5xl px-5 sm:px-8">
         <div className="flex flex-col items-center text-center">
-          <motion.div style={{ opacity: introOpacity, y: introY }} className="max-w-3xl">
+          <div
+            className="max-w-3xl"
+            style={{ opacity: introOpacity, transform: `translate3d(0, ${introY}px, 0)` }}
+          >
             <CaseEyebrow>{eyebrow}</CaseEyebrow>
             <CaseHeading className="mx-auto mt-5">{headline}</CaseHeading>
 
-            <motion.ul
-              style={{ opacity: painsOpacity }}
+            <ul
               className="mt-8 flex flex-wrap justify-center gap-x-4 gap-y-2 sm:gap-x-6"
+              style={{ opacity: painsOpacity }}
             >
               {pains.map((pain) => (
                 <li
@@ -59,8 +102,8 @@ function ProblemScrollStage({
                   {pain}
                 </li>
               ))}
-            </motion.ul>
-          </motion.div>
+            </ul>
+          </div>
 
           <div
             className="relative mt-14 h-[clamp(5rem,14vw,8.5rem)] w-full sm:mt-16"
@@ -72,7 +115,7 @@ function ProblemScrollStage({
                 label={name}
                 index={index}
                 total={channels.length}
-                progress={scrollYProgress}
+                progress={progress}
                 reduceEffects={reduceEffects}
               />
             ))}
@@ -80,12 +123,12 @@ function ProblemScrollStage({
         </div>
 
         {closing && (
-          <motion.p
-            style={{ opacity: closingOpacity, y: closingY }}
+          <p
             className="mx-auto mt-12 max-w-xl text-center text-lg font-medium leading-snug text-foreground/90 sm:mt-14 sm:text-xl md:text-2xl"
+            style={{ opacity: closingOpacity, transform: `translate3d(0, ${closingY}px, 0)` }}
           >
             {closing}
-          </motion.p>
+          </p>
         )}
 
         {channels.length > 1 && (
@@ -98,14 +141,14 @@ function ProblemScrollStage({
                 key={name}
                 index={index}
                 total={channels.length}
-                progress={scrollYProgress}
+                progress={progress}
               />
             ))}
           </div>
         )}
       </div>
 
-      <ScrollProgressBar progress={scrollYProgress} />
+      <ScrollProgressBar progress={progress} />
     </div>
   );
 }
@@ -115,6 +158,19 @@ export function ProblemScrollSection(props: ProblemScrollSectionProps) {
   const isWide = useIsWideViewport();
   const { id, eyebrow, headline, pains, channels, closing } = props;
 
+  if (reduceEffects) {
+    return (
+      <ProblemScrollStatic
+        id={id}
+        eyebrow={eyebrow}
+        headline={headline}
+        pains={pains}
+        channels={channels}
+        closing={closing}
+      />
+    );
+  }
+
   return (
     <ScrollDrivenSection
       id={id}
@@ -122,9 +178,9 @@ export function ProblemScrollSection(props: ProblemScrollSectionProps) {
       isWide={isWide}
       className="relative isolate bg-surface/40"
     >
-      {(scrollYProgress) => (
+      {(progress) => (
         <ProblemScrollStage
-          scrollYProgress={scrollYProgress}
+          progress={progress}
           reduceEffects={reduceEffects}
           eyebrow={eyebrow}
           headline={headline}

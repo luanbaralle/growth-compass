@@ -1,18 +1,13 @@
-import {
-  motion,
-  useMotionValueEvent,
-  useReducedMotion,
-  useTransform,
-  type MotionValue,
-} from "framer-motion";
-import { useState, type ReactNode } from "react";
+import { useReducedMotion } from "framer-motion";
+import { type ReactNode } from "react";
 import {
   SectionDescription,
   SectionEyebrow,
   SectionTitle,
 } from "@/components/home/shared/SectionShell";
+import { mapScrollRange } from "@/components/shared/scrollDrivenUtils";
 import {
-  getItemScrollRange,
+  getActiveScrollIndex,
   ScrollDrivenSection,
   ScrollProgressBar,
   ScrollSectionBackdrop,
@@ -36,71 +31,67 @@ interface ProcessScrollSectionProps {
   headerExtra?: ReactNode;
 }
 
-interface StepDescriptionProps {
-  steps: ProcessScrollStep[];
-  progress: MotionValue<number>;
-}
-
-function StepDescription({ steps, progress }: StepDescriptionProps) {
-  const activeDescription = useTransform(progress, (value) => {
-    const ranges = steps.map((_, index) => getItemScrollRange(index, steps.length));
-    let bestIndex = 0;
-    let bestWeight = -1;
-
-    ranges.forEach((range, index) => {
-      if (value >= range.start && value <= range.end) {
-        const distance = Math.abs(value - range.peak);
-        const weight = 1 - distance / (range.end - range.start);
-        if (weight > bestWeight) {
-          bestWeight = weight;
-          bestIndex = index;
-        }
-      }
-    });
-
-    return steps[bestIndex]?.description ?? "";
-  });
-  const [description, setDescription] = useState(steps[0]?.description ?? "");
-
-  useMotionValueEvent(activeDescription, "change", setDescription);
-
+function ProcessScrollStatic({
+  eyebrow,
+  title,
+  description,
+  steps,
+  headerExtra,
+}: ProcessScrollSectionProps) {
   return (
-    <motion.p
-      style={{ opacity: useTransform(progress, [0.14, 0.22], [0, 1]) }}
-      className="mx-auto mt-8 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg"
-    >
-      {description}
-    </motion.p>
+    <section className="relative border-b border-border/60 bg-background py-24 sm:py-32">
+      <div className="mx-auto max-w-3xl px-5 text-center sm:px-8">
+        <SectionEyebrow>{eyebrow}</SectionEyebrow>
+        <SectionTitle>{title}</SectionTitle>
+        {description && <SectionDescription>{description}</SectionDescription>}
+        {headerExtra}
+        <ul className="mt-12 space-y-3">
+          {steps.map((step) => (
+            <li key={step.number} className="font-display text-2xl font-bold sm:text-3xl">
+              {step.title}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
   );
 }
 
 function ProcessScrollStage({
-  scrollYProgress,
+  progress,
   reduceEffects,
   eyebrow,
   title,
   description,
   steps,
   headerExtra,
-}: ProcessScrollSectionProps & {
-  scrollYProgress: MotionValue<number>;
-  reduceEffects: boolean;
-}) {
-  const introOpacity = useTransform(scrollYProgress, [0, 0.08, 0.16, 0.24], [0, 1, 1, 0.5]);
-  const introY = useTransform(scrollYProgress, [0, 0.1], reduceEffects ? [0, 0] : [24, 0]);
+}: ProcessScrollSectionProps & { progress: number; reduceEffects: boolean }) {
+  const introOpacity = mapScrollRange(progress, [0, 0.08, 0.16, 0.24], [0, 1, 1, 0.5]);
+  const introY = reduceEffects ? 0 : mapScrollRange(progress, [0, 0.1], [24, 0]);
+  const descOpacity = mapScrollRange(progress, [0.14, 0.22], [0, 1]);
+  const activeIndex = getActiveScrollIndex(progress, steps.length);
+  const activeDescription = steps[activeIndex]?.description ?? "";
 
   return (
-    <div className="relative flex h-[100dvh] min-h-[100svh] items-center justify-center overflow-hidden">
+    <div className="relative flex flex-1 items-center justify-center">
       <ScrollSectionBackdrop />
 
       <div className="relative mx-auto w-full max-w-5xl px-5 text-center sm:px-8">
-        <motion.div style={{ opacity: introOpacity, y: introY }} className="mx-auto max-w-3xl">
+        <div
+          className="mx-auto max-w-3xl"
+          style={{ opacity: introOpacity, transform: `translate3d(0, ${introY}px, 0)` }}
+        >
           <SectionEyebrow>{eyebrow}</SectionEyebrow>
           <SectionTitle>{title}</SectionTitle>
           {description && <SectionDescription>{description}</SectionDescription>}
           {headerExtra}
-          <StepDescription steps={steps} progress={scrollYProgress} />
-        </motion.div>
+          <p
+            className="mx-auto mt-8 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg"
+            style={{ opacity: descOpacity }}
+          >
+            {activeDescription}
+          </p>
+        </div>
 
         <div
           className="relative mx-auto mt-10 h-[clamp(4.5rem,12vw,7rem)] w-full max-w-3xl sm:mt-12"
@@ -112,7 +103,7 @@ function ProcessScrollStage({
               label={step.title}
               index={index}
               total={steps.length}
-              progress={scrollYProgress}
+              progress={progress}
               reduceEffects={reduceEffects}
             />
           ))}
@@ -128,14 +119,14 @@ function ProcessScrollStage({
                 key={step.number}
                 index={index}
                 total={steps.length}
-                progress={scrollYProgress}
+                progress={progress}
               />
             ))}
           </div>
         )}
       </div>
 
-      <ScrollProgressBar progress={scrollYProgress} />
+      <ScrollProgressBar progress={progress} />
     </div>
   );
 }
@@ -145,6 +136,10 @@ export function ProcessScrollSection(props: ProcessScrollSectionProps) {
   const isWide = useIsWideViewport();
   const { id, steps } = props;
 
+  if (reduceEffects) {
+    return <ProcessScrollStatic {...props} />;
+  }
+
   return (
     <ScrollDrivenSection
       id={id}
@@ -152,12 +147,8 @@ export function ProcessScrollSection(props: ProcessScrollSectionProps) {
       isWide={isWide}
       className="relative border-b border-border/60 bg-background"
     >
-      {(scrollYProgress) => (
-        <ProcessScrollStage
-          scrollYProgress={scrollYProgress}
-          reduceEffects={reduceEffects}
-          {...props}
-        />
+      {(progress) => (
+        <ProcessScrollStage progress={progress} reduceEffects={reduceEffects} {...props} />
       )}
     </ScrollDrivenSection>
   );
