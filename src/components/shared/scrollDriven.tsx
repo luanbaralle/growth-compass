@@ -106,7 +106,7 @@ export function ScrollSequenceWord({
         opacity: outer.opacity,
         zIndex: outer.zIndex,
         transform: outer.transform,
-        visibility: style.opacity < 0.04 ? "hidden" : "visible",
+        visibility: style.opacity < 0.06 ? "hidden" : "visible",
       }}
     >
       <span

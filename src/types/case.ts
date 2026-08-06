@@ -1,6 +1,8 @@
 export interface CaseMetric {
   value: string;
   label: string;
+  /** Contexto humanizado — ex.: média diária, o que o número representa */
+  context?: string;
 }
 
 export interface CaseGalleryItem {
@@ -130,6 +132,47 @@ export interface CaseMarketing {
   copyStrategy?: string;
   conversionStrategy?: string;
   ctaPrimary?: string;
+  /** Se definido, o botão principal abre WhatsApp com esta mensagem */
+  ctaWhatsAppMessage?: string;
+  /** Itens analisados no diagnóstico gratuito — exibidos no CTA final */
+  ctaBullets?: string[];
+}
+
+export interface CaseInsightItem {
+  title: string;
+  description: string;
+}
+
+export interface CaseEvidenceSlot {
+  label: string;
+  description?: string;
+}
+
+export interface CaseSystemFlowStep {
+  label: string;
+  /** Microcopy curto abaixo do label */
+  hint?: string;
+  /** demand = entrada do usuário · system = touchpoint Raise · conversion = fechamento */
+  kind?: "demand" | "system" | "conversion";
+}
+
+export interface CaseDeliverableItem {
+  label: string;
+  hint?: string;
+}
+
+export type CaseDeliverable = string | CaseDeliverableItem;
+
+export interface CaseTransformItem {
+  label: string;
+  hint?: string;
+}
+
+export type CaseTransformEntry = string | CaseTransformItem;
+
+export interface CaseTransformSide {
+  outcome: string;
+  items: CaseTransformEntry[];
 }
 
 /** Configuração estendida do hero — casos curados (ex.: UNIP) */
@@ -201,15 +244,33 @@ export interface CaseContentBlock {
   faqs?: CaseFAQ[];
   curiosities?: CaseCuriosity[];
   quotes?: CaseQuote[];
+  problemIntro?: string;
+  problemConsequence?: string;
   problemClosing?: string;
   problemChannels?: string[];
   quoteContext?: string;
   landingTitle?: string;
+  landingDescription?: string;
   landingScrollHint?: string;
-  transformBefore?: { channels: string[]; outcome: string };
-  transformAfter?: { channels: string[]; outcome: string };
+  transformBefore?: CaseTransformSide;
+  transformAfter?: CaseTransformSide;
+  transformIntro?: string;
+  transformClosing?: string;
   /** Entregáveis Raise One — seção discreta de autoria */
-  agencyDeliverables?: string[];
+  agencyDeliverables?: CaseDeliverable[];
+  deliverablesIntro?: string;
+  resultsIntro?: string;
+  whyItWorkedTitle?: string;
+  whyItWorkedIntro?: string;
+  whyItWorked?: CaseInsightItem[];
+  lessonsTitle?: string;
+  lessonsIntro?: string;
+  lessonsLearned?: CaseInsightItem[];
+  evidenceTitle?: string;
+  evidenceIntro?: string;
+  evidenceSlots?: CaseEvidenceSlot[];
+  systemFlowIntro?: string;
+  systemFlow?: CaseSystemFlowStep[];
 }
 
 /* ─── Case ─── */

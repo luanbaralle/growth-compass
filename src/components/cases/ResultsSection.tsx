@@ -8,6 +8,7 @@ interface ResultsSectionProps {
   metrics: CaseMetric[];
   testimonial?: CaseTestimonial;
   deliverables?: string[];
+  intro?: string;
 }
 
 function MetricCard({ metric, index }: { metric: CaseMetric; index: number }) {
@@ -46,6 +47,17 @@ function MetricCard({ metric, index }: { metric: CaseMetric; index: number }) {
       >
         {metric.label}
       </p>
+      {metric.context && (
+        <p
+          className={
+            isFeatured
+              ? "mt-4 text-sm leading-relaxed text-muted-foreground/80 sm:text-base"
+              : "mt-3 text-xs leading-relaxed text-muted-foreground/75"
+          }
+        >
+          {metric.context}
+        </p>
+      )}
       {isFeatured && (
         <span className="mt-6 inline-flex rounded-full border border-brand/20 bg-brand/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-brand">
           Destaque
@@ -55,7 +67,7 @@ function MetricCard({ metric, index }: { metric: CaseMetric; index: number }) {
   );
 }
 
-export function ResultsSection({ metrics, testimonial, deliverables = [] }: ResultsSectionProps) {
+export function ResultsSection({ metrics, testimonial, deliverables = [], intro }: ResultsSectionProps) {
   return (
     <CaseSection className="relative py-24 sm:py-32 lg:py-40">
       {/* Background accent */}
@@ -67,6 +79,9 @@ export function ResultsSection({ metrics, testimonial, deliverables = [] }: Resu
       <CaseReveal className="mx-auto max-w-2xl text-center">
         <CaseEyebrow>Resultados</CaseEyebrow>
         <CaseHeading>Impacto mensurável</CaseHeading>
+        {intro && (
+          <p className="mt-6 text-base leading-relaxed text-muted-foreground sm:text-lg">{intro}</p>
+        )}
       </CaseReveal>
 
       {/* Metrics grid — bento layout */}

@@ -2,6 +2,7 @@ import type { Case } from "@/types/case";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import { fadeUp, viewportOnce } from "./shared/motion";
 
 interface CaseCTAProps {
@@ -15,6 +16,15 @@ export function CaseCTA({ caseData }: CaseCTAProps) {
     caseData.marketing?.conversionStrategy ??
     `Cada projeto começa com um diagnóstico gratuito.`;
   const primaryLabel = caseData.marketing?.ctaPrimary ?? "Fazer diagnóstico gratuito";
+
+  const bullets = caseData.marketing?.ctaBullets ?? [];
+  const whatsappMessage = caseData.marketing?.ctaWhatsAppMessage;
+  const primaryWhatsAppHref = whatsappMessage
+    ? buildWhatsAppUrl(whatsappMessage)
+    : null;
+
+  const primaryButtonClass =
+    "group inline-flex items-center gap-2.5 rounded-full bg-brand px-8 py-4 text-sm font-semibold text-primary-foreground shadow-[0_0_50px_-10px_oklch(0.72_0.19_48/0.5)] transition-all hover:shadow-[0_0_60px_-8px_oklch(0.72_0.19_48/0.6)] hover:brightness-110";
 
   return (
     <section className="relative overflow-hidden py-24 sm:py-32 lg:py-40">
@@ -59,14 +69,34 @@ export function CaseCTA({ caseData }: CaseCTAProps) {
             {subheadline}
           </p>
 
+          {bullets.length > 0 && (
+            <ul className="relative mx-auto mt-8 max-w-md space-y-2.5 text-left text-sm text-muted-foreground sm:text-base">
+              {bullets.map((item) => (
+                <li key={item} className="flex items-start gap-3">
+                  <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-brand" aria-hidden />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          )}
+
           <div className="relative mt-10 flex flex-wrap justify-center gap-4">
-            <Link
-              to="/diagnostico"
-              className="group inline-flex items-center gap-2.5 rounded-full bg-brand px-8 py-4 text-sm font-semibold text-primary-foreground shadow-[0_0_50px_-10px_oklch(0.72_0.19_48/0.5)] transition-all hover:shadow-[0_0_60px_-8px_oklch(0.72_0.19_48/0.6)] hover:brightness-110"
-            >
-              {primaryLabel}
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-            </Link>
+            {primaryWhatsAppHref ? (
+              <a
+                href={primaryWhatsAppHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={primaryButtonClass}
+              >
+                {primaryLabel}
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </a>
+            ) : (
+              <Link to="/diagnostico" className={primaryButtonClass}>
+                {primaryLabel}
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            )}
             <Link
               to="/programa-de-crescimento"
               className="inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.04] px-8 py-4 text-sm font-semibold backdrop-blur-sm transition-all hover:border-white/20 hover:bg-white/[0.08]"

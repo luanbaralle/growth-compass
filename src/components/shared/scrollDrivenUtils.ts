@@ -70,7 +70,7 @@ export function applyScrollWordStyleNested(
 ) {
   outer.style.opacity = String(style.opacity);
   outer.style.zIndex = String(style.zIndex);
-  outer.style.visibility = style.opacity < 0.04 ? "hidden" : "visible";
+  outer.style.visibility = style.opacity < 0.06 ? "hidden" : "visible";
   outer.style.transform = `translate3d(0, ${style.y}px, 0) scale(${style.scale})`;
   inner.style.filter = style.blur > 0.01 ? `blur(${style.blur}px)` : "";
 }

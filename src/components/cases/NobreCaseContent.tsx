@@ -1,6 +1,5 @@
 import type { Case } from "@/types/case";
 import {
-  ArrowRight,
   ClipboardList,
   LayoutTemplate,
   MapPin,
@@ -16,6 +15,9 @@ import { ProblemScrollSection } from "./ProblemScrollSection";
 import { ProcessTimeline } from "./ProcessTimeline";
 import { ResultsSection } from "./ResultsSection";
 import { ReputationShowcase } from "./showcase";
+import { LessonsSection } from "./shared/LessonsSection";
+import { TransformSection } from "./shared/TransformSection";
+import { WhyItWorkedSection } from "./shared/WhyItWorkedSection";
 import {
   CaseBody,
   CaseEyebrow,
@@ -23,7 +25,7 @@ import {
   CaseReveal,
   CaseSection,
 } from "./shared/CaseSection";
-import { fadeUp, scaleIn, staggerContainer, viewportOnce } from "./shared/motion";
+import { fadeUp, staggerContainer, viewportOnce } from "./shared/motion";
 
 interface NobreCaseContentProps {
   caseData: Case;
@@ -70,6 +72,7 @@ export function NobreCaseContent({ caseData }: NobreCaseContentProps) {
         id="problema"
         eyebrow="O problema"
         headline={data.challenge}
+        intro={content?.problemIntro}
         pains={data.goals}
         channels={content?.problemChannels ?? []}
         closing={content?.problemClosing}
@@ -77,12 +80,31 @@ export function NobreCaseContent({ caseData }: NobreCaseContentProps) {
 
       <ProcessTimeline steps={data.process} eyebrow="A solução" title={data.solution} />
 
+      <ResultsSection
+        metrics={data.metrics}
+        deliverables={[]}
+        intro={content?.resultsIntro}
+      />
+
+      {content?.whyItWorked && content.whyItWorked.length > 0 && (
+        <WhyItWorkedSection
+          title={content.whyItWorkedTitle}
+          intro={content.whyItWorkedIntro}
+          items={content.whyItWorked}
+          systemFlow={content.systemFlow}
+          systemFlowIntro={content.systemFlowIntro}
+        />
+      )}
+
       <CaseSection id="reputacao" className="overflow-visible py-24 sm:py-32">
         <CaseReveal className="mx-auto max-w-3xl text-center">
           <hr className="border-white/[0.08]" />
           <CaseHeading className="mt-10 text-2xl sm:text-3xl lg:text-4xl">
             {content?.landingTitle}
           </CaseHeading>
+          {content?.landingDescription && (
+            <CaseBody className="mx-auto mt-6 max-w-2xl">{content.landingDescription}</CaseBody>
+          )}
           {content?.landingScrollHint && (
             <p className="mt-4 text-sm text-muted-foreground">{content.landingScrollHint}</p>
           )}
@@ -103,127 +125,29 @@ export function NobreCaseContent({ caseData }: NobreCaseContentProps) {
         </div>
       </CaseSection>
 
-      <ResultsSection metrics={data.metrics} deliverables={[]} />
+      {content?.lessonsLearned && content.lessonsLearned.length > 0 && (
+        <LessonsSection
+          title={content.lessonsTitle}
+          intro={content.lessonsIntro}
+          items={content.lessonsLearned}
+        />
+      )}
 
       {content?.agencyDeliverables && content.agencyDeliverables.length > 0 && (
-        <DeliverablesScrollSection id="entregaveis" items={content.agencyDeliverables} />
+        <DeliverablesScrollSection
+          id="entregaveis"
+          items={content.agencyDeliverables}
+          intro={content.deliverablesIntro}
+        />
       )}
 
       {content?.transformBefore && content?.transformAfter && (
-        <CaseSection id="transformacao" variant="elevated" className="py-24 sm:py-32 lg:py-40">
-          <CaseReveal className="mx-auto mb-16 max-w-2xl text-center sm:mb-20">
-            <CaseEyebrow>A transformação</CaseEyebrow>
-            <CaseHeading>Antes & Depois</CaseHeading>
-          </CaseReveal>
-
-          <div className="grid items-center gap-10 lg:grid-cols-[1fr_auto_1fr] lg:gap-8">
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={viewportOnce}
-              variants={scaleIn}
-              className="group"
-            >
-              <div className="mb-4 flex items-center gap-3">
-                <span className="h-px flex-1 bg-border" />
-                <span className="text-[11px] font-semibold uppercase tracking-[0.32em] text-muted-foreground">
-                  Antes
-                </span>
-                <span className="h-px flex-1 bg-border" />
-              </div>
-
-              <div className="rounded-2xl border border-white/[0.06] bg-surface/20 p-8 opacity-80 transition-opacity duration-500 group-hover:opacity-100 sm:p-10">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-muted-foreground">
-                  {content.transformBefore.outcome}
-                </p>
-
-                <motion.ul
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={viewportOnce}
-                  variants={staggerContainer}
-                  className="mt-8 space-y-4"
-                >
-                  {content.transformBefore.channels.map((channel) => (
-                    <motion.li
-                      key={channel}
-                      variants={fadeUp}
-                      className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-background/40 px-5 py-4"
-                    >
-                      <span className="h-2 w-2 shrink-0 rounded-full bg-muted-foreground/30" />
-                      <span className="font-display text-lg font-semibold text-muted-foreground sm:text-xl">
-                        {channel}
-                      </span>
-                    </motion.li>
-                  ))}
-                </motion.ul>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={viewportOnce}
-              transition={{ delay: 0.2, duration: 0.5 }}
-              className="flex justify-center"
-              aria-hidden
-            >
-              <div className="flex h-14 w-14 items-center justify-center rounded-full border border-brand/30 bg-brand/10 shadow-[0_0_40px_-10px_oklch(0.72_0.19_48/0.5)] lg:h-16 lg:w-16">
-                <ArrowRight className="h-6 w-6 rotate-90 text-brand lg:rotate-0" />
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={viewportOnce}
-              variants={scaleIn}
-              className="group"
-            >
-              <div className="mb-4 flex items-center gap-3">
-                <span className="h-px flex-1 bg-border" />
-                <span className="text-[11px] font-semibold uppercase tracking-[0.32em] text-brand">
-                  Depois
-                </span>
-                <span className="h-px flex-1 bg-border" />
-              </div>
-
-              <div className="relative overflow-hidden rounded-2xl border border-brand/25 bg-brand/5 p-8 shadow-[0_20px_60px_-30px_oklch(0.72_0.19_48/0.35)] sm:p-10">
-                <div
-                  className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-brand/10"
-                  aria-hidden
-                />
-                <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-brand/80">
-                  {content.transformAfter.outcome}
-                </p>
-
-                <motion.ol
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={viewportOnce}
-                  variants={staggerContainer}
-                  className="relative mt-8 space-y-0"
-                >
-                  {content.transformAfter.channels.map((step, i) => (
-                    <motion.li key={step} variants={fadeUp} className="relative flex flex-col items-stretch">
-                      <div className="flex items-center gap-4 rounded-xl border border-brand/25 bg-brand/10 px-5 py-4">
-                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-brand/40 bg-brand/15 text-xs font-bold text-brand">
-                          {String(i + 1).padStart(2, "0")}
-                        </span>
-                        <span className="font-display text-lg font-semibold sm:text-xl">{step}</span>
-                      </div>
-                      {i < content.transformAfter.channels.length - 1 && (
-                        <span className="my-1 flex justify-center text-brand/40" aria-hidden>
-                          ↓
-                        </span>
-                      )}
-                    </motion.li>
-                  ))}
-                </motion.ol>
-              </div>
-            </motion.div>
-          </div>
-        </CaseSection>
+        <TransformSection
+          intro={content.transformIntro}
+          closing={content.transformClosing}
+          before={content.transformBefore}
+          after={content.transformAfter}
+        />
       )}
 
       {content?.faqs && content.faqs.length > 0 && (
