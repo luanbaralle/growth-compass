@@ -61,10 +61,26 @@ export function OSShell() {
     <div className="flex min-h-screen bg-background text-foreground">
       <aside className="admin-sidebar hidden w-56 shrink-0 flex-col border-r border-border/60 md:flex">
         <div className="border-b border-border/60 px-5 py-5">
-          <p className="font-display text-base font-bold tracking-tight">Raise One</p>
-          <p className="text-xs text-muted-foreground">OS v2</p>
+          <p className="font-display text-base font-bold tracking-tight">
+            Raise One <span className="text-brand">OS</span>
+          </p>
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/70">
+            v2
+          </p>
           {activePerson && (
             <div className="mt-4">
+              <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/50">
+                Você
+              </p>
+              <div className="mb-3 flex items-center gap-3 rounded-xl border border-border/30 bg-surface/30 p-3">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand/15 text-sm font-bold text-brand">
+                  {TEAM_LABELS[activePerson].charAt(0)}
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold">{TEAM_LABELS[activePerson]}</p>
+                  <p className="text-[11px] text-muted-foreground">Administrador</p>
+                </div>
+              </div>
               <PersonSwitcher activePerson={activePerson} onSwitch={switchPerson} />
             </div>
           )}
@@ -82,7 +98,7 @@ export function OSShell() {
                   "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-all duration-150",
                   active
                     ? "admin-nav-active font-medium"
-                    : "text-muted-foreground hover:bg-surface-elevated/60 hover:text-foreground",
+                    : "text-muted-foreground transition-all duration-200 hover:bg-surface-elevated/60 hover:text-foreground hover:shadow-[inset_0_0_0_1px_oklch(1_0_0/0.04)]",
                 )}
               >
                 <item.icon className="h-4 w-4 shrink-0" />
@@ -129,7 +145,7 @@ export function OSShell() {
             </SelectContent>
           </Select>
         </header>
-        <main className="flex-1 overflow-auto">
+        <main className="dashboard-page-bg flex-1 overflow-auto">
           <div className="mx-auto max-w-7xl animate-fade-up p-4 sm:p-6 lg:p-8">
             <Outlet />
           </div>
@@ -172,9 +188,6 @@ function PersonSwitcher({
   return (
     <>
       <div className="space-y-1.5">
-        <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-          Você
-        </p>
         <Select value={activePerson} onValueChange={handleSelect}>
           <SelectTrigger className="h-8 w-full text-xs">
             <SelectValue />

@@ -12,7 +12,7 @@ import type {
   CommercialScript,
 } from "@/domains/prospection/types";
 import { SCRIPT_TYPE_LABELS } from "@/domains/prospection/types";
-import { EmptyState, PageHeader, PageSkeleton, Section } from "@/os/ui";
+import { EmptyState, PageHeader, PageSkeleton, Section, OSPage } from "@/os/ui";
 import { getErrorMessage, isUnauthorizedError } from "@/lib/api/client-errors";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -68,18 +68,16 @@ export function CommercialLibraryPage() {
   const current = data.find((d) => d.segment.id === segmentId) ?? data[0];
 
   return (
-    <div className="space-y-6">
+    <OSPage>
       <PageHeader
         title="Biblioteca Comercial"
         description="Scripts, objeções e qualificação por segmento"
         icon={BookOpen}
         actions={
-          <Button variant="outline" size="sm" asChild>
-            <Link to="/os/prospeccao">
-              <ArrowLeft className="h-4 w-4" />
-              Pipeline
-            </Link>
-          </Button>
+          <Link to="/os/prospeccao" className="dashboard-btn-ghost">
+            <ArrowLeft className="h-4 w-4" />
+            Pipeline
+          </Link>
         }
       />
 
@@ -132,7 +130,7 @@ export function CommercialLibraryPage() {
           onSaved={load}
         />
       </Section>
-    </div>
+    </OSPage>
   );
 }
 

@@ -18,7 +18,7 @@ import type { ProjectStatus, ProjectWithCompany } from "@/domains/projects/types
 import { PROJECT_STATUSES, STATUS_LABELS } from "@/domains/projects/types";
 import { TEAM_LABELS, type TeamMember } from "@/lib/auth/types";
 import { getErrorMessage, isUnauthorizedError } from "@/lib/api/client-errors";
-import { EmptyState, PageHeader, PageSkeleton } from "@/os/ui";
+import { EmptyState, PageHeader, PageSkeleton, OSPage, OSRefreshButton, OSPrimaryButton, FilterToolbar, FilterPill, DataTable } from "@/os/ui";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -48,7 +48,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { FolderKanban, Plus, RefreshCw, Search, Trash2 } from "lucide-react";
+import { FolderKanban, Search, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 export function ProjectListPage() {
@@ -104,20 +104,15 @@ export function ProjectListPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <OSPage>
       <PageHeader
         title="Projetos"
         description="Execução por empresa — checklist, prazos e comentários"
         icon={FolderKanban}
         actions={
           <>
-            <Button variant="outline" size="sm" onClick={load} disabled={loading}>
-              <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-            </Button>
-            <Button size="sm" onClick={() => setCreateOpen(true)}>
-              <Plus className="h-4 w-4" />
-              Novo projeto
-            </Button>
+            <OSRefreshButton loading={loading} onClick={load} />
+            <OSPrimaryButton label="Novo projeto" onClick={() => setCreateOpen(true)} />
           </>
         }
       />
@@ -129,9 +124,9 @@ export function ProjectListPage() {
         />
       )}
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+      <FilterToolbar>
+        <div className="relative min-w-[200px] flex-1">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/50" />
           <Input
             className="pl-9"
             placeholder="Buscar por título ou empresa..."
@@ -152,7 +147,7 @@ export function ProjectListPage() {
             ))}
           </SelectContent>
         </Select>
-      </div>
+      </FilterToolbar>
 
       <div className="flex flex-wrap gap-2">
         <FilterPill
@@ -184,7 +179,7 @@ export function ProjectListPage() {
           description="Crie um projeto vinculado a uma empresa para acompanhar a execução."
         />
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-border">
+        <DataTable>
           <Table>
             <TableHeader>
               <TableRow>
@@ -267,7 +262,7 @@ export function ProjectListPage() {
               ))}
             </TableBody>
           </Table>
-        </div>
+        </DataTable>
       )}
 
       <ProjectFormDialog
@@ -276,30 +271,6 @@ export function ProjectListPage() {
         title="Novo projeto"
         onSubmit={handleCreate}
       />
-    </div>
-  );
-}
-
-function FilterPill({
-  active,
-  onClick,
-  label,
-}: {
-  active: boolean;
-  onClick: () => void;
-  label: string;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
-        active
-          ? "border-brand bg-brand-soft text-brand"
-          : "border-border text-muted-foreground hover:text-foreground"
-      }`}
-    >
-      {label}
-    </button>
+    </OSPage>
   );
 }

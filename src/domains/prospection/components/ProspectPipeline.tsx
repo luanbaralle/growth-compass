@@ -52,8 +52,8 @@ export function ProspectPipeline({
             <div
               key={status}
               className={cn(
-                "flex w-[240px] shrink-0 flex-col rounded-xl border border-border/50 bg-surface-elevated/20",
-                isOver && "border-brand/40 bg-brand-soft/20",
+                "dashboard-card flex w-[240px] shrink-0 flex-col overflow-hidden p-0",
+                isOver && "border-brand/40 ring-1 ring-brand/20",
               )}
               onDragOver={(e) => {
                 e.preventDefault();
@@ -67,8 +67,8 @@ export function ProspectPipeline({
                 if (id) void handleDrop(status, id);
               }}
             >
-              <div className="flex items-center justify-between border-b border-border/40 px-3 py-2.5">
-                <p className="text-xs font-semibold">{STATUS_LABELS[status]}</p>
+              <div className="flex items-center justify-between border-b border-border/30 px-3 py-2.5">
+                <p className="dashboard-label text-[11px]">{STATUS_LABELS[status]}</p>
                 <span className="rounded-full bg-surface-elevated px-2 py-0.5 text-[10px] text-muted-foreground">
                   {items.length}
                 </span>

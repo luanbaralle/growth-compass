@@ -31,7 +31,7 @@ import {
   effectiveFinanceStatus,
 } from "@/domains/finance/types";
 import { getErrorMessage, isUnauthorizedError } from "@/lib/api/client-errors";
-import { EmptyState, PageHeader, PageSkeleton, StatCard } from "@/os/ui";
+import { EmptyState, PageHeader, PageSkeleton, StatCard, OSPage, OSRefreshButton, OSPrimaryButton, FilterToolbar, FilterPill, DataTable } from "@/os/ui";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -61,7 +61,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Check, Pencil, Plus, RefreshCw, Search, Trash2, Wallet } from "lucide-react";
+import { Check, Pencil, Search, Trash2, Wallet } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -151,20 +151,15 @@ export function FinanceListPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <OSPage>
       <PageHeader
         title="Financeiro"
         description="Mensalidades, setup e cobranças por empresa"
         icon={Wallet}
         actions={
           <>
-            <Button variant="outline" size="sm" onClick={load} disabled={loading}>
-              <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-            </Button>
-            <Button size="sm" onClick={() => setCreateOpen(true)}>
-              <Plus className="h-4 w-4" />
-              Novo lançamento
-            </Button>
+            <OSRefreshButton loading={loading} onClick={load} />
+            <OSPrimaryButton label="Novo lançamento" onClick={() => setCreateOpen(true)} />
           </>
         }
       />
@@ -197,9 +192,9 @@ export function FinanceListPage() {
         <EmptyState title="Não foi possível carregar o financeiro" description={error} />
       )}
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+      <FilterToolbar>
+        <div className="relative min-w-[200px] flex-1">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/50" />
           <Input
             className="pl-9"
             placeholder="Buscar por descrição ou empresa..."
@@ -220,7 +215,7 @@ export function FinanceListPage() {
             ))}
           </SelectContent>
         </Select>
-      </div>
+      </FilterToolbar>
 
       <div className="flex flex-wrap gap-2">
         <FilterPill
@@ -247,7 +242,7 @@ export function FinanceListPage() {
           description="Registre mensalidades, setup ou outras cobranças vinculadas às empresas."
         />
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-border">
+        <DataTable>
           <Table>
             <TableHeader>
               <TableRow>
@@ -338,7 +333,7 @@ export function FinanceListPage() {
               })}
             </TableBody>
           </Table>
-        </div>
+        </DataTable>
       )}
 
       <FinanceFormDialog
@@ -357,30 +352,6 @@ export function FinanceListPage() {
         financeEntryId={editEntry?.id}
         onSubmit={handleEdit}
       />
-    </div>
-  );
-}
-
-function FilterPill({
-  active,
-  onClick,
-  label,
-}: {
-  active: boolean;
-  onClick: () => void;
-  label: string;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
-        active
-          ? "border-brand bg-brand-soft text-brand"
-          : "border-border text-muted-foreground hover:text-foreground"
-      }`}
-    >
-      {label}
-    </button>
+    </OSPage>
   );
 }

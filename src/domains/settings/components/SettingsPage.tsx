@@ -3,8 +3,7 @@ import type { SettingsPageData } from "@/domains/settings/types";
 import { TEAM_LABELS } from "@/lib/auth/types";
 import { getErrorMessage, isUnauthorizedError } from "@/lib/api/client-errors";
 import { useOSContext } from "@/os/shell/use-os-context";
-import { EmptyState, PageHeader, PageSkeleton, Section } from "@/os/ui";
-import { Button } from "@/components/ui/button";
+import { EmptyState, PageHeader, PageSkeleton, Section, OSPage, ListItem } from "@/os/ui";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -82,7 +81,7 @@ export function SettingsPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <OSPage>
       <PageHeader
         title="Configurações"
         description="Preferências da agência, equipe e status do sistema"
@@ -134,33 +133,45 @@ export function SettingsPage() {
                 rows={4}
               />
             </div>
-            <Button onClick={() => void handleSave()} disabled={saving}>
-              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Salvar preferências"}
-            </Button>
+            <button
+              type="button"
+              onClick={() => void handleSave()}
+              disabled={saving}
+              className="dashboard-btn-primary disabled:opacity-50"
+            >
+              {saving ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <CheckCircle2 className="h-4 w-4" />
+              )}
+              Salvar preferências
+            </button>
           </div>
         </Section>
 
         <Section title="Equipe" description="Perfis do Raise One OS">
-          <ul className="divide-y divide-border/60 rounded-lg border border-border/60">
+          <div className="divide-y divide-border/40 rounded-xl border border-border/40">
             {data.team.map((member) => (
-              <li key={member.id} className="flex items-center justify-between px-4 py-3">
-                <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                  <span className="font-medium">{member.label}</span>
+              <ListItem key={member.id}>
+                <div className="flex w-full items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <span className="font-medium">{member.label}</span>
+                  </div>
+                  <span
+                    className={cn(
+                      "rounded-full px-2.5 py-0.5 text-xs",
+                      member.pinConfigured
+                        ? "border border-emerald-400/30 bg-emerald-400/10 text-emerald-300"
+                        : "border border-border/40 text-muted-foreground",
+                    )}
+                  >
+                    PIN {member.pinConfigured ? "ativo" : "opcional"}
+                  </span>
                 </div>
-                <span
-                  className={cn(
-                    "rounded-full px-2.5 py-0.5 text-xs",
-                    member.pinConfigured
-                      ? "border border-emerald-400/30 bg-emerald-400/10 text-emerald-300"
-                      : "border border-border text-muted-foreground",
-                  )}
-                >
-                  PIN {member.pinConfigured ? "ativo" : "opcional"}
-                </span>
-              </li>
+              </ListItem>
             ))}
-          </ul>
+          </div>
           <p className="mt-3 text-xs text-muted-foreground">
             PINs são definidos no servidor via ADMIN_PIN_LUAN, ADMIN_PIN_VINI e ADMIN_PIN_CAIO.
           </p>
@@ -201,7 +212,7 @@ export function SettingsPage() {
           {data.integrations.map((integration) => (
             <div
               key={integration.id}
-              className="rounded-lg border border-border/60 bg-surface-elevated/20 p-4"
+              className="dashboard-card p-4"
             >
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
@@ -217,7 +228,7 @@ export function SettingsPage() {
       </Section>
 
       <Section title="Segurança" description="Boas práticas">
-        <div className="flex gap-3 rounded-lg border border-border/60 bg-surface-elevated/20 p-4">
+        <div className="dashboard-card flex gap-3 p-4">
           <Shield className="mt-0.5 h-5 w-5 shrink-0 text-brand" />
           <div className="space-y-1 text-sm text-muted-foreground">
             <p>Senha e PINs nunca são exibidos nem editáveis por aqui — ficam no .env do servidor.</p>
@@ -226,7 +237,7 @@ export function SettingsPage() {
           </div>
         </div>
       </Section>
-    </div>
+    </OSPage>
   );
 }
 
@@ -240,7 +251,7 @@ function StatusRow({
   detail: string;
 }) {
   return (
-    <li className="flex items-start gap-2 rounded-lg border border-border/40 px-3 py-2.5 text-sm">
+    <li className="dashboard-card flex items-start gap-2 px-3 py-2.5 text-sm">
       {ok ? (
         <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
       ) : (

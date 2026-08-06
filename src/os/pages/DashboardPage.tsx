@@ -1,33 +1,33 @@
-import { STAGE_LABELS, COMPANY_STAGES } from "@/domains/companies/types";
-import { formatMoney as formatFinanceMoney } from "@/domains/finance/types";
-import { CHANNEL_LABELS, formatPeriod, type MarketingChannel } from "@/domains/marketing/types";
 import { getOSConfigStatus } from "@/lib/api/auth.functions";
 import { getErrorMessage, isUnauthorizedError } from "@/lib/api/client-errors";
-import { getOSDashboard } from "@/os/dashboard.functions";
-import type { OSDashboardData } from "@/os/dashboard.service.server";
+import { TEAM_LABELS } from "@/lib/auth/types";
 import {
-  AlertBanner,
-  EmptyState,
-  ListItem,
-  PageHeader,
-  QuickLinkButton,
-  QuickLinkCard,
-  Section,
-  StatCard,
-} from "@/os/ui";
-import { Link, useNavigate } from "@tanstack/react-router";
-import {
-  AlertTriangle,
   Building2,
+  DashboardEmptyState,
+  DashboardFinanceHighlight,
+  DashboardHero,
+  DashboardKpiCard,
+  DashboardMarketingChart,
+  DashboardPanel,
+  DashboardPipeline,
+  DashboardQuickAccess,
+  DashboardSuccessState,
+  DashboardTopBar,
   FolderKanban,
-  LayoutDashboard,
+  formatFinanceMoney,
   Megaphone,
   Target,
-  TrendingUp,
+  UserPlus,
   Users,
   Wallet,
-} from "lucide-react";
-import { useEffect, useState } from "react";
+} from "@/os/components/dashboard";
+import { getOSDashboard } from "@/os/dashboard.functions";
+import type { OSDashboardData } from "@/os/dashboard.service.server";
+import { useOSContext } from "@/os/shell/use-os-context";
+import { EmptyState } from "@/os/ui";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { CheckCircle2 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 
 function formatDate(iso: string): string {
   return new Intl.DateTimeFormat("pt-BR", {
@@ -38,6 +38,7 @@ function formatDate(iso: string): string {
 
 export function DashboardPage() {
   const navigate = useNavigate();
+  const { activePerson } = useOSContext();
   const [data, setData] = useState<OSDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -62,15 +63,75 @@ export function DashboardPage() {
       .finally(() => setLoading(false));
   }, [navigate]);
 
-  const attentionCount =
-    (data?.projects.overdue ?? 0) + (data?.finance.overdueCount ?? 0);
+  const userName = activePerson ? TEAM_LABELS[activePerson] : "Operador";
+
+  const totalCompanies = useMemo(() => {
+    if (!data) return 0;
+    return Object.values(data.companies.pipeline).reduce((sum, count) => sum + count, 0);
+  }, [data]);
+
+  const totalProjects = useMemo(() => {
+    if (!data) return 0;
+    return data.projects.inProgress + data.projects.overdue;
+  }, [data]);
+
+  const quickAccessItems = [
+    {
+      title: "Empresas",
+      description: `${loading ? "—" : totalCompanies} registros`,
+      href: "/os/empresas",
+      icon: Building2,
+      accent: "brand" as const,
+    },
+    {
+      title: "Projetos",
+      description: `${loading ? "—" : totalProjects} projetos`,
+      href: "/os/projetos",
+      icon: FolderKanban,
+      accent: "warning" as const,
+    },
+    {
+      title: "Financeiro",
+      description: `${loading ? "—" : formatFinanceMoney(data?.finance.paidThisMonthCents ?? 0)} recebidos`,
+      href: "/os/financeiro",
+      icon: Wallet,
+      accent: "success" as const,
+    },
+    {
+      title: "Marketing",
+      description: `${loading ? "—" : data?.marketing.snapshotCount ?? 0} campanhas ativas`,
+      href: "/os/marketing",
+      icon: Megaphone,
+      accent: "info" as const,
+    },
+    {
+      title: "Prospecção",
+      description: `${loading ? "—" : data?.prospection.prospected ?? 0} leads novos`,
+      href: "/os/prospeccao",
+      icon: Target,
+      accent: "purple" as const,
+    },
+    {
+      title: "Leads hoje",
+      description: `${loading ? "—" : data?.companies.leadsToday ?? 0} leads`,
+      href: "/os/empresas",
+      icon: Users,
+      accent: "brand" as const,
+    },
+    {
+      title: "Conversões",
+      description: `${loading ? "—" : data?.marketing.conversions ?? 0} conversões`,
+      href: "/os/marketing",
+      icon: Target,
+      accent: "success" as const,
+    },
+  ];
 
   return (
-    <div className="space-y-8">
-      <PageHeader
-        title="Dashboard"
-        description="Visão geral da operação — empresas, projetos, financeiro e marketing"
-        icon={LayoutDashboard}
+    <div className="dashboard-page space-y-10 pb-6">
+      <DashboardTopBar
+        activePerson={activePerson}
+        supabaseConnected={setup?.supabaseConfigured ?? false}
       />
 
       {setup && !setup.supabaseConfigured && (
@@ -80,339 +141,220 @@ export function DashboardPage() {
         />
       )}
 
-      {setup?.supabaseHost && (
-        <p className="text-xs text-muted-foreground">Banco conectado: {setup.supabaseHost}</p>
-      )}
-
       {error && <EmptyState title="Não foi possível carregar o dashboard" description={error} />}
 
-      {!error && attentionCount > 0 && data && (
-        <AlertBanner
-          variant="danger"
-          title={`${attentionCount} item(ns) precisam de atenção`}
-          description={`${data.projects.overdue} projeto(s) atrasado(s) e ${data.finance.overdueCount} cobrança(s) vencida(s).`}
-        />
+      {!error && (
+        <>
+          <DashboardHero userName={userName} />
+
+          {/* KPIs principais */}
+          <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <DashboardKpiCard
+              label="Leads hoje"
+              value={loading ? "—" : String(data?.companies.leadsToday ?? 0)}
+              sub="Novas empresas hoje"
+              icon={Users}
+              accent="brand"
+              size="lg"
+              sparkSeed={1}
+            />
+            <DashboardKpiCard
+              label="Clientes ativos"
+              value={loading ? "—" : String(data?.companies.activeClients ?? 0)}
+              sub="Estágio: Cliente ativo"
+              icon={Users}
+              accent="success"
+              subTone="success"
+              size="lg"
+              sparkSeed={2}
+            />
+            <DashboardKpiCard
+              label="Projetos"
+              value={loading ? "—" : String(totalProjects)}
+              sub={`${data?.projects.inProgress ?? 0} em andamento`}
+              icon={FolderKanban}
+              accent="warning"
+              subTone="warning"
+              size="lg"
+              sparkSeed={3}
+            />
+            <DashboardKpiCard
+              label="Recebimentos no mês"
+              value={loading ? "—" : formatFinanceMoney(data?.finance.paidThisMonthCents ?? 0)}
+              sub="0% vs mês anterior"
+              icon={Wallet}
+              accent="gold"
+              size="lg"
+              sparkSeed={4}
+            />
+          </section>
+
+          {/* KPIs secundários */}
+          <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <DashboardKpiCard
+              label="Taxa de conversão"
+              value={loading ? "—" : `${data?.prospection.conversionRate ?? 0}%`}
+              sub={`${data?.prospection.clients ?? 0} clientes`}
+              icon={Target}
+              accent="purple"
+              size="sm"
+              sparkSeed={5}
+            />
+            <DashboardKpiCard
+              label="Investimento (marketing)"
+              value={loading ? "—" : formatFinanceMoney(data?.marketing.investmentCents ?? 0)}
+              sub={`${data?.marketing.leads ?? 0} leads`}
+              icon={Megaphone}
+              accent="brand"
+              size="sm"
+              sparkSeed={6}
+            />
+            <DashboardKpiCard
+              label="Mensagens enviadas"
+              value={loading ? "—" : String(data?.prospection.messagesSent ?? 0)}
+              sub="Registradas no pipeline"
+              icon={Target}
+              accent="info"
+              size="sm"
+              sparkSeed={7}
+            />
+            <DashboardKpiCard
+              label="Projetos atrasados"
+              value={loading ? "—" : String(data?.projects.overdue ?? 0)}
+              sub={(data?.projects.overdue ?? 0) > 0 ? "Precisam de atenção" : "Tudo em dia"}
+              icon={FolderKanban}
+              accent={(data?.projects.overdue ?? 0) > 0 ? "danger" : "success"}
+              size="sm"
+              sparkSeed={8}
+              showSparkline={(data?.projects.overdue ?? 0) > 0}
+              trailing={
+                !loading && (data?.projects.overdue ?? 0) === 0 ? (
+                  <CheckCircle2 className="h-4 w-4 text-emerald-400/80" strokeWidth={1.75} />
+                ) : undefined
+              }
+            />
+          </section>
+
+          {/* Pipeline comercial */}
+          {!loading && data && <DashboardPipeline pipeline={data.companies.pipeline} />}
+
+          {/* O que precisa de atenção hoje */}
+          <div className="grid gap-5 lg:grid-cols-2">
+            <DashboardPanel
+              title="Leads recentes"
+              description="Aguardando contato"
+              action={{ label: "Ver todos →", href: "/os/empresas" }}
+            >
+              {loading ? (
+                <p className="text-sm text-muted-foreground">Carregando...</p>
+              ) : (data?.companies.recentLeads.length ?? 0) === 0 ? (
+                <DashboardEmptyState
+                  icon={UserPlus}
+                  title="Nenhum lead aguardando contato."
+                  description="Quando novos leads chegarem, eles aparecerão aqui automaticamente."
+                />
+              ) : (
+                <ul className="divide-y divide-border/40">
+                  {data?.companies.recentLeads.map((lead) => (
+                    <li key={lead.id}>
+                      <Link
+                        to="/os/empresas/$id"
+                        params={{ id: lead.id }}
+                        className="flex items-center justify-between gap-3 py-3 text-sm transition-colors hover:text-brand"
+                      >
+                        <span className="font-medium">{lead.name}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {lead.city ?? formatDate(lead.created_at)}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </DashboardPanel>
+
+            <DashboardPanel
+              title="Projetos atrasados"
+              action={{ label: "Ver todos →", href: "/os/projetos" }}
+            >
+              {loading ? (
+                <p className="text-sm text-muted-foreground">Carregando...</p>
+              ) : (data?.projects.overdueItems.length ?? 0) === 0 ? (
+                <DashboardSuccessState
+                  title="Tudo em dia!"
+                  subtitle="Nenhum projeto atrasado."
+                />
+              ) : (
+                <ul className="divide-y divide-border/40">
+                  {data?.projects.overdueItems.map((project) => (
+                    <li key={project.id}>
+                      <Link
+                        to="/os/projetos/$id"
+                        params={{ id: project.id }}
+                        className="block py-3 text-sm transition-colors hover:text-brand"
+                      >
+                        <p className="font-medium">{project.title}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {project.companyName ?? "—"}
+                          {project.due_date &&
+                            ` · venc. ${project.due_date.split("-").reverse().join("/")}`}
+                        </p>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </DashboardPanel>
+          </div>
+
+          {/* Financeiro & Marketing */}
+          <div className="grid gap-5 lg:grid-cols-3">
+            <DashboardFinanceHighlight
+              label="Cobranças atrasadas"
+              value={loading ? "—" : formatFinanceMoney(data?.finance.overdueCents ?? 0)}
+              icon={Wallet}
+              href="/os/financeiro"
+              actionLabel="Ver cobranças"
+            />
+            <DashboardMarketingChart hasData={(data?.marketing.snapshotCount ?? 0) > 0} />
+            <DashboardFinanceHighlight
+              label="Recebido no mês"
+              value={loading ? "—" : formatFinanceMoney(data?.finance.paidThisMonthCents ?? 0)}
+              icon={Building2}
+              href="/os/financeiro"
+              actionLabel="Ver financeiro"
+            />
+          </div>
+
+          {/* Próximas ações de prospecção (se houver) */}
+          {(data?.prospection.upcomingActions.length ?? 0) > 0 && (
+            <DashboardPanel
+              title="Próximas ações — Prospecção"
+              action={{ label: "Ver pipeline →", href: "/os/prospeccao" }}
+            >
+              <ul className="divide-y divide-border/40">
+                {data?.prospection.upcomingActions.map((p) => (
+                  <li key={p.id}>
+                    <Link
+                      to="/os/prospeccao/$id"
+                      params={{ id: p.id }}
+                      className="block py-3 text-sm transition-colors hover:text-brand"
+                    >
+                      <p className="font-medium">{p.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {p.next_action ?? "—"} · {p.next_action_date ?? "sem data"}
+                      </p>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </DashboardPanel>
+          )}
+
+          {/* Acesso rápido */}
+          <DashboardQuickAccess items={quickAccessItems} />
+        </>
       )}
-
-      <section>
-        <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          Operação
-        </h2>
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <StatCard
-            label="Leads hoje"
-            value={loading ? "—" : String(data?.companies.leadsToday ?? 0)}
-            sub="Novas empresas hoje"
-            icon={Building2}
-          />
-          <StatCard
-            label="Clientes ativos"
-            value={loading ? "—" : String(data?.companies.activeClients ?? 0)}
-            sub="Estágio: Cliente ativo"
-            accent="success"
-            icon={Users}
-          />
-          <StatCard
-            label="Projetos em andamento"
-            value={loading ? "—" : String(data?.projects.inProgress ?? 0)}
-            sub="Pendentes, ativos, revisão ou bloqueados"
-            accent="brand"
-            icon={FolderKanban}
-          />
-          <StatCard
-            label="Projetos atrasados"
-            value={loading ? "—" : String(data?.projects.overdue ?? 0)}
-            sub="Prazo vencido"
-            accent={(data?.projects.overdue ?? 0) > 0 ? "danger" : "warning"}
-            icon={AlertTriangle}
-          />
-        </div>
-      </section>
-
-      <section>
-        <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          Prospecção
-        </h2>
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <StatCard
-            label="Prospectados"
-            value={loading ? "—" : String(data?.prospection.prospected ?? 0)}
-            sub="Pipeline ativo"
-            icon={Target}
-          />
-          <StatCard
-            label="Taxa de resposta"
-            value={loading ? "—" : `${data?.prospection.responseRate ?? 0}%`}
-            sub={`${data?.prospection.responses ?? 0} respostas`}
-            accent="success"
-            icon={TrendingUp}
-          />
-          <StatCard
-            label="Conversão"
-            value={loading ? "—" : `${data?.prospection.conversionRate ?? 0}%`}
-            sub={`${data?.prospection.clients ?? 0} clientes`}
-            accent="brand"
-            icon={Users}
-          />
-          <StatCard
-            label="Mensagens enviadas"
-            value={loading ? "—" : String(data?.prospection.messagesSent ?? 0)}
-            sub="Registradas no pipeline"
-            accent="neutral"
-            icon={Target}
-          />
-        </div>
-      </section>
-
-      {(data?.prospection.upcomingActions.length ?? 0) > 0 && (
-        <Section
-          title="Próximas ações — Prospecção"
-          action={
-            <Link to="/os/prospeccao" className="text-xs text-brand hover:underline">
-              Ver pipeline
-            </Link>
-          }
-        >
-          <ul className="divide-y divide-border/60">
-            {data?.prospection.upcomingActions.map((p) => (
-              <ListItem key={p.id}>
-                <Link
-                  to="/os/prospeccao/$id"
-                  params={{ id: p.id }}
-                  className="block py-3 text-sm"
-                >
-                  <p className="font-medium hover:text-brand">{p.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {p.next_action ?? "—"} · {p.next_action_date ?? "sem data"}
-                  </p>
-                </Link>
-              </ListItem>
-            ))}
-          </ul>
-        </Section>
-      )}
-
-      <section>
-        <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          Financeiro & Marketing
-        </h2>
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <StatCard
-            label="A receber"
-            value={loading ? "—" : formatFinanceMoney(data?.finance.pendingCents ?? 0)}
-            sub="Cobranças pendentes"
-            accent="warning"
-            icon={Wallet}
-          />
-          <StatCard
-            label="Cobranças atrasadas"
-            value={loading ? "—" : formatFinanceMoney(data?.finance.overdueCents ?? 0)}
-            sub={`${data?.finance.overdueCount ?? 0} lançamento(s)`}
-            accent={(data?.finance.overdueCount ?? 0) > 0 ? "danger" : "neutral"}
-            icon={Wallet}
-          />
-          <StatCard
-            label="Recebido no mês"
-            value={loading ? "—" : formatFinanceMoney(data?.finance.paidThisMonthCents ?? 0)}
-            sub="Pagamentos confirmados"
-            accent="success"
-            icon={Wallet}
-          />
-          <StatCard
-            label="Investimento (marketing)"
-            value={loading ? "—" : formatFinanceMoney(data?.marketing.investmentCents ?? 0)}
-            sub={`${data?.marketing.leads ?? 0} leads · ${data?.marketing.conversions ?? 0} conv.`}
-            accent="brand"
-            icon={Megaphone}
-          />
-        </div>
-      </section>
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Section title="Pipeline comercial" description="Empresas por estágio">
-          {loading ? (
-            <p className="text-sm text-muted-foreground">Carregando...</p>
-          ) : (
-            <div className="flex flex-wrap gap-2">
-              {COMPANY_STAGES.map((stage) => (
-                <Link
-                  key={stage}
-                  to="/os/empresas"
-                  className="rounded-full border border-border px-3 py-1.5 text-sm transition-colors hover:border-brand/30 hover:text-brand"
-                >
-                  {STAGE_LABELS[stage]}{" "}
-                  <span className="font-semibold text-foreground">
-                    ({data?.companies.pipeline[stage] ?? 0})
-                  </span>
-                </Link>
-              ))}
-            </div>
-          )}
-        </Section>
-
-        <Section title="Leads recentes" description="Aguardando contato">
-          {loading ? (
-            <p className="text-sm text-muted-foreground">Carregando...</p>
-          ) : (data?.companies.recentLeads.length ?? 0) === 0 ? (
-            <p className="text-sm text-muted-foreground">Nenhum lead no pipeline.</p>
-          ) : (
-            <ul className="divide-y divide-border/60">
-              {data?.companies.recentLeads.map((lead) => (
-                <ListItem key={lead.id}>
-                  <Link
-                    to="/os/empresas/$id"
-                    params={{ id: lead.id }}
-                    className="flex w-full items-center justify-between gap-3 py-3 text-sm"
-                  >
-                    <span className="font-medium hover:text-brand">{lead.name}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {lead.city ?? formatDate(lead.created_at)}
-                    </span>
-                  </Link>
-                </ListItem>
-              ))}
-            </ul>
-          )}
-        </Section>
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Section
-          title="Projetos atrasados"
-          action={
-            <Link to="/os/projetos" className="text-xs text-brand hover:underline">
-              Ver todos
-            </Link>
-          }
-        >
-          {loading ? (
-            <p className="text-sm text-muted-foreground">Carregando...</p>
-          ) : (data?.projects.overdueItems.length ?? 0) === 0 ? (
-            <p className="text-sm text-muted-foreground">Nenhum projeto atrasado.</p>
-          ) : (
-            <ul className="divide-y divide-border/60">
-              {data?.projects.overdueItems.map((project) => (
-                <ListItem key={project.id}>
-                  <Link
-                    to="/os/projetos/$id"
-                    params={{ id: project.id }}
-                    className="block py-3 text-sm"
-                  >
-                    <p className="font-medium hover:text-brand">{project.title}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {project.companyName ?? "—"}
-                      {project.due_date && ` · venc. ${project.due_date.split("-").reverse().join("/")}`}
-                    </p>
-                  </Link>
-                </ListItem>
-              ))}
-            </ul>
-          )}
-        </Section>
-
-        <Section
-          title="Cobranças atrasadas"
-          action={
-            <Link to="/os/financeiro" className="text-xs text-brand hover:underline">
-              Ver todas
-            </Link>
-          }
-        >
-          {loading ? (
-            <p className="text-sm text-muted-foreground">Carregando...</p>
-          ) : (data?.finance.overdueItems.length ?? 0) === 0 ? (
-            <p className="text-sm text-muted-foreground">Nenhuma cobrança atrasada.</p>
-          ) : (
-            <ul className="divide-y divide-border/60">
-              {data?.finance.overdueItems.map((entry) => (
-                <ListItem key={entry.id}>
-                  <Link
-                    to="/os/empresas/$id"
-                    params={{ id: entry.company_id }}
-                    className="block py-3 text-sm"
-                  >
-                    <p className="font-medium hover:text-brand">{entry.description}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {entry.companyName ?? "—"} · {formatFinanceMoney(entry.amount_cents)} · venc.{" "}
-                      {entry.due_date.split("-").reverse().join("/")}
-                    </p>
-                  </Link>
-                </ListItem>
-              ))}
-            </ul>
-          )}
-        </Section>
-      </div>
-
-      <Section
-        title="Marketing recente"
-        description={`${data?.marketing.snapshotCount ?? 0} registro(s) no total`}
-        action={
-          <Link to="/os/marketing" className="text-xs text-brand hover:underline">
-            Ver todos
-          </Link>
-        }
-      >
-        {loading ? (
-          <p className="text-sm text-muted-foreground">Carregando...</p>
-        ) : (data?.marketing.recentSnapshots.length ?? 0) === 0 ? (
-          <p className="text-sm text-muted-foreground">Nenhuma métrica registrada ainda.</p>
-        ) : (
-          <ul className="divide-y divide-border/60">
-            {data?.marketing.recentSnapshots.map((snapshot) => (
-              <ListItem key={snapshot.id}>
-                <Link
-                  to="/os/empresas/$id"
-                  params={{ id: snapshot.company_id }}
-                  className="block py-3 text-sm"
-                >
-                  <p className="font-medium hover:text-brand">
-                    {snapshot.companyName ?? "—"} ·{" "}
-                    {CHANNEL_LABELS[snapshot.channel as MarketingChannel]}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {formatPeriod(snapshot.period_start, snapshot.period_end)} ·{" "}
-                    {formatFinanceMoney(snapshot.investment_cents)} · {snapshot.leads ?? 0} leads
-                  </p>
-                </Link>
-              </ListItem>
-            ))}
-          </ul>
-        )}
-      </Section>
-
-      <section>
-        <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          Acesso rápido
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          <QuickLinkCard title="Empresas" description="Leads, clientes e pipeline" href="/os/empresas" icon={Building2}>
-            <QuickLinkButton href="/os/empresas" label="Abrir empresas" />
-          </QuickLinkCard>
-          <QuickLinkCard title="Projetos" description="Execução e prazos" href="/os/projetos" icon={FolderKanban}>
-            <QuickLinkButton href="/os/projetos" label="Abrir projetos" />
-          </QuickLinkCard>
-          <QuickLinkCard title="Financeiro" description="Mensalidades e cobranças" href="/os/financeiro" icon={Wallet}>
-            <QuickLinkButton href="/os/financeiro" label="Abrir financeiro" />
-          </QuickLinkCard>
-          <QuickLinkCard title="Marketing" description="Métricas por canal" href="/os/marketing" icon={Megaphone}>
-            <QuickLinkButton href="/os/marketing" label="Abrir marketing" />
-          </QuickLinkCard>
-          <QuickLinkCard title="Prospecção" description="Pipeline comercial" href="/os/prospeccao" icon={Target}>
-            <QuickLinkButton href="/os/prospeccao" label="Abrir prospecção" />
-          </QuickLinkCard>
-          <QuickLinkCard title="Leads hoje" description="Captação do site" href="/os/empresas" icon={Building2}>
-            <p className="mt-2 font-display text-2xl font-bold">
-              {loading ? "—" : data?.companies.leadsToday ?? 0}
-            </p>
-          </QuickLinkCard>
-          <QuickLinkCard title="Conversões" description="Total registrado em marketing" href="/os/marketing" icon={TrendingUp}>
-            <p className="mt-2 font-display text-2xl font-bold">
-              {loading ? "—" : data?.marketing.conversions ?? 0}
-            </p>
-          </QuickLinkCard>
-        </div>
-      </section>
     </div>
   );
 }

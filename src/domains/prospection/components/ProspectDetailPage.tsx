@@ -13,7 +13,7 @@ import {
   STATUS_LABELS,
   formatProspectDate,
 } from "@/domains/prospection/types";
-import { EmptyState, PageHeader, PageSkeleton, Section } from "@/os/ui";
+import { EmptyState, PageHeader, PageSkeleton, Section, OSPage } from "@/os/ui";
 import { getErrorMessage, isUnauthorizedError } from "@/lib/api/client-errors";
 import { TEAM_LABELS, TEAM_MEMBERS, type TeamMember } from "@/lib/auth/types";
 import { Button } from "@/components/ui/button";
@@ -153,31 +153,40 @@ export function ProspectDetailPage() {
   );
 
   return (
-    <div className="space-y-6">
+    <OSPage>
       <PageHeader
         title={prospect.name}
         description={`${prospect.city ?? "—"} · ${STATUS_LABELS[prospect.status]}`}
         icon={Target}
         actions={
           <>
-            <Button variant="outline" size="sm" asChild>
-              <Link to="/os/prospeccao">
-                <ArrowLeft className="h-4 w-4" />
-                Pipeline
-              </Link>
-            </Button>
+            <Link to="/os/prospeccao" className="dashboard-btn-ghost">
+              <ArrowLeft className="h-4 w-4" />
+              Pipeline
+            </Link>
             {prospect.company_id ? (
-              <Button size="sm" asChild>
-                <Link to="/os/empresas/$id" params={{ id: prospect.company_id }}>
-                  <Building2 className="h-4 w-4" />
-                  Ver empresa
-                </Link>
-              </Button>
+              <Link
+                to="/os/empresas/$id"
+                params={{ id: prospect.company_id }}
+                className="dashboard-btn-primary"
+              >
+                <Building2 className="h-4 w-4" />
+                Ver empresa
+              </Link>
             ) : (
-              <Button size="sm" onClick={() => void handleConvert()} disabled={converting}>
-                {converting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Building2 className="h-4 w-4" />}
+              <button
+                type="button"
+                onClick={() => void handleConvert()}
+                disabled={converting}
+                className="dashboard-btn-primary disabled:opacity-50"
+              >
+                {converting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Building2 className="h-4 w-4" />
+                )}
                 Converter em Empresa
-              </Button>
+              </button>
             )}
           </>
         }
@@ -278,7 +287,7 @@ export function ProspectDetailPage() {
           </Tabs>
         </div>
       </div>
-    </div>
+    </OSPage>
   );
 }
 

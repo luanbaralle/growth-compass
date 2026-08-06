@@ -49,8 +49,7 @@ import { COMPANY_STAGES, STAGE_LABELS } from "@/domains/companies/types";
 import { TEAM_LABELS } from "@/lib/auth/types";
 import { getErrorMessage, isUnauthorizedError } from "@/lib/api/client-errors";
 import { buildClientWhatsAppUrl } from "@/lib/whatsapp";
-import { PageHeader, PageSkeleton, Section } from "@/os/ui";
-import { Button } from "@/components/ui/button";
+import { PageHeader, PageSkeleton, Section, OSPage } from "@/os/ui";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -159,32 +158,26 @@ export function CompanyDetailPage({ companyId }: { companyId: string }) {
 
   if (error || !data) {
     return (
-      <div className="space-y-4">
-        <Button variant="ghost" size="sm" asChild>
-          <Link to="/os/empresas">
-            <ArrowLeft className="h-4 w-4" />
-            Voltar
-          </Link>
-        </Button>
+      <OSPage>
+        <Link to="/os/empresas" className="dashboard-btn-ghost w-fit">
+          <ArrowLeft className="h-4 w-4" />
+          Voltar
+        </Link>
         <p className="text-sm text-destructive">
           {error || "Empresa não encontrada."}
         </p>
-      </div>
+      </OSPage>
     );
   }
 
   const { company, activities, files, links, services } = data;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-2">
-        <Button variant="ghost" size="sm" asChild>
-          <Link to="/os/empresas">
-            <ArrowLeft className="h-4 w-4" />
-            Voltar
-          </Link>
-        </Button>
-      </div>
+    <OSPage>
+      <Link to="/os/empresas" className="dashboard-btn-ghost w-fit">
+        <ArrowLeft className="h-4 w-4" />
+        Voltar
+      </Link>
 
       <PageHeader
         title={company.name}
@@ -193,24 +186,23 @@ export function CompanyDetailPage({ companyId }: { companyId: string }) {
         actions={
           <>
             {company.whatsapp && (
-              <Button variant="outline" size="sm" asChild>
-                <a
-                  href={buildClientWhatsAppUrl(
-                    company.whatsapp,
-                    `Olá ${company.name}! Aqui é da Raise One.`,
-                  )}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <MessageCircle className="h-4 w-4" />
-                  WhatsApp
-                </a>
-              </Button>
+              <a
+                href={buildClientWhatsAppUrl(
+                  company.whatsapp,
+                  `Olá ${company.name}! Aqui é da Raise One.`,
+                )}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="dashboard-btn-ghost"
+              >
+                <MessageCircle className="h-4 w-4" />
+                WhatsApp
+              </a>
             )}
-            <Button variant="outline" size="sm" onClick={() => setEditOpen(true)}>
+            <button type="button" onClick={() => setEditOpen(true)} className="dashboard-btn-ghost">
               <Pencil className="h-4 w-4" />
               Editar
-            </Button>
+            </button>
           </>
         }
       />
@@ -358,7 +350,7 @@ export function CompanyDetailPage({ companyId }: { companyId: string }) {
         defaultCompanyId={companyId}
         onSubmit={handleCreateMarketing}
       />
-    </div>
+    </OSPage>
   );
 }
 

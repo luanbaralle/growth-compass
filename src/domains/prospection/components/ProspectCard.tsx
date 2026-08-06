@@ -27,8 +27,7 @@ export function ProspectCard({
       }}
       onDragEnd={onDragEnd}
       className={cn(
-        "block rounded-lg border border-border/60 bg-background/60 p-3 transition-all duration-150",
-        "hover:border-border hover:bg-surface-elevated/50",
+        "dashboard-card-interactive block p-3",
         dragging && "opacity-50 ring-1 ring-brand/40",
       )}
     >

@@ -23,7 +23,7 @@ import type { ProjectChecklistItem, ProjectComment } from "@/domains/projects/ty
 import { TYPE_LABELS } from "@/domains/projects/types";
 import { TEAM_LABELS } from "@/lib/auth/types";
 import { getErrorMessage, isUnauthorizedError } from "@/lib/api/client-errors";
-import { PageHeader, PageSkeleton, Section } from "@/os/ui";
+import { PageHeader, PageSkeleton, Section, OSPage } from "@/os/ui";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -69,17 +69,15 @@ export function ProjectDetailPage({ projectId }: { projectId: string }) {
 
   if (error || !data) {
     return (
-      <div className="space-y-4">
-        <Button variant="ghost" size="sm" asChild>
-          <Link to="/os/projetos">
-            <ArrowLeft className="h-4 w-4" />
-            Voltar
-          </Link>
-        </Button>
+      <OSPage>
+        <Link to="/os/projetos" className="dashboard-btn-ghost w-fit">
+          <ArrowLeft className="h-4 w-4" />
+          Voltar
+        </Link>
         <p className="text-sm text-destructive">
           {error || "Projeto não encontrado."}
         </p>
-      </div>
+      </OSPage>
     );
   }
 
@@ -143,13 +141,11 @@ export function ProjectDetailPage({ projectId }: { projectId: string }) {
   };
 
   return (
-    <div className="space-y-6">
-      <Button variant="ghost" size="sm" asChild>
-        <Link to="/os/projetos">
-          <ArrowLeft className="h-4 w-4" />
-          Voltar
-        </Link>
-      </Button>
+    <OSPage>
+      <Link to="/os/projetos" className="dashboard-btn-ghost w-fit">
+        <ArrowLeft className="h-4 w-4" />
+        Voltar
+      </Link>
 
       <PageHeader
         title={project.title}
@@ -162,16 +158,18 @@ export function ProjectDetailPage({ projectId }: { projectId: string }) {
         actions={
           <>
             {company && (
-              <Button variant="outline" size="sm" asChild>
-                <Link to="/os/empresas/$id" params={{ id: company.id }}>
-                  Ver empresa
-                </Link>
-              </Button>
+              <Link
+                to="/os/empresas/$id"
+                params={{ id: company.id }}
+                className="dashboard-btn-ghost"
+              >
+                Ver empresa
+              </Link>
             )}
-            <Button variant="outline" size="sm" onClick={() => setEditOpen(true)}>
+            <button type="button" onClick={() => setEditOpen(true)} className="dashboard-btn-ghost">
               <Pencil className="h-4 w-4" />
               Editar
-            </Button>
+            </button>
           </>
         }
       />
@@ -287,7 +285,7 @@ export function ProjectDetailPage({ projectId }: { projectId: string }) {
         initial={projectToFormValues(project)}
         onSubmit={handleEdit}
       />
-    </div>
+    </OSPage>
   );
 }
 
@@ -304,7 +302,7 @@ function CommentItem({
   }).format(new Date(comment.created_at));
 
   return (
-    <li className="rounded-lg border border-border/50 p-3">
+    <li className="dashboard-card p-3">
       <div className="flex items-start justify-between gap-2">
         <p className="whitespace-pre-wrap text-sm leading-relaxed">{comment.body}</p>
         <Button size="sm" variant="ghost" className="shrink-0 text-destructive" onClick={onDelete}>

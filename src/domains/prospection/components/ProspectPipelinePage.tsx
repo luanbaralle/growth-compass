@@ -9,10 +9,9 @@ import { ProspectPipeline } from "@/domains/prospection/components/ProspectPipel
 import type { Prospect, ProspectionMetrics } from "@/domains/prospection/types";
 import { OPPORTUNITY_ITEMS } from "@/domains/prospection/types";
 import { useOSContext } from "@/os/shell/use-os-context";
-import { EmptyState, ListItem, PageHeader, PageSkeleton, Section } from "@/os/ui";
+import { EmptyState, ListItem, PageHeader, PageSkeleton, Section, OSPage, OSRefreshButton, OSPrimaryButton } from "@/os/ui";
 import { getErrorMessage, isUnauthorizedError } from "@/lib/api/client-errors";
 import { TEAM_LABELS, TEAM_MEMBERS, type TeamMember } from "@/lib/auth/types";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -24,8 +23,6 @@ import {
 import { Link, useNavigate } from "@tanstack/react-router";
 import {
   BookOpen,
-  Plus,
-  RefreshCw,
   Search,
   Target,
   Upload,
@@ -113,30 +110,28 @@ export function ProspectPipelinePage() {
   }
 
   return (
-    <div className="space-y-6">
+    <OSPage>
       <PageHeader
         title="Prospecção"
         description="Pipeline comercial — do Google Maps ao cliente"
         icon={Target}
         actions={
           <>
-            <Button variant="outline" size="sm" asChild>
-              <Link to="/os/prospeccao/biblioteca">
-                <BookOpen className="h-4 w-4" />
-                Biblioteca
-              </Link>
-            </Button>
-            <Button variant="outline" size="sm" onClick={load} disabled={loading}>
-              <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-            </Button>
-            <Button variant="outline" size="sm" disabled title="Em breve">
+            <Link to="/os/prospeccao/biblioteca" className="dashboard-btn-ghost">
+              <BookOpen className="h-4 w-4" />
+              Biblioteca
+            </Link>
+            <OSRefreshButton loading={loading} onClick={load} />
+            <button
+              type="button"
+              disabled
+              title="Em breve"
+              className="dashboard-btn-ghost cursor-not-allowed opacity-50"
+            >
               <Upload className="h-4 w-4" />
               Importar
-            </Button>
-            <Button size="sm" onClick={() => setCreateOpen(true)}>
-              <Plus className="h-4 w-4" />
-              Adicionar
-            </Button>
+            </button>
+            <OSPrimaryButton label="Adicionar" onClick={() => setCreateOpen(true)} />
           </>
         }
       />
@@ -293,6 +288,6 @@ export function ProspectPipelinePage() {
           navigate({ to: "/os/prospeccao/$id", params: { id } });
         }}
       />
-    </div>
+    </OSPage>
   );
 }

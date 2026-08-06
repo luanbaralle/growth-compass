@@ -2,7 +2,6 @@ import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-ro
 import { osLogin, checkOSAuth } from "@/lib/api/auth.functions";
 import { Logo } from "@/components/landing/shared/Logo";
 import { TEAM_LABELS, type TeamMember } from "@/lib/auth/types";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -51,7 +50,7 @@ function OSLoginPage() {
   };
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center bg-background px-5">
+    <div className="relative flex min-h-screen flex-col items-center justify-center dashboard-page-bg px-5">
       <div className="pointer-events-none absolute inset-0 grid-bg opacity-30" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-64 radial-glow opacity-40" />
 
@@ -103,9 +102,9 @@ function OSLoginPage() {
 
           {error && <p className="text-sm text-destructive">{error}</p>}
 
-          <Button type="submit" disabled={loading} className="w-full rounded-full">
+          <button type="submit" disabled={loading} className="dashboard-btn-primary w-full justify-center">
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Entrar"}
-          </Button>
+          </button>
         </form>
 
         <Link

@@ -427,19 +427,293 @@
 /* ── Admin panel utilities ─────────────────────────────────── */
 
 @utility admin-card {
-  border-radius: var(--radius-xl);
-  border: 1px solid oklch(1 0 0 / 0.08);
-  background: oklch(0.18 0.005 60 / 0.5);
-  box-shadow: 0 1px 2px oklch(0 0 0 / 0.2);
+  border-radius: 0.75rem;
+  border: 1px solid oklch(1 0 0 / 0.06);
+  background: oklch(0.155 0.004 55);
+  box-shadow: 0 1px 0 oklch(1 0 0 / 0.04) inset;
 }
 
 @utility admin-sidebar {
-  background: oklch(0.16 0.004 60 / 0.95);
-  backdrop-filter: blur(12px);
+  background: oklch(0.12 0.003 55 / 0.98);
+  backdrop-filter: blur(16px);
+  border-color: oklch(1 0 0 / 0.05);
 }
 
 @utility admin-nav-active {
-  background: oklch(0.72 0.19 48 / 0.14);
+  background: oklch(0.72 0.19 48 / 0.12);
   color: var(--brand);
   box-shadow: inset 2px 0 0 var(--brand);
+}
+
+@utility os-page {
+  position: relative;
+}
+
+@utility os-table-wrap {
+  background: oklch(0.155 0.004 55);
+}
+
+.os-table-wrap thead tr {
+  border-color: oklch(1 0 0 / 0.06);
+}
+
+.os-table-wrap tbody tr {
+  border-color: oklch(1 0 0 / 0.04);
+  transition: background-color 200ms ease;
+}
+
+.os-table-wrap tbody tr:hover {
+  background: oklch(1 0 0 / 0.02);
+}
+
+.os-table-wrap th {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: oklch(0.65 0.01 60 / 0.55);
+}
+
+.os-page input:not([type="checkbox"]):not([type="radio"]),
+.os-page textarea {
+  border-radius: 0.625rem;
+  border-color: oklch(1 0 0 / 0.08);
+  background: oklch(0.14 0.003 55 / 0.9);
+}
+
+.os-page input:not([type="checkbox"]):not([type="radio"]):focus,
+.os-page textarea:focus {
+  border-color: oklch(0.72 0.19 48 / 0.25);
+  box-shadow: 0 0 0 1px oklch(0.72 0.19 48 / 0.12);
+}
+
+.os-page [data-slot="select-trigger"] {
+  border-radius: 0.625rem;
+  border-color: oklch(1 0 0 / 0.08);
+  background: oklch(0.14 0.003 55 / 0.9);
+}
+
+/* ── Dashboard ─────────────────────────────────────────────── */
+
+:root {
+  --dashboard-radius: 1.125rem;
+  --dashboard-radius-lg: 1.25rem;
+  --dashboard-pad: 1.75rem;
+  --dashboard-pad-lg: 2rem;
+  --dashboard-pad-sm: 1.25rem;
+  --dashboard-gap: 1.25rem;
+  --dashboard-section-gap: 2.5rem;
+  --dashboard-control-h: 2.5rem;
+  --dashboard-shadow:
+    0 0 0 1px oklch(1 0 0 / 0.035) inset,
+    0 1px 1px oklch(0 0 0 / 0.04),
+    0 8px 32px -12px oklch(0 0 0 / 0.45);
+  --dashboard-shadow-hover:
+    0 0 0 1px oklch(1 0 0 / 0.05) inset,
+    0 1px 1px oklch(0 0 0 / 0.05),
+    0 16px 48px -16px oklch(0 0 0 / 0.55),
+    0 0 24px -8px oklch(0.72 0.19 48 / 0.06);
+}
+
+@utility dashboard-page {
+  position: relative;
+}
+
+@utility dashboard-page-bg {
+  background:
+    radial-gradient(ellipse 80% 40% at 20% 0%, oklch(0.72 0.19 48 / 0.03), transparent 50%),
+    oklch(0.115 0 0);
+}
+
+@utility dashboard-card {
+  position: relative;
+  border-radius: var(--dashboard-radius-lg);
+  border: 1px solid oklch(1 0 0 / 0.055);
+  background: oklch(0.165 0.004 55 / 0.92);
+  box-shadow: var(--dashboard-shadow);
+  transition:
+    border-color 200ms ease,
+    box-shadow 200ms ease,
+    transform 200ms ease;
+}
+
+@utility dashboard-card-interactive {
+  cursor: pointer;
+}
+
+.dashboard-card-interactive:hover {
+  border-color: oklch(1 0 0 / 0.07);
+  box-shadow: var(--dashboard-shadow-hover);
+  transform: translateY(-1px);
+}
+
+@utility dashboard-kpi-primary {
+  position: relative;
+  min-height: 8.5rem;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  border: 1px solid oklch(1 0 0 / 0.06);
+  background: oklch(0.155 0.004 55);
+  padding: 1.125rem 1.125rem 1rem;
+  box-shadow: 0 1px 0 oklch(1 0 0 / 0.04) inset;
+  transition: border-color 200ms ease;
+}
+
+.dashboard-kpi-primary:hover {
+  border-color: oklch(1 0 0 / 0.09);
+}
+
+@utility dashboard-kpi-secondary {
+  position: relative;
+  min-height: 7rem;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  border: 1px solid oklch(1 0 0 / 0.06);
+  background: oklch(0.155 0.004 55);
+  padding: 1rem 1rem 0.875rem;
+  box-shadow: 0 1px 0 oklch(1 0 0 / 0.04) inset;
+  transition: border-color 200ms ease;
+}
+
+@utility dashboard-kpi-value {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: oklch(1 0 0);
+}
+
+@utility dashboard-kpi-value-secondary {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: oklch(1 0 0);
+}
+
+@utility dashboard-kpi {
+  overflow: hidden;
+}
+
+@utility dashboard-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: oklch(0.65 0.01 60 / 0.72);
+}
+
+@utility dashboard-value-lg {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 4vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: oklch(0.98 0 0);
+}
+
+@utility dashboard-value-sm {
+  font-family: var(--font-display);
+  font-size: clamp(1.625rem, 3vw, 2rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  color: oklch(0.98 0 0);
+}
+
+@utility dashboard-sub {
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: oklch(0.65 0.01 60 / 0.78);
+}
+
+@utility dashboard-icon-ring {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  backdrop-filter: blur(8px);
+}
+
+@utility dashboard-control {
+  height: var(--dashboard-control-h);
+  border-radius: 9999px;
+  border: 1px solid oklch(1 0 0 / 0.05);
+  background: oklch(0.18 0.004 55 / 0.55);
+  backdrop-filter: blur(12px);
+  transition:
+    border-color 200ms ease,
+    background 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.dashboard-control:hover {
+  border-color: oklch(1 0 0 / 0.08);
+  background: oklch(0.2 0.005 55 / 0.65);
+}
+
+@utility dashboard-section-title {
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: oklch(0.95 0 0);
+}
+
+@utility dashboard-link {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--brand);
+  transition: color 200ms ease, opacity 200ms ease;
+}
+
+.dashboard-link:hover {
+  color: oklch(0.78 0.17 48);
+}
+
+@utility dashboard-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.625rem;
+  background: var(--brand);
+  padding: 0.5625rem 1.125rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--primary-foreground);
+  box-shadow: 0 4px 16px -4px oklch(0.72 0.19 48 / 0.5);
+  transition: transform 200ms ease, filter 200ms ease, box-shadow 200ms ease;
+}
+
+.dashboard-btn-primary:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+  box-shadow:
+    0 0 0 1px oklch(0.72 0.19 48 / 0.4) inset,
+    0 8px 28px -4px oklch(0.72 0.19 48 / 0.55);
+}
+
+@utility dashboard-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.625rem;
+  border: 1px solid oklch(1 0 0 / 0.08);
+  background: oklch(0.17 0.004 55 / 0.6);
+  padding: 0.5625rem 1.125rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: oklch(0.9 0 0);
+  transition: transform 200ms ease, border-color 200ms ease, background 200ms ease;
+}
+
+.dashboard-btn-ghost:hover {
+  transform: translateY(-1px);
+  border-color: oklch(1 0 0 / 0.1);
+  background: oklch(0.2 0.005 55 / 0.6);
+  box-shadow: 0 4px 20px -8px oklch(0 0 0 / 0.4);
 }
