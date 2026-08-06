@@ -254,7 +254,7 @@ export function ProblemScrollSection(props: ProblemScrollSectionProps) {
   const isWide = useIsWideViewport();
   const { id, eyebrow, headline, pains, channels, closing } = props;
 
-  if (reduceEffects) {
+  if (reduceEffects || !isWide) {
     return (
       <ProblemScrollStatic
         id={id}

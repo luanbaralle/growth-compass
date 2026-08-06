@@ -32,6 +32,7 @@ interface ProcessScrollSectionProps {
 }
 
 function ProcessScrollStatic({
+  id,
   eyebrow,
   title,
   description,
@@ -39,19 +40,37 @@ function ProcessScrollStatic({
   headerExtra,
 }: ProcessScrollSectionProps) {
   return (
-    <section className="relative border-b border-border/60 bg-background py-24 sm:py-32">
+    <section
+      id={id}
+      className="relative border-b border-border/60 bg-background py-20 sm:py-28 lg:py-32"
+    >
       <div className="mx-auto max-w-3xl px-5 text-center sm:px-8">
         <SectionEyebrow>{eyebrow}</SectionEyebrow>
         <SectionTitle>{title}</SectionTitle>
         {description && <SectionDescription>{description}</SectionDescription>}
         {headerExtra}
-        <ul className="mt-12 space-y-3">
+        <ol className="mt-10 space-y-3 text-left sm:mt-12">
           {steps.map((step) => (
-            <li key={step.number} className="font-display text-2xl font-bold sm:text-3xl">
-              {step.title}
+            <li
+              key={step.number}
+              className="rounded-xl border border-white/[0.06] bg-surface/25 px-4 py-4 sm:px-5 sm:py-5"
+            >
+              <div className="flex items-start gap-3">
+                <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-brand/30 bg-brand/10 text-[11px] font-bold tabular-nums text-brand">
+                  {step.number}
+                </span>
+                <div>
+                  <p className="font-display text-lg font-semibold tracking-tight sm:text-xl">
+                    {step.title}
+                  </p>
+                  <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground sm:text-base">
+                    {step.description}
+                  </p>
+                </div>
+              </div>
             </li>
           ))}
-        </ul>
+        </ol>
       </div>
     </section>
   );
@@ -136,7 +155,7 @@ export function ProcessScrollSection(props: ProcessScrollSectionProps) {
   const isWide = useIsWideViewport();
   const { id, steps } = props;
 
-  if (reduceEffects) {
+  if (reduceEffects || !isWide) {
     return <ProcessScrollStatic {...props} />;
   }
 
