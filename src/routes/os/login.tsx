@@ -1,5 +1,5 @@
 import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
-import { osLogin, checkOSAuth } from "@/lib/api/auth.server";
+import { osLogin, checkOSAuth } from "@/lib/api/auth.functions";
 import { Logo } from "@/components/landing/shared/Logo";
 import { TEAM_LABELS, type TeamMember } from "@/lib/auth/types";
 import { Button } from "@/components/ui/button";

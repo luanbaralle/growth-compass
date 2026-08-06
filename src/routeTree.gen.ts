@@ -34,12 +34,14 @@ import { Route as CasesSlugRouteImport } from './routes/cases/$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminLeadsRouteImport } from './routes/admin/leads'
+import { Route as OsProspeccaoIndexRouteImport } from './routes/os/prospeccao/index'
 import { Route as OsProjetosIndexRouteImport } from './routes/os/projetos/index'
 import { Route as OsMarketingIndexRouteImport } from './routes/os/marketing/index'
 import { Route as OsFinanceiroIndexRouteImport } from './routes/os/financeiro/index'
 import { Route as OsEmpresasIndexRouteImport } from './routes/os/empresas/index'
 import { Route as OsConfiguracoesIndexRouteImport } from './routes/os/configuracoes/index'
 import { Route as PlaygroundCasesDecisionLanguageRouteImport } from './routes/playground/cases/decision-language'
+import { Route as OsProspeccaoIdRouteImport } from './routes/os/prospeccao/$id'
 import { Route as OsProjetosIdRouteImport } from './routes/os/projetos/$id'
 import { Route as OsEmpresasIdRouteImport } from './routes/os/empresas/$id'
 import { Route as BlogCategoriaCategoryRouteImport } from './routes/blog/categoria/$category'
@@ -49,6 +51,7 @@ import { Route as AdminExecucaoPlanejamentoRouteImport } from './routes/admin/ex
 import { Route as AdminExecucaoHojeRouteImport } from './routes/admin/execucao/hoje'
 import { Route as AdminExecucaoClientesRouteImport } from './routes/admin/execucao/clientes'
 import { Route as AdminExecucaoCapacidadeRouteImport } from './routes/admin/execucao/capacidade'
+import { Route as OsProspeccaoBibliotecaIndexRouteImport } from './routes/os/prospeccao/biblioteca/index'
 import { Route as AdminExecucaoRituaisIndexRouteImport } from './routes/admin/execucao/rituais/index'
 import { Route as AdminExecucaoRituaisReviewRouteImport } from './routes/admin/execucao/rituais/review'
 import { Route as AdminExecucaoRituaisPlanningRouteImport } from './routes/admin/execucao/rituais/planning'
@@ -180,6 +183,11 @@ const AdminLeadsRoute = AdminLeadsRouteImport.update({
   path: '/leads',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const OsProspeccaoIndexRoute = OsProspeccaoIndexRouteImport.update({
+  id: '/prospeccao/',
+  path: '/prospeccao/',
+  getParentRoute: () => OsRouteRoute,
+} as any)
 const OsProjetosIndexRoute = OsProjetosIndexRouteImport.update({
   id: '/projetos/',
   path: '/projetos/',
@@ -211,6 +219,11 @@ const PlaygroundCasesDecisionLanguageRoute =
     path: '/playground/cases/decision-language',
     getParentRoute: () => rootRouteImport,
   } as any)
+const OsProspeccaoIdRoute = OsProspeccaoIdRouteImport.update({
+  id: '/prospeccao/$id',
+  path: '/prospeccao/$id',
+  getParentRoute: () => OsRouteRoute,
+} as any)
 const OsProjetosIdRoute = OsProjetosIdRouteImport.update({
   id: '/projetos/$id',
   path: '/projetos/$id',
@@ -257,6 +270,12 @@ const AdminExecucaoCapacidadeRoute = AdminExecucaoCapacidadeRouteImport.update({
   path: '/execucao/capacidade',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const OsProspeccaoBibliotecaIndexRoute =
+  OsProspeccaoBibliotecaIndexRouteImport.update({
+    id: '/prospeccao/biblioteca/',
+    path: '/prospeccao/biblioteca/',
+    getParentRoute: () => OsRouteRoute,
+  } as any)
 const AdminExecucaoRituaisIndexRoute =
   AdminExecucaoRituaisIndexRouteImport.update({
     id: '/execucao/rituais/',
@@ -317,16 +336,19 @@ export interface FileRoutesByFullPath {
   '/blog/categoria/$category': typeof BlogCategoriaCategoryRoute
   '/os/empresas/$id': typeof OsEmpresasIdRoute
   '/os/projetos/$id': typeof OsProjetosIdRoute
+  '/os/prospeccao/$id': typeof OsProspeccaoIdRoute
   '/playground/cases/decision-language': typeof PlaygroundCasesDecisionLanguageRoute
   '/os/configuracoes/': typeof OsConfiguracoesIndexRoute
   '/os/empresas/': typeof OsEmpresasIndexRoute
   '/os/financeiro/': typeof OsFinanceiroIndexRoute
   '/os/marketing/': typeof OsMarketingIndexRoute
   '/os/projetos/': typeof OsProjetosIndexRoute
+  '/os/prospeccao/': typeof OsProspeccaoIndexRoute
   '/admin/execucao/rituais/checkin': typeof AdminExecucaoRituaisCheckinRoute
   '/admin/execucao/rituais/planning': typeof AdminExecucaoRituaisPlanningRoute
   '/admin/execucao/rituais/review': typeof AdminExecucaoRituaisReviewRoute
   '/admin/execucao/rituais/': typeof AdminExecucaoRituaisIndexRoute
+  '/os/prospeccao/biblioteca/': typeof OsProspeccaoBibliotecaIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -361,16 +383,19 @@ export interface FileRoutesByTo {
   '/blog/categoria/$category': typeof BlogCategoriaCategoryRoute
   '/os/empresas/$id': typeof OsEmpresasIdRoute
   '/os/projetos/$id': typeof OsProjetosIdRoute
+  '/os/prospeccao/$id': typeof OsProspeccaoIdRoute
   '/playground/cases/decision-language': typeof PlaygroundCasesDecisionLanguageRoute
   '/os/configuracoes': typeof OsConfiguracoesIndexRoute
   '/os/empresas': typeof OsEmpresasIndexRoute
   '/os/financeiro': typeof OsFinanceiroIndexRoute
   '/os/marketing': typeof OsMarketingIndexRoute
   '/os/projetos': typeof OsProjetosIndexRoute
+  '/os/prospeccao': typeof OsProspeccaoIndexRoute
   '/admin/execucao/rituais/checkin': typeof AdminExecucaoRituaisCheckinRoute
   '/admin/execucao/rituais/planning': typeof AdminExecucaoRituaisPlanningRoute
   '/admin/execucao/rituais/review': typeof AdminExecucaoRituaisReviewRoute
   '/admin/execucao/rituais': typeof AdminExecucaoRituaisIndexRoute
+  '/os/prospeccao/biblioteca': typeof OsProspeccaoBibliotecaIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -408,16 +433,19 @@ export interface FileRoutesById {
   '/blog/categoria/$category': typeof BlogCategoriaCategoryRoute
   '/os/empresas/$id': typeof OsEmpresasIdRoute
   '/os/projetos/$id': typeof OsProjetosIdRoute
+  '/os/prospeccao/$id': typeof OsProspeccaoIdRoute
   '/playground/cases/decision-language': typeof PlaygroundCasesDecisionLanguageRoute
   '/os/configuracoes/': typeof OsConfiguracoesIndexRoute
   '/os/empresas/': typeof OsEmpresasIndexRoute
   '/os/financeiro/': typeof OsFinanceiroIndexRoute
   '/os/marketing/': typeof OsMarketingIndexRoute
   '/os/projetos/': typeof OsProjetosIndexRoute
+  '/os/prospeccao/': typeof OsProspeccaoIndexRoute
   '/admin/execucao/rituais/checkin': typeof AdminExecucaoRituaisCheckinRoute
   '/admin/execucao/rituais/planning': typeof AdminExecucaoRituaisPlanningRoute
   '/admin/execucao/rituais/review': typeof AdminExecucaoRituaisReviewRoute
   '/admin/execucao/rituais/': typeof AdminExecucaoRituaisIndexRoute
+  '/os/prospeccao/biblioteca/': typeof OsProspeccaoBibliotecaIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -456,16 +484,19 @@ export interface FileRouteTypes {
     | '/blog/categoria/$category'
     | '/os/empresas/$id'
     | '/os/projetos/$id'
+    | '/os/prospeccao/$id'
     | '/playground/cases/decision-language'
     | '/os/configuracoes/'
     | '/os/empresas/'
     | '/os/financeiro/'
     | '/os/marketing/'
     | '/os/projetos/'
+    | '/os/prospeccao/'
     | '/admin/execucao/rituais/checkin'
     | '/admin/execucao/rituais/planning'
     | '/admin/execucao/rituais/review'
     | '/admin/execucao/rituais/'
+    | '/os/prospeccao/biblioteca/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -500,16 +531,19 @@ export interface FileRouteTypes {
     | '/blog/categoria/$category'
     | '/os/empresas/$id'
     | '/os/projetos/$id'
+    | '/os/prospeccao/$id'
     | '/playground/cases/decision-language'
     | '/os/configuracoes'
     | '/os/empresas'
     | '/os/financeiro'
     | '/os/marketing'
     | '/os/projetos'
+    | '/os/prospeccao'
     | '/admin/execucao/rituais/checkin'
     | '/admin/execucao/rituais/planning'
     | '/admin/execucao/rituais/review'
     | '/admin/execucao/rituais'
+    | '/os/prospeccao/biblioteca'
   id:
     | '__root__'
     | '/'
@@ -546,16 +580,19 @@ export interface FileRouteTypes {
     | '/blog/categoria/$category'
     | '/os/empresas/$id'
     | '/os/projetos/$id'
+    | '/os/prospeccao/$id'
     | '/playground/cases/decision-language'
     | '/os/configuracoes/'
     | '/os/empresas/'
     | '/os/financeiro/'
     | '/os/marketing/'
     | '/os/projetos/'
+    | '/os/prospeccao/'
     | '/admin/execucao/rituais/checkin'
     | '/admin/execucao/rituais/planning'
     | '/admin/execucao/rituais/review'
     | '/admin/execucao/rituais/'
+    | '/os/prospeccao/biblioteca/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -760,6 +797,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLeadsRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/os/prospeccao/': {
+      id: '/os/prospeccao/'
+      path: '/prospeccao'
+      fullPath: '/os/prospeccao/'
+      preLoaderRoute: typeof OsProspeccaoIndexRouteImport
+      parentRoute: typeof OsRouteRoute
+    }
     '/os/projetos/': {
       id: '/os/projetos/'
       path: '/projetos'
@@ -801,6 +845,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/playground/cases/decision-language'
       preLoaderRoute: typeof PlaygroundCasesDecisionLanguageRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/os/prospeccao/$id': {
+      id: '/os/prospeccao/$id'
+      path: '/prospeccao/$id'
+      fullPath: '/os/prospeccao/$id'
+      preLoaderRoute: typeof OsProspeccaoIdRouteImport
+      parentRoute: typeof OsRouteRoute
     }
     '/os/projetos/$id': {
       id: '/os/projetos/$id'
@@ -864,6 +915,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/execucao/capacidade'
       preLoaderRoute: typeof AdminExecucaoCapacidadeRouteImport
       parentRoute: typeof AdminRouteRoute
+    }
+    '/os/prospeccao/biblioteca/': {
+      id: '/os/prospeccao/biblioteca/'
+      path: '/prospeccao/biblioteca'
+      fullPath: '/os/prospeccao/biblioteca/'
+      preLoaderRoute: typeof OsProspeccaoBibliotecaIndexRouteImport
+      parentRoute: typeof OsRouteRoute
     }
     '/admin/execucao/rituais/': {
       id: '/admin/execucao/rituais/'
@@ -937,11 +995,14 @@ interface OsRouteRouteChildren {
   OsIndexRoute: typeof OsIndexRoute
   OsEmpresasIdRoute: typeof OsEmpresasIdRoute
   OsProjetosIdRoute: typeof OsProjetosIdRoute
+  OsProspeccaoIdRoute: typeof OsProspeccaoIdRoute
   OsConfiguracoesIndexRoute: typeof OsConfiguracoesIndexRoute
   OsEmpresasIndexRoute: typeof OsEmpresasIndexRoute
   OsFinanceiroIndexRoute: typeof OsFinanceiroIndexRoute
   OsMarketingIndexRoute: typeof OsMarketingIndexRoute
   OsProjetosIndexRoute: typeof OsProjetosIndexRoute
+  OsProspeccaoIndexRoute: typeof OsProspeccaoIndexRoute
+  OsProspeccaoBibliotecaIndexRoute: typeof OsProspeccaoBibliotecaIndexRoute
 }
 
 const OsRouteRouteChildren: OsRouteRouteChildren = {
@@ -949,11 +1010,14 @@ const OsRouteRouteChildren: OsRouteRouteChildren = {
   OsIndexRoute: OsIndexRoute,
   OsEmpresasIdRoute: OsEmpresasIdRoute,
   OsProjetosIdRoute: OsProjetosIdRoute,
+  OsProspeccaoIdRoute: OsProspeccaoIdRoute,
   OsConfiguracoesIndexRoute: OsConfiguracoesIndexRoute,
   OsEmpresasIndexRoute: OsEmpresasIndexRoute,
   OsFinanceiroIndexRoute: OsFinanceiroIndexRoute,
   OsMarketingIndexRoute: OsMarketingIndexRoute,
   OsProjetosIndexRoute: OsProjetosIndexRoute,
+  OsProspeccaoIndexRoute: OsProspeccaoIndexRoute,
+  OsProspeccaoBibliotecaIndexRoute: OsProspeccaoBibliotecaIndexRoute,
 }
 
 const OsRouteRouteWithChildren =

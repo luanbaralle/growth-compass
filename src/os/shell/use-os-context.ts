@@ -1,4 +1,4 @@
-import { checkOSAuth, osLogout, switchOSPerson } from "@/lib/api/auth.server";
+import { checkOSAuth, osLogout, switchOSPerson } from "@/lib/api/auth.functions";
 import { TEAM_LABELS, type TeamMember } from "@/lib/auth/types";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";

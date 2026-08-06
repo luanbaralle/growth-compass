@@ -47,6 +47,7 @@ npm run dev
    - `supabase/migrations/001_os_schema.sql`
    - `supabase/migrations/002_drop_execution_state.sql` (se existir tabela legada)
    - `supabase/migrations/003_finance_receipts.sql` (comprovantes nos lançamentos)
+   - `supabase/migrations/004_prospection.sql` (módulo Prospecção)
 3. Configure `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` no `.env`
 
 ### Migrar dados legados (opcional)

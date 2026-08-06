@@ -9,6 +9,7 @@ import {
   LogOut,
   Megaphone,
   Settings,
+  Target,
   Wallet,
 } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
@@ -34,6 +35,7 @@ import { useState } from "react";
 
 const NAV_ITEMS = [
   { to: "/os", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { to: "/os/prospeccao", label: "Prospecção", icon: Target },
   { to: "/os/empresas", label: "Empresas", icon: Building2 },
   { to: "/os/projetos", label: "Projetos", icon: FolderKanban },
   { to: "/os/marketing", label: "Marketing", icon: Megaphone },

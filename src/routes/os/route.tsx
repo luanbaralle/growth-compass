@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { OSShell } from "@/os/shell/OSShell";
-import { checkOSAuth } from "@/lib/api/auth.server";
+import { checkOSAuth } from "@/lib/api/auth.functions";
 
 export const Route = createFileRoute("/os")({
   beforeLoad: async ({ location }) => {

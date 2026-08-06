@@ -1,9 +1,9 @@
 import { STAGE_LABELS, COMPANY_STAGES } from "@/domains/companies/types";
 import { formatMoney as formatFinanceMoney } from "@/domains/finance/types";
 import { CHANNEL_LABELS, formatPeriod, type MarketingChannel } from "@/domains/marketing/types";
-import { getOSConfigStatus } from "@/lib/api/auth.server";
+import { getOSConfigStatus } from "@/lib/api/auth.functions";
 import { getErrorMessage, isUnauthorizedError } from "@/lib/api/client-errors";
-import { getOSDashboard } from "@/os/dashboard.api.server";
+import { getOSDashboard } from "@/os/dashboard.functions";
 import type { OSDashboardData } from "@/os/dashboard.service.server";
 import {
   AlertBanner,
@@ -128,6 +128,69 @@ export function DashboardPage() {
           />
         </div>
       </section>
+
+      <section>
+        <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Prospecção
+        </h2>
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <StatCard
+            label="Prospectados"
+            value={loading ? "—" : String(data?.prospection.prospected ?? 0)}
+            sub="Pipeline ativo"
+            icon={Target}
+          />
+          <StatCard
+            label="Taxa de resposta"
+            value={loading ? "—" : `${data?.prospection.responseRate ?? 0}%`}
+            sub={`${data?.prospection.responses ?? 0} respostas`}
+            accent="success"
+            icon={TrendingUp}
+          />
+          <StatCard
+            label="Conversão"
+            value={loading ? "—" : `${data?.prospection.conversionRate ?? 0}%`}
+            sub={`${data?.prospection.clients ?? 0} clientes`}
+            accent="brand"
+            icon={Users}
+          />
+          <StatCard
+            label="Mensagens enviadas"
+            value={loading ? "—" : String(data?.prospection.messagesSent ?? 0)}
+            sub="Registradas no pipeline"
+            accent="neutral"
+            icon={Target}
+          />
+        </div>
+      </section>
+
+      {(data?.prospection.upcomingActions.length ?? 0) > 0 && (
+        <Section
+          title="Próximas ações — Prospecção"
+          action={
+            <Link to="/os/prospeccao" className="text-xs text-brand hover:underline">
+              Ver pipeline
+            </Link>
+          }
+        >
+          <ul className="divide-y divide-border/60">
+            {data?.prospection.upcomingActions.map((p) => (
+              <ListItem key={p.id}>
+                <Link
+                  to="/os/prospeccao/$id"
+                  params={{ id: p.id }}
+                  className="block py-3 text-sm"
+                >
+                  <p className="font-medium hover:text-brand">{p.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {p.next_action ?? "—"} · {p.next_action_date ?? "sem data"}
+                  </p>
+                </Link>
+              </ListItem>
+            ))}
+          </ul>
+        </Section>
+      )}
 
       <section>
         <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -335,7 +398,10 @@ export function DashboardPage() {
           <QuickLinkCard title="Marketing" description="Métricas por canal" href="/os/marketing" icon={Megaphone}>
             <QuickLinkButton href="/os/marketing" label="Abrir marketing" />
           </QuickLinkCard>
-          <QuickLinkCard title="Leads hoje" description="Captação do site" href="/os/empresas" icon={Target}>
+          <QuickLinkCard title="Prospecção" description="Pipeline comercial" href="/os/prospeccao" icon={Target}>
+            <QuickLinkButton href="/os/prospeccao" label="Abrir prospecção" />
+          </QuickLinkCard>
+          <QuickLinkCard title="Leads hoje" description="Captação do site" href="/os/empresas" icon={Building2}>
             <p className="mt-2 font-display text-2xl font-bold">
               {loading ? "—" : data?.companies.leadsToday ?? 0}
             </p>

@@ -59,6 +59,20 @@ export interface OSDashboardData {
       leads: number | null;
     }>;
   };
+  prospection: {
+    prospected: number;
+    messagesSent: number;
+    responses: number;
+    clients: number;
+    responseRate: number;
+    conversionRate: number;
+    upcomingActions: Array<{
+      id: string;
+      name: string;
+      next_action: string | null;
+      next_action_date: string | null;
+    }>;
+  };
 }
 
 export async function getOSDashboardData(): Promise<OSDashboardData> {
@@ -75,6 +89,7 @@ export async function getOSDashboardData(): Promise<OSDashboardData> {
     marketingCounts,
     recentSnapshots,
     recentCompanies,
+    prospectionMetrics,
   ] = await Promise.all([
     companyRepo.countCompaniesCreatedToday(),
     companyRepo.countActiveCompanies(),
@@ -88,6 +103,7 @@ export async function getOSDashboardData(): Promise<OSDashboardData> {
     marketingRepo.countMarketingByChannel(),
     marketingRepo.findMarketingSnapshots({ sort: "period_start", order: "desc" }),
     companyRepo.findCompanies({ stage: "lead", sort: "created_at", order: "desc" }),
+    import("@/domains/prospection/service.server").then((m) => m.getProspectionMetrics()),
   ]);
 
   const overdueProjects = allProjects
@@ -151,6 +167,20 @@ export async function getOSDashboardData(): Promise<OSDashboardData> {
         period_end: s.period_end,
         investment_cents: s.investment_cents,
         leads: s.leads,
+      })),
+    },
+    prospection: {
+      prospected: prospectionMetrics.prospected,
+      messagesSent: prospectionMetrics.messagesSent,
+      responses: prospectionMetrics.responses,
+      clients: prospectionMetrics.clients,
+      responseRate: prospectionMetrics.responseRate,
+      conversionRate: prospectionMetrics.conversionRate,
+      upcomingActions: prospectionMetrics.upcomingActions.slice(0, 5).map((p) => ({
+        id: p.id,
+        name: p.name,
+        next_action: p.next_action,
+        next_action_date: p.next_action_date,
       })),
     },
   };

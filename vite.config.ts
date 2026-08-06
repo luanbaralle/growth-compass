@@ -17,14 +17,16 @@ export default defineConfig({
     plugins: [
       {
         name: "raise-one-server-only",
-        // Só no build client — em dev o SSR precisa carregar *.server.ts
+        // Externalize pure *.server modules in the client build so node-only code
+        // (session, repositories) never lands in the browser bundle.
         apply: "build",
         enforce: "pre",
         resolveId(source, _importer, options) {
           if (options?.ssr) return null;
-          if (source.includes(".server") && !source.includes("node_modules")) {
-            return { id: source, external: true };
-          }
+          if (!source.includes(".server") || source.includes("node_modules")) return null;
+          // TanStack Start transforms server fn modules for the client — never externalize those.
+          if (source.includes(".functions") || source.includes("api.server")) return null;
+          return { id: source, external: true };
         },
       },
     ],
