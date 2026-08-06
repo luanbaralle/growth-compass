@@ -221,7 +221,7 @@ export function ProgramaDeCrescimentoPage() {
 
       <PageFAQ
         title="Dúvidas sobre o Programa"
-        description="Respostas diretas para quem está avaliando trabalhar conosco."
+        description="O essencial para quem está avaliando uma parceria de crescimento integrada."
         items={programaFaq}
       />
 

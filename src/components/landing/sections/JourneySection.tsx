@@ -10,8 +10,7 @@ export function JourneySection({ config }: { config: SegmentConfig }) {
   const { ref, inView } = useInView();
 
   return (
-    <SectionWrap techGlow>
-      <TechBackground />
+    <SectionWrap techGlow background={<TechBackground />}>
       <div className="relative">
         <div className="mx-auto max-w-3xl text-center">
           <Eyebrow>{journey.eyebrow}</Eyebrow>

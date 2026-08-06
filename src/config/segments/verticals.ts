@@ -676,6 +676,22 @@ export const energiaSolarSegment = createSegmentConfig({
     closingLine: "Mas nada disso importa para quem nunca encontrou sua empresa.",
   },
   invisibleClient: { searchQuery: "energia solar residencial" },
+  journey: {
+    eyebrow: "03 — A Jornada",
+    title: "Como proprietários",
+    titleHighlight: "escolhem energia solar no Google",
+    steps: [
+      { label: "Proprietário pesquisa economia", icon: ScanSearch },
+      { label: "Busca no Google", icon: Search },
+      { label: "Compara integradores locais", icon: Globe },
+      { label: "Solicita orçamento", icon: MousePointerClick },
+      { label: "Entra em contato", icon: MessageSquare },
+      { label: "Agenda visita técnica", icon: CalendarCheck },
+      { label: "Fecha instalação", icon: UserCheck },
+    ],
+    instagramNote: "A maioria das integradoras depende só de indicação e feiras.",
+    googleNote: "Mas a maioria dos proprietários inicia a busca por energia solar no Google.",
+  },
   demand: {
     bars: [
       { label: "Residencial", value: 86 },
@@ -765,6 +781,22 @@ export const construcaoSegment = createSegmentConfig({
     closingLine: "Mas nada disso importa para quem nunca encontrou sua empresa.",
   },
   invisibleClient: { searchQuery: "reforma de apartamento" },
+  journey: {
+    eyebrow: "03 — A Jornada",
+    title: "Como proprietários",
+    titleHighlight: "contratam obras no Google",
+    steps: [
+      { label: "Proprietário precisa reformar", icon: ScanSearch },
+      { label: "Pesquisa no Google", icon: Search },
+      { label: "Compara empresas locais", icon: Globe },
+      { label: "Analisa portfólio e avaliações", icon: MousePointerClick },
+      { label: "Solicita orçamento", icon: MessageSquare },
+      { label: "Agenda visita técnica", icon: CalendarCheck },
+      { label: "Fecha o projeto", icon: UserCheck },
+    ],
+    instagramNote: "A maioria das construtoras depende só de indicação e obra passada.",
+    googleNote: "Mas a maioria dos proprietários busca reforma e construção no Google.",
+  },
   demand: {
     bars: [
       { label: "Reformas", value: 84 },
@@ -854,6 +886,22 @@ export const servicosLocaisSegment = createSegmentConfig({
     closingLine: "Mas nada disso importa para quem nunca encontrou seu negócio.",
   },
   invisibleClient: { searchQuery: "encanador perto de mim" },
+  journey: {
+    eyebrow: "03 — A Jornada",
+    title: "Como clientes",
+    titleHighlight: "contratam serviços locais no Google",
+    steps: [
+      { label: "Pessoa precisa de um serviço", icon: ScanSearch },
+      { label: "Pesquisa no Google", icon: Search },
+      { label: "Compara profissionais próximos", icon: Globe },
+      { label: "Vê avaliações e disponibilidade", icon: MousePointerClick },
+      { label: "Liga ou envia mensagem", icon: MessageSquare },
+      { label: "Agenda o atendimento", icon: CalendarCheck },
+      { label: "Contrata e recomenda", icon: UserCheck },
+    ],
+    instagramNote: "A maioria dos prestadores depende só de indicação e grupos locais.",
+    googleNote: "Mas a maioria das pessoas busca encanador, eletricista e serviços no Google.",
+  },
   demand: {
     bars: [
       { label: "Manutenção", value: 80 },
@@ -911,6 +959,14 @@ export const financeiroSegment = createSegmentConfig({
     titleHighlight: "recebendo mais clientes.",
     subtitle:
       "Pessoas da sua região pesquisam no Google por seguros, crédito e planejamento financeiro. Se você não aparece, esses clientes fecham com a concorrência.",
+    ctaLabel: "Quero analisar meu mercado",
+    badge: "Especialistas em crescimento para negócios locais",
+    trustItems: [
+      "Sem compromisso",
+      "Análise personalizada da sua região",
+      "Retorno em até 24 horas",
+      "Sem linguagem técnica",
+    ],
     monthlySearches: "+1.200",
   },
   visibility: {
@@ -923,8 +979,34 @@ export const financeiroSegment = createSegmentConfig({
     ],
     ctaQuestion: "Quando pesquisam, sua empresa aparece?",
     businessType: "empresa",
+    eyebrow: "01 — O Problema",
+    title: "A maioria das empresas financeiras não tem problema de qualidade.",
+    titleMuted: "Tem problema de visibilidade.",
+    qualities: [
+      "consultores experientes",
+      "produtos competitivos",
+      "atendimento consultivo",
+      "clientes satisfeitos",
+    ],
+    closingLine: "Mas nada disso importa para quem nunca encontrou sua empresa.",
   },
   invisibleClient: { searchQuery: "corretor de seguros perto de mim" },
+  journey: {
+    eyebrow: "03 — A Jornada",
+    title: "Como novos clientes",
+    titleHighlight: "encontram serviços financeiros no Google",
+    steps: [
+      { label: "Pessoa busca crédito ou seguro", icon: ScanSearch },
+      { label: "Pesquisa no Google", icon: Search },
+      { label: "Compara opções locais", icon: Globe },
+      { label: "Analisa propostas e avaliações", icon: MousePointerClick },
+      { label: "Solicita contato", icon: MessageSquare },
+      { label: "Agenda reunião", icon: CalendarCheck },
+      { label: "Fecha contrato", icon: UserCheck },
+    ],
+    instagramNote: "A maioria tenta captar clientes apenas por indicação.",
+    googleNote: "Mas a maioria inicia a busca por crédito e seguros no Google.",
+  },
   demand: {
     bars: [
       { label: "Seguros", value: 78 },
@@ -939,9 +1021,19 @@ export const financeiroSegment = createSegmentConfig({
     competitors: sharedCompetitors,
     yourBusinessLabel: "Sua empresa",
     notFoundLabel: "não aparece",
+    title: "Seus concorrentes já entenderam isso.",
+    subtitle:
+      "Enquanto você lê esta página, corretoras e consultorias da sua região estão aparecendo quando clientes procuram seguros, crédito e planejamento financeiro.",
   },
   form: {
     businessFieldLabel: "Empresa ou Serviço Financeiro",
+    eyebrow: "Diagnóstico Gratuito",
+    title: "Quantas oportunidades sua empresa está",
+    titleHighlight: "deixando passar hoje?",
+    subtitle:
+      "Solicite uma análise da demanda por serviços financeiros na sua região — e veja se você aparece quando o cliente está pronto para contratar.",
+    submitLabel: "Quero analisar meu mercado",
+    footerNote: "Sem compromisso · Retorno em até 24 horas",
   },
 });
 
@@ -962,6 +1054,14 @@ export const automotivoSegment = createSegmentConfig({
     titleHighlight: "recebendo mais clientes.",
     subtitle:
       "Motoristas da sua região pesquisam no Google por oficinas, funilaria e serviços automotivos. Se você não aparece, eles levam o carro para outro lugar.",
+    ctaLabel: "Quero analisar meu mercado",
+    badge: "Especialistas em crescimento para negócios locais",
+    trustItems: [
+      "Sem compromisso",
+      "Análise personalizada da sua região",
+      "Retorno em até 24 horas",
+      "Sem linguagem técnica",
+    ],
     monthlySearches: "+1.600",
   },
   visibility: {
@@ -974,8 +1074,34 @@ export const automotivoSegment = createSegmentConfig({
     ],
     ctaQuestion: "Quando pesquisam, sua oficina aparece?",
     businessType: "oficina",
+    eyebrow: "01 — O Problema",
+    title: "A maioria das oficinas não tem problema de qualidade.",
+    titleMuted: "Tem problema de visibilidade.",
+    qualities: [
+      "mecânicos experientes",
+      "serviço ágil",
+      "preço justo",
+      "clientes satisfeitos",
+    ],
+    closingLine: "Mas nada disso importa para quem nunca encontrou sua oficina.",
   },
   invisibleClient: { searchQuery: "oficina mecânica perto de mim" },
+  journey: {
+    eyebrow: "03 — A Jornada",
+    title: "Como motoristas",
+    titleHighlight: "encontram oficinas no Google",
+    steps: [
+      { label: "Motorista precisa de serviço", icon: ScanSearch },
+      { label: "Pesquisa no Google", icon: Search },
+      { label: "Compara oficinas próximas", icon: Globe },
+      { label: "Vê avaliações e preços", icon: MousePointerClick },
+      { label: "Liga ou envia mensagem", icon: MessageSquare },
+      { label: "Agenda o serviço", icon: CalendarCheck },
+      { label: "Torna-se cliente", icon: UserCheck },
+    ],
+    instagramNote: "A maioria das oficinas depende só de indicação e passagem.",
+    googleNote: "Mas a maioria dos motoristas busca oficina e guincho no Google.",
+  },
   demand: {
     bars: [
       { label: "Mecânica", value: 86 },
@@ -990,9 +1116,19 @@ export const automotivoSegment = createSegmentConfig({
     competitors: sharedCompetitors,
     yourBusinessLabel: "Sua oficina",
     notFoundLabel: "não aparece",
+    title: "Seus concorrentes já entenderam isso.",
+    subtitle:
+      "Enquanto você lê esta página, oficinas da sua região estão aparecendo quando motoristas procuram mecânica, funilaria e serviços automotivos.",
   },
   form: {
     businessFieldLabel: "Oficina ou Serviço Automotivo",
+    eyebrow: "Diagnóstico Gratuito",
+    title: "Quantos motoristas da sua região",
+    titleHighlight: "não estão encontrando você?",
+    subtitle:
+      "Solicite uma análise da demanda por serviços automotivos — e veja se sua oficina aparece no momento da busca.",
+    submitLabel: "Quero analisar meu mercado",
+    footerNote: "Sem compromisso · Retorno em até 24 horas",
   },
 });
 
@@ -1013,6 +1149,14 @@ export const educacaoSegment = createSegmentConfig({
     titleHighlight: "recebendo mais matrículas.",
     subtitle:
       "Famílias da sua região pesquisam no Google por escolas, cursos e reforço escolar. Se você não aparece, essas matrículas vão para outro lugar.",
+    ctaLabel: "Quero analisar meu mercado",
+    badge: "Especialistas em crescimento para negócios locais",
+    trustItems: [
+      "Sem compromisso",
+      "Análise personalizada da sua região",
+      "Retorno em até 24 horas",
+      "Sem linguagem técnica",
+    ],
     monthlySearches: "+1.300",
   },
   visibility: {
@@ -1025,8 +1169,34 @@ export const educacaoSegment = createSegmentConfig({
     ],
     ctaQuestion: "Quando pesquisam, sua escola aparece?",
     businessType: "escola",
+    eyebrow: "01 — O Problema",
+    title: "A maioria das escolas não tem problema de qualidade.",
+    titleMuted: "Tem problema de visibilidade.",
+    qualities: [
+      "professores qualificados",
+      "metodologia sólida",
+      "estrutura adequada",
+      "famílias satisfeitas",
+    ],
+    closingLine: "Mas nada disso importa para quem nunca encontrou sua escola.",
   },
   invisibleClient: { searchQuery: "escola particular perto de mim" },
+  journey: {
+    eyebrow: "03 — A Jornada",
+    title: "Como famílias",
+    titleHighlight: "escolhem escolas no Google",
+    steps: [
+      { label: "Família busca escola ou curso", icon: ScanSearch },
+      { label: "Pesquisa no Google", icon: Search },
+      { label: "Compara opções da região", icon: Globe },
+      { label: "Visita site e avaliações", icon: MousePointerClick },
+      { label: "Solicita informações", icon: MessageSquare },
+      { label: "Agenda visita ou prova", icon: CalendarCheck },
+      { label: "Realiza matrícula", icon: UserCheck },
+    ],
+    instagramNote: "A maioria das escolas depende só de indicação e panfletos.",
+    googleNote: "Mas a maioria das famílias inicia a busca por escolas e cursos no Google.",
+  },
   demand: {
     bars: [
       { label: "Escolas", value: 80 },
@@ -1041,9 +1211,19 @@ export const educacaoSegment = createSegmentConfig({
     competitors: sharedCompetitors,
     yourBusinessLabel: "Sua escola",
     notFoundLabel: "não aparece",
+    title: "Seus concorrentes já entenderam isso.",
+    subtitle:
+      "Enquanto você lê esta página, escolas e cursos da sua região estão aparecendo quando famílias procuram matrículas e reforço escolar.",
   },
   form: {
     businessFieldLabel: "Escola ou Curso",
+    eyebrow: "Diagnóstico Gratuito",
+    title: "Quantas matrículas sua escola está",
+    titleHighlight: "deixando passar hoje?",
+    subtitle:
+      "Solicite uma análise da demanda por educação na sua região — e veja se você aparece quando a família está pronta para decidir.",
+    submitLabel: "Quero analisar meu mercado",
+    footerNote: "Sem compromisso · Retorno em até 24 horas",
   },
 });
 
@@ -1064,6 +1244,14 @@ export const alimentacaoSegment = createSegmentConfig({
     titleHighlight: "recebendo mais pedidos.",
     subtitle:
       "Pessoas da sua região pesquisam no Google por restaurantes, delivery e opções para comer. Se você não aparece, esses pedidos vão para a concorrência.",
+    ctaLabel: "Quero analisar meu mercado",
+    badge: "Especialistas em crescimento para negócios locais",
+    trustItems: [
+      "Sem compromisso",
+      "Análise personalizada da sua região",
+      "Retorno em até 24 horas",
+      "Sem linguagem técnica",
+    ],
     monthlySearches: "+2.100",
   },
   visibility: {
@@ -1076,8 +1264,34 @@ export const alimentacaoSegment = createSegmentConfig({
     ],
     ctaQuestion: "Quando pesquisam, seu restaurante aparece?",
     businessType: "restaurante",
+    eyebrow: "01 — O Problema",
+    title: "A maioria dos restaurantes não tem problema de qualidade.",
+    titleMuted: "Tem problema de visibilidade.",
+    qualities: [
+      "comida de qualidade",
+      "atendimento ágil",
+      "ambiente agradável",
+      "clientes fiéis",
+    ],
+    closingLine: "Mas nada disso importa para quem nunca encontrou seu restaurante.",
   },
   invisibleClient: { searchQuery: "restaurante perto de mim" },
+  journey: {
+    eyebrow: "03 — A Jornada",
+    title: "Como clientes",
+    titleHighlight: "escolhem onde comer no Google",
+    steps: [
+      { label: "Pessoa decide onde comer", icon: ScanSearch },
+      { label: "Pesquisa no Google", icon: Search },
+      { label: "Compara restaurantes próximos", icon: Globe },
+      { label: "Vê cardápio e avaliações", icon: MousePointerClick },
+      { label: "Faz pedido ou reserva", icon: MessageSquare },
+      { label: "Confirma entrega ou mesa", icon: CalendarCheck },
+      { label: "Torna-se cliente recorrente", icon: UserCheck },
+    ],
+    instagramNote: "A maioria dos restaurantes depende só de iFood e indicação.",
+    googleNote: "Mas muitos clientes ainda buscam restaurante e delivery direto no Google.",
+  },
   demand: {
     bars: [
       { label: "Delivery", value: 92 },
@@ -1092,9 +1306,19 @@ export const alimentacaoSegment = createSegmentConfig({
     competitors: sharedCompetitors,
     yourBusinessLabel: "Seu restaurante",
     notFoundLabel: "não aparece",
+    title: "Seus concorrentes já entenderam isso.",
+    subtitle:
+      "Enquanto você lê esta página, restaurantes da sua região estão aparecendo quando clientes procuram onde comer, delivery e opções locais.",
   },
   form: {
     businessFieldLabel: "Restaurante ou Tipo de Comida",
+    eyebrow: "Diagnóstico Gratuito",
+    title: "Quantos pedidos seu restaurante está",
+    titleHighlight: "deixando passar hoje?",
+    subtitle:
+      "Solicite uma análise da demanda por alimentação na sua região — e veja se você aparece quando o cliente está com fome e pronto para pedir.",
+    submitLabel: "Quero analisar meu mercado",
+    footerNote: "Sem compromisso · Retorno em até 24 horas",
   },
 });
 
@@ -1115,6 +1339,14 @@ export const petsSegment = createSegmentConfig({
     titleHighlight: "recebendo mais clientes.",
     subtitle:
       "Todos os dias, tutores da sua região pesquisam no Google por pet shop, veterinário e banho e tosa. Se você não aparece, esses clientes vão para outro lugar.",
+    ctaLabel: "Quero analisar meu mercado",
+    badge: "Especialistas em crescimento para negócios locais",
+    trustItems: [
+      "Sem compromisso",
+      "Análise personalizada da sua região",
+      "Retorno em até 24 horas",
+      "Sem linguagem técnica",
+    ],
     monthlySearches: "+1.400",
   },
   visibility: {
@@ -1127,8 +1359,34 @@ export const petsSegment = createSegmentConfig({
     ],
     ctaQuestion: "Quando pesquisam, seu pet shop aparece?",
     businessType: "pet shop",
+    eyebrow: "01 — O Problema",
+    title: "A maioria dos negócios pet não tem problema de qualidade.",
+    titleMuted: "Tem problema de visibilidade.",
+    qualities: [
+      "cuidado com os animais",
+      "profissionais qualificados",
+      "produtos de qualidade",
+      "tutores satisfeitos",
+    ],
+    closingLine: "Mas nada disso importa para quem nunca encontrou seu pet shop.",
   },
   invisibleClient: { searchQuery: "pet shop perto de mim" },
+  journey: {
+    eyebrow: "03 — A Jornada",
+    title: "Como tutores",
+    titleHighlight: "encontram serviços pet no Google",
+    steps: [
+      { label: "Tutor precisa de serviço pet", icon: ScanSearch },
+      { label: "Pesquisa no Google", icon: Search },
+      { label: "Compara pet shops e clínicas", icon: Globe },
+      { label: "Vê avaliações e horários", icon: MousePointerClick },
+      { label: "Entra em contato", icon: MessageSquare },
+      { label: "Agenda consulta ou banho", icon: CalendarCheck },
+      { label: "Torna-se cliente", icon: UserCheck },
+    ],
+    instagramNote: "A maioria dos pet shops depende só de indicação e Instagram.",
+    googleNote: "Mas a maioria dos tutores busca veterinário e pet shop no Google.",
+  },
   demand: {
     bars: [
       { label: "Pet shop", value: 82 },
@@ -1143,9 +1401,19 @@ export const petsSegment = createSegmentConfig({
     competitors: sharedCompetitors,
     yourBusinessLabel: "Seu pet shop",
     notFoundLabel: "não aparece",
+    title: "Seus concorrentes já entenderam isso.",
+    subtitle:
+      "Enquanto você lê esta página, pet shops e clínicas veterinárias da sua região estão aparecendo quando tutores procuram banho, tosa e atendimento.",
   },
   form: {
     businessFieldLabel: "Pet Shop ou Serviço Pet",
+    eyebrow: "Diagnóstico Gratuito",
+    title: "Quantos tutores da sua região",
+    titleHighlight: "não estão encontrando você?",
+    subtitle:
+      "Solicite uma análise da demanda por serviços pet — e veja se você aparece quando o tutor precisa de atendimento.",
+    submitLabel: "Quero analisar meu mercado",
+    footerNote: "Sem compromisso · Retorno em até 24 horas",
   },
 });
 

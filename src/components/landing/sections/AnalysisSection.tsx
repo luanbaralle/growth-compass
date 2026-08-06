@@ -10,8 +10,7 @@ export function AnalysisSection({ config }: { config: SegmentConfig }) {
   const { analysis } = config;
 
   return (
-    <SectionWrap techGlow>
-      <TechBackground />
+    <SectionWrap techGlow background={<TechBackground />}>
       <div className="relative">
         <div className="mx-auto max-w-3xl text-center">
           <Eyebrow>{analysis.eyebrow}</Eyebrow>

@@ -12,7 +12,7 @@ interface HeroSectionProps {
 
 export function HeroSection({ config, city, personalization }: HeroSectionProps) {
   const { hero } = config;
-  const visual = getSegmentVisual(config.slug);
+  const visual = getSegmentVisual(config.slug, config.hubLabel);
 
   let title = hero.title;
   let titleHighlight = hero.titleHighlight;

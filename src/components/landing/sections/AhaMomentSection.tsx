@@ -90,8 +90,7 @@ export function AhaMomentSection({ config }: { config: SegmentConfig }) {
   const { ref, inView } = useInView();
 
   return (
-    <SectionWrap className="bg-surface/30" techGlow>
-      <TechBackground />
+    <SectionWrap className="bg-surface/30" techGlow background={<TechBackground />}>
       <div ref={ref} className="relative">
         <div className="mx-auto max-w-3xl text-center">
           <Eyebrow>{ahaMoment.eyebrow}</Eyebrow>

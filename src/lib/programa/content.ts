@@ -231,34 +231,29 @@ export const programaMethod = {
 
 export const programaFaq: HomeFaqItem[] = [
   {
-    question: "O Programa é para qual tipo de empresa?",
+    question: "Por que o Programa e não contratar fornecedores separados?",
     answer:
-      "Para empresas que já faturam e querem crescer de forma estruturada — clínicas, imobiliárias, educação, serviços locais, indústria e outros segmentos. O programa se adapta ao seu mercado e estágio.",
+      "Porque crescimento exige integração. Agência de tráfego sem CRM, produtora sem estratégia de conversão e desenvolvedor sem visão de funil geram entregas isoladas — e leads que não fecham. O Programa une tudo em um time, com um objetivo: receita previsível.",
   },
   {
-    question: "Preciso contratar tudo de uma vez?",
+    question: "Para quem o Programa faz sentido?",
     answer:
-      "O Programa de Crescimento é integrado por design — marketing, conteúdo e tecnologia trabalham juntos. Mas priorizamos conforme seu momento: alguns clientes começam com aquisição, outros com CRM. O diagnóstico define o ponto de partida.",
-  },
-  {
-    question: "Quanto tempo até ver resultados?",
-    answer:
-      "Campanhas podem gerar leads nas primeiras semanas. Resultados consistentes e previsíveis costumam consolidar entre o 2º e 4º mês, conforme o funil amadurece.",
-  },
-  {
-    question: "Vocês substituem meu time interno?",
-    answer:
-      "Complementamos. Atuamos como braço estratégico e operacional de growth — seu time foca no core business, nós cuidamos da máquina de aquisição e conversão.",
+      "Empresas que já faturam, investem em marketing e sentem que o retorno não acompanha o esforço. Clínicas, imobiliárias, educação, serviços locais e indústria são segmentos onde mais atuamos — mas o critério principal é ambição de crescimento estruturado, não o setor.",
   },
   {
     question: "Como funciona o investimento?",
     answer:
-      "O investimento varia conforme escopo, segmento e objetivos. Após o diagnóstico, apresentamos uma proposta clara com entregas, cronograma e investimento mensal. Sem surpresas.",
+      "Fee mensal de gestão + verba de mídia (quando aplicável), definidos após o diagnóstico. Você recebe proposta com entregas por mês, cronograma de 6 meses e projeção de investimento — sem pacotes genéricos ou custos escondidos.",
+  },
+  {
+    question: "Em quanto tempo aparecem resultados?",
+    answer:
+      "Leads podem chegar nas primeiras semanas do mês 3. Previsibilidade real — CAC estável, funil maduro, processo comercial rodando — costuma consolidar entre o 3º e 5º mês, conforme o mercado e ponto de partida.",
   },
   {
     question: "E depois dos 6 meses?",
     answer:
-      "Muitos clientes continuam em parceria de longo prazo. Outros internalizam processos com nosso playbook. O objetivo é que você tenha um sistema de crescimento que funciona — com ou sem a Raise One.",
+      "Você sai com sistema funcionando, processos documentados e playbook comercial. Muitos clientes continuam em parceria; outros internalizam com nossa base. O objetivo é autonomia — a Raise One acelera, não cria dependência.",
   },
 ];
 

@@ -319,20 +319,16 @@ export const solutionPages: Record<string, SolutionPageContent> = {
     },
     faq: [
       {
+        question: "Vocês gerenciam campanhas ou constroem o funil completo?",
+        answer: "O funil completo. Campanhas, landing pages, tracking, CRM e automações de follow-up — porque Google Ads sem página de conversão e processo comercial é dinheiro queimado.",
+      },
+      {
         question: "Quanto preciso investir em mídia?",
-        answer: "Depende do segmento e objetivos. Após o diagnóstico, recomendamos um investimento mínimo viável para gerar dados estatisticamente relevantes — geralmente a partir de R$ 3.000/mês em mídia.",
+        answer: "Depende do segmento e ticket médio. Após o diagnóstico, indicamos o mínimo viável para gerar dados estatísticos — geralmente a partir de R$ 3.000/mês em mídia, além da gestão.",
       },
       {
-        question: "Vocês criam as landing pages?",
-        answer: "Sim. Landing pages são parte essencial do funil. Criamos, testamos e otimizamos páginas dedicadas para cada campanha.",
-      },
-      {
-        question: "Em quanto tempo vejo resultados?",
-        answer: "Primeiros leads podem chegar em dias. Otimização consistente e previsibilidade costumam consolidar entre 30 e 90 dias.",
-      },
-      {
-        question: "Trabalham com SEO também?",
-        answer: "Sim. Google Ads e SEO se complementam — tráfego pago para resultados imediatos, orgânico para sustentabilidade de longo prazo.",
+        question: "Em quanto tempo aparecem leads qualificados?",
+        answer: "Primeiros leads em dias após ativação. CAC estável e volume previsível costumam consolidar entre 60 e 90 dias, com otimização contínua de campanhas, páginas e qualificação comercial.",
       },
     ],
     cta: {
@@ -415,16 +411,16 @@ export const solutionPages: Record<string, SolutionPageContent> = {
     },
     faq: [
       {
-        question: "Meta Ads funciona para B2B?",
-        answer: "Sim, especialmente para serviços locais, saúde, educação e imobiliário. A estratégia muda conforme o segmento — por isso o diagnóstico é essencial.",
+        question: "Meta Ads funciona para o meu segmento?",
+        answer: "Funciona especialmente bem para serviços locais, saúde, educação, imobiliário e negócios com ticket médio acessível. B2B complexo exige estratégia diferente — o diagnóstico define se Meta é o canal certo ou complementar.",
       },
       {
-        question: "Vocês produzem os criativos?",
-        answer: "Sim. Produção de conteúdo é parte do nosso ecossistema — vídeos, fotos e designs otimizados para performance.",
+        question: "Vocês produzem criativos ou só gerenciam campanhas?",
+        answer: "Produzimos. Vídeos, carrosséis, stories e copy otimizados para performance — criativos genéricos não param scroll nem geram demanda qualificada.",
       },
       {
-        question: "Qual a diferença para Google Ads?",
-        answer: "Google captura demanda existente (quem já busca). Meta gera demanda (quem ainda não sabe que precisa). Os dois se complementam.",
+        question: "Preciso de Google Ads junto com Meta?",
+        answer: "Depende. Meta gera demanda (quem ainda não busca); Google captura intenção (quem já está procurando). Nos segmentos certos, os dois juntos aceleram o funil — mas nem todo negócio precisa dos dois desde o início.",
       },
     ],
     cta: {
@@ -507,16 +503,16 @@ export const solutionPages: Record<string, SolutionPageContent> = {
     },
     faq: [
       {
+        question: "Por que não usar meu site institucional?",
+        answer: "Site institucional informa; landing page converte. Múltiplos links, navegação e conteúdo genérico diluem a taxa de conversão — cada clique pago direcionado para a página errada é investimento perdido.",
+      },
+      {
         question: "Quantas landing pages preciso?",
-        answer: "Depende das campanhas e ofertas. Recomendamos pelo menos uma LP dedicada por campanha ou segmento — para mensurar e otimizar individualmente.",
+        answer: "Uma por campanha ou oferta distinta. Isso permite mensurar conversão individualmente, testar copy e escalar o que funciona — uma LP genérica para tudo impede otimização real.",
       },
       {
-        question: "Vocês hospedam as páginas?",
-        answer: "Sim. Hospedamos em infraestrutura rápida e confiável, com SSL, CDN e monitoramento incluídos.",
-      },
-      {
-        question: "Posso editar depois?",
-        answer: "Sim. Entregamos páginas que podem ser atualizadas conforme novas ofertas, campanhas ou testes.",
+        question: "As páginas vêm integradas ao funil?",
+        answer: "Sim. Hospedagem, tracking (pixel, conversões, GA4), formulário conectado ao CRM e automações de follow-up — a LP não é entrega isolada, é peça do sistema comercial.",
       },
     ],
     cta: {
@@ -599,16 +595,16 @@ export const solutionPages: Record<string, SolutionPageContent> = {
     },
     faq: [
       {
-        question: "Vocês fazem apenas social media?",
-        answer: "Não. Social media é uma frente. Também produzimos vídeos institucionais, fotografia, eventos e conteúdo para campanhas pagas.",
+        question: "Conteúdo orgânico gera vendas ou só engajamento?",
+        answer: "Depende da estratégia. Conteúdo sem funil gera likes; conteúdo alinhado ao funil gera demanda, alimenta campanhas pagas e reduz CAC. Medimos impacto em leads e conversões — não apenas alcance.",
       },
       {
-        question: "Preciso ter equipe interna?",
-        answer: "Não necessariamente. Podemos ser seu braço completo de conteúdo ou complementar seu time existente.",
+        question: "Vocês fazem social media ou produção completa?",
+        answer: "Produção completa: vídeos, fotografia, carrosséis, stories, institucional e peças para campanhas. Social media é uma frente — o foco é conteúdo estratégico que move o funil.",
       },
       {
-        question: "Como medem o impacto do conteúdo?",
-        answer: "Engajamento, alcance, tráfego gerado e — principalmente — impacto no funil: leads, conversões e CAC.",
+        question: "Preciso de equipe interna de conteúdo?",
+        answer: "Não. Podemos ser seu braço completo ou complementar quem você já tem. O importante é que o conteúdo converse com campanhas, landing pages e processo comercial — não rode em paralelo.",
       },
     ],
     cta: {

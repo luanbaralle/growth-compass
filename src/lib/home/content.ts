@@ -215,29 +215,34 @@ export const techStats: HomeStat[] = [
 
 export const faqItems: HomeFaqItem[] = [
   {
-    question: "Vocês trabalham apenas com Google Ads?",
+    question: "A Raise One é uma agência de tráfego?",
     answer:
-      "Não. Google Ads é uma das nossas frentes, mas também atuamos com Meta Ads, SEO, conteúdo, tecnologia, automações, IA e soluções completas de crescimento.",
+      "Somos parceiros de crescimento. Além de Google Ads e Meta Ads, integramos SEO, conteúdo, CRM, automações, IA e tecnologia sob medida — tudo conectado em um sistema comercial, não em entregas isoladas.",
   },
   {
-    question: "Criam sistemas e plataformas?",
+    question: "Para quem a Raise One trabalha?",
     answer:
-      "Sim. Desenvolvemos sites, portais, CRMs, automações e produtos sob medida — como o Atlas, nosso portal imobiliário inteligente.",
+      "Empresas que querem crescer com estratégia e previsibilidade — clínicas, imobiliárias, educação, serviços locais, indústria e outros segmentos. Adaptamos o plano ao seu mercado, estágio e objetivos.",
   },
   {
-    question: "Atendem todo o Brasil?",
+    question: "Como funciona a parceria na prática?",
     answer:
-      "Sim. Trabalhamos com empresas de diferentes regiões e segmentos, com estratégias adaptadas a cada mercado.",
+      "Começamos com um diagnóstico do seu mercado e funil comercial. A partir daí, estruturamos o Programa de Crescimento — 6 meses integrados — ou soluções específicas, sempre conectando campanhas, landing pages, CRM e processo comercial.",
   },
   {
-    question: "Quanto custa?",
+    question: "Vocês também desenvolvem tecnologia?",
     answer:
-      "Depende do projeto. Cada solução é desenhada sob medida. O diagnóstico gratuito é o primeiro passo para entender suas oportunidades.",
+      "Sim. Criamos sites, portais, CRMs, automações e produtos sob medida — como o Atlas, nosso portal imobiliário inteligente. Tecnologia faz parte do ecossistema de crescimento, não é um serviço à parte.",
   },
   {
-    question: "Quanto tempo leva?",
+    question: "Qual o investimento envolvido?",
     answer:
-      "Varia conforme a solução. Campanhas podem iniciar em dias; plataformas e sistemas seguem um cronograma alinhado com escopo e complexidade.",
+      "Depende do escopo, segmento e objetivos. Após o diagnóstico, apresentamos proposta clara com entregas, cronograma e investimento mensal — gestão e mídia separados, sem custos escondidos.",
+  },
+  {
+    question: "Em quanto tempo aparecem resultados?",
+    answer:
+      "Campanhas podem gerar leads nas primeiras semanas. Resultados consistentes — CAC estável, funil maduro, processo comercial rodando — costumam consolidar entre 60 e 120 dias, conforme mercado e ponto de partida.",
   },
 ];
 
