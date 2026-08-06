@@ -1,16 +1,23 @@
-import { useMotionValueEvent, type MotionValue } from "framer-motion";
-import { useCallback, useEffect, useMemo, useRef, type ReactNode } from "react";
+import { motion, useTransform, type MotionValue } from "framer-motion";
+import { createContext, useContext, useRef, type ReactNode } from "react";
 import {
   computeScrollWordStyle,
   getItemScrollRange,
   getScrollSectionHeight,
   mapScrollRange,
   scrollWordStyleToCss,
-  setScrollWordElementStyle,
 } from "./scrollDrivenUtils";
+import { useClientMounted } from "./useClientMounted";
 import { usePinnedScrollProgress } from "./usePinnedScrollProgress";
+import { usePreferMotionScroll } from "./usePreferMotionScroll";
 
 export { getItemScrollRange, getScrollSectionHeight } from "./scrollDrivenUtils";
+
+const ScrollProgressValueContext = createContext(0);
+
+export function useScrollProgressValue() {
+  return useContext(ScrollProgressValueContext);
+}
 
 interface ScrollDrivenSectionProps {
   id?: string;
@@ -26,7 +33,7 @@ export function ScrollDrivenSection({
   children,
 }: ScrollDrivenSectionProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const scrollYProgress = usePinnedScrollProgress(containerRef);
+  const { motion: scrollYProgress, value: progressValue } = usePinnedScrollProgress(containerRef);
   const scrollHeight = getScrollSectionHeight(itemCount);
 
   return (
@@ -37,9 +44,11 @@ export function ScrollDrivenSection({
       style={{ height: `${scrollHeight}vh` }}
       data-scroll-driven=""
     >
-      <div className="sticky top-0 h-[100dvh] min-h-[100svh] w-full overflow-hidden">
-        {children(scrollYProgress)}
-      </div>
+      <ScrollProgressValueContext.Provider value={progressValue}>
+        <div className="sticky top-0 h-[100dvh] min-h-[100svh] w-full overflow-hidden">
+          {children(scrollYProgress)}
+        </div>
+      </ScrollProgressValueContext.Provider>
     </div>
   );
 }
@@ -49,19 +58,7 @@ interface ScrollProgressBarProps {
 }
 
 export function ScrollProgressBar({ progress }: ScrollProgressBarProps) {
-  const barRef = useRef<HTMLDivElement>(null);
-
-  const applyWidth = useCallback((value: number) => {
-    if (barRef.current) {
-      barRef.current.style.width = `${value * 100}%`;
-    }
-  }, []);
-
-  useMotionValueEvent(progress, "change", applyWidth);
-
-  useEffect(() => {
-    applyWidth(progress.get());
-  }, [progress, applyWidth]);
+  const progressWidth = useTransform(progress, [0, 1], ["0%", "100%"]);
 
   return (
     <div className="absolute bottom-10 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-3 sm:bottom-12">
@@ -69,11 +66,7 @@ export function ScrollProgressBar({ progress }: ScrollProgressBarProps) {
         Scroll
       </span>
       <div className="h-px w-24 overflow-hidden rounded-full bg-white/[0.08] sm:w-32">
-        <div
-          ref={barRef}
-          className="h-full origin-left bg-brand will-change-[width]"
-          style={{ width: "0%" }}
-        />
+        <motion.div className="h-full origin-left bg-brand" style={{ width: progressWidth }} />
       </div>
     </div>
   );
@@ -88,7 +81,11 @@ interface ScrollSequenceWordProps {
   reduceEffects?: boolean;
 }
 
-export function ScrollSequenceWord({
+const DEFAULT_WORD_CLASS =
+  "absolute inset-0 flex items-center justify-center font-display text-[clamp(2.75rem,9vw,6rem)] font-bold tracking-[-0.04em] text-foreground";
+
+/** Touch / mobile — useTransform + nested blur (do not change) */
+function ScrollSequenceWordMotion({
   label,
   index,
   total,
@@ -96,35 +93,117 @@ export function ScrollSequenceWord({
   className,
   reduceEffects = false,
 }: ScrollSequenceWordProps) {
-  const wordRef = useRef<HTMLSpanElement>(null);
+  const { start, end, peak, fade } = getItemScrollRange(index, total);
 
-  const initialStyle = useMemo(
-    () => scrollWordStyleToCss(computeScrollWordStyle(0, index, total, reduceEffects)),
-    [index, total, reduceEffects],
+  const opacity = useTransform(
+    progress,
+    [start, peak - fade, peak, peak + fade, end],
+    reduceEffects ? [0.15, 0.3, 1, 0.3, 0.15] : [0.06, 0.2, 1, 0.2, 0.06],
   );
-
-  const applyStyle = useCallback(
-    (value: number) => {
-      setScrollWordElementStyle(wordRef.current, value, index, total, reduceEffects);
-    },
-    [index, total, reduceEffects],
+  const scale = useTransform(
+    progress,
+    [start, peak, end],
+    reduceEffects ? [1, 1, 1] : [0.88, 1.06, 0.88],
   );
-
-  useMotionValueEvent(progress, "change", applyStyle);
-
-  useEffect(() => {
-    applyStyle(progress.get());
-  }, [progress, applyStyle]);
-
-  const wordClassName =
-    className ??
-    "absolute inset-0 flex items-center justify-center font-display text-[clamp(2.75rem,9vw,6rem)] font-bold tracking-[-0.04em] text-foreground will-change-[transform,filter,opacity]";
+  const y = useTransform(progress, [start, peak, end], reduceEffects ? [0, 0, 0] : [48, 0, -48]);
+  const blur = useTransform(progress, [start, peak, end], reduceEffects ? [0, 0, 0] : [6, 0, 6]);
+  const filter = useTransform(blur, (value) => `blur(${value}px)`);
+  const zIndex = useTransform(progress, (value) => {
+    const distance = Math.abs(value - peak);
+    const half = (end - start) / 2;
+    if (distance >= half) return 1;
+    return Math.round((1 - distance / half) * 10) + 2;
+  });
 
   return (
-    <span ref={wordRef} className={wordClassName} style={initialStyle}>
-      {label}
+    <motion.span
+      style={{ opacity, scale, y, zIndex }}
+      className={className ?? DEFAULT_WORD_CLASS}
+    >
+      <motion.span style={{ filter }} className="inline-block will-change-[filter]">
+        {label}
+      </motion.span>
+    </motion.span>
+  );
+}
+
+/** Desktop mouse — plain spans driven by context progress (synced with scroll RAF) */
+function ScrollSequenceWordState({
+  label,
+  index,
+  total,
+  className,
+  reduceEffects = false,
+}: Omit<ScrollSequenceWordProps, "progress">) {
+  const progressValue = useScrollProgressValue();
+  const style = computeScrollWordStyle(progressValue, index, total, reduceEffects);
+  const outer = scrollWordStyleToCss(style);
+
+  return (
+    <span
+      className={`${className ?? DEFAULT_WORD_CLASS} will-change-[transform,opacity]`}
+      style={{
+        opacity: outer.opacity,
+        zIndex: outer.zIndex,
+        transform: outer.transform,
+        visibility: style.opacity < 0.04 ? "hidden" : "visible",
+      }}
+    >
+      <span
+        className="inline-block will-change-[filter]"
+        style={style.blur > 0.01 ? { filter: `blur(${style.blur}px)` } : undefined}
+      >
+        {label}
+      </span>
     </span>
   );
+}
+
+function ScrollSequenceWordPlaceholder({
+  label,
+  index,
+  total,
+  className,
+  reduceEffects = false,
+}: Omit<ScrollSequenceWordProps, "progress">) {
+  const style = computeScrollWordStyle(0, index, total, reduceEffects);
+  const outer = scrollWordStyleToCss(style);
+
+  return (
+    <span
+      className={`${className ?? DEFAULT_WORD_CLASS} will-change-[transform,opacity]`}
+      style={{
+        opacity: outer.opacity,
+        zIndex: outer.zIndex,
+        transform: outer.transform,
+        visibility: style.opacity < 0.04 ? "hidden" : "visible",
+      }}
+    >
+      <span
+        className="inline-block will-change-[filter]"
+        style={style.blur > 0.01 ? { filter: `blur(${style.blur}px)` } : undefined}
+      >
+        {label}
+      </span>
+    </span>
+  );
+}
+
+export function ScrollSequenceWord(props: ScrollSequenceWordProps) {
+  const mounted = useClientMounted();
+  const preferMotion = usePreferMotionScroll();
+
+  if (!mounted) {
+    const { progress: _progress, ...rest } = props;
+    return <ScrollSequenceWordPlaceholder {...rest} />;
+  }
+
+  if (preferMotion) {
+    return <ScrollSequenceWordMotion {...props} />;
+  }
+
+  const { progress: _progress, ...rest } = props;
+  return <ScrollSequenceWordState {...rest} />;
 }
 
 interface ScrollSequenceDotProps {
@@ -133,40 +212,57 @@ interface ScrollSequenceDotProps {
   progress: MotionValue<number>;
 }
 
-export function ScrollSequenceDot({ index, total, progress }: ScrollSequenceDotProps) {
-  const dotRef = useRef<HTMLSpanElement>(null);
+function ScrollSequenceDotMotion({ index, total, progress }: ScrollSequenceDotProps) {
   const { start, end, peak, fade } = getItemScrollRange(index, total);
   const itemFade = fade * 1.25;
 
-  const applyStyle = useCallback(
-    (value: number) => {
-      const el = dotRef.current;
-      if (!el) return;
-
-      const opacity = mapScrollRange(value, [start, peak - itemFade, peak, peak + itemFade, end], [0.2, 0.45, 1, 0.45, 0.2]);
-      const scale = mapScrollRange(value, [start, peak, end], [1, 1.6, 1]);
-      const width = mapScrollRange(value, [start, peak, end], [6, 20, 6]);
-
-      el.style.opacity = String(opacity);
-      el.style.transform = `scale(${scale})`;
-      el.style.width = `${width}px`;
-    },
-    [start, end, peak, itemFade],
+  const opacity = useTransform(
+    progress,
+    [start, peak - itemFade, peak, peak + itemFade, end],
+    [0.2, 0.45, 1, 0.45, 0.2],
   );
+  const scale = useTransform(progress, [start, peak, end], [1, 1.6, 1]);
+  const width = useTransform(progress, [start, peak, end], [6, 20, 6]);
 
-  useMotionValueEvent(progress, "change", applyStyle);
+  return (
+    <motion.span
+      style={{ opacity, scale, width }}
+      className="h-1.5 rounded-full bg-brand"
+    />
+  );
+}
 
-  useEffect(() => {
-    applyStyle(progress.get());
-  }, [progress, applyStyle]);
+function ScrollSequenceDotState({ index, total }: Omit<ScrollSequenceDotProps, "progress">) {
+  const progressValue = useScrollProgressValue();
+  const { start, end, peak, fade } = getItemScrollRange(index, total);
+  const itemFade = fade * 1.25;
+
+  const opacity = mapScrollRange(
+    progressValue,
+    [start, peak - itemFade, peak, peak + itemFade, end],
+    [0.2, 0.45, 1, 0.45, 0.2],
+  );
+  const scale = mapScrollRange(progressValue, [start, peak, end], [1, 1.6, 1]);
+  const width = mapScrollRange(progressValue, [start, peak, end], [6, 20, 6]);
 
   return (
     <span
-      ref={dotRef}
-      className="h-1.5 rounded-full bg-brand will-change-[transform,width,opacity]"
-      style={{ width: 6, opacity: 0.2 }}
+      className="inline-block h-1.5 rounded-full bg-brand"
+      style={{ opacity, transform: `scale(${scale})`, width }}
     />
   );
+}
+
+export function ScrollSequenceDot(props: ScrollSequenceDotProps) {
+  const preferMotion = usePreferMotionScroll();
+  const mounted = useClientMounted();
+
+  if (!mounted || preferMotion) {
+    return <ScrollSequenceDotMotion {...props} />;
+  }
+
+  const { progress: _progress, ...rest } = props;
+  return <ScrollSequenceDotState {...rest} />;
 }
 
 export function ScrollSectionBackdrop() {

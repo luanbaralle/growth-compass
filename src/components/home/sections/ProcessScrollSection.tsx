@@ -87,7 +87,6 @@ function ProcessScrollStage({
 }) {
   const introOpacity = useTransform(scrollYProgress, [0, 0.08, 0.16, 0.24], [0, 1, 1, 0.5]);
   const introY = useTransform(scrollYProgress, [0, 0.1], reduceEffects ? [0, 0] : [24, 0]);
-  const stageOpacity = useTransform(scrollYProgress, [0.14, 0.2, 0.78, 0.86], [0, 1, 1, 0.25]);
 
   return (
     <div className="relative flex h-full items-center justify-center">
@@ -102,8 +101,7 @@ function ProcessScrollStage({
           <StepDescription steps={steps} progress={scrollYProgress} />
         </motion.div>
 
-        <motion.div
-          style={{ opacity: stageOpacity }}
+        <div
           className="relative mx-auto mt-10 h-[clamp(4.5rem,12vw,7rem)] w-full max-w-3xl sm:mt-12"
           aria-live="polite"
         >
@@ -117,7 +115,7 @@ function ProcessScrollStage({
               reduceEffects={reduceEffects}
             />
           ))}
-        </motion.div>
+        </div>
 
         {steps.length > 1 && (
           <div

@@ -73,6 +73,18 @@ function applyScrollWordStyle(element: HTMLElement, style: ScrollWordStyle) {
   element.style.filter = style.blur > 0.01 ? `blur(${style.blur}px)` : "";
 }
 
+/** Split transform + filter — avoids desktop GPU compositing bugs */
+export function applyScrollWordStyleNested(
+  outer: HTMLElement,
+  inner: HTMLElement,
+  style: ScrollWordStyle,
+) {
+  outer.style.opacity = String(style.opacity);
+  outer.style.zIndex = String(style.zIndex);
+  outer.style.transform = `translate3d(0, ${style.y}px, 0) scale(${style.scale})`;
+  inner.style.filter = style.blur > 0.01 ? `blur(${style.blur}px)` : "";
+}
+
 export function setScrollWordElementStyle(
   element: HTMLElement | null,
   progress: number,
@@ -82,6 +94,22 @@ export function setScrollWordElementStyle(
 ) {
   if (!element) return;
   applyScrollWordStyle(element, computeScrollWordStyle(progress, index, total, reduceEffects));
+}
+
+export function setScrollWordElementsNested(
+  outer: HTMLElement | null,
+  inner: HTMLElement | null,
+  progress: number,
+  index: number,
+  total: number,
+  reduceEffects = false,
+) {
+  if (!outer || !inner) return;
+  applyScrollWordStyleNested(
+    outer,
+    inner,
+    computeScrollWordStyle(progress, index, total, reduceEffects),
+  );
 }
 
 export function scrollWordStyleToCss(style: ScrollWordStyle): CSSProperties {

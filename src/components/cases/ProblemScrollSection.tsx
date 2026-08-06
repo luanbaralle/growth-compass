@@ -32,7 +32,6 @@ function ProblemScrollStage({
   const introOpacity = useTransform(scrollYProgress, [0, 0.08, 0.18, 0.28], [0, 1, 1, 0.45]);
   const introY = useTransform(scrollYProgress, [0, 0.1], reduceEffects ? [0, 0] : [32, 0]);
   const painsOpacity = useTransform(scrollYProgress, [0.06, 0.14, 0.24], [0, 1, 0.35]);
-  const channelsWrapOpacity = useTransform(scrollYProgress, [0.16, 0.22, 0.76, 0.82], [0, 1, 1, 0.25]);
   const closingOpacity = useTransform(scrollYProgress, [0.8, 0.9], [0, 1]);
   const closingY = useTransform(scrollYProgress, [0.8, 0.9], reduceEffects ? [0, 0] : [28, 0]);
 
@@ -61,8 +60,7 @@ function ProblemScrollStage({
             </motion.ul>
           </motion.div>
 
-          <motion.div
-            style={{ opacity: channelsWrapOpacity }}
+          <div
             className="relative mt-14 h-[clamp(5rem,14vw,8.5rem)] w-full sm:mt-16"
             aria-live="polite"
           >
@@ -76,7 +74,7 @@ function ProblemScrollStage({
                 reduceEffects={reduceEffects}
               />
             ))}
-          </motion.div>
+          </div>
         </div>
 
         {closing && (
