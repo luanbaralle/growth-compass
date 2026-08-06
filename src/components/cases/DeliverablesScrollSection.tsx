@@ -12,6 +12,7 @@ import {
   ScrollProgressBar,
   ScrollSectionBackdrop,
   ScrollSequenceWord,
+  useIsWideViewport,
 } from "@/components/shared/scrollDriven";
 
 interface DeliverablesScrollSectionProps {
@@ -71,7 +72,7 @@ function DeliverablesScrollStage({
   const introY = useTransform(scrollYProgress, [0, 0.1], reduceEffects ? [0, 0] : [24, 0]);
 
   return (
-    <div className="relative flex h-full items-center justify-center">
+    <div className="relative flex h-[100dvh] min-h-[100svh] items-center justify-center overflow-hidden">
       <ScrollSectionBackdrop />
 
       <div className="relative mx-auto w-full max-w-3xl px-5 text-center sm:px-8">
@@ -109,12 +110,14 @@ function DeliverablesScrollStage({
 
 export function DeliverablesScrollSection(props: DeliverablesScrollSectionProps) {
   const reduceEffects = useReducedMotion() ?? false;
+  const isWide = useIsWideViewport();
   const { id, eyebrow = "Raise One", title = "O que entregamos", items } = props;
 
   return (
     <ScrollDrivenSection
       id={id}
       itemCount={items.length}
+      isWide={isWide}
       className="relative border-y border-white/[0.04] bg-surface/30"
     >
       {(scrollYProgress) => (

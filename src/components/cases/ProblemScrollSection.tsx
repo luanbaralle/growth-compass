@@ -1,10 +1,12 @@
 import { motion, useReducedMotion, useTransform, type MotionValue } from "framer-motion";
 import {
+  getItemScrollRange,
   ScrollDrivenSection,
   ScrollProgressBar,
   ScrollSectionBackdrop,
   ScrollSequenceDot,
   ScrollSequenceWord,
+  useIsWideViewport,
 } from "@/components/shared/scrollDriven";
 import { CaseEyebrow, CaseHeading } from "./shared/CaseSection";
 
@@ -36,7 +38,7 @@ function ProblemScrollStage({
   const closingY = useTransform(scrollYProgress, [0.8, 0.9], reduceEffects ? [0, 0] : [28, 0]);
 
   return (
-    <div className="relative flex h-full items-center justify-center">
+    <div className="relative flex h-[100dvh] min-h-[100svh] items-center justify-center overflow-hidden">
       <ScrollSectionBackdrop />
 
       <div className="relative mx-auto w-full max-w-5xl px-5 sm:px-8">
@@ -110,12 +112,14 @@ function ProblemScrollStage({
 
 export function ProblemScrollSection(props: ProblemScrollSectionProps) {
   const reduceEffects = useReducedMotion() ?? false;
+  const isWide = useIsWideViewport();
   const { id, eyebrow, headline, pains, channels, closing } = props;
 
   return (
     <ScrollDrivenSection
       id={id}
       itemCount={channels.length}
+      isWide={isWide}
       className="relative isolate bg-surface/40"
     >
       {(scrollYProgress) => (

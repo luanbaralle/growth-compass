@@ -1,24 +1,23 @@
 import { interpolate } from "framer-motion";
 import type { CSSProperties } from "react";
 
-/** Same timing as the original ProblemScrollSection — one word dominant at a time */
-export function getScrollSectionHeight(itemCount: number) {
-  const base = 170;
-  const perItem = 85;
+export function getScrollSectionHeight(itemCount: number, isWide: boolean) {
+  const base = isWide ? 220 : 170;
+  const perItem = isWide ? 115 : 85;
   return base + Math.max(itemCount, 1) * perItem;
 }
 
 export function getItemScrollRange(
   index: number,
   total: number,
-  start = 0.2,
-  span = 0.52,
+  start = 0.16,
+  span = 0.64,
 ) {
   const itemSpan = span / total;
   const itemStart = start + index * itemSpan;
   const itemEnd = itemStart + itemSpan;
   const peak = (itemStart + itemEnd) / 2;
-  const fade = (itemEnd - itemStart) * 0.28;
+  const fade = itemSpan * 0.28;
 
   return { start: itemStart, end: itemEnd, peak, fade };
 }
@@ -31,12 +30,10 @@ export interface ScrollWordStyle {
   zIndex: number;
 }
 
-/** FM13: interpolate(inputRange, outputRange) returns (value) => mapped */
 function mapRange(progress: number, input: number[], output: number[]) {
   return interpolate(input, output)(progress);
 }
 
-/** Imperative style — useTransform does not follow manual MotionValue.set() on desktop */
 export function computeScrollWordStyle(
   progress: number,
   index: number,
@@ -48,7 +45,7 @@ export function computeScrollWordStyle(
   const opacity = mapRange(
     progress,
     [start, peak - fade, peak, peak + fade, end],
-    reduceEffects ? [0.15, 0.3, 1, 0.3, 0.15] : [0.06, 0.2, 1, 0.2, 0.06],
+    reduceEffects ? [0.15, 0.3, 1, 0.3, 0.15] : [0.06, 0.22, 1, 0.22, 0.06],
   );
 
   const scale = reduceEffects
@@ -66,14 +63,6 @@ export function computeScrollWordStyle(
   return { opacity, y, blur, scale, zIndex };
 }
 
-function applyScrollWordStyle(element: HTMLElement, style: ScrollWordStyle) {
-  element.style.opacity = String(style.opacity);
-  element.style.zIndex = String(style.zIndex);
-  element.style.transform = `translate3d(0, ${style.y}px, 0) scale(${style.scale})`;
-  element.style.filter = style.blur > 0.01 ? `blur(${style.blur}px)` : "";
-}
-
-/** Split transform + filter — avoids desktop GPU compositing bugs */
 export function applyScrollWordStyleNested(
   outer: HTMLElement,
   inner: HTMLElement,
@@ -81,35 +70,9 @@ export function applyScrollWordStyleNested(
 ) {
   outer.style.opacity = String(style.opacity);
   outer.style.zIndex = String(style.zIndex);
+  outer.style.visibility = style.opacity < 0.04 ? "hidden" : "visible";
   outer.style.transform = `translate3d(0, ${style.y}px, 0) scale(${style.scale})`;
   inner.style.filter = style.blur > 0.01 ? `blur(${style.blur}px)` : "";
-}
-
-export function setScrollWordElementStyle(
-  element: HTMLElement | null,
-  progress: number,
-  index: number,
-  total: number,
-  reduceEffects = false,
-) {
-  if (!element) return;
-  applyScrollWordStyle(element, computeScrollWordStyle(progress, index, total, reduceEffects));
-}
-
-export function setScrollWordElementsNested(
-  outer: HTMLElement | null,
-  inner: HTMLElement | null,
-  progress: number,
-  index: number,
-  total: number,
-  reduceEffects = false,
-) {
-  if (!outer || !inner) return;
-  applyScrollWordStyleNested(
-    outer,
-    inner,
-    computeScrollWordStyle(progress, index, total, reduceEffects),
-  );
 }
 
 export function scrollWordStyleToCss(style: ScrollWordStyle): CSSProperties {

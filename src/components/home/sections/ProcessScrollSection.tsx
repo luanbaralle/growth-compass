@@ -18,6 +18,7 @@ import {
   ScrollSectionBackdrop,
   ScrollSequenceDot,
   ScrollSequenceWord,
+  useIsWideViewport,
 } from "@/components/shared/scrollDriven";
 
 export interface ProcessScrollStep {
@@ -89,7 +90,7 @@ function ProcessScrollStage({
   const introY = useTransform(scrollYProgress, [0, 0.1], reduceEffects ? [0, 0] : [24, 0]);
 
   return (
-    <div className="relative flex h-full items-center justify-center">
+    <div className="relative flex h-[100dvh] min-h-[100svh] items-center justify-center overflow-hidden">
       <ScrollSectionBackdrop />
 
       <div className="relative mx-auto w-full max-w-5xl px-5 text-center sm:px-8">
@@ -141,12 +142,14 @@ function ProcessScrollStage({
 
 export function ProcessScrollSection(props: ProcessScrollSectionProps) {
   const reduceEffects = useReducedMotion() ?? false;
+  const isWide = useIsWideViewport();
   const { id, steps } = props;
 
   return (
     <ScrollDrivenSection
       id={id}
       itemCount={steps.length}
+      isWide={isWide}
       className="relative border-b border-border/60 bg-background"
     >
       {(scrollYProgress) => (
