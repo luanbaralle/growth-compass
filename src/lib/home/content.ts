@@ -128,14 +128,14 @@ export const projects: HomeProject[] = [
   {
     name: "UNIP",
     description: "Captação de alunos com landing pages, Google Ads e SEO.",
-    tag: "Marketing",
+    tag: "Educação",
     tagTone: "blue",
     gradient: "from-blue-950 via-indigo-900 to-slate-900",
   },
   {
     name: "Studio 21",
     description: "Posicionamento e aquisição com Google Ads estratégico.",
-    tag: "Marketing",
+    tag: "Beleza",
     tagTone: "blue",
     gradient: "from-zinc-900 via-neutral-800 to-amber-950/30",
   },

@@ -18,7 +18,7 @@ export const studio21: Case = {
   subtitle: "Landing Page · Google Ads · Estratégia de Conversão · 3 meses.",
   client: "Studio 21 · Itanhaém",
   industry: "Beleza",
-  category: "Marketing",
+  category: "Beleza",
   year: 2026,
   website: "https://salaostudio21.com.br",
   coverImage: "/images/cases/placeholder-cover.jpg",
@@ -252,7 +252,7 @@ export const studio21: Case = {
   },
   heroExtended: {
     caseNumber: "02",
-    caseVertical: "Serviços",
+    caseVertical: "Beleza",
     background: "ambient",
     headlineLines: [
       "Transformando pesquisas no Google",
