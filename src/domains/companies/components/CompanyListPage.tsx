@@ -12,7 +12,6 @@ import { StageBadge } from "@/domains/companies/components/StageBadge";
 import { CompanyAvatar } from "@/domains/companies/components/CompanyAvatar";
 import type { CompanyStage, CompanyWithLogo } from "@/domains/companies/types";
 import { COMPANY_STAGES, STAGE_LABELS } from "@/domains/companies/types";
-import { TEAM_LABELS } from "@/lib/auth/types";
 import { buildClientWhatsAppUrl } from "@/lib/whatsapp";
 import { getErrorMessage, isUnauthorizedError } from "@/lib/api/client-errors";
 import { EmptyState, PageHeader, PageSkeleton, OSPage, OSRefreshButton, OSPrimaryButton, FilterToolbar, FilterPill, DataTable } from "@/os/ui";
@@ -222,10 +221,8 @@ export function CompanyListPage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    {company.responsible_id ? (
-                      <span className="text-sm">
-                        {TEAM_LABELS[company.responsible_id as keyof typeof TEAM_LABELS]}
-                      </span>
+                    {company.responsible_name ? (
+                      <span className="text-sm">{company.responsible_name}</span>
                     ) : (
                       <span className="text-sm text-muted-foreground">—</span>
                     )}

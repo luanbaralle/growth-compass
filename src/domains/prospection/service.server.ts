@@ -272,7 +272,7 @@ export async function convertProspectToCompany(id: string, authorId: TeamMember 
     cnpj: null,
     city: prospect.city,
     city_state: prospect.state,
-    responsible_id: (prospect.owner_id as TeamMember) ?? null,
+    responsible_name: null,
     whatsapp: prospect.whatsapp ?? prospect.phone,
     email: null,
     website: prospect.website,

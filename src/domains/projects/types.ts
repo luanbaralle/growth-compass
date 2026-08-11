@@ -12,6 +12,7 @@ export type ProjectPriority = "low" | "medium" | "high" | "urgent";
 
 export type ProjectType =
   | "landing_page"
+  | "website"
   | "google_ads"
   | "meta_ads"
   | "seo"
@@ -88,6 +89,7 @@ export const PROJECT_PRIORITIES: ProjectPriority[] = ["low", "medium", "high", "
 
 export const PROJECT_TYPES: ProjectType[] = [
   "landing_page",
+  "website",
   "google_ads",
   "meta_ads",
   "seo",
@@ -115,6 +117,7 @@ export const PRIORITY_LABELS: Record<ProjectPriority, string> = {
 
 export const TYPE_LABELS: Record<ProjectType, string> = {
   landing_page: "Landing Page",
+  website: "Website",
   google_ads: "Google Ads",
   meta_ads: "Meta Ads",
   seo: "SEO",

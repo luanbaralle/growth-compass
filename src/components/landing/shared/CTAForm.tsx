@@ -143,8 +143,13 @@ export function CTAForm({ config, leadContext }: CTAFormProps) {
           uf: leadContext.cityState,
         },
       });
-    } catch {
-      setError("Não foi possível enviar. Tente novamente ou fale conosco pelo WhatsApp.");
+    } catch (err) {
+      console.error("[submitLead]", err);
+      setError(
+        import.meta.env.DEV && err instanceof Error
+          ? err.message
+          : "Não foi possível enviar. Tente novamente ou fale conosco pelo WhatsApp.",
+      );
     } finally {
       setSubmitting(false);
     }

@@ -27,6 +27,48 @@ function encodeQuery(params: Record<string, string>): string {
     .join("&");
 }
 
+type CompanyDbRow = Company & { responsible_id?: string | null };
+
+function isMissingColumnError(error: unknown, column: string): boolean {
+  const message = error instanceof Error ? error.message : String(error);
+  return message.includes(column) && /column|schema|PGRST/i.test(message);
+}
+
+function companyFromDb(row: CompanyDbRow): Company {
+  const { responsible_id, ...rest } = row;
+  return {
+    ...rest,
+    responsible_name: rest.responsible_name ?? responsible_id ?? null,
+  };
+}
+
+function stripResponsibleField(data: Record<string, unknown>): Record<string, unknown> {
+  const { responsible_name: _name, responsible_id: _id, ...rest } = data;
+  return rest;
+}
+
+async function writeCompanyPayload(
+  write: (payload: Record<string, unknown>) => Promise<CompanyDbRow[]>,
+  data: Partial<Omit<Company, "id" | "created_at" | "updated_at">>,
+): Promise<Company> {
+  const { responsible_name, ...rest } = data;
+  const base = { ...rest } as Record<string, unknown>;
+
+  if (responsible_name === undefined) {
+    const rows = await write(base);
+    return companyFromDb(rows[0]);
+  }
+
+  try {
+    const rows = await write({ ...base, responsible_name });
+    return companyFromDb(rows[0]);
+  } catch (error) {
+    if (!isMissingColumnError(error, "responsible_name")) throw error;
+    const rows = await write({ ...stripResponsibleField(base), responsible_id: responsible_name });
+    return companyFromDb(rows[0]);
+  }
+}
+
 export async function findCompanies(filters: CompanyListFilters = {}): Promise<Company[]> {
   const params: Record<string, string> = {
     select: "*",
@@ -40,7 +82,7 @@ export async function findCompanies(filters: CompanyListFilters = {}): Promise<C
     params.stage = `eq.${filters.stage}`;
   }
 
-  let companies = await dbSelect<Company>("companies", encodeQuery(params));
+  let companies = (await dbSelect<CompanyDbRow>("companies", encodeQuery(params))).map(companyFromDb);
 
   if (filters.search?.trim()) {
     const q = filters.search.trim().toLowerCase();
@@ -80,23 +122,45 @@ export async function countCompaniesByStage(): Promise<CompanyStageCounts> {
 }
 
 export async function findCompanyById(id: string): Promise<Company | null> {
-  const rows = await dbSelect<Company>("companies", encodeQuery({ select: "*", id: `eq.${id}` }));
-  return rows[0] ?? null;
+  const rows = await dbSelect<CompanyDbRow>("companies", encodeQuery({ select: "*", id: `eq.${id}` }));
+  return rows[0] ? companyFromDb(rows[0]) : null;
 }
 
 export async function insertCompany(
   data: Omit<Company, "id" | "created_at" | "updated_at">,
 ): Promise<Company> {
-  const [row] = await dbInsert<Company>("companies", data);
-  return row;
+  return writeCompanyPayload(
+    (payload) => dbInsert<CompanyDbRow>("companies", payload),
+    data,
+  );
 }
 
 export async function patchCompany(
   id: string,
   data: Partial<Omit<Company, "id" | "created_at" | "updated_at">>,
 ): Promise<Company | null> {
-  const rows = await dbUpdate<Company>("companies", `id=eq.${id}`, data);
-  return rows[0] ?? null;
+  const { responsible_name, ...rest } = data;
+
+  const patchWithFallback = async (payload: Record<string, unknown>) => {
+    if (responsible_name === undefined) {
+      return dbUpdate<CompanyDbRow>("companies", `id=eq.${id}`, payload);
+    }
+    try {
+      return await dbUpdate<CompanyDbRow>("companies", `id=eq.${id}`, {
+        ...payload,
+        responsible_name,
+      });
+    } catch (error) {
+      if (!isMissingColumnError(error, "responsible_name")) throw error;
+      return dbUpdate<CompanyDbRow>("companies", `id=eq.${id}`, {
+        ...stripResponsibleField(payload),
+        responsible_id: responsible_name,
+      });
+    }
+  };
+
+  const rows = await patchWithFallback(rest as Record<string, unknown>);
+  return rows[0] ? companyFromDb(rows[0]) : null;
 }
 
 export async function removeCompany(id: string): Promise<boolean> {

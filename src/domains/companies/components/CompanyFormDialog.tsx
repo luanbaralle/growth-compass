@@ -1,6 +1,5 @@
 import type { CompanyStage } from "@/domains/companies/types";
 import { COMPANY_STAGES, STAGE_LABELS } from "@/domains/companies/types";
-import { TEAM_LABELS, type TeamMember } from "@/lib/auth/types";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -28,7 +27,7 @@ export interface CompanyFormValues {
   cnpj: string;
   city: string;
   city_state: string;
-  responsible_id: TeamMember | "";
+  responsible_name: string;
   whatsapp: string;
   email: string;
   website: string;
@@ -44,7 +43,7 @@ const emptyForm: CompanyFormValues = {
   cnpj: "",
   city: "",
   city_state: "",
-  responsible_id: "",
+  responsible_name: "",
   whatsapp: "",
   email: "",
   website: "",
@@ -150,22 +149,11 @@ export function CompanyFormDialog({
             </div>
             <div className="space-y-1.5">
               <Label>Responsável</Label>
-              <Select
-                value={form.responsible_id || "none"}
-                onValueChange={(v) => set("responsible_id", v === "none" ? "" : v)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecionar" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">—</SelectItem>
-                  {(Object.keys(TEAM_LABELS) as TeamMember[]).map((m) => (
-                    <SelectItem key={m} value={m}>
-                      {TEAM_LABELS[m]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Input
+                value={form.responsible_name}
+                onChange={(e) => set("responsible_name", e.target.value)}
+                placeholder="Nome do contato na empresa"
+              />
             </div>
             <div className="space-y-1.5">
               <Label>Estágio</Label>
@@ -212,7 +200,7 @@ export function companyToFormValues(company: {
   cnpj: string | null;
   city: string | null;
   city_state: string | null;
-  responsible_id: string | null;
+  responsible_name: string | null;
   whatsapp: string | null;
   email: string | null;
   website: string | null;
@@ -227,7 +215,7 @@ export function companyToFormValues(company: {
     cnpj: company.cnpj ?? "",
     city: company.city ?? "",
     city_state: company.city_state ?? "",
-    responsible_id: (company.responsible_id as TeamMember) ?? "",
+    responsible_name: company.responsible_name ?? "",
     whatsapp: company.whatsapp ?? "",
     email: company.email ?? "",
     website: company.website ?? "",
@@ -245,7 +233,7 @@ export function formToPayload(form: CompanyFormValues) {
     cnpj: form.cnpj.trim() || undefined,
     city: form.city.trim() || undefined,
     city_state: form.city_state.trim() || undefined,
-    responsible_id: form.responsible_id || undefined,
+    responsible_name: form.responsible_name.trim() || undefined,
     whatsapp: form.whatsapp.trim() || undefined,
     email: form.email.trim() || undefined,
     website: form.website.trim() || undefined,

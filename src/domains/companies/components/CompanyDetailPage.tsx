@@ -50,7 +50,6 @@ import type {
   CompanyStage,
   CompanyWithLogo,
 } from "@/domains/companies/types";
-import { TEAM_LABELS, type TeamMember } from "@/lib/auth/types";
 import { getErrorMessage, isUnauthorizedError } from "@/lib/api/client-errors";
 import { cn } from "@/lib/utils";
 import { PageSkeleton, Section, OSPage } from "@/os/ui";
@@ -133,14 +132,6 @@ export function CompanyDetailPage({ companyId }: { companyId: string }) {
     toast.success("Estágio atualizado");
     await load();
     bumpOverview();
-  };
-
-  const handleResponsibleChange = async (member: TeamMember | null) => {
-    await updateCompany({
-      data: { id: companyId, responsible_id: member },
-    });
-    toast.success(member ? `Responsável: ${TEAM_LABELS[member]}` : "Responsável removido");
-    await load();
   };
 
   const handleLogoUpload = async (file: File) => {
@@ -249,7 +240,6 @@ export function CompanyDetailPage({ companyId }: { companyId: string }) {
         company={company}
         onEdit={() => setEditOpen(true)}
         onStageChange={handleStageChange}
-        onResponsibleChange={handleResponsibleChange}
         onLogoUpload={handleLogoUpload}
         onLogoRemove={company.logo_url ? handleLogoRemove : undefined}
         logoUploading={logoUploading}
@@ -331,11 +321,7 @@ export function CompanyDetailPage({ companyId }: { companyId: string }) {
               <CadastroField
                 icon={User}
                 label="Responsável"
-                value={
-                  company.responsible_id
-                    ? TEAM_LABELS[company.responsible_id as keyof typeof TEAM_LABELS]
-                    : null
-                }
+                value={company.responsible_name}
               />
               {company.notes?.trim() && (
                 <div className="cadastro-field sm:col-span-2">

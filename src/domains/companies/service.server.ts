@@ -64,7 +64,7 @@ export async function createCompany(
     cnpj?: string;
     city?: string;
     city_state?: string;
-    responsible_id?: TeamMember;
+    responsible_name?: string;
     whatsapp?: string;
     email?: string;
     website?: string;
@@ -81,7 +81,7 @@ export async function createCompany(
     cnpj: input.cnpj ?? null,
     city: input.city ?? null,
     city_state: input.city_state ?? null,
-    responsible_id: input.responsible_id ?? null,
+    responsible_name: input.responsible_name?.trim() || null,
     whatsapp: input.whatsapp ?? null,
     email: input.email || null,
     website: input.website ?? null,
@@ -125,7 +125,7 @@ export async function createFromPublicForm(input: SubmitCompanyFormInput): Promi
     cnpj: null,
     city: input.city,
     city_state: input.cityState ?? null,
-    responsible_id: null,
+    responsible_name: null,
     whatsapp: input.phone,
     email: null,
     website: input.link ?? null,

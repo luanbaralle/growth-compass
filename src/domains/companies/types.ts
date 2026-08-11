@@ -36,7 +36,7 @@ export interface Company {
   cnpj: string | null;
   city: string | null;
   city_state: string | null;
-  responsible_id: string | null;
+  responsible_name: string | null;
   whatsapp: string | null;
   email: string | null;
   website: string | null;

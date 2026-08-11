@@ -9,7 +9,7 @@ export const createCompanySchema = z.object({
   cnpj: z.string().max(18).optional(),
   city: z.string().max(120).optional(),
   city_state: z.string().max(2).optional(),
-  responsible_id: z.enum(["luan", "vini", "caio"]).optional(),
+  responsible_name: z.string().max(120).optional(),
   whatsapp: z.string().max(20).optional(),
   email: z.string().max(200).optional(),
   website: z.string().max(300).optional(),
@@ -21,7 +21,7 @@ export const createCompanySchema = z.object({
 
 export const updateCompanySchema = createCompanySchema.partial().extend({
   id: z.string().uuid(),
-  responsible_id: z.enum(["luan", "vini", "caio"]).nullable().optional(),
+  responsible_name: z.string().max(120).nullable().optional(),
 });
 
 export const listCompaniesSchema = z.object({

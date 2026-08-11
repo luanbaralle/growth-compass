@@ -24,6 +24,7 @@ import {
 import { getOSDashboard } from "@/os/dashboard.functions";
 import type { OSDashboardData } from "@/os/dashboard.service.server";
 import { getLeadsKpiCopy, dashboardDateFilterToApiParams, DEFAULT_DASHBOARD_DATE_FILTER, type DashboardDateFilter } from "@/os/dashboard-date";
+import { buildDashboardNotifications } from "@/os/dashboard-notifications";
 import { useOSContext } from "@/os/shell/use-os-context";
 import { EmptyState } from "@/os/ui";
 import { Link, useNavigate } from "@tanstack/react-router";
@@ -105,6 +106,7 @@ export function DashboardPage() {
   const investmentCents = data?.marketing.investmentCents ?? 0;
   const messagesSent = data?.prospection.messagesSent ?? 0;
   const projectsOverdue = data?.projects.overdue ?? 0;
+  const notifications = useMemo(() => buildDashboardNotifications(data), [data]);
 
   const quickAccessItems = [
     {
@@ -163,6 +165,8 @@ export function DashboardPage() {
       <DashboardTopBar
         activePerson={activePerson}
         supabaseConnected={setup?.supabaseConfigured ?? false}
+        notifications={notifications}
+        notificationsLoading={loading}
       />
 
       {setup && !setup.supabaseConfigured && (

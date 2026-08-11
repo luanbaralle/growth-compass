@@ -178,7 +178,7 @@ async function main() {
         name: client.name,
         stage: CLIENT_STATUS_MAP[client.status] ?? "ativo",
         notes: client.observation || null,
-        responsible_id: client.owners[0] ?? null,
+        responsible_name: client.owners[0] ?? null,
         origin: "migracao",
       });
 
