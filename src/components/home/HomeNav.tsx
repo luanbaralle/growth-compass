@@ -52,9 +52,8 @@ export function HomeNav() {
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-8">
-        <Link to="/" className="flex shrink-0 items-center gap-2.5">
-          <Logo />
-          <span className="text-[15px] font-semibold tracking-tight">Raise One</span>
+        <Link to="/" className="flex shrink-0 items-center">
+          <Logo size="nav" />
         </Link>
 
         <NavigationMenu className="hidden lg:flex">

@@ -439,6 +439,83 @@
   border-color: oklch(1 0 0 / 0.05);
 }
 
+/* ── Brand logos (site + painel) ─────────────────────────── */
+
+.brand-logo-wrap {
+  display: inline-flex;
+  shrink: 0;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.brand-logo-wrap-horizontal {
+  width: auto;
+}
+
+.brand-logo-wrap-vertical {
+  aspect-ratio: 1;
+}
+
+.brand-logo-image {
+  display: block;
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.brand-logo-wrap-vertical .brand-logo-image {
+  width: 100%;
+  height: 100%;
+  object-position: center;
+}
+
+.brand-logo-size-nav {
+  height: 2.75rem;
+  max-width: 12.25rem;
+}
+
+.brand-logo-size-footer {
+  height: 2.75rem;
+  max-width: 12.25rem;
+}
+
+.brand-logo-size-login {
+  height: 2.75rem;
+  max-width: 12.5rem;
+}
+
+.brand-logo-size-loginHero {
+  height: 3.25rem;
+  max-width: 14.5rem;
+}
+
+.brand-logo-size-sidebar {
+  width: 100%;
+  height: auto;
+  min-height: 3rem;
+  max-width: none;
+}
+
+.brand-logo-size-sidebar .brand-logo-image {
+  width: 100%;
+  height: auto;
+  max-height: 3rem;
+}
+
+.brand-logo-size-compact {
+  height: 2.5rem;
+  width: 2.5rem;
+}
+
+.brand-logo-size-nav.brand-logo-wrap-horizontal,
+.brand-logo-size-footer.brand-logo-wrap-horizontal,
+.brand-logo-size-login.brand-logo-wrap-horizontal,
+.brand-logo-size-loginHero.brand-logo-wrap-horizontal {
+  width: auto;
+}
+
 @utility admin-nav-active {
   background: oklch(0.72 0.19 48 / 0.12);
   color: var(--brand);
@@ -549,7 +626,7 @@
 
 @utility dashboard-kpi-primary {
   position: relative;
-  min-height: 8.5rem;
+  min-height: 7.5rem;
   overflow: hidden;
   border-radius: 0.75rem;
   border: 1px solid oklch(1 0 0 / 0.06);
@@ -565,7 +642,7 @@
 
 @utility dashboard-kpi-secondary {
   position: relative;
-  min-height: 7rem;
+  min-height: 6.75rem;
   overflow: hidden;
   border-radius: 0.75rem;
   border: 1px solid oklch(1 0 0 / 0.06);
@@ -717,3 +794,435 @@
   background: oklch(0.2 0.005 55 / 0.6);
   box-shadow: 0 4px 20px -8px oklch(0 0 0 / 0.4);
 }
+
+/* ── Company detail page ─────────────────────────────────── */
+
+.company-profile-header-accent {
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    oklch(0.72 0.17 55 / 0.9) 0%,
+    oklch(0.65 0.14 280 / 0.7) 50%,
+    oklch(0.72 0.17 155 / 0.5) 100%
+  );
+}
+
+.company-profile-avatar {
+  display: flex;
+  height: 3.5rem;
+  width: 3.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  background: oklch(0.72 0.17 55 / 0.12);
+  font-size: 1rem;
+  font-weight: 700;
+  color: oklch(0.78 0.16 55);
+  border: 1px solid oklch(0.72 0.17 55 / 0.2);
+}
+
+.company-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid oklch(0.72 0.17 55 / 0.2);
+  background: oklch(0.72 0.17 55 / 0.12);
+  color: oklch(0.78 0.16 55);
+  position: relative;
+}
+
+.company-avatar-editable {
+  cursor: pointer;
+  padding: 0;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+
+.company-avatar-editable:hover {
+  border-color: oklch(0.72 0.17 55 / 0.45);
+  box-shadow: 0 0 0 3px oklch(0.72 0.17 55 / 0.1);
+}
+
+.company-avatar-editable:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.company-avatar-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: oklch(0 0 0 / 0.55);
+  color: white;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.company-avatar-editable:hover .company-avatar-overlay,
+.company-avatar-editable:focus-visible .company-avatar-overlay {
+  opacity: 1;
+}
+
+.company-avatar-remove {
+  position: absolute;
+  top: -0.375rem;
+  right: -0.375rem;
+  display: flex;
+  height: 1.25rem;
+  width: 1.25rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid oklch(1 0 0 / 0.12);
+  background: oklch(0.2 0.005 55 / 0.95);
+  color: oklch(0.75 0 0 / 0.85);
+}
+
+.company-avatar-remove:hover {
+  color: oklch(0.78 0.14 25);
+  border-color: oklch(0.78 0.14 25 / 0.35);
+}
+
+.company-contact-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 9999px;
+  border: 1px solid oklch(1 0 0 / 0.08);
+  background: oklch(0.18 0.005 55 / 0.5);
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  color: oklch(0.75 0 0 / 0.85);
+  transition: border-color 200ms ease, background 200ms ease;
+}
+
+.company-contact-chip:hover {
+  border-color: oklch(1 0 0 / 0.14);
+  background: oklch(0.22 0.005 55 / 0.7);
+}
+
+.company-contact-chip-whatsapp:hover {
+  border-color: oklch(0.72 0.17 155 / 0.35);
+  color: oklch(0.78 0.14 155);
+}
+
+.company-stage-select {
+  border-color: oklch(1 0 0 / 0.08);
+  background: oklch(0.16 0.005 55 / 0.6);
+}
+
+.company-tab-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  padding: 0.25rem;
+  border-radius: 0.875rem;
+  border: 1px solid oklch(1 0 0 / 0.06);
+  background: oklch(0.14 0.005 55 / 0.5);
+}
+
+.company-tab-nav-item {
+  border-radius: 0.625rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: oklch(0.7 0 0 / 0.65);
+  transition: color 200ms ease, background 200ms ease;
+}
+
+.company-tab-nav-item:hover {
+  color: oklch(0.9 0 0 / 0.9);
+  background: oklch(1 0 0 / 0.04);
+}
+
+.company-tab-nav-item-active {
+  background: oklch(0.72 0.17 55 / 0.12);
+  color: oklch(0.78 0.16 55);
+  box-shadow: inset 0 0 0 1px oklch(0.72 0.17 55 / 0.2);
+}
+
+.company-alert-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  border-radius: var(--dashboard-radius);
+  border: 1px solid oklch(0.78 0.14 85 / 0.25);
+  background: oklch(0.78 0.14 85 / 0.08);
+  padding: 0.875rem 1.125rem;
+}
+
+.company-alert-banner-action {
+  margin-left: auto;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: oklch(0.78 0.16 55);
+}
+
+.company-alert-banner-action:hover {
+  text-decoration: underline;
+}
+
+.company-quick-action {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.625rem;
+  border-radius: 0.625rem;
+  border: 1px solid oklch(1 0 0 / 0.06);
+  background: oklch(0.16 0.005 55 / 0.4);
+  padding: 0.625rem 0.875rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-align: left;
+  transition: border-color 200ms ease, background 200ms ease;
+}
+
+.company-quick-action:hover {
+  border-color: oklch(1 0 0 / 0.1);
+  background: oklch(0.2 0.005 55 / 0.6);
+}
+
+.company-link-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-radius: 0.625rem;
+  border: 1px solid oklch(1 0 0 / 0.05);
+  padding: 0.625rem 0.75rem;
+  transition: border-color 200ms ease, background 200ms ease;
+}
+
+.company-link-row:hover {
+  border-color: oklch(0.72 0.17 55 / 0.2);
+  background: oklch(0.72 0.17 55 / 0.05);
+}
+
+.company-note-input {
+  width: 100%;
+  resize: none;
+  border-radius: 0.625rem;
+  border: 1px solid oklch(1 0 0 / 0.08);
+  background: oklch(0.14 0.005 55 / 0.5);
+  padding: 0.625rem 0.75rem;
+  font-size: 0.8125rem;
+  outline: none;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+
+.company-note-input:focus {
+  border-color: oklch(0.72 0.17 55 / 0.3);
+  box-shadow: 0 0 0 2px oklch(0.72 0.17 55 / 0.08);
+}
+
+.cadastro-field {
+  border-radius: 0.75rem;
+  border: 1px solid oklch(1 0 0 / 0.05);
+  background: oklch(0.15 0.005 55 / 0.35);
+  padding: 0.875rem 1rem;
+}
+
+.cadastro-field-label {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: oklch(0.65 0 0 / 0.55);
+}
+
+.cadastro-field-value {
+  margin-top: 0.375rem;
+  font-size: 0.875rem;
+  color: oklch(0.92 0 0 / 0.9);
+}
+
+/* ── OS login page ───────────────────────────────────────── */
+
+.os-login-page {
+  position: relative;
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 2rem 1.25rem;
+}
+
+.os-login-ambient {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+}
+
+.os-login-grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.35;
+  background-image:
+    linear-gradient(to right, oklch(1 0 0 / 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(1 0 0 / 0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black 20%, transparent 75%);
+}
+
+.os-login-glow-primary {
+  position: absolute;
+  inset-x: 0;
+  top: -10%;
+  height: 55%;
+  background: radial-gradient(
+    ellipse 70% 55% at 50% 0%,
+    oklch(0.72 0.19 48 / 0.22),
+    transparent 68%
+  );
+}
+
+.os-login-glow-secondary {
+  position: absolute;
+  bottom: -20%;
+  left: 50%;
+  height: 40%;
+  width: 80%;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    ellipse 50% 50% at 50% 50%,
+    oklch(0.55 0.12 280 / 0.08),
+    transparent 70%
+  );
+}
+
+.os-login-shell {
+  position: relative;
+  width: 100%;
+  max-width: 24rem;
+  animation: fade-up 0.55s ease-out both;
+}
+
+.os-login-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.75rem;
+  text-align: center;
+}
+
+.os-login-eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: oklch(0.68 0 0 / 0.55);
+}
+
+.os-login-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.125rem;
+  border: 1px solid oklch(1 0 0 / 0.08);
+  background: oklch(0.14 0.004 55 / 0.72);
+  backdrop-filter: blur(20px);
+  box-shadow:
+    0 0 0 1px oklch(1 0 0 / 0.03) inset,
+    0 24px 48px -24px oklch(0 0 0 / 0.65);
+}
+
+.os-login-card-accent {
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    oklch(0.72 0.17 55 / 0.15) 0%,
+    oklch(0.72 0.19 48 / 0.95) 50%,
+    oklch(0.65 0.14 280 / 0.35) 100%
+  );
+}
+
+.os-login-card-body {
+  padding: 1.5rem;
+}
+
+.os-login-card-title {
+  margin-bottom: 1.25rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: oklch(0.92 0 0 / 0.92);
+}
+
+.os-login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.os-login-field-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: oklch(0.65 0 0 / 0.55);
+}
+
+.os-login-person-row {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.os-login-person-avatar {
+  display: flex;
+  height: 2rem;
+  width: 2rem;
+  shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: oklch(0.72 0.17 55 / 0.14);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: oklch(0.78 0.16 55);
+  border: 1px solid oklch(0.72 0.17 55 / 0.22);
+}
+
+.os-login-person-select {
+  flex: 1;
+}
+
+.os-login-error {
+  border-radius: 0.625rem;
+  border: 1px solid oklch(0.62 0.2 25 / 0.35);
+  background: oklch(0.62 0.2 25 / 0.1);
+  padding: 0.625rem 0.75rem;
+  font-size: 0.8125rem;
+  color: oklch(0.78 0.14 25);
+}
+
+.os-login-submit {
+  margin-top: 0.25rem;
+  height: 2.75rem;
+  width: 100%;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.os-login-back {
+  display: inline-flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  margin-top: 1.5rem;
+  font-size: 0.8125rem;
+  color: oklch(0.68 0 0 / 0.6);
+  transition: color 200ms ease;
+}
+
+.os-login-back:hover {
+  color: oklch(0.92 0 0 / 0.9);
+}
+

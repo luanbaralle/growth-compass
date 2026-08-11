@@ -21,6 +21,7 @@ export const createCompanySchema = z.object({
 
 export const updateCompanySchema = createCompanySchema.partial().extend({
   id: z.string().uuid(),
+  responsible_id: z.enum(["luan", "vini", "caio"]).nullable().optional(),
 });
 
 export const listCompaniesSchema = z.object({
@@ -71,6 +72,12 @@ export const createServiceSchema = z.object({
 export const updateServiceSchema = createServiceSchema.partial().extend({
   id: z.string().uuid(),
   companyId: z.string().uuid(),
+});
+
+export const uploadLogoSchema = z.object({
+  companyId: z.string().uuid(),
+  mimeType: z.enum(["image/jpeg", "image/png", "image/webp", "image/gif"]),
+  base64: z.string().min(1),
 });
 
 export const uploadFileSchema = z.object({

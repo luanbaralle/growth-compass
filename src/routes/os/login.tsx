@@ -3,7 +3,6 @@ import { osLogin, checkOSAuth } from "@/lib/api/auth.functions";
 import { Logo } from "@/components/landing/shared/Logo";
 import { TEAM_LABELS, type TeamMember } from "@/lib/auth/types";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -11,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import { type FormEvent, useState } from "react";
 
 export const Route = createFileRoute("/os/login")({
@@ -50,67 +49,92 @@ function OSLoginPage() {
   };
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center dashboard-page-bg px-5">
-      <div className="pointer-events-none absolute inset-0 grid-bg opacity-30" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-64 radial-glow opacity-40" />
+    <div className="os-login-page dashboard-page-bg">
+      <div className="os-login-ambient" aria-hidden>
+        <div className="os-login-glow-primary" />
+        <div className="os-login-glow-secondary" />
+        <div className="os-login-grid" />
+      </div>
 
-      <div className="relative w-full max-w-sm animate-fade-up">
-        <div className="mb-8 flex flex-col items-center gap-3">
-          <Logo />
-          <h1 className="font-display text-xl font-bold tracking-tight">Raise One OS</h1>
-          <p className="text-center text-sm text-muted-foreground">Sistema operacional interno</p>
+      <div className="os-login-shell">
+        <header className="os-login-brand">
+          <Logo size="loginHero" />
+          <p className="os-login-eyebrow">Sistema operacional interno</p>
+        </header>
+
+        <div className="os-login-card">
+          <div className="os-login-card-accent" />
+          <form onSubmit={handleSubmit} className="os-login-card-body space-y-4">
+            <p className="os-login-card-title">Acesso ao painel</p>
+
+            <div className="os-login-field">
+              <span className="os-login-field-label">Quem é você?</span>
+              <div className="os-login-person-row">
+                <div className="os-login-person-avatar" aria-hidden>
+                  {TEAM_LABELS[person].charAt(0)}
+                </div>
+                <Select
+                  value={person}
+                  onValueChange={(v) => setPerson(v as TeamMember)}
+                >
+                  <SelectTrigger className="os-login-person-select h-10">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(Object.keys(TEAM_LABELS) as TeamMember[]).map((m) => (
+                      <SelectItem key={m} value={m}>
+                        {TEAM_LABELS[m]}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="os-login-field">
+              <label htmlFor="os-login-password" className="os-login-field-label">
+                Senha do time
+              </label>
+              <Input
+                id="os-login-password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoFocus
+                className="h-10"
+              />
+            </div>
+
+            <div className="os-login-field">
+              <label htmlFor="os-login-pin" className="os-login-field-label">
+                PIN pessoal <span className="normal-case tracking-normal">(opcional)</span>
+              </label>
+              <Input
+                id="os-login-pin"
+                type="password"
+                inputMode="numeric"
+                value={pin}
+                onChange={(e) => setPin(e.target.value)}
+                placeholder="Só se configurado no servidor"
+                className="h-10"
+              />
+            </div>
+
+            {error && <p className="os-login-error">{error}</p>}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="dashboard-btn-primary os-login-submit justify-center"
+            >
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Entrar no painel"}
+            </button>
+          </form>
         </div>
 
-        <form onSubmit={handleSubmit} className="admin-card space-y-4 p-6">
-          <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">Quem é você?</Label>
-            <Select value={person} onValueChange={(v) => setPerson(v as TeamMember)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {(Object.keys(TEAM_LABELS) as TeamMember[]).map((m) => (
-                  <SelectItem key={m} value={m}>
-                    {TEAM_LABELS[m]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">Senha do time</Label>
-            <Input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              autoFocus
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">PIN pessoal (opcional)</Label>
-            <Input
-              type="password"
-              inputMode="numeric"
-              value={pin}
-              onChange={(e) => setPin(e.target.value)}
-              placeholder="Só se configurado no servidor"
-            />
-          </div>
-
-          {error && <p className="text-sm text-destructive">{error}</p>}
-
-          <button type="submit" disabled={loading} className="dashboard-btn-primary w-full justify-center">
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Entrar"}
-          </button>
-        </form>
-
-        <Link
-          to="/"
-          className="mt-6 block text-center text-sm text-muted-foreground transition-colors hover:text-foreground"
-        >
+        <Link to="/" className="os-login-back">
+          <ArrowLeft className="h-3.5 w-3.5" />
           Voltar ao site
         </Link>
       </div>

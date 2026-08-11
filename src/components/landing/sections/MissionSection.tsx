@@ -48,7 +48,7 @@ export function MissionSection({ config }: { config: SegmentConfig }) {
         <div className="relative">
           <div className="overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-surface to-background p-8 sm:p-10">
             <div className="flex items-center gap-3">
-              <Logo className="h-10 w-10" />
+              <Logo variant="vertical" size="compact" />
               <div>
                 <div className="text-lg font-semibold">Raise One</div>
                 <div className="text-xs text-muted-foreground">

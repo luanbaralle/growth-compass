@@ -23,6 +23,20 @@ import {
   Users,
   Wallet,
 } from "lucide-react";
+import {
+  DASHBOARD_DATE_PRESET_OPTIONS,
+  formatDashboardDateFilterTrigger,
+  getDashboardHeroSubtitle,
+  isPresetActive,
+  parseLocalDateStr,
+  toLocalDateStr,
+  type DashboardDateFilter,
+  type DashboardDatePreset,
+} from "@/os/dashboard-date";
+import { Calendar as CalendarPicker } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useState } from "react";
+import type { DateRange } from "react-day-picker";
 
 /* ── Utilities ───────────────────────────────────────────── */
 
@@ -33,11 +47,182 @@ function getGreeting(): string {
   return "Boa noite";
 }
 
-function formatTodayDate(): string {
-  return new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "long",
-  }).format(new Date());
+export function DashboardDateFilter({
+  value,
+  onChange,
+  disabled,
+}: {
+  value: DashboardDateFilter;
+  onChange: (filter: DashboardDateFilter) => void;
+  disabled?: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState<"single" | "range">("single");
+  const [singleDay, setSingleDay] = useState<Date | undefined>(() =>
+    value.kind === "day" ? parseLocalDateStr(value.date) : new Date(),
+  );
+  const [range, setRange] = useState<DateRange | undefined>(() => {
+    if (value.kind === "range") {
+      return {
+        from: parseLocalDateStr(value.start),
+        to: parseLocalDateStr(value.end),
+      };
+    }
+    if (value.kind === "day") {
+      const day = parseLocalDateStr(value.date);
+      return { from: day, to: day };
+    }
+    return undefined;
+  });
+
+  const syncDraftFromValue = () => {
+    if (value.kind === "day") {
+      setMode("single");
+      setSingleDay(parseLocalDateStr(value.date));
+    } else if (value.kind === "range") {
+      setMode("range");
+      setRange({
+        from: parseLocalDateStr(value.start),
+        to: parseLocalDateStr(value.end),
+      });
+    } else {
+      setMode("single");
+      setSingleDay(new Date());
+      setRange(undefined);
+    }
+  };
+
+  const applyPreset = (preset: DashboardDatePreset) => {
+    onChange({ kind: "preset", preset });
+    setOpen(false);
+  };
+
+  const applyCustom = () => {
+    if (mode === "single" && singleDay) {
+      onChange({ kind: "day", date: toLocalDateStr(singleDay) });
+      setOpen(false);
+      return;
+    }
+
+    if (mode === "range" && range?.from && range?.to) {
+      const start = toLocalDateStr(range.from);
+      const end = toLocalDateStr(range.to);
+      if (start === end) {
+        onChange({ kind: "day", date: start });
+      } else {
+        onChange({ kind: "range", start, end });
+      }
+      setOpen(false);
+    }
+  };
+
+  const canApplyCustom =
+    mode === "single" ? Boolean(singleDay) : Boolean(range?.from && range?.to);
+
+  return (
+    <Popover
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next);
+        if (next) syncDraftFromValue();
+      }}
+    >
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          disabled={disabled}
+          className="dashboard-control inline-flex h-10 items-center gap-2 self-start px-3.5 text-xs text-muted-foreground/75 transition-colors hover:text-foreground disabled:opacity-50 sm:self-end"
+        >
+          <Calendar className="h-3.5 w-3.5 opacity-50" />
+          <span>{formatDashboardDateFilterTrigger(value)}</span>
+          <ChevronDown className="h-3 w-3 opacity-40" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent align="end" className="w-auto p-0">
+        <div className="border-b border-border/40 p-3">
+          <p className="mb-2 text-[10px] font-medium uppercase tracking-wide text-muted-foreground/70">
+            Atalhos
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {DASHBOARD_DATE_PRESET_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => applyPreset(option.value)}
+                className={cn(
+                  "rounded-full border px-2.5 py-1 text-xs transition-colors",
+                  isPresetActive(value, option.value)
+                    ? "border-brand/30 bg-brand/10 text-brand"
+                    : "border-border/40 text-muted-foreground hover:border-border/70 hover:text-foreground",
+                )}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="border-b border-border/40 p-3">
+          <div className="mb-3 flex rounded-lg border border-border/40 p-0.5">
+            <button
+              type="button"
+              onClick={() => setMode("single")}
+              className={cn(
+                "flex-1 rounded-md px-2 py-1.5 text-xs transition-colors",
+                mode === "single"
+                  ? "bg-brand/10 text-brand"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              Data específica
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode("range")}
+              className={cn(
+                "flex-1 rounded-md px-2 py-1.5 text-xs transition-colors",
+                mode === "range"
+                  ? "bg-brand/10 text-brand"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              Período
+            </button>
+          </div>
+
+          {mode === "single" ? (
+            <CalendarPicker
+              mode="single"
+              selected={singleDay}
+              onSelect={setSingleDay}
+              defaultMonth={singleDay}
+              disabled={{ after: new Date() }}
+            />
+          ) : (
+            <CalendarPicker
+              mode="range"
+              selected={range}
+              onSelect={setRange}
+              defaultMonth={range?.from ?? new Date()}
+              disabled={{ after: new Date() }}
+              numberOfMonths={1}
+            />
+          )}
+        </div>
+
+        <div className="flex justify-end p-3">
+          <button
+            type="button"
+            disabled={!canApplyCustom}
+            onClick={applyCustom}
+            className="dashboard-btn-primary h-8 px-3 text-xs disabled:opacity-40"
+          >
+            Aplicar
+          </button>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
 }
 
 function formatRelativeMinutes(date: Date): string {
@@ -48,48 +233,6 @@ function formatRelativeMinutes(date: Date): string {
   const hours = Math.floor(diff / 60);
   if (hours === 1) return "há 1 hora";
   return `há ${hours} horas`;
-}
-
-/* ── Sparkline (right-side, prototype style) ─────────────── */
-
-function KpiSparkline({
-  color,
-  seed = 0,
-  variant = "primary",
-}: {
-  color: string;
-  seed?: number;
-  variant?: "primary" | "secondary";
-}) {
-  const id = `kpi-spark-${seed}-${variant}`;
-  const lines = [
-    "M0,34 C12,28 24,12 38,22 C52,32 64,10 78,18 C92,26 104,8 120,14",
-    "M0,30 C14,18 28,32 42,16 C56,8 70,28 84,14 C98,6 110,22 120,10",
-    "M0,32 C10,22 26,38 40,20 C54,12 68,30 82,16 C96,8 108,24 120,12",
-    "M0,28 C16,14 30,36 44,18 C58,6 72,26 86,12 C100,4 112,20 120,8",
-  ];
-  const line = lines[seed % lines.length];
-
-  return (
-    <svg viewBox="0 0 120 40" className="h-full w-full" preserveAspectRatio="none" aria-hidden>
-      <defs>
-        <linearGradient id={`${id}-fill`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity={variant === "primary" ? "0.18" : "0.14"} />
-          <stop offset="100%" stopColor={color} stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <path d={`${line} L120,40 L0,40 Z`} fill={`url(#${id}-fill)`} />
-      <path
-        d={line}
-        fill="none"
-        stroke={color}
-        strokeWidth="1.25"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        opacity="0.85"
-      />
-    </svg>
-  );
 }
 
 /* ── Top bar ─────────────────────────────────────────────── */
@@ -160,7 +303,17 @@ export function DashboardTopBar({
 
 /* ── Hero (open — no card) ───────────────────────────────── */
 
-export function DashboardHero({ userName }: { userName: string }) {
+export function DashboardHero({
+  userName,
+  dateFilter,
+  onDateFilterChange,
+  dateFilterDisabled,
+}: {
+  userName: string;
+  dateFilter: DashboardDateFilter;
+  onDateFilterChange: (filter: DashboardDateFilter) => void;
+  dateFilterDisabled?: boolean;
+}) {
   return (
     <section className="animate-fade-up pt-2 pb-2">
       <div className="flex flex-col gap-8 xl:flex-row xl:items-start xl:justify-between">
@@ -169,7 +322,7 @@ export function DashboardHero({ userName }: { userName: string }) {
             {getGreeting()}, {userName}! <span aria-hidden>👋</span>
           </h1>
           <p className="mt-2 text-sm text-muted-foreground/70">
-            Aqui está o resumo da sua operação hoje.
+            {getDashboardHeroSubtitle(dateFilter)}
           </p>
         </div>
 
@@ -188,11 +341,11 @@ export function DashboardHero({ userName }: { userName: string }) {
               Novo projeto
             </Link>
           </div>
-          <div className="dashboard-control inline-flex h-10 items-center gap-2 self-start px-3.5 text-xs text-muted-foreground/75 sm:self-end">
-            <Calendar className="h-3.5 w-3.5 opacity-50" />
-            <span>Hoje, {formatTodayDate()}</span>
-            <ChevronDown className="h-3 w-3 opacity-40" />
-          </div>
+          <DashboardDateFilter
+            value={dateFilter}
+            onChange={onDateFilterChange}
+            disabled={dateFilterDisabled}
+          />
         </div>
       </div>
     </section>
@@ -206,48 +359,41 @@ type SubTone = "muted" | "success" | "brand" | "warning";
 
 const accentMap: Record<
   AccentTone,
-  { iconBg: string; iconText: string; wave: string; bar: string }
+  { iconBg: string; iconText: string; bar: string }
 > = {
   brand: {
     iconBg: "bg-brand/15",
     iconText: "text-brand",
-    wave: "oklch(0.72 0.19 48)",
     bar: "bg-brand",
   },
   success: {
     iconBg: "bg-emerald-400/15",
     iconText: "text-emerald-400",
-    wave: "oklch(0.72 0.17 155)",
     bar: "bg-emerald-400",
   },
   warning: {
     iconBg: "bg-amber-400/15",
     iconText: "text-amber-400",
-    wave: "oklch(0.78 0.14 85)",
     bar: "bg-amber-400",
   },
   gold: {
     iconBg: "bg-yellow-400/14",
     iconText: "text-yellow-400",
-    wave: "oklch(0.82 0.12 90)",
     bar: "bg-yellow-400",
   },
   danger: {
     iconBg: "bg-red-400/15",
     iconText: "text-red-400",
-    wave: "oklch(0.65 0.2 25)",
     bar: "bg-red-400",
   },
   info: {
     iconBg: "bg-sky-400/15",
     iconText: "text-sky-400",
-    wave: "oklch(0.68 0.14 230)",
     bar: "bg-sky-400",
   },
   purple: {
     iconBg: "bg-violet-400/15",
     iconText: "text-violet-400",
-    wave: "oklch(0.62 0.2 290)",
     bar: "bg-violet-400",
   },
 };
@@ -268,8 +414,6 @@ export function DashboardKpiCard({
   subTone = "muted",
   size = "lg",
   trend,
-  sparkSeed,
-  showSparkline = true,
   trailing,
 }: {
   label: string;
@@ -280,8 +424,6 @@ export function DashboardKpiCard({
   subTone?: SubTone;
   size?: "lg" | "sm";
   trend?: "up" | "down" | "neutral";
-  sparkSeed?: number;
-  showSparkline?: boolean;
   trailing?: React.ReactNode;
 }) {
   const colors = accentMap[accent];
@@ -293,44 +435,36 @@ export function DashboardKpiCard({
       <div className="dashboard-kpi-primary group">
         <div className={cn("absolute inset-x-0 top-0 h-[2px] rounded-t-[inherit]", colors.bar)} />
 
-        <div className="relative flex h-full gap-1">
-          <div className="flex min-w-0 flex-1 flex-col pt-0.5">
-            <div className="flex items-center gap-2">
-              <div
-                className={cn(
-                  "flex h-7 w-7 shrink-0 items-center justify-center rounded-full",
-                  colors.iconBg,
-                  colors.iconText,
-                )}
-              >
-                <Icon className="h-3.5 w-3.5" strokeWidth={1.75} />
-              </div>
-              <p className="truncate text-[11px] font-medium uppercase tracking-[0.04em] text-muted-foreground/50">
-                {label}
-              </p>
+        <div className="relative flex h-full flex-col pt-0.5">
+          <div className="flex items-start gap-2">
+            <div
+              className={cn(
+                "flex h-7 w-7 shrink-0 items-center justify-center rounded-full",
+                colors.iconBg,
+                colors.iconText,
+              )}
+            >
+              <Icon className="h-3.5 w-3.5" strokeWidth={1.75} />
             </div>
-
-            <p className="dashboard-kpi-value mt-5">{value}</p>
-
-            {sub && (
-              <p
-                className={cn(
-                  "mt-2 flex items-center gap-1 text-[11px] leading-none",
-                  trend === "up" && "text-emerald-400",
-                  trend === "down" && "text-red-400",
-                  !trend && subToneClass[subTone],
-                )}
-              >
-                {TrendIcon && <TrendIcon className="h-3 w-3 shrink-0" strokeWidth={2.5} />}
-                {sub}
-              </p>
-            )}
+            <p className="min-w-0 flex-1 text-[11px] font-medium uppercase leading-snug tracking-[0.04em] text-muted-foreground/50">
+              {label}
+            </p>
           </div>
 
-          {showSparkline && (
-            <div className="pointer-events-none flex h-[52px] w-[44%] max-w-[118px] shrink-0 items-end self-end pb-0.5">
-              <KpiSparkline color={colors.wave} seed={sparkSeed ?? label.length} variant="primary" />
-            </div>
+          <p className="dashboard-kpi-value mt-5">{value}</p>
+
+          {sub && (
+            <p
+              className={cn(
+                "mt-2 flex items-center gap-1 text-[11px] leading-snug",
+                trend === "up" && "text-emerald-400",
+                trend === "down" && "text-red-400",
+                !trend && subToneClass[subTone],
+              )}
+            >
+              {TrendIcon && <TrendIcon className="h-3 w-3 shrink-0" strokeWidth={2.5} />}
+              {sub}
+            </p>
           )}
         </div>
       </div>
@@ -341,48 +475,40 @@ export function DashboardKpiCard({
     <div className="dashboard-kpi-secondary group">
       <div className={cn("absolute inset-x-0 top-0 h-[2px] rounded-t-[inherit]", colors.bar)} />
 
-      <div className="relative flex h-full gap-1">
-        <div className="flex min-w-0 flex-1 flex-col pt-0.5">
-          <div className="flex items-center gap-2">
-            <div
-              className={cn(
-                "flex h-6 w-6 shrink-0 items-center justify-center rounded-full",
-                colors.iconBg,
-                colors.iconText,
-              )}
-            >
-              <Icon className="h-3 w-3" strokeWidth={1.75} />
-            </div>
-            <p className="truncate text-[10px] font-medium uppercase tracking-[0.04em] text-muted-foreground/45">
-              {label}
-            </p>
+      <div className="relative flex h-full flex-col pt-0.5">
+        <div className="flex items-start gap-2">
+          <div
+            className={cn(
+              "flex h-6 w-6 shrink-0 items-center justify-center rounded-full",
+              colors.iconBg,
+              colors.iconText,
+            )}
+          >
+            <Icon className="h-3 w-3" strokeWidth={1.75} />
           </div>
-
-          <p className="dashboard-kpi-value-secondary mt-3">{value}</p>
-
-          {(sub || trailing) && (
-            <div className="mt-1.5 flex items-center justify-between gap-2">
-              {sub && (
-                <p
-                  className={cn(
-                    "flex items-center gap-1 text-[10px] leading-none",
-                    trend === "up" && "text-emerald-400",
-                    trend === "down" && "text-red-400",
-                    !trend && subToneClass[subTone],
-                  )}
-                >
-                  {TrendIcon && <TrendIcon className="h-3 w-3 shrink-0" />}
-                  {sub}
-                </p>
-              )}
-              {trailing}
-            </div>
-          )}
+          <p className="min-w-0 flex-1 text-[10px] font-medium uppercase leading-snug tracking-[0.04em] text-muted-foreground/45">
+            {label}
+          </p>
         </div>
 
-        {showSparkline && (
-          <div className="pointer-events-none flex h-[44px] w-[40%] max-w-[96px] shrink-0 items-end self-end pb-0.5">
-            <KpiSparkline color={colors.wave} seed={sparkSeed ?? label.length} variant="secondary" />
+        <p className="dashboard-kpi-value-secondary mt-3">{value}</p>
+
+        {(sub || trailing) && (
+          <div className="mt-1.5 flex items-start justify-between gap-2">
+            {sub && (
+              <p
+                className={cn(
+                  "min-w-0 flex-1 text-[10px] leading-snug",
+                  trend === "up" && "text-emerald-400",
+                  trend === "down" && "text-red-400",
+                  !trend && subToneClass[subTone],
+                )}
+              >
+                {TrendIcon && <TrendIcon className="mr-1 inline h-3 w-3 shrink-0" />}
+                {sub}
+              </p>
+            )}
+            {trailing}
           </div>
         )}
       </div>

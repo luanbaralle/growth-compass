@@ -23,11 +23,18 @@ import {
 } from "@/os/components/dashboard";
 import { getOSDashboard } from "@/os/dashboard.functions";
 import type { OSDashboardData } from "@/os/dashboard.service.server";
+import { getLeadsKpiCopy, dashboardDateFilterToApiParams, DEFAULT_DASHBOARD_DATE_FILTER, type DashboardDateFilter } from "@/os/dashboard-date";
 import { useOSContext } from "@/os/shell/use-os-context";
 import { EmptyState } from "@/os/ui";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { CheckCircle2 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  NEXT_ACTION_URGENCY_LABELS,
+  formatProspectDate,
+  getNextActionUrgency,
+} from "@/domains/prospection/types";
+import { cn } from "@/lib/utils";
 
 function formatDate(iso: string): string {
   return new Intl.DateTimeFormat("pt-BR", {
@@ -42,28 +49,44 @@ export function DashboardPage() {
   const [data, setData] = useState<OSDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [dateFilter, setDateFilter] = useState<DashboardDateFilter>(DEFAULT_DASHBOARD_DATE_FILTER);
   const [setup, setSetup] = useState<{ supabaseConfigured: boolean; supabaseHost: string | null } | null>(
     null,
   );
+
+  const loadDashboard = useCallback(async (filter: DashboardDateFilter) => {
+    setLoading(true);
+    setError("");
+    try {
+      const result = await getOSDashboard({ data: dashboardDateFilterToApiParams(filter) });
+      setData(result);
+    } catch (err) {
+      if (isUnauthorizedError(err)) {
+        navigate({ to: "/os/login" });
+        return;
+      }
+      setError(getErrorMessage(err, "Erro ao carregar dashboard."));
+    } finally {
+      setLoading(false);
+    }
+  }, [navigate]);
 
   useEffect(() => {
     getOSConfigStatus()
       .then(setSetup)
       .catch(() => setSetup({ supabaseConfigured: false, supabaseHost: null }));
+  }, []);
 
-    getOSDashboard()
-      .then(setData)
-      .catch((err) => {
-        if (isUnauthorizedError(err)) {
-          navigate({ to: "/os/login" });
-          return;
-        }
-        setError(getErrorMessage(err, "Erro ao carregar dashboard."));
-      })
-      .finally(() => setLoading(false));
-  }, [navigate]);
+  useEffect(() => {
+    void loadDashboard(dateFilter);
+  }, [dateFilter, loadDashboard]);
+
+  const handleDateFilterChange = (filter: DashboardDateFilter) => {
+    setDateFilter(filter);
+  };
 
   const userName = activePerson ? TEAM_LABELS[activePerson] : "Operador";
+  const leadsKpi = getLeadsKpiCopy(dateFilter);
 
   const totalCompanies = useMemo(() => {
     if (!data) return 0;
@@ -74,6 +97,14 @@ export function DashboardPage() {
     if (!data) return 0;
     return data.projects.inProgress + data.projects.overdue;
   }, [data]);
+
+  const leadsToday = data?.companies.leadsToday ?? 0;
+  const activeClients = data?.companies.activeClients ?? 0;
+  const paidThisMonth = data?.finance.paidThisMonthCents ?? 0;
+  const conversionRate = data?.prospection.conversionRate ?? 0;
+  const investmentCents = data?.marketing.investmentCents ?? 0;
+  const messagesSent = data?.prospection.messagesSent ?? 0;
+  const projectsOverdue = data?.projects.overdue ?? 0;
 
   const quickAccessItems = [
     {
@@ -145,28 +176,31 @@ export function DashboardPage() {
 
       {!error && (
         <>
-          <DashboardHero userName={userName} />
+          <DashboardHero
+            userName={userName}
+            dateFilter={dateFilter}
+            onDateFilterChange={handleDateFilterChange}
+            dateFilterDisabled={loading}
+          />
 
           {/* KPIs principais */}
           <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <DashboardKpiCard
-              label="Leads hoje"
-              value={loading ? "—" : String(data?.companies.leadsToday ?? 0)}
-              sub="Novas empresas hoje"
+              label={leadsKpi.label}
+              value={loading ? "—" : String(leadsToday)}
+              sub={leadsKpi.sub}
               icon={Users}
               accent="brand"
               size="lg"
-              sparkSeed={1}
             />
             <DashboardKpiCard
               label="Clientes ativos"
-              value={loading ? "—" : String(data?.companies.activeClients ?? 0)}
+              value={loading ? "—" : String(activeClients)}
               sub="Estágio: Cliente ativo"
               icon={Users}
               accent="success"
               subTone="success"
               size="lg"
-              sparkSeed={2}
             />
             <DashboardKpiCard
               label="Projetos"
@@ -176,16 +210,14 @@ export function DashboardPage() {
               accent="warning"
               subTone="warning"
               size="lg"
-              sparkSeed={3}
             />
             <DashboardKpiCard
               label="Recebimentos no mês"
-              value={loading ? "—" : formatFinanceMoney(data?.finance.paidThisMonthCents ?? 0)}
+              value={loading ? "—" : formatFinanceMoney(paidThisMonth)}
               sub="0% vs mês anterior"
               icon={Wallet}
               accent="gold"
               size="lg"
-              sparkSeed={4}
             />
           </section>
 
@@ -193,43 +225,38 @@ export function DashboardPage() {
           <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <DashboardKpiCard
               label="Taxa de conversão"
-              value={loading ? "—" : `${data?.prospection.conversionRate ?? 0}%`}
+              value={loading ? "—" : `${conversionRate}%`}
               sub={`${data?.prospection.clients ?? 0} clientes`}
               icon={Target}
               accent="purple"
               size="sm"
-              sparkSeed={5}
             />
             <DashboardKpiCard
               label="Investimento (marketing)"
-              value={loading ? "—" : formatFinanceMoney(data?.marketing.investmentCents ?? 0)}
+              value={loading ? "—" : formatFinanceMoney(investmentCents)}
               sub={`${data?.marketing.leads ?? 0} leads`}
               icon={Megaphone}
               accent="brand"
               size="sm"
-              sparkSeed={6}
             />
             <DashboardKpiCard
               label="Mensagens enviadas"
-              value={loading ? "—" : String(data?.prospection.messagesSent ?? 0)}
+              value={loading ? "—" : String(messagesSent)}
               sub="Registradas no pipeline"
               icon={Target}
               accent="info"
               size="sm"
-              sparkSeed={7}
             />
             <DashboardKpiCard
               label="Projetos atrasados"
-              value={loading ? "—" : String(data?.projects.overdue ?? 0)}
-              sub={(data?.projects.overdue ?? 0) > 0 ? "Precisam de atenção" : "Tudo em dia"}
+              value={loading ? "—" : String(projectsOverdue)}
+              sub={projectsOverdue > 0 ? "Precisam de atenção" : "Tudo em dia"}
               icon={FolderKanban}
-              accent={(data?.projects.overdue ?? 0) > 0 ? "danger" : "success"}
+              accent={projectsOverdue > 0 ? "danger" : "success"}
               size="sm"
-              sparkSeed={8}
-              showSparkline={(data?.projects.overdue ?? 0) > 0}
               trailing={
-                !loading && (data?.projects.overdue ?? 0) === 0 ? (
-                  <CheckCircle2 className="h-4 w-4 text-emerald-400/80" strokeWidth={1.75} />
+                !loading && projectsOverdue === 0 ? (
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400/80" strokeWidth={1.75} />
                 ) : undefined
               }
             />
@@ -333,20 +360,37 @@ export function DashboardPage() {
               action={{ label: "Ver pipeline →", href: "/os/prospeccao" }}
             >
               <ul className="divide-y divide-border/40">
-                {data?.prospection.upcomingActions.map((p) => (
+                {data?.prospection.upcomingActions.map((p) => {
+                  const urgency = getNextActionUrgency(p.next_action_date);
+                  return (
                   <li key={p.id}>
                     <Link
                       to="/os/prospeccao/$id"
                       params={{ id: p.id }}
                       className="block py-3 text-sm transition-colors hover:text-brand"
                     >
-                      <p className="font-medium">{p.name}</p>
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="font-medium">{p.name}</p>
+                        {urgency && (
+                          <span
+                            className={cn(
+                              "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium",
+                              urgency === "overdue" && "bg-red-400/15 text-red-400",
+                              urgency === "today" && "bg-amber-400/15 text-amber-400",
+                              urgency === "future" && "bg-muted text-muted-foreground",
+                            )}
+                          >
+                            {NEXT_ACTION_URGENCY_LABELS[urgency]}
+                          </span>
+                        )}
+                      </div>
                       <p className="text-xs text-muted-foreground">
-                        {p.next_action ?? "—"} · {p.next_action_date ?? "sem data"}
+                        {p.next_action ?? "—"} · {formatProspectDate(p.next_action_date)}
                       </p>
                     </Link>
                   </li>
-                ))}
+                  );
+                })}
               </ul>
             </DashboardPanel>
           )}

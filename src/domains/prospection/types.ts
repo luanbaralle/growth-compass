@@ -268,3 +268,27 @@ export function formatRelativeDate(iso: string | null): string {
   if (diff < 7) return `${diff}d atrás`;
   return formatProspectDate(iso);
 }
+
+export type NextActionUrgency = "overdue" | "today" | "future";
+
+export const NEXT_ACTION_URGENCY_LABELS: Record<NextActionUrgency, string> = {
+  overdue: "Vencida",
+  today: "Hoje",
+  future: "Futura",
+};
+
+export function getNextActionUrgency(date: string | null): NextActionUrgency | null {
+  if (!date) return null;
+  const today = new Date().toISOString().slice(0, 10);
+  if (date < today) return "overdue";
+  if (date === today) return "today";
+  return "future";
+}
+
+/** Link wa.me — retorna null se o número tiver menos de 10 dígitos. */
+export function buildWhatsAppUrl(phone: string): string | null {
+  const digits = phone.replace(/\D/g, "");
+  if (digits.length < 10) return null;
+  const normalized = digits.startsWith("55") ? digits : `55${digits}`;
+  return `https://wa.me/${normalized}`;
+}

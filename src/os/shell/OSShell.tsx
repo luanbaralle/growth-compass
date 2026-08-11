@@ -1,4 +1,5 @@
 import { useOSContext } from "@/os/shell/use-os-context";
+import { OSLogo } from "@/os/shell/OSLogo";
 import { TEAM_LABELS, type TeamMember } from "@/lib/auth/types";
 import { cn } from "@/lib/utils";
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
@@ -60,13 +61,8 @@ export function OSShell() {
   return (
     <div className="flex min-h-screen bg-background text-foreground">
       <aside className="admin-sidebar hidden w-56 shrink-0 flex-col border-r border-border/60 md:flex">
-        <div className="border-b border-border/60 px-5 py-5">
-          <p className="font-display text-base font-bold tracking-tight">
-            Raise One <span className="text-brand">OS</span>
-          </p>
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/70">
-            v2
-          </p>
+        <div className="border-b border-border/60 px-4 py-4">
+          <OSLogo variant="sidebar" />
           {activePerson && (
             <div className="mt-4">
               <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/50">
@@ -121,8 +117,8 @@ export function OSShell() {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center justify-between border-b border-border/60 bg-surface/20 px-4 py-3 backdrop-blur-sm md:hidden">
-          <div className="min-w-0">
-            <p className="text-sm font-bold">Raise One OS</p>
+          <div className="min-w-0 flex-1">
+            <OSLogo variant="mobile" />
             {activePerson && (
               <p className="truncate text-xs text-muted-foreground">
                 {TEAM_LABELS[activePerson]}

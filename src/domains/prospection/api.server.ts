@@ -114,6 +114,17 @@ export const convertProspect = createServerFn({ method: "POST" })
     });
   });
 
+export const deleteProspect = createServerFn({ method: "POST" })
+  .validator(prospectIdSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const service = await import("@/domains/prospection/service.server");
+      const removed = await service.deleteProspect(data.id);
+      if (!removed) throw new Error("Prospect não encontrado.");
+      return { ok: true };
+    });
+  });
+
 export const getProspectionMetrics = createServerFn({ method: "GET" }).handler(async () => {
   return withAuth(async () => {
     const service = await import("@/domains/prospection/service.server");

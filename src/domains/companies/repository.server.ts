@@ -100,10 +100,18 @@ export async function patchCompany(
 }
 
 export async function removeCompany(id: string): Promise<boolean> {
+  const company = await findCompanyById(id);
   const files = await findCompanyFiles(id);
   for (const file of files) {
     try {
       await storageDelete(file.storage_path);
+    } catch {
+      // storage may already be gone
+    }
+  }
+  if (company?.logo_storage_path) {
+    try {
+      await storageDelete(company.logo_storage_path);
     } catch {
       // storage may already be gone
     }
@@ -180,6 +188,49 @@ export async function findFilesByFinanceEntry(financeEntryId: string): Promise<C
       order: "created_at.desc",
     }),
   );
+}
+
+export async function uploadCompanyLogo(
+  companyId: string,
+  mimeType: string,
+  buffer: Buffer,
+): Promise<string> {
+  const company = await findCompanyById(companyId);
+  if (company?.logo_storage_path) {
+    try {
+      await storageDelete(company.logo_storage_path);
+    } catch {
+      // replace logo
+    }
+  }
+
+  const ext =
+    mimeType === "image/png"
+      ? ".png"
+      : mimeType === "image/webp"
+        ? ".webp"
+        : mimeType === "image/gif"
+          ? ".gif"
+          : ".jpg";
+  const storagePath = `${companyId}/logo${ext}`;
+
+  await storageUpload(storagePath, buffer, mimeType);
+  await patchCompany(companyId, { logo_storage_path: storagePath });
+  return storagePath;
+}
+
+export async function removeCompanyLogo(companyId: string): Promise<boolean> {
+  const company = await findCompanyById(companyId);
+  if (!company?.logo_storage_path) return false;
+
+  try {
+    await storageDelete(company.logo_storage_path);
+  } catch {
+    // storage may already be gone
+  }
+
+  await patchCompany(companyId, { logo_storage_path: null });
+  return true;
 }
 
 export async function uploadCompanyFile(
@@ -270,13 +321,17 @@ export async function removeCompanyService(id: string): Promise<boolean> {
   return true;
 }
 
-export async function countCompaniesCreatedToday(): Promise<number> {
-  const today = new Date().toISOString().slice(0, 10);
+export async function countCompaniesCreatedBetween(start: string, end: string): Promise<number> {
   const all = await dbSelect<Company>(
     "companies",
-    encodeQuery({ select: "created_at", created_at: `gte.${today}T00:00:00` }),
+    encodeQuery({ select: "created_at", created_at: `gte.${start}T00:00:00` }),
   );
-  return all.length;
+  return all.filter((c) => c.created_at.slice(0, 10) <= end).length;
+}
+
+export async function countCompaniesCreatedToday(): Promise<number> {
+  const today = new Date().toISOString().slice(0, 10);
+  return countCompaniesCreatedBetween(today, today);
 }
 
 export async function countActiveCompanies(): Promise<number> {

@@ -213,6 +213,10 @@ export async function upsertOpportunity(
 
 export async function findUpcomingActions(limit = 10): Promise<Prospect[]> {
   const today = new Date().toISOString().slice(0, 10);
+  const horizon = new Date();
+  horizon.setDate(horizon.getDate() + 14);
+  const horizonStr = horizon.toISOString().slice(0, 10);
+
   const all = await dbSelect<Prospect>(
     "prospects",
     encodeQuery({
@@ -221,9 +225,23 @@ export async function findUpcomingActions(limit = 10): Promise<Prospect[]> {
       order: "next_action_date.asc",
     }),
   );
+
+  const urgencyRank = (date: string): number => {
+    if (date < today) return 0;
+    if (date === today) return 1;
+    return 2;
+  };
+
   return all
     .filter((p) => p.status !== "cliente" && p.status !== "perdido")
-    .filter((p) => !p.next_action_date || p.next_action_date >= today || p.next_action_date <= today)
+    .filter((p) => p.next_action_date && p.next_action_date <= horizonStr)
+    .sort((a, b) => {
+      const dateA = a.next_action_date!;
+      const dateB = b.next_action_date!;
+      const rankDiff = urgencyRank(dateA) - urgencyRank(dateB);
+      if (rankDiff !== 0) return rankDiff;
+      return dateA.localeCompare(dateB);
+    })
     .slice(0, limit);
 }
 

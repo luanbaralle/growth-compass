@@ -1,8 +1,12 @@
 import type { Prospect } from "@/domains/prospection/types";
-import { formatRelativeDate } from "@/domains/prospection/types";
+import {
+  formatRelativeDate,
+  getNextActionUrgency,
+} from "@/domains/prospection/types";
 import { TEAM_LABELS, type TeamMember } from "@/lib/auth/types";
 import { cn } from "@/lib/utils";
 import { Link } from "@tanstack/react-router";
+import { useRef } from "react";
 
 export function ProspectCard({
   prospect,
@@ -15,20 +19,35 @@ export function ProspectCard({
   onDragStart?: () => void;
   onDragEnd?: () => void;
 }) {
+  const blockClickRef = useRef(false);
+  const actionUrgency = getNextActionUrgency(prospect.next_action_date);
+
   return (
     <Link
       to="/os/prospeccao/$id"
       params={{ id: prospect.id }}
       draggable
       onDragStart={(e) => {
+        blockClickRef.current = true;
         e.dataTransfer.setData("text/prospect-id", prospect.id);
         e.dataTransfer.effectAllowed = "move";
         onDragStart?.();
       }}
-      onDragEnd={onDragEnd}
+      onDragEnd={() => {
+        onDragEnd?.();
+        setTimeout(() => {
+          blockClickRef.current = false;
+        }, 0);
+      }}
+      onClick={(e) => {
+        if (blockClickRef.current) {
+          e.preventDefault();
+        }
+      }}
       className={cn(
         "dashboard-card-interactive block p-3",
         dragging && "opacity-50 ring-1 ring-brand/40",
+        actionUrgency === "overdue" && "ring-1 ring-red-400/40",
       )}
     >
       <p className="truncate text-sm font-medium">{prospect.name}</p>
@@ -45,7 +64,15 @@ export function ProspectCard({
         )}
       </div>
       {prospect.next_action && (
-        <p className="mt-2 truncate rounded-md bg-brand-soft/40 px-2 py-1 text-[10px] font-medium text-brand">
+        <p
+          className={cn(
+            "mt-2 truncate rounded-md px-2 py-1 text-[10px] font-medium",
+            actionUrgency === "overdue" && "bg-red-400/15 text-red-400",
+            actionUrgency === "today" && "bg-amber-400/15 text-amber-400",
+            actionUrgency === "future" && "bg-brand-soft/40 text-brand",
+            !actionUrgency && "bg-brand-soft/40 text-brand",
+          )}
+        >
           {prospect.next_action}
         </p>
       )}

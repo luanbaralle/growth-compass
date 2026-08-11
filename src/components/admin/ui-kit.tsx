@@ -63,7 +63,12 @@ export function Section({
   return (
     <section className={cn("dashboard-card", !noPadding && "p-6 sm:p-7", className)}>
       {(title || action) && (
-        <div className="mb-5 flex items-start justify-between gap-3">
+        <div
+          className={cn(
+            "mb-5 flex items-start justify-between gap-3",
+            noPadding && "px-6 pt-6 sm:px-7 sm:pt-7",
+          )}
+        >
           <div>
             {title && <h2 className="dashboard-section-title">{title}</h2>}
             {description && (

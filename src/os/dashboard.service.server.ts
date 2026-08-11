@@ -5,6 +5,11 @@ import * as marketingRepo from "@/domains/marketing/repository.server";
 import * as projectRepo from "@/domains/projects/repository.server";
 import { isOverdue } from "@/domains/projects/repository.server";
 import type { CompanyStageCounts } from "@/domains/companies/types";
+import {
+  getDashboardDateFilterBounds,
+  isDateInRange,
+  type DashboardDateFilter,
+} from "@/os/dashboard-date";
 
 export interface OSDashboardData {
   companies: {
@@ -75,9 +80,13 @@ export interface OSDashboardData {
   };
 }
 
-export async function getOSDashboardData(): Promise<OSDashboardData> {
+export async function getOSDashboardData(
+  filter: DashboardDateFilter = { kind: "preset", preset: "today" },
+): Promise<OSDashboardData> {
+  const { start, end } = getDashboardDateFilterBounds(filter);
+
   const [
-    leadsToday,
+    leadsInRange,
     activeClients,
     pipeline,
     allProjects,
@@ -91,7 +100,7 @@ export async function getOSDashboardData(): Promise<OSDashboardData> {
     recentCompanies,
     prospectionMetrics,
   ] = await Promise.all([
-    companyRepo.countCompaniesCreatedToday(),
+    companyRepo.countCompaniesCreatedBetween(start, end),
     companyRepo.countActiveCompanies(),
     companyRepo.countCompaniesByStage(),
     projectRepo.findProjects({ sort: "due_date", order: "asc" }),
@@ -131,10 +140,13 @@ export async function getOSDashboardData(): Promise<OSDashboardData> {
 
   return {
     companies: {
-      leadsToday,
+      leadsToday: leadsInRange,
       activeClients,
       pipeline,
-      recentLeads: recentCompanies.slice(0, 5).map((c) => ({
+      recentLeads: recentCompanies
+        .filter((c) => isDateInRange(c.created_at, start, end))
+        .slice(0, 5)
+        .map((c) => ({
         id: c.id,
         name: c.name,
         created_at: c.created_at,

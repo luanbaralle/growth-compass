@@ -15,10 +15,7 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-5 py-12 sm:px-8">
         <div className="flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <div className="flex items-center gap-2.5">
-              <Logo />
-              <span className="text-base font-semibold tracking-tight">Raise One</span>
-            </div>
+            <Logo size="footer" />
             <p className="mt-3 max-w-xs text-sm text-muted-foreground">
               Especialistas em crescimento e aquisição de clientes para negócios locais.
             </p>

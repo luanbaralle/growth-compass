@@ -3,6 +3,7 @@ import { withAuth } from "@/lib/api/auth.server";
 import {
   addNoteSchema,
   changeStageSchema,
+  companyIdSchema,
   createCompanySchema,
   createLinkSchema,
   createServiceSchema,
@@ -16,6 +17,7 @@ import {
   updateLinkSchema,
   updateServiceSchema,
   uploadFileSchema,
+  uploadLogoSchema,
 } from "@/domains/companies/schema";
 import { buildLeadWhatsAppMessage, buildWhatsAppUrl } from "@/lib/whatsapp";
 
@@ -131,6 +133,24 @@ export const uploadCompanyFile = createServerFn({ method: "POST" })
         author,
         data.financeEntryId,
       );
+    });
+  });
+
+export const uploadCompanyLogo = createServerFn({ method: "POST" })
+  .validator(uploadLogoSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const companyService = await import("@/domains/companies/service.server");
+      return companyService.uploadLogo(data.companyId, data.mimeType, data.base64);
+    });
+  });
+
+export const removeCompanyLogo = createServerFn({ method: "POST" })
+  .validator(companyIdSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const companyService = await import("@/domains/companies/service.server");
+      return companyService.removeLogo(data.companyId);
     });
   });
 

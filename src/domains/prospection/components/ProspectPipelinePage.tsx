@@ -8,6 +8,11 @@ import { ProspectMetricsBar } from "@/domains/prospection/components/ProspectMet
 import { ProspectPipeline } from "@/domains/prospection/components/ProspectPipeline";
 import type { Prospect, ProspectionMetrics } from "@/domains/prospection/types";
 import { OPPORTUNITY_ITEMS } from "@/domains/prospection/types";
+import {
+  NEXT_ACTION_URGENCY_LABELS,
+  formatProspectDate,
+  getNextActionUrgency,
+} from "@/domains/prospection/types";
 import { useOSContext } from "@/os/shell/use-os-context";
 import { EmptyState, ListItem, PageHeader, PageSkeleton, Section, OSPage, OSRefreshButton, OSPrimaryButton } from "@/os/ui";
 import { getErrorMessage, isUnauthorizedError } from "@/lib/api/client-errors";
@@ -28,6 +33,24 @@ import {
   Upload,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { cn } from "@/lib/utils";
+
+function NextActionUrgencyBadge({ date }: { date: string | null }) {
+  const urgency = getNextActionUrgency(date);
+  if (!urgency) return null;
+  return (
+    <span
+      className={cn(
+        "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium",
+        urgency === "overdue" && "bg-red-400/15 text-red-400",
+        urgency === "today" && "bg-amber-400/15 text-amber-400",
+        urgency === "future" && "bg-muted text-muted-foreground",
+      )}
+    >
+      {NEXT_ACTION_URGENCY_LABELS[urgency]}
+    </span>
+  );
+}
 
 export function ProspectPipelinePage() {
   const navigate = useNavigate();
@@ -152,11 +175,16 @@ export function ProspectPipelinePage() {
                 >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium">{p.name}</p>
-                    <p className="truncate text-xs text-muted-foreground">{p.next_action}</p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {p.next_action ?? "Sem descrição"}
+                    </p>
                   </div>
-                  <span className="shrink-0 text-xs text-muted-foreground">
-                    {p.next_action_date ?? "—"}
-                  </span>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <NextActionUrgencyBadge date={p.next_action_date} />
+                    <span className="text-xs text-muted-foreground">
+                      {formatProspectDate(p.next_action_date)}
+                    </span>
+                  </div>
                 </Link>
               </ListItem>
             ))}
@@ -165,7 +193,7 @@ export function ProspectPipelinePage() {
       )}
 
       <Section title="Pipeline" noPadding>
-        <div className="space-y-4 border-b border-border/40 p-4">
+        <div className="space-y-4 border-b border-border/40 px-6 pb-4 sm:px-7">
           <div className="flex flex-wrap gap-2">
             <div className="relative min-w-[200px] flex-1">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -266,7 +294,7 @@ export function ProspectPipelinePage() {
             </Select>
           </div>
         </div>
-        <div className="p-4">
+        <div className="px-6 py-5 sm:px-7">
           {prospects.length === 0 && !loading ? (
             <EmptyState
               icon={Target}

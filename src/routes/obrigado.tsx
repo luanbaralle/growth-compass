@@ -121,9 +121,8 @@ function ObrigadoPage() {
     <div className="flex min-h-screen flex-col bg-background text-foreground antialiased">
       <header className="border-b border-border/60 bg-background/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center px-5 sm:px-8">
-          <Link to="/" className="flex items-center gap-2.5">
-            <Logo />
-            <span className="text-[15px] font-semibold tracking-tight">Raise One</span>
+          <Link to="/" className="flex shrink-0 items-center">
+            <Logo size="nav" />
           </Link>
         </div>
       </header>

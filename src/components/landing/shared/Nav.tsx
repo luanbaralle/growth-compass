@@ -14,14 +14,12 @@ export function Nav({
   homeHref,
 }: NavProps) {
   const brandLink = homeHref ? (
-    <Link to={homeHref} className="flex items-center gap-2.5">
-      <Logo />
-      <span className="text-[15px] font-semibold tracking-tight">Raise One</span>
+    <Link to={homeHref} className="flex shrink-0 items-center">
+      <Logo size="nav" />
     </Link>
   ) : (
-    <a href="#top" className="flex items-center gap-2.5">
-      <Logo />
-      <span className="text-[15px] font-semibold tracking-tight">Raise One</span>
+    <a href="#top" className="flex shrink-0 items-center">
+      <Logo size="nav" />
     </a>
   );
 

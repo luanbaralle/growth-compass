@@ -143,7 +143,25 @@ export function ConversationAssistant({
       await persist({ step: "no_reply", replyStatus: "no_reply" });
       return;
     }
-    await persist({ step: "response_state", replyStatus: "replied" });
+    try {
+      await addProspectInteraction({
+        data: {
+          prospectId,
+          type: "message_received",
+          title: "Resposta recebida",
+          body: "Prospect respondeu (assistente de conversa).",
+          direction: "in",
+        },
+      });
+      await updateProspect({
+        data: { id: prospectId, status: "respondeu" },
+      });
+      await persist({ step: "response_state", replyStatus: "replied" });
+      onUpdated();
+      toast.success("Status atualizado: Respondeu.");
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Erro ao registrar resposta."));
+    }
   };
 
   const pickResponseState = async (key: string) => {

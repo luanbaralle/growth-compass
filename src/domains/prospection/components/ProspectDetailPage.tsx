@@ -1,6 +1,7 @@
 import {
   addProspectInteraction,
   convertProspect,
+  deleteProspect,
   getProspect,
   updateProspect,
 } from "@/domains/prospection/api.server";
@@ -13,6 +14,7 @@ import { SEGMENT_OPTIONS } from "@/domains/prospection/copilot/types";
 import {
   PROSPECT_STATUSES,
   STATUS_LABELS,
+  buildWhatsAppUrl,
   formatProspectDate,
 } from "@/domains/prospection/types";
 import { EmptyState, PageHeader, PageSkeleton, Section, OSPage } from "@/os/ui";
@@ -30,6 +32,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Link, useNavigate, useParams } from "@tanstack/react-router";
 import {
   ArrowLeft,
@@ -38,6 +51,7 @@ import {
   Loader2,
   MessageSquare,
   Target,
+  Trash2,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -51,6 +65,7 @@ export function ProspectDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [converting, setConverting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [conversationForm, setConversationForm] = useState({
     sent: "",
     received: "",
@@ -97,46 +112,63 @@ export function ProspectDetailPage() {
     }
   };
 
+  const handleDelete = async () => {
+    setDeleting(true);
+    try {
+      await deleteProspect({ data: { id } });
+      toast.success("Prospect excluído.");
+      navigate({ to: "/os/prospeccao" });
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Erro ao excluir prospect."));
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const handleLogConversation = async () => {
     const { sent, received, notes } = conversationForm;
     if (!sent && !received && !notes) return;
 
-    if (sent) {
-      await addProspectInteraction({
-        data: {
-          prospectId: id,
-          type: "message_sent",
-          title: "Mensagem enviada",
-          body: sent,
-          direction: "out",
-        },
-      });
+    try {
+      if (sent) {
+        await addProspectInteraction({
+          data: {
+            prospectId: id,
+            type: "message_sent",
+            title: "Mensagem enviada",
+            body: sent,
+            direction: "out",
+          },
+        });
+      }
+      if (received) {
+        await addProspectInteraction({
+          data: {
+            prospectId: id,
+            type: "message_received",
+            title: "Resposta recebida",
+            body: received,
+            direction: "in",
+          },
+        });
+      }
+      if (notes) {
+        await addProspectInteraction({
+          data: {
+            prospectId: id,
+            type: "note",
+            title: "Nota",
+            body: notes,
+            direction: "internal",
+          },
+        });
+      }
+      setConversationForm({ sent: "", received: "", notes: "" });
+      await load();
+      toast.success("Conversa registrada.");
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Erro ao registrar conversa."));
     }
-    if (received) {
-      await addProspectInteraction({
-        data: {
-          prospectId: id,
-          type: "message_received",
-          title: "Resposta recebida",
-          body: received,
-          direction: "in",
-        },
-      });
-    }
-    if (notes) {
-      await addProspectInteraction({
-        data: {
-          prospectId: id,
-          type: "note",
-          title: "Nota",
-          body: notes,
-          direction: "internal",
-        },
-      });
-    }
-    setConversationForm({ sent: "", received: "", notes: "" });
-    await load();
-    toast.success("Conversa registrada.");
   };
 
   if (loading) return <PageSkeleton title="Prospect" metricCount={0} />;
@@ -190,6 +222,41 @@ export function ProspectDetailPage() {
                 Converter em Empresa
               </button>
             )}
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <button
+                  type="button"
+                  disabled={deleting}
+                  className="dashboard-btn-ghost text-destructive hover:text-destructive disabled:opacity-50"
+                >
+                  {deleting ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Trash2 className="h-4 w-4" />
+                  )}
+                  Excluir
+                </button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Excluir prospect?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {prospect.company_id
+                      ? "O registro de prospecção será removido. A empresa convertida não será excluída."
+                      : "Esta ação não pode ser desfeita. Conversas, checklist e histórico serão removidos."}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    onClick={() => void handleDelete()}
+                  >
+                    Excluir
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </>
         }
       />
@@ -313,6 +380,7 @@ function ProspectInfoForm({
     category: prospect.category ?? "",
     city: prospect.city ?? "",
     state: prospect.state ?? "",
+    phone: prospect.phone ?? "",
     whatsapp: prospect.whatsapp ?? "",
     instagram: prospect.instagram ?? "",
     website: prospect.website ?? "",
@@ -330,6 +398,7 @@ function ProspectInfoForm({
       category: prospect.category ?? "",
       city: prospect.city ?? "",
       state: prospect.state ?? "",
+      phone: prospect.phone ?? "",
       whatsapp: prospect.whatsapp ?? "",
       instagram: prospect.instagram ?? "",
       website: prospect.website ?? "",
@@ -354,6 +423,7 @@ function ProspectInfoForm({
           category: next.category || undefined,
           city: next.city || undefined,
           state: next.state || undefined,
+          phone: next.phone || undefined,
           whatsapp: next.whatsapp || undefined,
           instagram: next.instagram || undefined,
           website: next.website || undefined,
@@ -367,6 +437,8 @@ function ProspectInfoForm({
       onSaved();
     }, 500);
   };
+
+  const whatsAppUrl = buildWhatsAppUrl(form.whatsapp);
 
   return (
     <div className="space-y-3 text-sm">
@@ -388,7 +460,18 @@ function ProspectInfoForm({
       </div>
       <Field label="Cidade" value={form.city} onChange={(v) => save({ city: v })} />
       <Field label="UF" value={form.state} onChange={(v) => save({ state: v })} />
+      <Field label="Telefone" value={form.phone} onChange={(v) => save({ phone: v })} />
       <Field label="WhatsApp" value={form.whatsapp} onChange={(v) => save({ whatsapp: v })} />
+      {whatsAppUrl && (
+        <a
+          href={whatsAppUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1 text-xs text-brand hover:underline"
+        >
+          Abrir no WhatsApp <ExternalLink className="h-3 w-3" />
+        </a>
+      )}
       <Field label="Instagram" value={form.instagram} onChange={(v) => save({ instagram: v })} />
       <Field label="Website" value={form.website} onChange={(v) => save({ website: v })} />
       <Field

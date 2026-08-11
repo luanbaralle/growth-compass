@@ -44,6 +44,7 @@ export interface Company {
   segment: string | null;
   stage: CompanyStage;
   notes: string | null;
+  logo_storage_path?: string | null;
   utm_source: string | null;
   utm_medium: string | null;
   utm_campaign: string | null;
@@ -115,6 +116,9 @@ export interface CompanyStageCounts {
   pausado: number;
   encerrado: number;
 }
+
+/** Empresa com URL assinada do logo (resposta da API). */
+export type CompanyWithLogo = Company & { logo_url: string | null };
 
 export const COMPANY_STAGES: CompanyStage[] = [
   "lead",

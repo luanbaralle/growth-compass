@@ -41,10 +41,7 @@ export function HomeFooter() {
       <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-6">
           <div className="lg:col-span-2">
-            <div className="flex items-center gap-2.5">
-              <Logo />
-              <span className="text-base font-semibold tracking-tight">Raise One</span>
-            </div>
+            <Logo size="footer" />
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
               Marketing, tecnologia e crescimento. Construímos soluções que fazem empresas
               crescerem.

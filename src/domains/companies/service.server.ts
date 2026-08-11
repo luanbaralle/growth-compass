@@ -4,6 +4,7 @@ import type {
   Company,
   CompanyStage,
   SubmitCompanyFormInput,
+  CompanyWithLogo,
 } from "./types";
 import { STAGE_LABELS } from "./types";
 
@@ -12,21 +13,48 @@ export async function listCompanies(filters: Parameters<typeof repo.findCompanie
     repo.findCompanies(filters),
     repo.countCompaniesByStage(),
   ]);
-  return { companies, counts };
+  const companiesWithLogo = await attachLogoUrls(companies);
+  return { companies: companiesWithLogo, counts };
+}
+
+async function attachLogoUrls(companies: Company[]): Promise<CompanyWithLogo[]> {
+  return Promise.all(
+    companies.map(async (company) => {
+      const path = company.logo_storage_path;
+      if (!path) {
+        return { ...company, logo_url: null };
+      }
+      try {
+        const logo_url = await repo.getFileSignedUrl(path);
+        return { ...company, logo_url };
+      } catch {
+        return { ...company, logo_url: null };
+      }
+    }),
+  );
 }
 
 export async function getCompany(id: string) {
   const company = await repo.findCompanyById(id);
   if (!company) return null;
 
-  const [activities, files, links, services] = await Promise.all([
+  const [activities, files, links, services, logo_url] = await Promise.all([
     repo.findActivities(id),
     repo.findCompanyFiles(id),
     repo.findCompanyLinks(id),
     repo.findCompanyServices(id),
+    company.logo_storage_path
+      ? repo.getFileSignedUrl(company.logo_storage_path)
+      : Promise.resolve(null),
   ]);
 
-  return { company, activities, files, links, services };
+  return {
+    company: { ...company, logo_url } satisfies CompanyWithLogo,
+    activities,
+    files,
+    links,
+    services,
+  };
 }
 
 export async function createCompany(
@@ -69,6 +97,7 @@ export async function createCompany(
     template_slug: null,
     microvertical_id: null,
     match_level: null,
+    logo_storage_path: null,
   });
 
   await repo.insertActivity({
@@ -225,6 +254,32 @@ export async function getFileDownloadUrl(id: string, companyId: string) {
   if (!file) return null;
   const url = await repo.getFileSignedUrl(file.storage_path);
   return { url, name: file.name };
+}
+
+const LOGO_MAX_BYTES = 2 * 1024 * 1024;
+
+export async function uploadLogo(companyId: string, mimeType: string, base64: string) {
+  const company = await repo.findCompanyById(companyId);
+  if (!company) throw new Error("Empresa não encontrada.");
+
+  const buffer = Buffer.from(base64, "base64");
+  if (buffer.length > LOGO_MAX_BYTES) {
+    throw new Error("Logo máximo: 2 MB.");
+  }
+
+  await repo.uploadCompanyLogo(companyId, mimeType, buffer);
+  const updated = await repo.findCompanyById(companyId);
+  const logo_url = updated?.logo_storage_path
+    ? await repo.getFileSignedUrl(updated.logo_storage_path)
+    : null;
+
+  return { logo_url };
+}
+
+export async function removeLogo(companyId: string) {
+  const removed = await repo.removeCompanyLogo(companyId);
+  if (!removed) throw new Error("Esta empresa não possui logo.");
+  return { ok: true };
 }
 
 export async function createLink(

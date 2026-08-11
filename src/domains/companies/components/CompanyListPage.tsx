@@ -9,8 +9,10 @@ import {
   type CompanyFormValues,
 } from "@/domains/companies/components/CompanyFormDialog";
 import { StageBadge } from "@/domains/companies/components/StageBadge";
-import type { Company, CompanyStage } from "@/domains/companies/types";
+import { CompanyAvatar } from "@/domains/companies/components/CompanyAvatar";
+import type { CompanyStage, CompanyWithLogo } from "@/domains/companies/types";
 import { COMPANY_STAGES, STAGE_LABELS } from "@/domains/companies/types";
+import { TEAM_LABELS } from "@/lib/auth/types";
 import { buildClientWhatsAppUrl } from "@/lib/whatsapp";
 import { getErrorMessage, isUnauthorizedError } from "@/lib/api/client-errors";
 import { EmptyState, PageHeader, PageSkeleton, OSPage, OSRefreshButton, OSPrimaryButton, FilterToolbar, FilterPill, DataTable } from "@/os/ui";
@@ -55,7 +57,7 @@ function formatDate(iso: string): string {
 
 export function CompanyListPage() {
   const navigate = useNavigate();
-  const [companies, setCompanies] = useState<Company[]>([]);
+  const [companies, setCompanies] = useState<CompanyWithLogo[]>([]);
   const [counts, setCounts] = useState<Record<string, number>>({ all: 0 });
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -191,6 +193,7 @@ export function CompanyListPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Empresa</TableHead>
+                <TableHead>Responsável</TableHead>
                 <TableHead>Contato</TableHead>
                 <TableHead>Cidade</TableHead>
                 <TableHead>Segmento</TableHead>
@@ -202,14 +205,30 @@ export function CompanyListPage() {
               {companies.map((company) => (
                 <TableRow key={company.id}>
                   <TableCell>
-                    <Link
-                      to="/os/empresas/$id"
-                      params={{ id: company.id }}
-                      className="font-medium hover:text-brand"
-                    >
-                      {company.name}
-                    </Link>
-                    <p className="text-xs text-muted-foreground">{formatDate(company.created_at)}</p>
+                    <div className="flex items-center gap-3">
+                      <CompanyAvatar name={company.name} logoUrl={company.logo_url} size="sm" />
+                      <div className="min-w-0">
+                        <Link
+                          to="/os/empresas/$id"
+                          params={{ id: company.id }}
+                          className="font-medium hover:text-brand"
+                        >
+                          {company.name}
+                        </Link>
+                        <p className="text-xs text-muted-foreground">
+                          {formatDate(company.created_at)}
+                        </p>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    {company.responsible_id ? (
+                      <span className="text-sm">
+                        {TEAM_LABELS[company.responsible_id as keyof typeof TEAM_LABELS]}
+                      </span>
+                    ) : (
+                      <span className="text-sm text-muted-foreground">—</span>
+                    )}
                   </TableCell>
                   <TableCell>
                     {company.whatsapp ? (

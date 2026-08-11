@@ -186,6 +186,12 @@ export async function moveProspect(
   return updateProspect(id, { status }, authorId);
 }
 
+export async function deleteProspect(id: string) {
+  const existing = await repo.findProspectById(id);
+  if (!existing) return false;
+  return repo.removeProspect(id);
+}
+
 export async function updateChecklistItem(
   prospectId: string,
   itemKey: string,
