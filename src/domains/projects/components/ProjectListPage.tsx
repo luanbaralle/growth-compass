@@ -18,7 +18,7 @@ import type { ProjectStatus, ProjectWithCompany } from "@/domains/projects/types
 import { PROJECT_STATUSES, STATUS_LABELS } from "@/domains/projects/types";
 import { TEAM_LABELS, type TeamMember } from "@/lib/auth/types";
 import { getErrorMessage, isUnauthorizedError } from "@/lib/api/client-errors";
-import { EmptyState, PageHeader, PageSkeleton, OSPage, OSRefreshButton, OSPrimaryButton, FilterToolbar, FilterPill, DataTable } from "@/os/ui";
+import { EmptyState, PageHeader, PageSkeleton, OSPage, OSRefreshButton, OSPrimaryButton, FilterToolbar, FilterRow, FilterSearch, FilterPillsRow, FilterPill, DataTable } from "@/os/ui";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,7 +31,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -48,7 +47,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { FolderKanban, Search, Trash2 } from "lucide-react";
+import { FolderKanban, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 export function ProjectListPage() {
@@ -125,31 +124,29 @@ export function ProjectListPage() {
       )}
 
       <FilterToolbar>
-        <div className="relative min-w-[200px] flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/50" />
-          <Input
-            className="pl-9"
-            placeholder="Buscar por título ou empresa..."
+        <FilterRow>
+          <FilterSearch
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={setSearch}
+            placeholder="Buscar por título ou empresa..."
           />
-        </div>
-        <Select value={ownerId} onValueChange={(v) => setOwnerId(v as typeof ownerId)}>
-          <SelectTrigger className="w-[140px]">
-            <SelectValue placeholder="Responsável" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
-            {(Object.keys(TEAM_LABELS) as TeamMember[]).map((m) => (
-              <SelectItem key={m} value={m}>
-                {TEAM_LABELS[m]}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          <Select value={ownerId} onValueChange={(v) => setOwnerId(v as typeof ownerId)}>
+            <SelectTrigger className="h-9 w-[140px] shrink-0 sm:ml-auto">
+              <SelectValue placeholder="Responsável" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos</SelectItem>
+              {(Object.keys(TEAM_LABELS) as TeamMember[]).map((m) => (
+                <SelectItem key={m} value={m}>
+                  {TEAM_LABELS[m]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </FilterRow>
       </FilterToolbar>
 
-      <div className="flex flex-wrap gap-2">
+      <FilterPillsRow>
         <FilterPill
           active={status === "all"}
           onClick={() => setStatus("all")}
@@ -164,11 +161,11 @@ export function ProjectListPage() {
           />
         ))}
         {(counts.overdue ?? 0) > 0 && (
-          <span className="rounded-full border border-red-400/40 bg-red-400/10 px-3 py-1.5 text-sm text-red-300">
+          <span className="rounded-lg border border-red-400/25 bg-red-400/10 px-3 py-1.5 text-xs font-medium text-red-300">
             {counts.overdue} atrasado(s)
           </span>
         )}
-      </div>
+      </FilterPillsRow>
 
       {loading ? (
         <PageSkeleton title="Projetos" metricCount={0} />

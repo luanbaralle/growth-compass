@@ -14,10 +14,9 @@ import {
   getNextActionUrgency,
 } from "@/domains/prospection/types";
 import { useOSContext } from "@/os/shell/use-os-context";
-import { EmptyState, ListItem, PageHeader, PageSkeleton, Section, OSPage, OSRefreshButton, OSPrimaryButton } from "@/os/ui";
+import { EmptyState, ListItem, PageHeader, PageSkeleton, Section, OSPage, OSRefreshButton, OSPrimaryButton, FilterRow, FilterSearch } from "@/os/ui";
 import { getErrorMessage, isUnauthorizedError } from "@/lib/api/client-errors";
 import { TEAM_LABELS, TEAM_MEMBERS, type TeamMember } from "@/lib/auth/types";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -28,7 +27,6 @@ import {
 import { Link, useNavigate } from "@tanstack/react-router";
 import {
   BookOpen,
-  Search,
   Target,
   Upload,
 } from "lucide-react";
@@ -192,20 +190,49 @@ export function ProspectPipelinePage() {
         </Section>
       )}
 
-      <Section title="Pipeline" noPadding>
-        <div className="space-y-4 border-b border-border/40 px-6 pb-4 sm:px-7">
-          <div className="flex flex-wrap gap-2">
-            <div className="relative min-w-[200px] flex-1">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                className="pl-9"
-                placeholder="Buscar empresa, cidade, telefone..."
+      <Section
+        title="Pipeline"
+        description={
+          prospects.length > 0
+            ? `${prospects.length} prospect${prospects.length === 1 ? "" : "s"} no funil`
+            : undefined
+        }
+        noPadding
+      >
+        <div className="dashboard-card overflow-hidden p-0">
+          <div className="os-filters !rounded-none !border-0">
+            <FilterRow>
+              <FilterSearch
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={setSearch}
+                placeholder="Buscar empresa, cidade, telefone..."
               />
-            </div>
+              <div className="flex shrink-0 items-center gap-2 sm:ml-auto">
+                <Select value={sort} onValueChange={(v) => setSort(v as typeof sort)}>
+                  <SelectTrigger className="h-9 w-[150px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="last_interaction_at">Última interação</SelectItem>
+                    <SelectItem value="next_action_date">Próxima ação</SelectItem>
+                    <SelectItem value="created_at">Cadastro</SelectItem>
+                    <SelectItem value="name">Nome</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={order} onValueChange={(v) => setOrder(v as "asc" | "desc")}>
+                  <SelectTrigger className="h-9 w-[90px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="desc">Desc</SelectItem>
+                    <SelectItem value="asc">Asc</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </FilterRow>
+            <div className="pipeline-filters-scroll">
             <Select value={category || "all"} onValueChange={(v) => setCategory(v === "all" ? "" : v)}>
-              <SelectTrigger className="w-[140px]">
+              <SelectTrigger className="h-9 w-[130px] shrink-0">
                 <SelectValue placeholder="Categoria" />
               </SelectTrigger>
               <SelectContent>
@@ -218,7 +245,7 @@ export function ProspectPipelinePage() {
               </SelectContent>
             </Select>
             <Select value={city || "all"} onValueChange={(v) => setCity(v === "all" ? "" : v)}>
-              <SelectTrigger className="w-[140px]">
+              <SelectTrigger className="h-9 w-[120px] shrink-0">
                 <SelectValue placeholder="Cidade" />
               </SelectTrigger>
               <SelectContent>
@@ -231,7 +258,7 @@ export function ProspectPipelinePage() {
               </SelectContent>
             </Select>
             <Select value={source || "all"} onValueChange={(v) => setSource(v === "all" ? "" : v)}>
-              <SelectTrigger className="w-[140px]">
+              <SelectTrigger className="h-9 w-[120px] shrink-0">
                 <SelectValue placeholder="Origem" />
               </SelectTrigger>
               <SelectContent>
@@ -244,7 +271,7 @@ export function ProspectPipelinePage() {
               </SelectContent>
             </Select>
             <Select value={ownerId} onValueChange={(v) => setOwnerId(v as TeamMember | "all")}>
-              <SelectTrigger className="w-[140px]">
+              <SelectTrigger className="h-9 w-[140px] shrink-0">
                 <SelectValue placeholder="Responsável" />
               </SelectTrigger>
               <SelectContent>
@@ -260,7 +287,7 @@ export function ProspectPipelinePage() {
               value={opportunityFilter || "all"}
               onValueChange={(v) => setOpportunityFilter(v === "all" ? "" : v)}
             >
-              <SelectTrigger className="w-[160px]">
+              <SelectTrigger className="h-9 w-[150px] shrink-0">
                 <SelectValue placeholder="Oportunidade" />
               </SelectTrigger>
               <SelectContent>
@@ -272,29 +299,10 @@ export function ProspectPipelinePage() {
                 ))}
               </SelectContent>
             </Select>
-            <Select value={sort} onValueChange={(v) => setSort(v as typeof sort)}>
-              <SelectTrigger className="w-[160px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="last_interaction_at">Última interação</SelectItem>
-                <SelectItem value="next_action_date">Próxima ação</SelectItem>
-                <SelectItem value="created_at">Cadastro</SelectItem>
-                <SelectItem value="name">Nome</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={order} onValueChange={(v) => setOrder(v as "asc" | "desc")}>
-              <SelectTrigger className="w-[120px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="desc">Desc</SelectItem>
-                <SelectItem value="asc">Asc</SelectItem>
-              </SelectContent>
-            </Select>
+            </div>
           </div>
         </div>
-        <div className="px-6 py-5 sm:px-7">
+        <div className="px-6 py-6 sm:px-7">
           {prospects.length === 0 && !loading ? (
             <EmptyState
               icon={Target}

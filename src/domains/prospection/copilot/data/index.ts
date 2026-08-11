@@ -44,78 +44,88 @@ export const saloesCopilot = seg(
       observationKeys: ["instagram_ativo", "poucas_avaliacoes"],
       template: `Oi, [Nome], tudo bem?
 
-Estava pesquisando salões em [Cidade] e achei o [Empresa].
+Sou da Raise One — trabalhamos com crescimento de empresas por estratégia e marketing digital.
 
-Vi que o Instagram de vocês está bem ativo — mas no Google tem poucas avaliações.
+Estamos selecionando salões consolidados em [Cidade] que querem captar clientes com mais previsibilidade. Analisando o [Empresa]: Instagram forte, mas presença no Google ainda não acompanha — gap comum que costumamos resolver.
 
-Fiquei curioso: hoje os clientes chegam mais pelo Insta ou pelo Google?`,
+Vale uma conversa rápida de 15 min essa semana?`,
     },
     {
       id: "sal-muitas-av",
       observationKeys: ["muitas_avaliacoes"],
       template: `Oi, [Nome], tudo bem?
 
-Estava olhando salões em [Cidade] e encontrei o [Empresa].
+Aqui é da Raise One. A gente estrutura marketing para salões que já têm operação rodando e querem transformar reputação em clientes novos todo mês — não só indicação.
 
-Vi que vocês têm bastante avaliação no Google.
+O [Empresa] se encaixou no perfil: boa avaliação no Google, operação visível. Queremos entender se faz sentido conversar sobre previsibilidade na captação.
 
-Fiquei curioso — isso realmente traz cliente novo ou acaba sendo mais indicação mesmo?`,
+Topa 15 min para eu te mostrar como enxergamos isso?`,
     },
     {
       id: "sal-ig-ativo",
       observationKeys: ["instagram_ativo"],
-      template: `Oi, [Nome]!
+      template: `Oi, [Nome], tudo bem?
 
-Vi o Instagram de vocês — bastante movimento.
+Sou da Raise One — crescimento de empresas por estratégia e marketing.
 
-Quem manda mensagem por lá consegue marcar fácil ou vira aquele vai-e-volta de horário?`,
+Vimos o [Empresa] em [Cidade]: Instagram ativo, movimento claro. Estamos falando com salões nesse estágio que querem converter visibilidade em agenda cheia com previsibilidade.
+
+Faz sentido trocar uma ideia de 15 min?`,
     },
     {
       id: "sal-poucas-av",
       observationKeys: ["poucas_avaliacoes"],
       template: `Oi, [Nome], tudo bem?
 
-Achei o [Empresa] no Google Maps.
+Sou da Raise One. Trabalhamos com salões que já operam bem, mas precisam de marketing para crescer com previsibilidade.
 
-Reparei que vocês têm poucas avaliações ainda — normalmente família pesquisa antes de marcar.
+O [Empresa] chamou atenção em [Cidade] — operação sólida, mas ainda com espaço para fortalecer reputação online e captação. É exatamente o tipo de empresa que buscamos.
 
-Isso pesa aí ou indicação resolve?`,
+Posso te mostrar em 15 min onde enxergamos oportunidade?`,
     },
     {
       id: "sal-coloracao",
       observationKeys: ["especialidade_coloracao"],
-      template: `Oi, [Nome]!
+      template: `Oi, [Nome], tudo bem?
 
-Vi que vocês trabalham bastante com coloração/loiro.
+Aqui é da Raise One — estratégia e marketing para empresas que querem crescer com previsibilidade.
 
-Essa parte da agenda enche sozinha ou vocês precisam empurrar?`,
+Estamos conversando com salões em [Cidade] com operação consolidada. O [Empresa] se destacou pela especialidade em coloração/loiro — perfil ideal para escalar demanda além da indicação.
+
+Vale 15 min para alinhar se faz sentido para vocês?`,
     },
     {
       id: "sal-empresa-nova",
       observationKeys: ["empresa_nova"],
       template: `Oi, [Nome], tudo bem?
 
-Vi que o [Empresa] parece recente na região.
+Sou da Raise One. Ajudamos empresas a estruturar captação desde cedo — para não depender só de indicação quando a operação estabilizar.
 
-Como tem sido captar os primeiros clientes — indicação, bairro, Insta?`,
+Vimos o [Empresa] em [Cidade] — negócio promissor na região. Estamos selecionando salões nessa fase que querem construir base de clientes com previsibilidade.
+
+Topa uma conversa rápida essa semana?`,
     },
     {
       id: "sal-sem-cta",
       observationKeys: ["sem_cta", "instagram_ativo"],
-      template: `Oi, [Nome]!
+      template: `Oi, [Nome], tudo bem?
 
-Instagram de vocês bonito, mas não vi link claro pra agendar.
+Sou da Raise One — crescimento por estratégia e marketing digital.
 
-Isso atrapalha ou quem quer marca mesmo assim?`,
+Analisamos o [Empresa]: boa presença no Insta, mas o caminho para agendar ainda não está claro. Isso costuma limitar quanto da visibilidade vira cliente — e é o que resolvemos.
+
+Faz sentido 15 min para eu te mostrar o que enxergamos?`,
     },
     {
       id: "sal-generico",
       observationKeys: [],
       template: `Oi, [Nome], tudo bem?
 
-Estava pesquisando salões em [Cidade] e acabei encontrando o [Empresa].
+Sou da Raise One — trabalhamos com crescimento de empresas por estratégia e marketing digital.
 
-Fiquei curioso com uma coisa — hoje os clientes novos chegam mais por indicação ou pelo digital?`,
+Estamos selecionando salões consolidados em [Cidade] que já têm operação rodando, mas querem captar clientes com mais previsibilidade. Pelo perfil, o [Empresa] se encaixou no que buscamos.
+
+Vale uma conversa de 15 min essa semana?`,
     },
   ],
   "clientes",
@@ -131,38 +141,44 @@ export const advogadosCopilot = seg(
       observationKeys: ["area_definida", "perfil_profissional"],
       template: `Dr(a). [Nome], tudo bem?
 
-Estava pesquisando escritórios em [Cidade] e encontrei o [Empresa].
+Sou da Raise One — crescimento de empresas por estratégia e marketing digital.
 
-Pela apresentação, a atuação parece bem focada.
+Estamos selecionando escritórios consolidados em [Cidade] com atuação definida que querem captar casos com mais previsibilidade. O [Empresa] se encaixou nesse perfil.
 
-Hoje os casos novos entram mais por indicação ou consulta direta também?`,
+Vale uma conversa de 15 min essa semana?`,
     },
     {
       id: "adv-muitas-av",
       observationKeys: ["muitas_avaliacoes"],
       template: `Dr(a). [Nome], boa tarde.
 
-Vi o [Empresa] no Google — boa avaliação.
+Aqui é da Raise One. Estruturamos marketing para escritórios que já têm reputação, mas querem transformar isso em consultas novas todo mês.
 
-Família ou empresa que chega pelo Google costuma converter ou ainda é indicação?`,
+O [Empresa] tem boa avaliação no Google — exatamente o tipo de operação que buscamos em [Cidade].
+
+Topa 15 min para alinhar se faz sentido?`,
     },
     {
       id: "adv-site-moderno",
       observationKeys: ["site_moderno"],
       template: `Dr(a). [Nome], tudo bem?
 
-Passei pelo site do [Empresa] — apresentação clara.
+Sou da Raise One — estratégia e marketing para empresas que querem crescer com previsibilidade.
 
-Quem preenche formulário aí — vocês sentem que converte?`,
+Vimos o [Empresa]: site profissional, apresentação clara. Estamos conversando com escritórios nesse estágio que querem mais volume qualificado de consultas.
+
+Faz sentido trocar uma ideia de 15 min?`,
     },
     {
       id: "adv-generico",
       observationKeys: [],
       template: `Dr(a). [Nome], tudo bem?
 
-Estava pesquisando escritórios em [Cidade] e achei o [Empresa].
+Sou da Raise One — trabalhamos com crescimento de empresas por estratégia e marketing.
 
-Fiquei curioso — indicação ainda concentra quase tudo aí?`,
+Estamos selecionando escritórios consolidados em [Cidade] que querem captar casos com previsibilidade, não só indicação. O [Empresa] entrou no nosso radar por esse perfil.
+
+Vale uma conversa rápida essa semana?`,
     },
   ],
   "casos",
@@ -178,38 +194,44 @@ export const clinicasCopilot = seg(
       observationKeys: ["muitas_avaliacoes"],
       template: `Oi, [Nome], tudo bem?
 
-Estava pesquisando clínicas em [Cidade] e encontrei a [Empresa].
+Sou da Raise One — crescimento de empresas por estratégia e marketing digital.
 
-Bastante avaliação no Google — transmite confiança.
+Estamos selecionando clínicas consolidadas em [Cidade] que querem transformar reputação em pacientes novos com previsibilidade. A [Empresa] se encaixou — boa avaliação, operação visível.
 
-Paciente novo chega mais por indicação ou pelo Google?`,
+Vale 15 min para conversarmos?`,
     },
     {
       id: "cli-especialidade",
       observationKeys: ["especialidade_forte"],
-      template: `Oi, [Nome]!
+      template: `Oi, [Nome], tudo bem?
 
-Vi que vocês atuam em [especialidade visível no perfil].
+Aqui é da Raise One. Estruturamos marketing para clínicas com especialidade clara que querem escalar captação além da indicação.
 
-Essa agenda enche sozinha ou tem horário que sobra?`,
+A [Empresa] se destacou em [Cidade] — perfil ideal para conversarmos sobre previsibilidade na agenda.
+
+Topa uma conversa rápida essa semana?`,
     },
     {
       id: "cli-sem-site",
       observationKeys: ["sem_site", "instagram_ativo"],
       template: `Oi, [Nome], tudo bem?
 
-Vi o Instagram da [Empresa] ativo, mas site discreto.
+Sou da Raise One — estratégia e marketing para empresas de saúde.
 
-Paciente marca por mensagem ou prefere ligar?`,
+Vimos a [Empresa]: presença ativa no Instagram, mas estrutura digital ainda pode evoluir para captar pacientes com previsibilidade. É o que fazemos.
+
+Faz sentido 15 min para eu te mostrar onde enxergamos oportunidade?`,
     },
     {
       id: "cli-generico",
       observationKeys: [],
       template: `Oi, [Nome], tudo bem?
 
-Achei a [Empresa] pesquisando clínicas em [Cidade].
+Sou da Raise One — trabalhamos com crescimento de clínicas por estratégia e marketing.
 
-Como pacientes novos costumam chegar aí?`,
+Estamos selecionando operações consolidadas em [Cidade] que querem captar pacientes com previsibilidade. A [Empresa] entrou no perfil que buscamos.
+
+Vale uma conversa de 15 min?`,
     },
   ],
   "pacientes",
@@ -225,27 +247,33 @@ export const imobiliariasCopilot = seg(
       observationKeys: ["perfil_profissional"],
       template: `Oi, [Nome], tudo bem?
 
-Estava olhando imobiliárias em [Cidade] e vi a [Empresa] nos portais.
+Sou da Raise One — crescimento de empresas por estratégia e marketing digital.
 
-A maior parte dos leads vem de portal ou canal próprio também?`,
+Estamos selecionando imobiliárias consolidadas em [Cidade] que querem captar leads com previsibilidade — não depender só de portal e indicação. A [Empresa] se encaixou no perfil.
+
+Vale 15 min essa semana?`,
     },
     {
       id: "imo-lancamento",
       observationKeys: ["lancamento_ativo"],
-      template: `Oi, [Nome]!
+      template: `Oi, [Nome], tudo bem?
 
-Vi que vocês estão com empreendimento na região.
+Aqui é da Raise One. Estruturamos marketing para imobiliárias com empreendimento ativo que precisam de captação previsível de interessados.
 
-Como captam interessados — plantão, portal, indicação?`,
+A [Empresa] chamou atenção em [Cidade] — perfil alinhado com o que buscamos.
+
+Topa uma conversa rápida?`,
     },
     {
       id: "imo-generico",
       observationKeys: [],
       template: `Oi, [Nome], tudo bem?
 
-Pesquisando imobiliárias em [Cidade], achei a [Empresa].
+Sou da Raise One — estratégia e marketing para empresas que querem crescer com previsibilidade.
 
-Quando lead chega, em quanto tempo alguém responde aí, em média?`,
+Estamos conversando com imobiliárias consolidadas em [Cidade]. A [Empresa] entrou no radar pelo perfil de operação.
+
+Faz sentido 15 min para alinhar?`,
     },
   ],
   "leads",
@@ -261,29 +289,33 @@ export const escolasCopilot = seg(
       observationKeys: ["muitas_avaliacoes"],
       template: `Oi, [Nome], tudo bem?
 
-Estava pesquisando escolas em [Cidade] e encontrei a [Empresa].
+Sou da Raise One — crescimento de empresas por estratégia e marketing digital.
 
-Bastante avaliação — família leva isso a sério.
+Estamos selecionando escolas consolidadas em [Cidade] que querem matrículas novas com previsibilidade o ano todo. A [Empresa] se encaixou — boa reputação online.
 
-Matrícula nova vem mais por indicação ou Google?`,
+Vale 15 min para conversarmos?`,
     },
     {
       id: "esc-proposta",
       observationKeys: ["proposta_clara"],
-      template: `Oi, [Nome]!
+      template: `Oi, [Nome], tudo bem?
 
-Site de vocês deixa a proposta clara.
+Aqui é da Raise One. Estruturamos marketing para escolas com proposta clara que querem escalar captação além da indicação.
 
-Como famílias novas costumam encontrar a [Empresa]?`,
+A [Empresa] se destacou em [Cidade] — perfil ideal para uma conversa sobre previsibilidade de matrículas.
+
+Topa 15 min essa semana?`,
     },
     {
       id: "esc-generico",
       observationKeys: [],
       template: `Oi, [Nome], tudo bem?
 
-Achei a [Empresa] pesquisando escolas em [Cidade].
+Sou da Raise One — estratégia e marketing para instituições de ensino.
 
-Fora de janeiro, vocês sentem vaga ociosa ou matrícula vem o ano todo?`,
+Estamos conversando com escolas consolidadas em [Cidade] que querem crescer com previsibilidade. A [Empresa] entrou no perfil que buscamos.
+
+Faz sentido uma conversa rápida?`,
     },
   ],
   "matrículas",
@@ -299,27 +331,33 @@ export const contabilidadeCopilot = seg(
       observationKeys: ["perfil_profissional"],
       template: `Oi, [Nome], tudo bem?
 
-Estava pesquisando escritórios em [Cidade] e encontrei o [Empresa].
+Sou da Raise One — crescimento de empresas por estratégia e marketing digital.
 
-Empresas novas chegam mais por indicação ou consulta direta?`,
+Estamos selecionando escritórios contábeis consolidados em [Cidade] que querem captar empresas clientes com previsibilidade. O [Empresa] se encaixou nesse perfil.
+
+Vale 15 min essa semana?`,
     },
     {
       id: "cont-mei",
       observationKeys: ["segmento_mei"],
-      template: `Oi, [Nome]!
+      template: `Oi, [Nome], tudo bem?
 
-Vi que vocês atuam com MEI/Simples.
+Aqui é da Raise One. Estruturamos marketing para contadores com foco em MEI/Simples que querem escalar captação de forma previsível.
 
-Esse perfil vocês captam como — indicação, parceria, busca no Google?`,
+O [Empresa] chamou atenção em [Cidade] — perfil alinhado com o que buscamos.
+
+Topa uma conversa rápida?`,
     },
     {
       id: "cont-generico",
       observationKeys: [],
       template: `Oi, [Nome], tudo bem?
 
-Achei o [Empresa] pesquisando contadores em [Cidade].
+Sou da Raise One — estratégia e marketing para empresas de serviços.
 
-Carteira de vocês tem espaço ou está no limite?`,
+Estamos conversando com escritórios consolidados em [Cidade] que querem crescer a carteira com previsibilidade. O [Empresa] entrou no nosso radar.
+
+Faz sentido 15 min para alinhar?`,
     },
   ],
   "empresas",
@@ -335,38 +373,44 @@ export const restaurantesCopilot = seg(
       observationKeys: ["muitas_avaliacoes"],
       template: `Oi, [Nome], tudo bem?
 
-Estava pesquisando restaurantes em [Cidade] e encontrei o [Empresa].
+Sou da Raise One — crescimento de empresas por estratégia e marketing digital.
 
-Boa avaliação no Google.
+Estamos selecionando restaurantes consolidados em [Cidade] que querem movimento previsível — salão e delivery. O [Empresa] se encaixou pelo perfil e reputação.
 
-Movimento vem mais do salão ou delivery?`,
+Vale 15 min para conversarmos?`,
     },
     {
       id: "rest-delivery",
       observationKeys: ["delivery_app"],
-      template: `Oi, [Nome]!
+      template: `Oi, [Nome], tudo bem?
 
-Vi que vocês estão nos apps de delivery.
+Aqui é da Raise One. Estruturamos marketing para restaurantes que operam delivery e querem canal próprio com previsibilidade — não depender só de app.
 
-Canal próprio existe ou concentra no app?`,
+O [Empresa] em [Cidade] entrou no perfil que buscamos.
+
+Topa uma conversa rápida?`,
     },
     {
       id: "rest-ig",
       observationKeys: ["instagram_ativo"],
-      template: `Oi, [Nome]!
+      template: `Oi, [Nome], tudo bem?
 
-Fotos de prato no Insta chamam atenção.
+Sou da Raise One — estratégia e marketing para food service.
 
-Quem vê e quer ir — encontra cardápio fácil?`,
+Vimos o [Empresa]: Instagram forte, operação visível. Estamos falando com restaurantes nesse estágio que querem converter visibilidade em mesa cheia com previsibilidade.
+
+Faz sentido 15 min essa semana?`,
     },
     {
       id: "rest-generico",
       observationKeys: [],
       template: `Oi, [Nome], tudo bem?
 
-Achei o [Empresa] no Maps.
+Sou da Raise One — trabalhamos com crescimento de restaurantes por estratégia e marketing.
 
-Tem dia da semana que costuma sobrar mesa?`,
+Estamos selecionando operações consolidadas em [Cidade] que querem movimento previsível. O [Empresa] se encaixou no que buscamos.
+
+Vale uma conversa de 15 min?`,
     },
   ],
   "clientes",
@@ -382,38 +426,44 @@ export const academiasCopilot = seg(
       observationKeys: ["perfil_profissional"],
       template: `Oi, [Nome], tudo bem?
 
-Estava pesquisando academias em [Cidade] e encontrei a [Empresa].
+Sou da Raise One — crescimento de empresas por estratégia e marketing digital.
 
-Boa estrutura pelo que vi.
+Estamos selecionando academias consolidadas em [Cidade] que querem matrículas novas com previsibilidade. A [Empresa] se encaixou — operação sólida, perfil profissional.
 
-Aluno novo chega mais por indicação ou Google?`,
+Vale 15 min essa semana?`,
     },
     {
       id: "acad-modalidade",
       observationKeys: ["modalidade_destaque"],
-      template: `Oi, [Nome]!
+      template: `Oi, [Nome], tudo bem?
 
-Vi que vocês destacam [modalidade].
+Aqui é da Raise One. Estruturamos marketing para academias com modalidade forte que querem escalar captação além da indicação.
 
-Essa parte enche fácil ou precisa divulgar?`,
+A [Empresa] se destacou em [Cidade] — perfil ideal para conversarmos.
+
+Topa 15 min?`,
     },
     {
       id: "acad-ig",
       observationKeys: ["instagram_ativo"],
-      template: `Oi, [Nome]!
+      template: `Oi, [Nome], tudo bem?
 
-Instagram com bastante conteúdo de treino.
+Sou da Raise One — estratégia e marketing para fitness.
 
-Isso traz matrícula ou é mais engajamento?`,
+Vimos a [Empresa]: conteúdo ativo no Instagram, operação visível. Estamos falando com academias nesse estágio que querem converter visibilidade em matrícula com previsibilidade.
+
+Faz sentido uma conversa rápida?`,
     },
     {
       id: "acad-generico",
       observationKeys: [],
       template: `Oi, [Nome], tudo bem?
 
-Achei a [Empresa] pesquisando academias em [Cidade].
+Sou da Raise One — trabalhamos com crescimento de academias por estratégia e marketing.
 
-Experimental vira matrícula aí — vocês sabem a taxa?`,
+Estamos selecionando operações consolidadas em [Cidade] que querem alunos novos com previsibilidade. A [Empresa] entrou no perfil que buscamos.
+
+Vale 15 min para alinhar?`,
     },
   ],
   "alunos",

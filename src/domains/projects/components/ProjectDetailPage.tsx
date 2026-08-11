@@ -196,7 +196,7 @@ export function ProjectDetailPage({ projectId }: { projectId: string }) {
         </Section>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-5 lg:grid-cols-2">
         <Section
           title="Checklist"
           action={
@@ -210,6 +210,7 @@ export function ProjectDetailPage({ projectId }: { projectId: string }) {
           <form onSubmit={handleAddItem} className="mb-4 flex gap-2">
             <Input
               placeholder="Novo item..."
+              className="h-9"
               value={newItem}
               onChange={(e) => setNewItem(e.target.value)}
             />
@@ -220,19 +221,16 @@ export function ProjectDetailPage({ projectId }: { projectId: string }) {
           {checklist.length === 0 ? (
             <p className="text-sm text-muted-foreground">Nenhum item no checklist.</p>
           ) : (
-            <ul className="space-y-2">
+            <ul>
               {checklist.map((item) => (
-                <li
-                  key={item.id}
-                  className="flex items-start gap-2 rounded-lg border border-border/50 p-2"
-                >
+                <li key={item.id} className="os-list-row">
                   <Checkbox
                     checked={item.done}
                     onCheckedChange={() => handleToggleItem(item)}
                     className="mt-0.5"
                   />
                   <span
-                    className={`flex-1 text-sm ${item.done ? "text-muted-foreground line-through" : ""}`}
+                    className={`flex-1 text-[13px] ${item.done ? "text-muted-foreground/70 line-through" : "text-foreground/90"}`}
                   >
                     {item.text}
                   </span>
@@ -302,9 +300,9 @@ function CommentItem({
   }).format(new Date(comment.created_at));
 
   return (
-    <li className="dashboard-card p-3">
+    <li className="rounded-lg border border-border/20 bg-surface-elevated/30 p-3.5">
       <div className="flex items-start justify-between gap-2">
-        <p className="whitespace-pre-wrap text-sm leading-relaxed">{comment.body}</p>
+        <p className="whitespace-pre-wrap text-[13px] leading-relaxed text-foreground/90">{comment.body}</p>
         <Button size="sm" variant="ghost" className="shrink-0 text-destructive" onClick={onDelete}>
           <Trash2 className="h-3.5 w-3.5" />
         </Button>

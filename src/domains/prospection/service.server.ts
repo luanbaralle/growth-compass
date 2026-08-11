@@ -1,5 +1,12 @@
 import * as companyRepo from "@/domains/companies/repository.server";
 import { getSegmentCopilot } from "@/domains/prospection/copilot/data";
+import {
+  buildConversationContext,
+  mergeDiscovery,
+  resolveNextObjective,
+  usesConversationGraph,
+} from "@/domains/prospection/copilot/conversation-engine";
+import type { SaloesDiscoveries } from "@/domains/prospection/copilot/graph/types";
 import { resolveSegmentSlug } from "@/domains/prospection/copilot/resolve-segment";
 import type {
   AssistantStep,
@@ -465,7 +472,20 @@ function defaultAssistantState(prospectId: string): ProspectAssistantState {
     opening_used: false,
     reply_status: null,
     response_state_key: null,
+    current_objective_key: null,
+    discoveries: {},
     updated_at: new Date().toISOString(),
+  };
+}
+
+function normalizeAssistantState(
+  state: Partial<ProspectAssistantState> & { prospect_id: string },
+): ProspectAssistantState {
+  return {
+    ...defaultAssistantState(state.prospect_id),
+    ...state,
+    discoveries: state.discoveries ?? {},
+    current_objective_key: state.current_objective_key ?? null,
   };
 }
 
@@ -478,12 +498,13 @@ export async function getCopilotBundle(prospectId: string): Promise<CopilotBundl
 
   let state: ProspectAssistantState;
   try {
-    state = (await repo.findAssistantState(prospectId)) ?? defaultAssistantState(prospectId);
+    const raw = await repo.findAssistantState(prospectId);
+    state = raw ? normalizeAssistantState(raw) : defaultAssistantState(prospectId);
   } catch {
     state = defaultAssistantState(prospectId);
   }
 
-  return {
+  const bundle: CopilotBundle = {
     segment,
     segmentSlug: slug,
     state,
@@ -495,6 +516,15 @@ export async function getCopilotBundle(prospectId: string): Promise<CopilotBundl
       segmentSlug: prospect.segment_slug,
     },
   };
+
+  if (usesConversationGraph(slug)) {
+    bundle.conversation = buildConversationContext(state, {
+      name: prospect.name,
+      city: prospect.city,
+    });
+  }
+
+  return bundle;
 }
 
 export async function saveAssistantState(input: {
@@ -506,14 +536,61 @@ export async function saveAssistantState(input: {
   openingUsed?: boolean;
   replyStatus?: ReplyStatus | null;
   responseStateKey?: string | null;
+  currentObjectiveKey?: string | null;
+  discoveries?: Record<string, string>;
+  registerDiscovery?: {
+    discoveryKey: string;
+    discoveryValue: string;
+    inboundReplyText?: string;
+  };
 }): Promise<ProspectAssistantState> {
-  const existing =
+  const existingRaw =
     (await repo.findAssistantState(input.prospectId).catch(() => null)) ??
     defaultAssistantState(input.prospectId);
+  const existing = normalizeAssistantState(existingRaw);
+
+  let discoveries = input.discoveries ?? existing.discoveries;
+  let step = input.step ?? existing.step;
+  let currentObjectiveKey =
+    input.currentObjectiveKey !== undefined
+      ? input.currentObjectiveKey
+      : existing.current_objective_key;
+
+  if (input.registerDiscovery) {
+    const { discoveryKey, discoveryValue, inboundReplyText } = input.registerDiscovery;
+    discoveries = mergeDiscovery(
+      discoveries as SaloesDiscoveries,
+      discoveryKey as keyof SaloesDiscoveries,
+      discoveryValue,
+    ) as Record<string, string>;
+    const resolved = resolveNextObjective(discoveries as SaloesDiscoveries);
+    currentObjectiveKey = resolved.key;
+    step =
+      resolved.key === "close_respectful"
+        ? "conversation"
+        : resolved.step === "raise_one"
+          ? "raise_one"
+          : resolved.step === "done"
+            ? "done"
+            : "conversation";
+
+    if (inboundReplyText?.trim()) {
+      await addInteraction(
+        input.prospectId,
+        {
+          type: "message_received",
+          title: "Resposta recebida",
+          body: inboundReplyText.trim(),
+          direction: "in",
+        },
+        null,
+      );
+    }
+  }
 
   const next: Omit<ProspectAssistantState, "updated_at"> = {
     prospect_id: input.prospectId,
-    step: input.step ?? existing.step,
+    step,
     selected_observations: input.selectedObservations ?? existing.selected_observations,
     selected_opening_id:
       input.selectedOpeningId !== undefined ? input.selectedOpeningId : existing.selected_opening_id,
@@ -522,12 +599,14 @@ export async function saveAssistantState(input: {
     reply_status: input.replyStatus !== undefined ? input.replyStatus : existing.reply_status,
     response_state_key:
       input.responseStateKey !== undefined ? input.responseStateKey : existing.response_state_key,
+    current_objective_key: currentObjectiveKey,
+    discoveries,
   };
 
   try {
-    return await repo.upsertAssistantState(next);
+    return normalizeAssistantState(await repo.upsertAssistantState(next));
   } catch {
-    return { ...next, updated_at: new Date().toISOString() };
+    return normalizeAssistantState({ ...next, updated_at: new Date().toISOString() });
   }
 }
 

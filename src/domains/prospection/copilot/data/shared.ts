@@ -62,12 +62,13 @@ export const SHARED_NO_REPLY: CopilotNoReplyAction[] = [
 export const SHARED_RAISE_ONE: CopilotRaiseOneReply[] = [
   {
     responseStateKey: "perguntou_quem",
-    template: "Trabalho na Raise One.",
+    template:
+      "Sou da Raise One. Trabalhamos com crescimento de empresas por estratégia e marketing — tráfego, presença digital e estrutura comercial para captar com previsibilidade.",
   },
   {
     responseStateKey: "perguntou_o_que",
     template:
-      "A Raise One trabalha com crescimento digital — captar cliente, estruturar comercial, presença online. Depende muito do negócio.",
+      "Estruturamos marketing e comercial para empresas que já operam bem, mas querem crescer com previsibilidade — saber de onde vem cliente, encher agenda nos dias certos e parar de depender só de indicação. Depende do momento de cada negócio.",
   },
 ];
 
@@ -115,7 +116,7 @@ export function sharedContinuations(business: string): CopilotContinuation[] {
     },
     {
       responseStateKey: "curioso",
-      template: `Boa. Me conta mais — o que te chamou atenção?`,
+      template: `Perfeito. Posso te mostrar em 15 min o que enxergamos de oportunidade no digital do [Empresa] — sem compromisso. Qual dia funciona melhor?`,
     },
     {
       responseStateKey: "outro",

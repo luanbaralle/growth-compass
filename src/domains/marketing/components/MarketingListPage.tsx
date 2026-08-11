@@ -25,7 +25,7 @@ import {
   MARKETING_CHANNELS,
 } from "@/domains/marketing/types";
 import { getErrorMessage, isUnauthorizedError } from "@/lib/api/client-errors";
-import { EmptyState, PageHeader, PageSkeleton, StatCard, OSPage, OSRefreshButton, OSPrimaryButton, FilterToolbar, FilterPill, DataTable } from "@/os/ui";
+import { EmptyState, PageHeader, PageSkeleton, StatCard, OSPage, OSRefreshButton, OSPrimaryButton, FilterToolbar, FilterRow, FilterSearch, FilterPillsRow, FilterPill, OSMetricGrid, DataTable } from "@/os/ui";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,14 +38,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -55,7 +47,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Megaphone, Pencil, Search, Trash2, Users } from "lucide-react";
+import { Megaphone, Pencil, Trash2, Users } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -144,7 +136,7 @@ export function MarketingListPage() {
         }
       />
 
-      <section className="grid gap-3 sm:grid-cols-3">
+      <OSMetricGrid>
         <StatCard
           label="Investimento total"
           value={formatMoney(summary.investmentCents)}
@@ -165,38 +157,23 @@ export function MarketingListPage() {
           accent="success"
           icon={Users}
         />
-      </section>
+      </OSMetricGrid>
 
       {error && (
         <EmptyState title="Não foi possível carregar marketing" description={error} />
       )}
 
       <FilterToolbar>
-        <div className="relative min-w-[200px] flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/50" />
-          <Input
-            className="pl-9"
-            placeholder="Buscar por empresa..."
+        <FilterRow>
+          <FilterSearch
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={setSearch}
+            placeholder="Buscar por empresa..."
           />
-        </div>
-        <Select value={channel} onValueChange={(v) => setChannel(v as typeof channel)}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Canal" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos canais</SelectItem>
-            {MARKETING_CHANNELS.map((c) => (
-              <SelectItem key={c} value={c}>
-                {CHANNEL_LABELS[c]}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        </FilterRow>
       </FilterToolbar>
 
-      <div className="flex flex-wrap gap-2">
+      <FilterPillsRow>
         <FilterPill
           active={channel === "all"}
           onClick={() => setChannel("all")}
@@ -210,7 +187,7 @@ export function MarketingListPage() {
             label={`${CHANNEL_LABELS[c]} (${counts[c] ?? 0})`}
           />
         ))}
-      </div>
+      </FilterPillsRow>
 
       {loading ? (
         <PageSkeleton title="Marketing" metricCount={0} />

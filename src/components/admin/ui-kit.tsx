@@ -1,8 +1,9 @@
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
 import type { LucideIcon } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Loader2, Plus, RefreshCw } from "lucide-react";
+import { ArrowRight, Loader2, Plus, RefreshCw, Search } from "lucide-react";
 import type { ReactNode } from "react";
 
 /* ── Page shell ──────────────────────────────────────────── */
@@ -14,7 +15,7 @@ export function OSPage({
   children: ReactNode;
   className?: string;
 }) {
-  return <div className={cn("os-page space-y-8 pb-2", className)}>{children}</div>;
+  return <div className={cn("os-page space-y-6 pb-2 sm:space-y-7", className)}>{children}</div>;
 }
 
 /* ── Page layout ─────────────────────────────────────────── */
@@ -65,7 +66,7 @@ export function Section({
       {(title || action) && (
         <div
           className={cn(
-            "mb-5 flex items-start justify-between gap-3",
+            "mb-4 flex items-start justify-between gap-3 sm:mb-5",
             noPadding && "px-6 pt-6 sm:px-7 sm:pt-7",
           )}
         >
@@ -145,10 +146,40 @@ export function OSGhostButton({
 
 export function FilterToolbar({ children }: { children: ReactNode }) {
   return (
-    <div className="dashboard-card flex flex-col gap-4 p-4 sm:flex-row sm:flex-wrap sm:items-center">
-      {children}
+    <div className="dashboard-card overflow-hidden p-0">
+      <div className="os-filters !rounded-none !border-0">{children}</div>
     </div>
   );
+}
+
+export function FilterRow({ children, className }: { children: ReactNode; className?: string }) {
+  return <div className={cn("os-filters-row", className)}>{children}</div>;
+}
+
+export function FilterSearch({
+  value,
+  onChange,
+  placeholder = "Buscar...",
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+}) {
+  return (
+    <div className="relative min-w-0 flex-1 basis-full sm:basis-[280px] sm:max-w-md">
+      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
+      <Input
+        className="h-9 pl-9"
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    </div>
+  );
+}
+
+export function FilterPillsRow({ children }: { children: ReactNode }) {
+  return <div className="flex flex-wrap gap-2">{children}</div>;
 }
 
 export function FilterPill({
@@ -165,10 +196,10 @@ export function FilterPill({
       type="button"
       onClick={onClick}
       className={cn(
-        "rounded-full border px-3 py-1.5 text-xs font-medium transition-all duration-200",
+        "rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-200",
         active
-          ? "border-brand/30 bg-brand/10 text-brand"
-          : "border-border/40 text-muted-foreground/70 hover:border-border/60 hover:text-foreground",
+          ? "bg-brand/10 text-brand shadow-[inset_0_0_0_1px_oklch(0.72_0.19_48/0.25)]"
+          : "border border-border/25 bg-surface-elevated/30 text-muted-foreground/70 hover:border-border/40 hover:text-foreground",
       )}
     >
       {label}
@@ -176,11 +207,15 @@ export function FilterPill({
   );
 }
 
+export function OSMetricGrid({ children, className }: { children: ReactNode; className?: string }) {
+  return <section className={cn("grid gap-4 sm:grid-cols-2 xl:grid-cols-3", className)}>{children}</section>;
+}
+
 /* ── Data table ──────────────────────────────────────────── */
 
 export function DataTable({ children }: { children: ReactNode }) {
   return (
-    <div className="os-table-wrap overflow-x-auto rounded-xl border border-border/40">
+    <div className="os-table-wrap overflow-x-auto rounded-xl border border-border/25 bg-surface-elevated/20">
       {children}
     </div>
   );
@@ -388,8 +423,8 @@ export function ListItem({
       type={onClick ? "button" : undefined}
       onClick={onClick}
       className={cn(
-        "w-full rounded-lg border border-border/30 bg-surface/20 p-3 text-left transition-all duration-200",
-        onClick && "cursor-pointer hover:border-border/50 hover:bg-surface-elevated/30",
+        "w-full rounded-lg border border-border/20 bg-surface-elevated/25 p-3.5 text-left transition-all duration-200",
+        onClick && "cursor-pointer hover:border-border/35 hover:bg-surface-elevated/45",
         className,
       )}
     >
@@ -408,7 +443,7 @@ export function PageSkeleton({ title, metricCount = 4 }: { title: string; metric
         <Skeleton className="h-4 w-64 rounded-lg" />
       </div>
       {metricCount > 0 && (
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {Array.from({ length: metricCount }).map((_, i) => (
             <Skeleton key={i} className="h-28 rounded-xl" />
           ))}

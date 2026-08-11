@@ -98,39 +98,48 @@ export function SettingsPage() {
         }
       />
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-5 lg:grid-cols-2">
         <Section title="Preferências da agência" description="Salvas no Supabase">
-          <div className="space-y-4">
+          <div className="os-field-group space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="agency-name">Nome exibido</Label>
+              <Label htmlFor="agency-name" className="text-[11px] font-medium text-muted-foreground/70">
+                Nome exibido
+              </Label>
               <Input
                 id="agency-name"
+                className="h-9"
                 value={agencyName}
                 onChange={(e) => setAgencyName(e.target.value)}
                 placeholder="Raise One"
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="default-whatsapp">WhatsApp padrão (interno)</Label>
+              <Label htmlFor="default-whatsapp" className="text-[11px] font-medium text-muted-foreground/70">
+                WhatsApp padrão (interno)
+              </Label>
               <Input
                 id="default-whatsapp"
+                className="h-9"
                 value={defaultWhatsApp}
                 onChange={(e) => setDefaultWhatsApp(e.target.value)}
                 placeholder="5513999999999"
                 inputMode="tel"
               />
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground/70">
                 Referência operacional. Links do site usam VITE_WHATSAPP_NUMBER no .env.
               </p>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="ops-notes">Notas operacionais</Label>
+              <Label htmlFor="ops-notes" className="text-[11px] font-medium text-muted-foreground/70">
+                Notas operacionais
+              </Label>
               <Textarea
                 id="ops-notes"
                 value={opsNotes}
                 onChange={(e) => setOpsNotes(e.target.value)}
                 placeholder="Processos internos, combinados com clientes..."
                 rows={4}
+                className="text-sm"
               />
             </div>
             <button
@@ -150,9 +159,9 @@ export function SettingsPage() {
         </Section>
 
         <Section title="Equipe" description="Perfis do Raise One OS">
-          <div className="divide-y divide-border/40 rounded-xl border border-border/40">
+          <div className="divide-y divide-border/20 rounded-xl border border-border/20 bg-surface-elevated/20">
             {data.team.map((member) => (
-              <ListItem key={member.id}>
+              <ListItem key={member.id} className="rounded-none border-0 bg-transparent p-3.5 hover:bg-surface-elevated/30">
                 <div className="flex w-full items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <Users className="h-4 w-4 text-muted-foreground" />
@@ -212,7 +221,7 @@ export function SettingsPage() {
           {data.integrations.map((integration) => (
             <div
               key={integration.id}
-              className="dashboard-card p-4"
+              className="rounded-lg border border-border/20 bg-surface-elevated/25 p-4 transition-colors hover:border-border/35"
             >
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
@@ -228,7 +237,7 @@ export function SettingsPage() {
       </Section>
 
       <Section title="Segurança" description="Boas práticas">
-        <div className="dashboard-card flex gap-3 p-4">
+        <div className="flex gap-3 rounded-lg border border-border/20 bg-surface-elevated/25 p-4">
           <Shield className="mt-0.5 h-5 w-5 shrink-0 text-brand" />
           <div className="space-y-1 text-sm text-muted-foreground">
             <p>Senha e PINs nunca são exibidos nem editáveis por aqui — ficam no .env do servidor.</p>
@@ -251,7 +260,7 @@ function StatusRow({
   detail: string;
 }) {
   return (
-    <li className="dashboard-card flex items-start gap-2 px-3 py-2.5 text-sm">
+    <li className="flex items-start gap-2.5 rounded-lg border border-border/20 bg-surface-elevated/25 px-3.5 py-3 text-sm">
       {ok ? (
         <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
       ) : (

@@ -1,10 +1,10 @@
 import type { ProspectionMetrics } from "@/domains/prospection/types";
-import { StatCard } from "@/os/ui";
+import { StatCard, OSMetricGrid } from "@/os/ui";
 import { MessageSquare, Percent, Target, TrendingUp, Users } from "lucide-react";
 
 export function ProspectMetricsBar({ metrics }: { metrics: ProspectionMetrics }) {
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+    <OSMetricGrid className="lg:grid-cols-5">
       <StatCard
         label="Prospectados"
         value={String(metrics.prospected)}
@@ -38,6 +38,6 @@ export function ProspectMetricsBar({ metrics }: { metrics: ProspectionMetrics })
         icon={Percent}
         accent="warning"
       />
-    </div>
+    </OSMetricGrid>
   );
 }

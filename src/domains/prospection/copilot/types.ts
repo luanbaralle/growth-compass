@@ -1,10 +1,13 @@
 export type AssistantStep =
   | "observations"
   | "openings"
+  | "opening"
   | "awaiting_reply"
   | "no_reply"
   | "response_state"
   | "continuation"
+  | "conversation"
+  | "raise_one"
   | "done";
 
 export type ReplyStatus = "waiting" | "no_reply" | "replied";
@@ -64,6 +67,8 @@ export interface ProspectAssistantState {
   opening_used: boolean;
   reply_status: ReplyStatus | null;
   response_state_key: string | null;
+  current_objective_key: string | null;
+  discoveries: Record<string, string>;
   updated_at: string;
 }
 
@@ -78,6 +83,7 @@ export interface CopilotBundle {
     category: string | null;
     segmentSlug: string | null;
   };
+  conversation?: import("./graph/types").SaloesConversationContext;
 }
 
 export const SEGMENT_OPTIONS = [

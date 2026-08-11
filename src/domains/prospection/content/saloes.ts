@@ -28,122 +28,82 @@ Conversas interessantes com donos de salão giram em torno de: agenda, profissio
 
 Anote 1–2 observações reais. A conversa nasce delas.`,
 
-    conversation_philosophy: `**Filosofia oficial**
+    conversation_philosophy: `**Filosofia — abordagem direta e persuasiva**
 
-Toda conversa da Raise One deve parecer uma conversa entre dois empresários que gostam de falar sobre negócios. O assunto principal nunca é a Raise One. O assunto principal é o negócio da outra pessoa. A Raise One entra naturalmente, só quando existe contexto.
-
-**Você não está prospectando. Está pesquisando empresas.**
-
-Encontrou um salão interessante. Mandou mensagem. Objetivo: conversar sobre o negócio deles. Não vender. Não marcar reunião. Não apresentar serviço.
+Você representa a Raise One: crescimento de empresas por estratégia e marketing. O dono do salão precisa bater o olho e pensar *"essa empresa pode me fazer faturar mais"*.
 
 **A primeira mensagem tem 3 objetivos:**
-1. Mostrar que você observou aquela empresa
-2. Criar conexão
-3. Fazer uma pergunta interessante
+1. Posicionar a Raise One com clareza — sem rodeio, sem disfarce
+2. Mostrar que o salão se encaixa no perfil de cliente que vocês buscam
+3. Convidar para uma conversa curta (15 min), com observação real como prova de que analisaram
+
+**Tom:** parceiro de negócios, não curioso disfarçado. Todo mundo percebe venda encoberta — melhor ser direto e profissional.
 
 **Proibido na primeira mensagem:**
-- Explicar o que a Raise One faz
-- Falar de marketing, digital, Google Ads, CRM
-- Usar a palavra "ajudar"
-- Oferecer reunião, análise, diagnóstico
-- Qualquer tentativa de posicionamento
+- "Fiquei curioso..."
+- Perguntas retóricas ("isso traz cliente ou é indicação?")
+- Fingir que pesquisa salões por hobby
+- Tom de auditoria ou crítica ("não vi link pra agendar")
+- Mascarar que é abordagem comercial
 
-**Regra de ouro:** na primeira conversa, só fale da Raise One se o empresário perguntar quem você é.
+**Recomendado:**
+- Dizer que trabalham com crescimento, estratégia e marketing
+- Mencionar perfil ideal (salão consolidado, quer previsibilidade)
+- Usar observação concreta como gancho — não como julgamento
+- CTA claro: conversa de 15 min
 
 **O fluxo:**
-Observação → Curiosidade → Pergunta → Conversa → (só depois, se fizer sentido) Raise One
+Posicionamento → Perfil encaixa → Gancho (opcional) → Convite para conversa → Diagnóstico na call`,
 
-**Você não qualifica lead. Você conversa.** Durante a conversa, dores e oportunidades aparecem sozinhas.`,
+    first_approach_examples: `Cada mensagem segue: **Posicionamento → Perfil encaixa → Gancho (opcional) → Convite**
 
-    first_approach_examples: `Cada mensagem segue: **Observação → Curiosidade → Pergunta**
-
-Nenhuma menciona Raise One. Nenhuma fala de marketing.
+A Raise One aparece desde a primeira linha. Sem disfarce.
 
 ---
 
-**Padrão 1 — Avaliações no Google**
-
-Observação: bastante avaliação no Google
-Curiosidade: será que o Google gera cliente de verdade?
-Pergunta:
+**Padrão 1 — Genérico (salão consolidado)**
 
 Oi, [Nome], tudo bem?
 
-Estava pesquisando salões aqui em [Cidade] e acabei encontrando o [Salão].
+Sou da Raise One — trabalhamos com crescimento de empresas por estratégia e marketing digital.
 
-Vi que vocês têm bastante avaliação no Google.
+Estamos selecionando salões consolidados em [Cidade] que já têm operação rodando, mas querem captar clientes com mais previsibilidade. Pelo perfil, o [Salão] se encaixou no que buscamos.
 
-Fiquei curioso com uma coisa — hoje vocês sentem que o Google traz cliente ou acaba sendo mais Instagram mesmo?
-
----
-
-**Padrão 2 — Instagram ativo**
-
-Observação: Instagram postando com frequência
-Curiosidade: post gera agendamento ou só engajamento?
-Pergunta:
-
-Oi, [Nome]!
-
-Vi o Instagram de vocês — bastante movimento por lá.
-
-Sempre tive curiosidade: quem manda mensagem pelo Insta consegue marcar fácil ou vira aquele vai-e-volta de horário?
+Vale uma conversa de 15 min essa semana?
 
 ---
 
-**Padrão 3 — Especialidade (ex: loiro/coloração)**
-
-Observação: trabalho forte em [loiro/progressiva]
-Curiosidade: especialidade lota ou depende de indicação?
-Pergunta:
+**Padrão 2 — Instagram forte, Google fraco**
 
 Oi, [Nome], tudo bem?
 
-Achei o [Salão] pesquisando a região e vi que vocês trabalham bastante com [serviço].
+Sou da Raise One — estratégia e marketing para salões.
 
-Como funciona aí — essa parte da agenda enche sozinha ou vocês precisam empurrar?
+Analisando o [Salão] em [Cidade]: Instagram ativo, mas presença no Google ainda não acompanha. Esse gap costuma deixar cliente novo na mesa — e é o que resolvemos.
 
----
-
-**Padrão 4 — Salão novo ou recente**
-
-Observação: parece ter aberto recentemente
-Curiosidade: como está sendo captar cliente no começo?
-Pergunta:
-
-Oi, [Nome]!
-
-Vi que o [Salão] está em [bairro] — região que movimenta.
-
-Como tem sido os primeiros meses? Cliente veio mais por indicação ou vocês sentiram movimento pelo bairro?
+Topa 15 min para eu te mostrar onde enxergamos oportunidade?
 
 ---
 
-**Padrão 5 — Horário (ex: fechado segunda)**
-
-Observação: fecham segunda / horário diferente
-Curiosidade: como isso afeta a agenda?
-Pergunta:
+**Padrão 3 — Boa reputação no Google**
 
 Oi, [Nome], tudo bem?
 
-Vi o [Salão] no Maps e reparei que vocês [fecham segunda / abrem sábado].
+Aqui é da Raise One. Estruturamos marketing para salões que já têm reputação e querem transformar isso em clientes novos todo mês — não só indicação.
 
-Isso costuma ser escolha de vocês ou foi por causa da demanda?
+O [Salão] se encaixou no perfil em [Cidade]. Faz sentido trocar uma ideia de 15 min?
 
 ---
 
-**Padrão 6 — Profissional específico (se observou no Insta)**
+**Padrão 4 — Especialidade (coloração/loiro)**
 
-Observação: destaque claro de um profissional ou serviço
-Curiosidade: agenda equilibrada entre profissionais?
-Pergunta:
+Oi, [Nome], tudo bem?
 
-Oi, [Nome]!
+Sou da Raise One — crescimento por estratégia e marketing.
 
-Vi o perfil de vocês e reparei que [nome/profissional/serviço] aparece bastante.
+Estamos conversando com salões em [Cidade] com operação consolidada. O [Salão] se destacou pela especialidade — perfil ideal para escalar demanda além da indicação.
 
-A agenda de vocês costuma ser equilibrada entre os profissionais ou tem quem lota mais?`,
+Vale alinhar em 15 min?`,
 
     conversation_patterns: `A conversa não segue roteiro. Você reage.
 
@@ -186,81 +146,56 @@ A agenda de vocês costuma ser equilibrada entre os profissionais ou tem quem lo
 - Vocês fecham algum dia — foi escolha ou demanda?
 - Como foi captar cliente no começo?`,
 
-    when_to_present_raise_one: `Enquanto o empresário falar do próprio negócio, continue no assunto dele.
+    when_to_present_raise_one: `A Raise One já entra na **primeira mensagem** — posicionamento claro desde o início.
 
-**A Raise One só entra quando:**
-- Perguntarem quem você é
-- Perguntarem o que você faz
-- Perguntarem como resolver algo que vocês conversaram
-- Demonstrarem interesse espontâneo ("como vocês fazem isso?", "conhece alguém que...")
+**Na conversa seguinte:**
+- Aprofunde a dor (previsibilidade, indicação, agenda)
+- Conecte observação com oportunidade concreta
+- Proponha call ou diagnóstico se ainda não marcou
 
-**A Raise One NÃO entra quando:**
-- Você acha que "é hora de apresentar"
-- A conversa esfriou e você quer retomar com pitch
-- Ele respondeu educadamente mas não abriu assunto
-- Você quer "fechar" algo
+**Não volte ao tom de curioso disfarçado** se a conversa esfriar — retome com valor ("posso te mandar um ponto que vimos no digital de vocês?").`,
 
-**Teste simples:** se você está pensando em mencionar Raise One e ele não perguntou — não mencione.`,
+    how_to_present_raise_one: `**Na primeira mensagem** — posicione direto:
 
-    how_to_present_raise_one: `**Só responda quando perguntarem.**
+"A Raise One trabalha com crescimento de empresas por estratégia e marketing — captar cliente com previsibilidade."
 
 ---
 
-**"Com quem eu falo?" / "Quem é você?"**
+**Se perguntarem "o que vocês fazem?"**
 
-Trabalho na Raise One.
-
-(Pare. Se quiserem saber mais, vão perguntar.)
+Estruturamos marketing e comercial: tráfego, presença digital, processo de agendamento. Para salões que já operam bem e querem crescer com previsibilidade — saber de onde vem cliente e encher agenda nos dias certos.
 
 ---
 
-**"O que vocês fazem?" / "O que é Raise One?"**
+**Se perguntarem "vocês fazem para salão?"**
 
-A Raise One trabalha com crescimento digital — captar cliente, estruturar processo comercial, presença online. Depende muito do negócio.
-
----
-
-**"Vocês fazem isso para salão?"**
-
-Sim, conversamos com bastante salão. Cada um tem uma realidade — uns dependem de indicação, outros querem equilibrar agenda, outros querem saber de onde vem cliente. Depende do que faz sentido.
+Sim. Trabalhamos com salões consolidados — uns querem equilibrar agenda, outros sair da dependência de indicação, outros converter Instagram em agendamento. Depende do momento.
 
 ---
 
-**"Como vocês fariam isso?" / "Vocês resolvem isso?"**
+**Se pedirem proposta antes da call**
 
-Primeiro eu precisaria entender melhor como o [Salão] funciona. Pelo que você contou, [retomar algo que ele disse]. Aí dá pra ter uma ideia se faz sentido conversar mais a fundo.
+Antes de qualquer proposta, preciso entender como o [Salão] funciona hoje. Por isso a conversa de 15 min — para ver se faz sentido e onde está a oportunidade.`,
 
----
+    best_practices: `**Pesquise antes.** Google Maps, Instagram, avaliações. A observação prova que você analisou — não que está caçando defeito.
 
-**Proibido:**
-- "Ajudamos empresas a..."
-- Pitch decorado
-- Listar serviços (Google Ads, CRM, Landing Page)
-- Oferecer reunião antes dele pedir`,
+**Seja direto.** Posicione a Raise One na primeira mensagem. O empresário precisa entender que você pode ajudá-lo a faturar mais.
 
-    best_practices: `**Pesquise antes.** Google Maps, Instagram, avaliações. A mensagem nasce de algo real.
+**Tom de parceiro.** Profissional, sem marketingês, sem curiosidade falsa.
 
-**Escreva como fundador.** Dois empresários após um evento. Ninguém vendendo.
-
-**Nunca use "ajudar".** Clichê de agência. Ninguém acredita.
-
-**Frases curtas.** Naturais. Sem marketingês.
-
-**Personalize.** Troque cidade, serviço, observação. Se não viu nada real, não mande mensagem genérica.
+**Personalize.** Cidade, serviço, observação real. Genérico não converte.
 
 **Horário:** ter–qui, 10h–12h ou 14h–16h. Evite sábado manhã.
 
-**Insistência:** no máximo uma retomada, com nova observação. Duas tentativas sem resposta = encerrar.
+**Insistência:** no máximo uma retomada com novo ângulo de valor. Duas tentativas sem resposta = encerrar.
 
-**Sensação desejada:** "Gostei de conversar com esse cara." — não "tentaram me vender algo."
-
-**Adaptação:** estes padrões ensinam comportamento. Reescreva com suas palavras e o que você viu.`,
+**Sensação desejada:** "Essa empresa entende meu negócio e pode me ajudar a crescer." — não "mais um vendedor disfarçado."`,
   },
 
   objections: [
     {
       objection: "Quem é você? / O que você quer?",
-      response: "Trabalho na Raise One. Estava pesquisando salões da região e achei o de vocês interessante — por isso mandei mensagem.",
+      response: "Sou da Raise One — trabalhamos com crescimento de salões por estratégia e marketing. Vi o perfil de vocês e achei que valia uma conversa.",
       objective: "Responder sem pitch.",
     },
     {

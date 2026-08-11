@@ -25,22 +25,19 @@ export function CommercialLibraryPage() {
         description="Abra qualquer prospect no pipeline. O Assistente de Conversa guia observação → abertura → resposta → continuidade em poucos cliques."
       />
 
-      <div className="mt-4">
+      <div>
         <Link to="/os/prospeccao" className="dashboard-btn-primary inline-flex">
           Ir para o pipeline
         </Link>
       </div>
 
-      <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {SEGMENT_OPTIONS.map((s) => {
           const copilot = getSegmentCopilot(s.slug);
           return (
-            <div
-              key={s.slug}
-              className="rounded-lg border border-border/50 p-4 text-sm"
-            >
-              <p className="font-medium">{s.name}</p>
-              <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
+            <div key={s.slug} className="os-option-card">
+              <p className="font-medium text-foreground/90">{s.name}</p>
+              <ul className="mt-2.5 space-y-1 text-xs text-muted-foreground/70">
                 <li>{copilot.observations.length} observações</li>
                 <li>{copilot.openings.length} aberturas</li>
                 <li>{copilot.responseStates.length} respostas</li>

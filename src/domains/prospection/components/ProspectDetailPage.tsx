@@ -13,9 +13,12 @@ import type { Prospect, ProspectStatus } from "@/domains/prospection/types";
 import { SEGMENT_OPTIONS } from "@/domains/prospection/copilot/types";
 import {
   PROSPECT_STATUSES,
+  STATUS_ACCENT,
   STATUS_LABELS,
   buildWhatsAppUrl,
   formatProspectDate,
+  getNextActionUrgency,
+  NEXT_ACTION_URGENCY_LABELS,
 } from "@/domains/prospection/types";
 import { EmptyState, PageHeader, PageSkeleton, Section, OSPage } from "@/os/ui";
 import { getErrorMessage, isUnauthorizedError } from "@/lib/api/client-errors";
@@ -49,12 +52,14 @@ import {
   Building2,
   ExternalLink,
   Loader2,
+  MapPin,
   MessageSquare,
   Target,
   Trash2,
 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 type DetailData = Awaited<ReturnType<typeof getProspect>>;
 
@@ -190,7 +195,6 @@ export function ProspectDetailPage() {
     <OSPage>
       <PageHeader
         title={prospect.name}
-        description={`${prospect.city ?? "—"} · ${STATUS_LABELS[prospect.status]}`}
         icon={Target}
         actions={
           <>
@@ -261,8 +265,27 @@ export function ProspectDetailPage() {
         }
       />
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-1">
+      <div className="flex flex-wrap items-center gap-3">
+        {(prospect.city || prospect.state) && (
+          <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/70">
+            <MapPin className="h-3 w-3 shrink-0 opacity-60" strokeWidth={1.75} />
+            {[prospect.city, prospect.state].filter(Boolean).join(", ")}
+          </span>
+        )}
+        <span className="prospect-status-badge">
+          <span
+            className={cn("h-1.5 w-1.5 shrink-0 rounded-full", STATUS_ACCENT[prospect.status])}
+            aria-hidden
+          />
+          {STATUS_LABELS[prospect.status]}
+        </span>
+        <span className="text-xs text-muted-foreground/50">
+          Cadastro {formatProspectDate(prospect.created_at)}
+        </span>
+      </div>
+
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,340px)_1fr]">
+        <div className="space-y-5">
           <Section title="Informações">
             <ProspectInfoForm prospect={prospect} onSaved={load} />
           </Section>
@@ -271,23 +294,43 @@ export function ProspectDetailPage() {
           </Section>
         </div>
 
-        <div className="space-y-6 lg:col-span-2">
+        <div className="space-y-5">
           <Section title="Assistente de Conversa" noPadding>
-            <div className="p-4">
+            <div className="prospect-panel-inner">
               <ConversationAssistant prospectId={prospect.id} onUpdated={load} />
             </div>
           </Section>
 
-          <Tabs defaultValue="diagnostico">
-            <TabsList className="w-full justify-start">
-              <TabsTrigger value="diagnostico">Diagnóstico</TabsTrigger>
-              <TabsTrigger value="oportunidades">Oportunidades</TabsTrigger>
-              <TabsTrigger value="conversas">Conversas</TabsTrigger>
-              <TabsTrigger value="historico">Histórico</TabsTrigger>
+          <Tabs defaultValue="diagnostico" className="space-y-4">
+            <TabsList className="os-tabs-list justify-start bg-transparent">
+              <TabsTrigger
+                value="diagnostico"
+                className="os-tab-trigger data-[state=active]:bg-surface-elevated/80 data-[state=active]:text-foreground data-[state=active]:shadow-none"
+              >
+                Diagnóstico
+              </TabsTrigger>
+              <TabsTrigger
+                value="oportunidades"
+                className="os-tab-trigger data-[state=active]:bg-surface-elevated/80 data-[state=active]:text-foreground data-[state=active]:shadow-none"
+              >
+                Oportunidades
+              </TabsTrigger>
+              <TabsTrigger
+                value="conversas"
+                className="os-tab-trigger data-[state=active]:bg-surface-elevated/80 data-[state=active]:text-foreground data-[state=active]:shadow-none"
+              >
+                Conversas
+              </TabsTrigger>
+              <TabsTrigger
+                value="historico"
+                className="os-tab-trigger data-[state=active]:bg-surface-elevated/80 data-[state=active]:text-foreground data-[state=active]:shadow-none"
+              >
+                Histórico
+              </TabsTrigger>
             </TabsList>
-            <TabsContent value="diagnostico" className="mt-4">
+            <TabsContent value="diagnostico" className="mt-0">
               <Section title="Checklist" noPadding>
-                <div className="p-4">
+                <div className="prospect-panel-inner">
                   <ProspectChecklist
                     prospectId={prospect.id}
                     items={checklist}
@@ -296,9 +339,9 @@ export function ProspectDetailPage() {
                 </div>
               </Section>
             </TabsContent>
-            <TabsContent value="oportunidades" className="mt-4">
+            <TabsContent value="oportunidades" className="mt-0">
               <Section title="Oportunidades identificadas" noPadding>
-                <div className="p-4">
+                <div className="prospect-panel-inner">
                   <ProspectOpportunities
                     prospectId={prospect.id}
                     items={opportunities}
@@ -307,39 +350,39 @@ export function ProspectDetailPage() {
                 </div>
               </Section>
             </TabsContent>
-            <TabsContent value="conversas" className="mt-4 space-y-4">
+            <TabsContent value="conversas" className="mt-0 space-y-5">
               <Section title="Registrar conversa">
-                <div className="space-y-3">
-                  <div className="space-y-1.5">
-                    <Label>Mensagem enviada</Label>
+                <div className="space-y-4">
+                  <Field label="Mensagem enviada">
                     <Textarea
                       value={conversationForm.sent}
                       onChange={(e) =>
                         setConversationForm((f) => ({ ...f, sent: e.target.value }))
                       }
                       rows={2}
+                      className="text-sm"
                     />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label>Resposta recebida</Label>
+                  </Field>
+                  <Field label="Resposta recebida">
                     <Textarea
                       value={conversationForm.received}
                       onChange={(e) =>
                         setConversationForm((f) => ({ ...f, received: e.target.value }))
                       }
                       rows={2}
+                      className="text-sm"
                     />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label>Notas</Label>
+                  </Field>
+                  <Field label="Notas">
                     <Textarea
                       value={conversationForm.notes}
                       onChange={(e) =>
                         setConversationForm((f) => ({ ...f, notes: e.target.value }))
                       }
                       rows={2}
+                      className="text-sm"
                     />
-                  </div>
+                  </Field>
                   <Button size="sm" onClick={() => void handleLogConversation()}>
                     <MessageSquare className="h-4 w-4" />
                     Registrar
@@ -348,13 +391,13 @@ export function ProspectDetailPage() {
               </Section>
               <Section title="Memória comercial">
                 {conversations.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">Nenhuma conversa registrada.</p>
+                  <p className="text-sm text-muted-foreground/70">Nenhuma conversa registrada.</p>
                 ) : (
                   <ProspectTimeline interactions={conversations} />
                 )}
               </Section>
             </TabsContent>
-            <TabsContent value="historico" className="mt-4">
+            <TabsContent value="historico" className="mt-0">
               <Section title="Timeline">
                 <ProspectTimeline interactions={interactions} />
               </Section>
@@ -441,104 +484,107 @@ function ProspectInfoForm({
   const whatsAppUrl = buildWhatsAppUrl(form.whatsapp);
 
   return (
-    <div className="space-y-3 text-sm">
-      <Field label="Empresa" value={form.name} onChange={(v) => save({ name: v })} />
-      <div className="space-y-1.5">
-        <Label className="text-xs text-muted-foreground">Segmento</Label>
-        <Select value={form.segmentSlug} onValueChange={(v) => save({ segmentSlug: v })}>
-          <SelectTrigger className="h-8">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {SEGMENT_OPTIONS.map((s) => (
-              <SelectItem key={s.slug} value={s.slug}>
-                {s.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <Field label="Cidade" value={form.city} onChange={(v) => save({ city: v })} />
-      <Field label="UF" value={form.state} onChange={(v) => save({ state: v })} />
-      <Field label="Telefone" value={form.phone} onChange={(v) => save({ phone: v })} />
-      <Field label="WhatsApp" value={form.whatsapp} onChange={(v) => save({ whatsapp: v })} />
-      {whatsAppUrl && (
-        <a
-          href={whatsAppUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center gap-1 text-xs text-brand hover:underline"
-        >
-          Abrir no WhatsApp <ExternalLink className="h-3 w-3" />
-        </a>
-      )}
-      <Field label="Instagram" value={form.instagram} onChange={(v) => save({ instagram: v })} />
-      <Field label="Website" value={form.website} onChange={(v) => save({ website: v })} />
-      <Field
-        label="Google Maps"
-        value={form.googleMapsUrl}
-        onChange={(v) => save({ googleMapsUrl: v })}
-      />
-      {form.googleMapsUrl && (
-        <a
-          href={form.googleMapsUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center gap-1 text-xs text-brand hover:underline"
-        >
-          Abrir no Maps <ExternalLink className="h-3 w-3" />
-        </a>
-      )}
-      <Field label="Origem" value={form.source} onChange={(v) => save({ source: v })} />
-      <div className="space-y-1.5">
-        <Label className="text-xs text-muted-foreground">Responsável</Label>
-        <Select
-          value={form.ownerId || "none"}
-          onValueChange={(v) => save({ ownerId: v === "none" ? "" : (v as TeamMember) })}
-        >
-          <SelectTrigger className="h-8">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="none">—</SelectItem>
-            {TEAM_MEMBERS.map((m) => (
-              <SelectItem key={m} value={m}>
-                {TEAM_LABELS[m]}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="space-y-1.5">
-        <Label className="text-xs text-muted-foreground">Status</Label>
-        <Select
-          value={form.status}
-          onValueChange={(v) => save({ status: v as ProspectStatus })}
-        >
-          <SelectTrigger className="h-8">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {PROSPECT_STATUSES.map((s) => (
-              <SelectItem key={s} value={s}>
-                {STATUS_LABELS[s]}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <p className="text-xs text-muted-foreground">
-        Cadastro: {formatProspectDate(prospect.created_at)}
-      </p>
-      <div className="space-y-1.5">
-        <Label className="text-xs text-muted-foreground">Observações</Label>
-        <Textarea
-          value={form.notes}
-          onChange={(e) => save({ notes: e.target.value })}
-          rows={3}
-          className="text-sm"
+    <div className="space-y-5 text-sm">
+      <FieldGroup title="Empresa">
+        <Field label="Nome" value={form.name} onChange={(v) => save({ name: v })} />
+        <div className="space-y-1.5">
+          <Label className="text-[11px] font-medium text-muted-foreground/70">Segmento</Label>
+          <Select value={form.segmentSlug} onValueChange={(v) => save({ segmentSlug: v })}>
+            <SelectTrigger className="h-9 w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {SEGMENT_OPTIONS.map((s) => (
+                <SelectItem key={s.slug} value={s.slug}>
+                  {s.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <Field label="Categoria" value={form.category} onChange={(v) => save({ category: v })} />
+        <div className="grid grid-cols-3 gap-2">
+          <div className="col-span-2">
+            <Field label="Cidade" value={form.city} onChange={(v) => save({ city: v })} />
+          </div>
+          <Field label="UF" value={form.state} onChange={(v) => save({ state: v })} />
+        </div>
+      </FieldGroup>
+
+      <FieldGroup title="Contato">
+        <Field label="Telefone" value={form.phone} onChange={(v) => save({ phone: v })} />
+        <Field label="WhatsApp" value={form.whatsapp} onChange={(v) => save({ whatsapp: v })} />
+        {whatsAppUrl && (
+          <a href={whatsAppUrl} target="_blank" rel="noreferrer" className="prospect-link-action">
+            Abrir no WhatsApp <ExternalLink className="h-3 w-3" />
+          </a>
+        )}
+        <Field label="Instagram" value={form.instagram} onChange={(v) => save({ instagram: v })} />
+        <Field label="Website" value={form.website} onChange={(v) => save({ website: v })} />
+        <Field
+          label="Google Maps"
+          value={form.googleMapsUrl}
+          onChange={(v) => save({ googleMapsUrl: v })}
         />
-      </div>
+        {form.googleMapsUrl && (
+          <a href={form.googleMapsUrl} target="_blank" rel="noreferrer" className="prospect-link-action">
+            Abrir no Maps <ExternalLink className="h-3 w-3" />
+          </a>
+        )}
+      </FieldGroup>
+
+      <FieldGroup title="Gestão">
+        <Field label="Origem" value={form.source} onChange={(v) => save({ source: v })} />
+        <div className="space-y-1.5">
+          <Label className="text-[11px] font-medium text-muted-foreground/70">Responsável</Label>
+          <Select
+            value={form.ownerId || "none"}
+            onValueChange={(v) => save({ ownerId: v === "none" ? "" : (v as TeamMember) })}
+          >
+            <SelectTrigger className="h-9 w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">—</SelectItem>
+              {TEAM_MEMBERS.map((m) => (
+                <SelectItem key={m} value={m}>
+                  {TEAM_LABELS[m]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-[11px] font-medium text-muted-foreground/70">Status</Label>
+          <Select
+            value={form.status}
+            onValueChange={(v) => save({ status: v as ProspectStatus })}
+          >
+            <SelectTrigger className="h-9 w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {PROSPECT_STATUSES.map((s) => (
+                <SelectItem key={s} value={s}>
+                  <span className="flex items-center gap-2">
+                    <span className={cn("h-1.5 w-1.5 rounded-full", STATUS_ACCENT[s])} />
+                    {STATUS_LABELS[s]}
+                  </span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-[11px] font-medium text-muted-foreground/70">Observações</Label>
+          <Textarea
+            value={form.notes}
+            onChange={(e) => save({ notes: e.target.value })}
+            rows={3}
+            className="text-sm"
+          />
+        </div>
+      </FieldGroup>
     </div>
   );
 }
@@ -573,10 +619,23 @@ function NextActionForm({
     }, 500);
   };
 
+  const urgency = getNextActionUrgency(nextActionDate);
+
   return (
-    <div className="space-y-3">
-      <div className="space-y-1.5">
-        <Label className="text-xs text-muted-foreground">Ação</Label>
+    <div className="space-y-4">
+      {urgency && (
+        <span
+          className={cn(
+            "inline-flex rounded-full px-2.5 py-0.5 text-[10px] font-medium",
+            urgency === "overdue" && "bg-red-400/12 text-red-400",
+            urgency === "today" && "bg-amber-400/12 text-amber-400",
+            urgency === "future" && "bg-brand/8 text-brand/90",
+          )}
+        >
+          {NEXT_ACTION_URGENCY_LABELS[urgency]}
+        </span>
+      )}
+      <Field label="Ação">
         <Input
           value={nextAction}
           onChange={(e) => {
@@ -584,10 +643,10 @@ function NextActionForm({
             save(e.target.value, nextActionDate);
           }}
           placeholder="Ex: Enviar follow-up"
+          className="h-9"
         />
-      </div>
-      <div className="space-y-1.5">
-        <Label className="text-xs text-muted-foreground">Data</Label>
+      </Field>
+      <Field label="Data">
         <Input
           type="date"
           value={nextActionDate}
@@ -595,8 +654,18 @@ function NextActionForm({
             setNextActionDate(e.target.value);
             save(nextAction, e.target.value);
           }}
+          className="h-9"
         />
-      </div>
+      </Field>
+    </div>
+  );
+}
+
+function FieldGroup({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <div className="prospect-field-group">
+      <p className="prospect-field-group-title">{title}</p>
+      {children}
     </div>
   );
 }
@@ -605,19 +674,23 @@ function Field({
   label,
   value,
   onChange,
+  children,
 }: {
   label: string;
-  value: string;
-  onChange: (v: string) => void;
+  value?: string;
+  onChange?: (v: string) => void;
+  children?: ReactNode;
 }) {
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs text-muted-foreground">{label}</Label>
-      <Input
-        className="h-8"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      />
+      <Label className="text-[11px] font-medium text-muted-foreground/70">{label}</Label>
+      {children ?? (
+        <Input
+          className="h-9"
+          value={value}
+          onChange={(e) => onChange?.(e.target.value)}
+        />
+      )}
     </div>
   );
 }

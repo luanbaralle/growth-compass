@@ -48,7 +48,7 @@ export function ProspectChecklist({
   }, []);
 
   return (
-    <div className="space-y-2">
+    <div>
       {CHECKLIST_ITEMS.map((item) => {
         const row = itemMap.get(item.key);
         const status = row?.status ?? "no";
@@ -88,24 +88,24 @@ function ChecklistRow({
   }, [notes]);
 
   return (
-    <div className="rounded-lg border border-border/50 p-3">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm font-medium">{label}</p>
-        <div className="flex gap-1">
+    <div className="prospect-checklist-row">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-[13px] font-medium text-foreground/90">{label}</p>
+        <div className="prospect-segmented">
           {STATUS_OPTIONS.map((opt) => (
             <button
               key={opt.value}
               type="button"
               onClick={() => onStatusChange(opt.value)}
               className={cn(
-                "rounded-md px-2 py-1 text-xs transition-colors",
+                "rounded-md px-2.5 py-1 text-[11px] font-medium transition-colors",
                 status === opt.value
                   ? opt.value === "yes"
-                    ? "bg-emerald-400/15 text-emerald-400"
+                    ? "bg-emerald-400/15 text-emerald-400 shadow-sm"
                     : opt.value === "no"
-                      ? "bg-red-400/15 text-red-400"
-                      : "bg-amber-400/15 text-amber-400"
-                  : "text-muted-foreground hover:bg-surface-elevated",
+                      ? "bg-red-400/12 text-red-400 shadow-sm"
+                      : "bg-amber-400/12 text-amber-400 shadow-sm"
+                  : "text-muted-foreground/60 hover:text-muted-foreground",
               )}
             >
               {opt.label}
@@ -114,7 +114,7 @@ function ChecklistRow({
         </div>
       </div>
       <Input
-        className="mt-2 h-8 text-xs"
+        className="h-8 border-border/20 bg-background/30 text-xs"
         placeholder="Observação rápida..."
         value={localNotes}
         onChange={(e) => {

@@ -193,6 +193,18 @@ export const STATUS_LABELS: Record<ProspectStatus, string> = {
   perdido: "Perdido",
 };
 
+export const STATUS_ACCENT: Record<ProspectStatus, string> = {
+  novo: "bg-sky-400",
+  primeiro_contato: "bg-brand",
+  respondeu: "bg-amber-400",
+  diagnostico_enviado: "bg-violet-400",
+  interessado: "bg-orange-400",
+  proposta_enviada: "bg-cyan-400",
+  negociacao: "bg-yellow-400",
+  cliente: "bg-emerald-400",
+  perdido: "bg-red-400/60",
+};
+
 export const CHECKLIST_ITEMS: { key: string; label: string }[] = [
   { key: "google_business", label: "Google Meu Negócio" },
   { key: "website", label: "Website" },

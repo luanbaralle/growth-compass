@@ -31,7 +31,7 @@ import {
   effectiveFinanceStatus,
 } from "@/domains/finance/types";
 import { getErrorMessage, isUnauthorizedError } from "@/lib/api/client-errors";
-import { EmptyState, PageHeader, PageSkeleton, StatCard, OSPage, OSRefreshButton, OSPrimaryButton, FilterToolbar, FilterPill, DataTable } from "@/os/ui";
+import { EmptyState, PageHeader, PageSkeleton, StatCard, OSPage, OSRefreshButton, OSPrimaryButton, FilterToolbar, FilterRow, FilterSearch, FilterPillsRow, FilterPill, OSMetricGrid, DataTable } from "@/os/ui";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,7 +44,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -61,7 +60,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Check, Pencil, Search, Trash2, Wallet } from "lucide-react";
+import { Check, Pencil, Trash2, Wallet } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -164,7 +163,7 @@ export function FinanceListPage() {
         }
       />
 
-      <section className="grid gap-3 sm:grid-cols-3">
+      <OSMetricGrid>
         <StatCard
           label="A receber"
           value={formatMoney(summary.pendingCents)}
@@ -186,38 +185,36 @@ export function FinanceListPage() {
           accent="success"
           icon={Wallet}
         />
-      </section>
+      </OSMetricGrid>
 
       {error && (
         <EmptyState title="Não foi possível carregar o financeiro" description={error} />
       )}
 
       <FilterToolbar>
-        <div className="relative min-w-[200px] flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/50" />
-          <Input
-            className="pl-9"
-            placeholder="Buscar por descrição ou empresa..."
+        <FilterRow>
+          <FilterSearch
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={setSearch}
+            placeholder="Buscar por descrição ou empresa..."
           />
-        </div>
-        <Select value={type} onValueChange={(v) => setType(v as typeof type)}>
-          <SelectTrigger className="w-[150px]">
-            <SelectValue placeholder="Tipo" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos tipos</SelectItem>
-            {FINANCE_TYPES.map((t) => (
-              <SelectItem key={t} value={t}>
-                {TYPE_LABELS[t]}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          <Select value={type} onValueChange={(v) => setType(v as typeof type)}>
+            <SelectTrigger className="h-9 w-[150px] shrink-0 sm:ml-auto">
+              <SelectValue placeholder="Tipo" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos tipos</SelectItem>
+              {FINANCE_TYPES.map((t) => (
+                <SelectItem key={t} value={t}>
+                  {TYPE_LABELS[t]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </FilterRow>
       </FilterToolbar>
 
-      <div className="flex flex-wrap gap-2">
+      <FilterPillsRow>
         <FilterPill
           active={status === "all"}
           onClick={() => setStatus("all")}
@@ -231,7 +228,7 @@ export function FinanceListPage() {
             label={`${STATUS_LABELS[s]} (${counts[s] ?? 0})`}
           />
         ))}
-      </div>
+      </FilterPillsRow>
 
       {loading ? (
         <PageSkeleton title="Financeiro" metricCount={0} />

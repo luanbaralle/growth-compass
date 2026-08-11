@@ -120,10 +120,13 @@ export const saveAssistantStateSchema = z.object({
     .enum([
       "observations",
       "openings",
+      "opening",
       "awaiting_reply",
       "no_reply",
       "response_state",
       "continuation",
+      "conversation",
+      "raise_one",
       "done",
     ])
     .optional(),
@@ -133,4 +136,13 @@ export const saveAssistantStateSchema = z.object({
   openingUsed: z.boolean().optional(),
   replyStatus: z.enum(["waiting", "no_reply", "replied"]).nullable().optional(),
   responseStateKey: z.string().max(80).nullable().optional(),
+  currentObjectiveKey: z.string().max(80).nullable().optional(),
+  discoveries: z.record(z.string(), z.string()).optional(),
+  registerDiscovery: z
+    .object({
+      discoveryKey: z.string().max(80),
+      discoveryValue: z.string().max(80),
+      inboundReplyText: z.string().max(5000).optional(),
+    })
+    .optional(),
 });

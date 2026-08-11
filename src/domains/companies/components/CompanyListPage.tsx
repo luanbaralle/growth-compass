@@ -14,7 +14,7 @@ import type { CompanyStage, CompanyWithLogo } from "@/domains/companies/types";
 import { COMPANY_STAGES, STAGE_LABELS } from "@/domains/companies/types";
 import { buildClientWhatsAppUrl } from "@/lib/whatsapp";
 import { getErrorMessage, isUnauthorizedError } from "@/lib/api/client-errors";
-import { EmptyState, PageHeader, PageSkeleton, OSPage, OSRefreshButton, OSPrimaryButton, FilterToolbar, FilterPill, DataTable } from "@/os/ui";
+import { EmptyState, PageHeader, PageSkeleton, OSPage, OSRefreshButton, OSPrimaryButton, FilterToolbar, FilterRow, FilterSearch, FilterPillsRow, FilterPill, DataTable } from "@/os/ui";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,7 +27,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -44,7 +43,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Building2, MessageCircle, Search, Trash2 } from "lucide-react";
+import { Building2, MessageCircle, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 function formatDate(iso: string): string {
@@ -121,37 +120,37 @@ export function CompanyListPage() {
       />
 
       <FilterToolbar>
-        <div className="relative min-w-[200px] flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/50" />
-          <Input
-            className="pl-9"
-            placeholder="Buscar por nome, cidade, segmento..."
+        <FilterRow>
+          <FilterSearch
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={setSearch}
+            placeholder="Buscar por nome, cidade, segmento..."
           />
-        </div>
-        <Select value={sort} onValueChange={(v) => setSort(v as typeof sort)}>
-          <SelectTrigger className="w-[160px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="created_at">Data</SelectItem>
-            <SelectItem value="name">Nome</SelectItem>
-            <SelectItem value="stage">Estágio</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={order} onValueChange={(v) => setOrder(v as typeof order)}>
-          <SelectTrigger className="w-[120px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="desc">Desc</SelectItem>
-            <SelectItem value="asc">Asc</SelectItem>
-          </SelectContent>
-        </Select>
+          <div className="flex shrink-0 items-center gap-2 sm:ml-auto">
+            <Select value={sort} onValueChange={(v) => setSort(v as typeof sort)}>
+              <SelectTrigger className="h-9 w-[140px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="created_at">Data</SelectItem>
+                <SelectItem value="name">Nome</SelectItem>
+                <SelectItem value="stage">Estágio</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={order} onValueChange={(v) => setOrder(v as typeof order)}>
+              <SelectTrigger className="h-9 w-[90px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="desc">Desc</SelectItem>
+                <SelectItem value="asc">Asc</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </FilterRow>
       </FilterToolbar>
 
-      <div className="flex flex-wrap gap-2">
+      <FilterPillsRow>
         <FilterPill
           active={stage === "all"}
           onClick={() => setStage("all")}
@@ -165,7 +164,7 @@ export function CompanyListPage() {
             label={`${STAGE_LABELS[s]} (${counts[s] ?? 0})`}
           />
         ))}
-      </div>
+      </FilterPillsRow>
 
       {error && (
         <EmptyState
