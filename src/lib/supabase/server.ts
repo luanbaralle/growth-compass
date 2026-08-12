@@ -11,12 +11,12 @@ export function requireSupabaseConfig(): { url: string; key: string } {
   return { url, key };
 }
 
-function buildHeaders(prefer?: string, contentType = "application/json"): HeadersInit {
+function buildHeaders(prefer?: string, contentType: string | false = "application/json"): HeadersInit {
   const { key } = requireSupabaseConfig();
   return {
     apikey: key,
     Authorization: `Bearer ${key}`,
-    "Content-Type": contentType,
+    ...(contentType !== false ? { "Content-Type": contentType } : {}),
     ...(prefer ? { Prefer: prefer } : {}),
   };
 }
@@ -72,7 +72,7 @@ export async function dbDelete(table: string, query: string): Promise<void> {
   const { url } = requireSupabaseConfig();
   const res = await fetch(`${url}/rest/v1/${table}?${query}`, {
     method: "DELETE",
-    headers: buildHeaders(),
+    headers: buildHeaders(undefined, false),
   });
   await parseResponse<void>(res, `DELETE ${table}`);
 }
@@ -119,7 +119,7 @@ export async function storageDelete(path: string): Promise<void> {
   const { url } = requireSupabaseConfig();
   const res = await fetch(`${url}/storage/v1/object/${STORAGE_BUCKET}/${path}`, {
     method: "DELETE",
-    headers: buildHeaders(),
+    headers: buildHeaders(undefined, false),
   });
   await parseResponse(res, `STORAGE DELETE ${path}`);
 }
