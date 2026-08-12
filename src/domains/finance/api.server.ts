@@ -7,6 +7,8 @@ import {
   listFinanceEntriesSchema,
   markFinancePaidSchema,
   updateFinanceEntrySchema,
+  generateFinanceReceiptSchema,
+  financeReceiptPreviewSchema,
   uploadFinanceReceiptSchema,
 } from "@/domains/finance/schema";
 
@@ -34,6 +36,8 @@ export const createFinanceEntry = createServerFn({ method: "POST" })
           status: data.status,
           paidAt: data.paidAt || undefined,
           paymentMethod: data.paymentMethod,
+          recurring: data.recurring,
+          recurringMonths: data.recurringMonths,
         },
         author,
       );
@@ -120,6 +124,34 @@ export const uploadFinanceReceipt = createServerFn({ method: "POST" })
         data.name,
         data.mimeType,
         data.base64,
+        author,
+      );
+    });
+  });
+
+export const getFinanceReceiptPreview = createServerFn({ method: "GET" })
+  .validator(financeReceiptPreviewSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const financeService = await import("@/domains/finance/service.server");
+      return financeService.getFinanceReceiptPreview(data.id, data.companyId);
+    });
+  });
+
+export const generateFinanceReceipt = createServerFn({ method: "POST" })
+  .validator(generateFinanceReceiptSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async (author) => {
+      const financeService = await import("@/domains/finance/service.server");
+      return financeService.generateFinanceReceipt(
+        {
+          financeEntryId: data.id,
+          companyId: data.companyId,
+          receiptNumber: data.receiptNumber,
+          issueDate: data.issueDate,
+          companyCode: data.companyCode,
+          serviceDescription: data.serviceDescription,
+        },
         author,
       );
     });

@@ -48,6 +48,18 @@ export async function getOSPreferences(): Promise<OSPreferences> {
         : DEFAULT_OS_PREFERENCES.defaultWhatsApp,
     opsNotes:
       typeof raw.opsNotes === "string" ? raw.opsNotes : DEFAULT_OS_PREFERENCES.opsNotes,
+    receiptPrefix:
+      typeof raw.receiptPrefix === "string"
+        ? raw.receiptPrefix
+        : DEFAULT_OS_PREFERENCES.receiptPrefix,
+    issuerName:
+      typeof raw.issuerName === "string" ? raw.issuerName : DEFAULT_OS_PREFERENCES.issuerName,
+    issuerCpf:
+      typeof raw.issuerCpf === "string" ? raw.issuerCpf : DEFAULT_OS_PREFERENCES.issuerCpf,
+    issuerEmail:
+      typeof raw.issuerEmail === "string" ? raw.issuerEmail : DEFAULT_OS_PREFERENCES.issuerEmail,
+    issuerPhone:
+      typeof raw.issuerPhone === "string" ? raw.issuerPhone : DEFAULT_OS_PREFERENCES.issuerPhone,
   };
 }
 

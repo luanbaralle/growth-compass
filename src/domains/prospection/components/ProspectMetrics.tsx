@@ -4,7 +4,7 @@ import { MessageSquare, Percent, Target, TrendingUp, Users } from "lucide-react"
 
 export function ProspectMetricsBar({ metrics }: { metrics: ProspectionMetrics }) {
   return (
-    <OSMetricGrid className="lg:grid-cols-5">
+    <OSMetricGrid columns={5}>
       <StatCard
         label="Prospectados"
         value={String(metrics.prospected)}

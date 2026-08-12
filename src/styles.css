@@ -958,12 +958,12 @@
 
 @utility dashboard-kpi-primary {
   position: relative;
-  min-height: 7.5rem;
+  min-height: 6.75rem;
   overflow: hidden;
   border-radius: 0.75rem;
   border: 1px solid oklch(1 0 0 / 0.06);
   background: oklch(0.155 0.004 55);
-  padding: 1.125rem 1.125rem 1rem;
+  padding: 1rem 1rem 0.875rem;
   box-shadow: 0 1px 0 oklch(1 0 0 / 0.04) inset;
   transition: border-color 200ms ease;
 }
@@ -986,7 +986,7 @@
 
 @utility dashboard-kpi-value {
   font-family: var(--font-display);
-  font-size: 2.5rem;
+  font-size: 2.125rem;
   font-weight: 700;
   line-height: 1;
   letter-spacing: -0.04em;

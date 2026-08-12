@@ -17,6 +17,7 @@ import {
   formToPayload,
   type FinanceFormValues,
 } from "@/domains/finance/components/FinanceFormDialog";
+import { FinanceReceiptGeneratorDialog } from "@/domains/finance/components/FinanceReceiptGeneratorDialog";
 import { uploadFinanceReceiptFiles } from "@/domains/finance/components/FinanceReceiptsField";
 import type {
   FinanceEntryStatus,
@@ -60,7 +61,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Check, Pencil, Trash2, Wallet } from "lucide-react";
+import { Check, FileText, Pencil, Repeat, Trash2, Wallet } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -69,9 +70,13 @@ export function FinanceListPage() {
   const [entries, setEntries] = useState<FinanceEntryWithCompany[]>([]);
   const [counts, setCounts] = useState<Record<string, number>>({ all: 0 });
   const [summary, setSummary] = useState({
-    pendingCents: 0,
+    dueThisMonthCents: 0,
     overdueCents: 0,
+    receivableCents: 0,
     paidThisMonthCents: 0,
+    mrrCents: 0,
+    mrrClientCount: 0,
+    futurePendingCents: 0,
   });
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -79,6 +84,7 @@ export function FinanceListPage() {
   const [type, setType] = useState<FinanceEntryType | "all">("all");
   const [createOpen, setCreateOpen] = useState(false);
   const [editEntry, setEditEntry] = useState<FinanceEntryWithCompany | null>(null);
+  const [receiptEntry, setReceiptEntry] = useState<FinanceEntryWithCompany | null>(null);
   const [error, setError] = useState("");
 
   const load = useCallback(async () => {
@@ -114,11 +120,15 @@ export function FinanceListPage() {
   }, [load, search]);
 
   const handleCreate = async (form: FinanceFormValues, receipts: File[]) => {
-    const entry = await createFinanceEntry({ data: formToPayload(form) });
+    const result = await createFinanceEntry({ data: formToPayload(form) });
     if (receipts.length > 0) {
-      await uploadFinanceReceiptFiles(form.companyId, entry.id, receipts);
+      await uploadFinanceReceiptFiles(form.companyId, result.entry.id, receipts);
     }
-    toast.success("Lançamento criado");
+    toast.success(
+      result.createdCount > 1
+        ? `${result.createdCount} cobranças criadas`
+        : "Lançamento criado",
+    );
     await load();
   };
 
@@ -163,11 +173,26 @@ export function FinanceListPage() {
         }
       />
 
-      <OSMetricGrid>
+      <OSMetricGrid columns={4}>
+        <StatCard
+          label="MRR"
+          value={formatMoney(summary.mrrCents)}
+          sub={
+            summary.mrrClientCount > 0
+              ? `${summary.mrrClientCount} cliente(s) ativo(s)`
+              : "Mensalidades recorrentes"
+          }
+          accent="brand"
+          icon={Repeat}
+        />
         <StatCard
           label="A receber"
-          value={formatMoney(summary.pendingCents)}
-          sub="Pendentes"
+          value={formatMoney(summary.receivableCents)}
+          sub={
+            summary.futurePendingCents > 0
+              ? `+ ${formatMoney(summary.futurePendingCents)} agendado`
+              : "Este mês + atrasados"
+          }
           accent="warning"
           icon={Wallet}
         />
@@ -249,7 +274,7 @@ export function FinanceListPage() {
                 <TableHead>Valor</TableHead>
                 <TableHead>Vencimento</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="w-[120px]" />
+                <TableHead className="w-[150px]" />
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -293,6 +318,16 @@ export function FinanceListPage() {
                             onClick={() => void handleMarkPaid(entry)}
                           >
                             <Check className="h-3.5 w-3.5 text-emerald-400" />
+                          </Button>
+                        )}
+                        {displayStatus === "paid" && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            title="Gerar recibo"
+                            onClick={() => setReceiptEntry(entry)}
+                          >
+                            <FileText className="h-3.5 w-3.5 text-brand" />
                           </Button>
                         )}
                         <Button
@@ -349,6 +384,15 @@ export function FinanceListPage() {
         financeEntryId={editEntry?.id}
         onSubmit={handleEdit}
       />
+
+      {receiptEntry && (
+        <FinanceReceiptGeneratorDialog
+          open={!!receiptEntry}
+          onOpenChange={(open) => !open && setReceiptEntry(null)}
+          financeEntryId={receiptEntry.id}
+          companyId={receiptEntry.company_id}
+        />
+      )}
     </OSPage>
   );
 }

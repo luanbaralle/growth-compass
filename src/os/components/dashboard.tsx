@@ -464,6 +464,29 @@ const subToneClass: Record<SubTone, string> = {
   warning: "text-amber-400/85",
 };
 
+export function DashboardKpiGrid({
+  children,
+  columns = 4,
+  className,
+}: {
+  children: React.ReactNode;
+  columns?: 2 | 3 | 4 | 5;
+  className?: string;
+}) {
+  const columnClass =
+    columns === 2
+      ? "lg:grid-cols-2"
+      : columns === 3
+        ? "lg:grid-cols-3"
+        : columns === 5
+          ? "lg:grid-cols-5"
+          : "lg:grid-cols-4";
+
+  return (
+    <div className={cn("grid gap-3 sm:grid-cols-2", columnClass, className)}>{children}</div>
+  );
+}
+
 export function DashboardKpiCard({
   label,
   value,
@@ -719,23 +742,31 @@ export function DashboardSuccessState({
 export function DashboardFinanceHighlight({
   label,
   value,
+  sub,
   icon: Icon,
   href,
   actionLabel,
+  accent = "brand",
 }: {
   label: string;
   value: string;
+  sub?: string;
   icon: LucideIcon;
   href: string;
   actionLabel: string;
+  accent?: AccentTone;
 }) {
+  const colors = accentMap[accent];
+
   return (
     <Link
       to={href}
-      className="dashboard-card dashboard-card-interactive group relative flex min-h-[180px] flex-col overflow-hidden p-6 sm:p-7"
+      className="dashboard-card dashboard-card-interactive group relative flex min-h-[168px] flex-col overflow-hidden p-6 sm:p-7"
     >
+      <div className={cn("absolute inset-x-0 top-0 h-[2px]", colors.bar)} />
       <p className="dashboard-label">{label}</p>
       <p className="dashboard-value-lg mt-4">{value}</p>
+      {sub && <p className="mt-2 text-xs text-muted-foreground/70">{sub}</p>}
       <p className="dashboard-link mt-auto pt-6">{actionLabel} →</p>
       <Icon
         className="pointer-events-none absolute -bottom-3 -right-3 h-[88px] w-[88px] text-foreground/[0.03]"

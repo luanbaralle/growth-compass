@@ -23,6 +23,11 @@ export function SettingsPage() {
   const [agencyName, setAgencyName] = useState("");
   const [defaultWhatsApp, setDefaultWhatsApp] = useState("");
   const [opsNotes, setOpsNotes] = useState("");
+  const [receiptPrefix, setReceiptPrefix] = useState("R1");
+  const [issuerName, setIssuerName] = useState("");
+  const [issuerCpf, setIssuerCpf] = useState("");
+  const [issuerEmail, setIssuerEmail] = useState("");
+  const [issuerPhone, setIssuerPhone] = useState("");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -33,6 +38,11 @@ export function SettingsPage() {
       setAgencyName(result.preferences.agencyName);
       setDefaultWhatsApp(result.preferences.defaultWhatsApp);
       setOpsNotes(result.preferences.opsNotes);
+      setReceiptPrefix(result.preferences.receiptPrefix);
+      setIssuerName(result.preferences.issuerName);
+      setIssuerCpf(result.preferences.issuerCpf);
+      setIssuerEmail(result.preferences.issuerEmail);
+      setIssuerPhone(result.preferences.issuerPhone);
     } catch (err) {
       if (isUnauthorizedError(err)) {
         navigate({ to: "/os/login" });
@@ -56,6 +66,11 @@ export function SettingsPage() {
           agencyName,
           defaultWhatsApp,
           opsNotes,
+          receiptPrefix,
+          issuerName,
+          issuerCpf,
+          issuerEmail,
+          issuerPhone,
         },
       });
       toast.success("Preferências salvas");
@@ -141,6 +156,75 @@ export function SettingsPage() {
                 rows={4}
                 className="text-sm"
               />
+            </div>
+            <div className="border-t border-border/30 pt-4">
+              <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground/70">
+                Dados para recibos
+              </p>
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="receipt-prefix" className="text-[11px] font-medium text-muted-foreground/70">
+                    Prefixo da numeração
+                  </Label>
+                  <Input
+                    id="receipt-prefix"
+                    className="h-9"
+                    value={receiptPrefix}
+                    onChange={(e) => setReceiptPrefix(e.target.value)}
+                    placeholder="R1"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="issuer-name" className="text-[11px] font-medium text-muted-foreground/70">
+                    Nome do emissor
+                  </Label>
+                  <Input
+                    id="issuer-name"
+                    className="h-9"
+                    value={issuerName}
+                    onChange={(e) => setIssuerName(e.target.value)}
+                    placeholder="Nome completo"
+                  />
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="issuer-cpf" className="text-[11px] font-medium text-muted-foreground/70">
+                      CPF
+                    </Label>
+                    <Input
+                      id="issuer-cpf"
+                      className="h-9"
+                      value={issuerCpf}
+                      onChange={(e) => setIssuerCpf(e.target.value)}
+                      placeholder="000.000.000-00"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="issuer-phone" className="text-[11px] font-medium text-muted-foreground/70">
+                      Telefone
+                    </Label>
+                    <Input
+                      id="issuer-phone"
+                      className="h-9"
+                      value={issuerPhone}
+                      onChange={(e) => setIssuerPhone(e.target.value)}
+                      placeholder="(13) 99999-9999"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="issuer-email" className="text-[11px] font-medium text-muted-foreground/70">
+                    E-mail
+                  </Label>
+                  <Input
+                    id="issuer-email"
+                    className="h-9"
+                    value={issuerEmail}
+                    onChange={(e) => setIssuerEmail(e.target.value)}
+                    placeholder="contato@raiseone.com.br"
+                  />
+                </div>
+              </div>
             </div>
             <button
               type="button"

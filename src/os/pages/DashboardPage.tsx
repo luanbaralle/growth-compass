@@ -7,6 +7,7 @@ import {
   DashboardFinanceHighlight,
   DashboardHero,
   DashboardKpiCard,
+  DashboardKpiGrid,
   DashboardMarketingChart,
   DashboardPanel,
   DashboardPipeline,
@@ -102,10 +103,13 @@ export function DashboardPage() {
   const leadsToday = data?.companies.leadsToday ?? 0;
   const activeClients = data?.companies.activeClients ?? 0;
   const paidThisMonth = data?.finance.paidThisMonthCents ?? 0;
+  const mrrCents = data?.finance.mrrCents ?? 0;
+  const mrrClientCount = data?.finance.mrrClientCount ?? 0;
   const conversionRate = data?.prospection.conversionRate ?? 0;
   const investmentCents = data?.marketing.investmentCents ?? 0;
-  const messagesSent = data?.prospection.messagesSent ?? 0;
   const projectsOverdue = data?.projects.overdue ?? 0;
+  const receivableCents = data?.finance.receivableCents ?? 0;
+  const overdueFinanceCents = data?.finance.overdueCents ?? 0;
   const notifications = useMemo(() => buildDashboardNotifications(data), [data]);
 
   const quickAccessItems = [
@@ -161,7 +165,7 @@ export function DashboardPage() {
   ];
 
   return (
-    <div className="dashboard-page space-y-10 pb-6">
+    <div className="dashboard-page space-y-8 pb-6">
       <DashboardTopBar
         activePerson={activePerson}
         supabaseConnected={setup?.supabaseConfigured ?? false}
@@ -187,83 +191,85 @@ export function DashboardPage() {
             dateFilterDisabled={loading}
           />
 
-          {/* KPIs principais */}
-          <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <DashboardKpiCard
-              label={leadsKpi.label}
-              value={loading ? "—" : String(leadsToday)}
-              sub={leadsKpi.sub}
-              icon={Users}
-              accent="brand"
-              size="lg"
-            />
-            <DashboardKpiCard
-              label="Clientes ativos"
-              value={loading ? "—" : String(activeClients)}
-              sub="Estágio: Cliente ativo"
-              icon={Users}
-              accent="success"
-              subTone="success"
-              size="lg"
-            />
-            <DashboardKpiCard
-              label="Projetos"
-              value={loading ? "—" : String(totalProjects)}
-              sub={`${data?.projects.inProgress ?? 0} em andamento`}
-              icon={FolderKanban}
-              accent="warning"
-              subTone="warning"
-              size="lg"
-            />
-            <DashboardKpiCard
-              label="Recebimentos no mês"
-              value={loading ? "—" : formatFinanceMoney(paidThisMonth)}
-              sub="0% vs mês anterior"
-              icon={Wallet}
-              accent="gold"
-              size="lg"
-            />
-          </section>
+          {/* KPIs operacionais */}
+          <section className="space-y-3">
+            <DashboardKpiGrid columns={4}>
+              <DashboardKpiCard
+                label={leadsKpi.label}
+                value={loading ? "—" : String(leadsToday)}
+                sub={leadsKpi.sub}
+                icon={Users}
+                accent="brand"
+                size="lg"
+              />
+              <DashboardKpiCard
+                label="Clientes ativos"
+                value={loading ? "—" : String(activeClients)}
+                sub="Estágio: Cliente ativo"
+                icon={Users}
+                accent="success"
+                subTone="success"
+                size="lg"
+              />
+              <DashboardKpiCard
+                label="MRR"
+                value={loading ? "—" : formatFinanceMoney(mrrCents)}
+                sub={`${mrrClientCount} cliente(s) recorrente(s)`}
+                icon={Wallet}
+                accent="gold"
+                size="lg"
+              />
+              <DashboardKpiCard
+                label="Recebido no mês"
+                value={loading ? "—" : formatFinanceMoney(paidThisMonth)}
+                sub="Pagamentos confirmados"
+                icon={Wallet}
+                accent="success"
+                subTone="success"
+                size="lg"
+              />
+            </DashboardKpiGrid>
 
-          {/* KPIs secundários */}
-          <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <DashboardKpiCard
-              label="Taxa de conversão"
-              value={loading ? "—" : `${conversionRate}%`}
-              sub={`${data?.prospection.clients ?? 0} clientes`}
-              icon={Target}
-              accent="purple"
-              size="sm"
-            />
-            <DashboardKpiCard
-              label="Investimento (marketing)"
-              value={loading ? "—" : formatFinanceMoney(investmentCents)}
-              sub={`${data?.marketing.leads ?? 0} leads`}
-              icon={Megaphone}
-              accent="brand"
-              size="sm"
-            />
-            <DashboardKpiCard
-              label="Mensagens enviadas"
-              value={loading ? "—" : String(messagesSent)}
-              sub="Registradas no pipeline"
-              icon={Target}
-              accent="info"
-              size="sm"
-            />
-            <DashboardKpiCard
-              label="Projetos atrasados"
-              value={loading ? "—" : String(projectsOverdue)}
-              sub={projectsOverdue > 0 ? "Precisam de atenção" : "Tudo em dia"}
-              icon={FolderKanban}
-              accent={projectsOverdue > 0 ? "danger" : "success"}
-              size="sm"
-              trailing={
-                !loading && projectsOverdue === 0 ? (
-                  <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400/80" strokeWidth={1.75} />
-                ) : undefined
-              }
-            />
+            <DashboardKpiGrid columns={4}>
+              <DashboardKpiCard
+                label="Projetos"
+                value={loading ? "—" : String(totalProjects)}
+                sub={`${data?.projects.inProgress ?? 0} em andamento`}
+                icon={FolderKanban}
+                accent="warning"
+                subTone="warning"
+                size="sm"
+              />
+              <DashboardKpiCard
+                label="Projetos atrasados"
+                value={loading ? "—" : String(projectsOverdue)}
+                sub={projectsOverdue > 0 ? "Precisam de atenção" : "Tudo em dia"}
+                icon={FolderKanban}
+                accent={projectsOverdue > 0 ? "danger" : "success"}
+                size="sm"
+                trailing={
+                  !loading && projectsOverdue === 0 ? (
+                    <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400/80" strokeWidth={1.75} />
+                  ) : undefined
+                }
+              />
+              <DashboardKpiCard
+                label="Investimento (marketing)"
+                value={loading ? "—" : formatFinanceMoney(investmentCents)}
+                sub={`${data?.marketing.leads ?? 0} leads no período`}
+                icon={Megaphone}
+                accent="brand"
+                size="sm"
+              />
+              <DashboardKpiCard
+                label="Taxa de conversão"
+                value={loading ? "—" : `${conversionRate}%`}
+                sub={`${data?.prospection.clients ?? 0} clientes via prospecção`}
+                icon={Target}
+                accent="purple"
+                size="sm"
+              />
+            </DashboardKpiGrid>
           </section>
 
           {/* Pipeline comercial */}
@@ -341,19 +347,27 @@ export function DashboardPage() {
           {/* Financeiro & Marketing */}
           <div className="grid gap-5 lg:grid-cols-3">
             <DashboardFinanceHighlight
-              label="Cobranças atrasadas"
-              value={loading ? "—" : formatFinanceMoney(data?.finance.overdueCents ?? 0)}
+              label="A receber"
+              value={loading ? "—" : formatFinanceMoney(receivableCents)}
+              sub="Este mês + atrasados"
               icon={Wallet}
               href="/os/financeiro"
               actionLabel="Ver cobranças"
+              accent="warning"
             />
             <DashboardMarketingChart hasData={(data?.marketing.snapshotCount ?? 0) > 0} />
             <DashboardFinanceHighlight
-              label="Recebido no mês"
-              value={loading ? "—" : formatFinanceMoney(data?.finance.paidThisMonthCents ?? 0)}
+              label="Cobranças atrasadas"
+              value={loading ? "—" : formatFinanceMoney(overdueFinanceCents)}
+              sub={
+                (data?.finance.overdueCount ?? 0) > 0
+                  ? `${data?.finance.overdueCount ?? 0} lançamento(s) em atraso`
+                  : "Nenhuma inadimplência"
+              }
               icon={Building2}
               href="/os/financeiro"
               actionLabel="Ver financeiro"
+              accent={overdueFinanceCents > 0 ? "danger" : "success"}
             />
           </div>
 

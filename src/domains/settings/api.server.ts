@@ -18,6 +18,11 @@ export const updateSettings = createServerFn({ method: "POST" })
         agencyName: data.agencyName.trim(),
         defaultWhatsApp: data.defaultWhatsApp?.trim() ?? "",
         opsNotes: data.opsNotes?.trim() ?? "",
+        receiptPrefix: data.receiptPrefix?.trim() ?? "R1",
+        issuerName: data.issuerName?.trim() ?? "",
+        issuerCpf: data.issuerCpf?.trim() ?? "",
+        issuerEmail: data.issuerEmail?.trim() ?? "",
+        issuerPhone: data.issuerPhone?.trim() ?? "",
       });
     });
   });

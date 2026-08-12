@@ -76,9 +76,11 @@ export function CompanyOverview({
     Awaited<ReturnType<typeof listFinanceEntries>>["entries"]
   >([]);
   const [financeSummary, setFinanceSummary] = useState({
-    pendingCents: 0,
+    receivableCents: 0,
     overdueCents: 0,
     paidThisMonthCents: 0,
+    mrrCents: 0,
+    futurePendingCents: 0,
   });
   const [snapshots, setSnapshots] = useState<
     Awaited<ReturnType<typeof listMarketingSnapshots>>["snapshots"]
@@ -208,11 +210,13 @@ export function CompanyOverview({
         />
         <StatCard
           label="A receber"
-          value={formatMoney(financeSummary.pendingCents + financeSummary.overdueCents)}
+          value={formatMoney(financeSummary.receivableCents)}
           sub={
-            financeSummary.overdueCents > 0
-              ? `${formatMoney(financeSummary.overdueCents)} atrasado`
-              : "Nenhum atraso"
+            financeSummary.mrrCents > 0
+              ? `MRR ${formatMoney(financeSummary.mrrCents)}`
+              : financeSummary.overdueCents > 0
+                ? `${formatMoney(financeSummary.overdueCents)} atrasado`
+                : "Este mês + atrasados"
           }
           icon={Wallet}
           accent={financeSummary.overdueCents > 0 ? "danger" : "success"}

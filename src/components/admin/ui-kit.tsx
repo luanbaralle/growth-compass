@@ -207,8 +207,29 @@ export function FilterPill({
   );
 }
 
-export function OSMetricGrid({ children, className }: { children: ReactNode; className?: string }) {
-  return <section className={cn("grid gap-4 sm:grid-cols-2 xl:grid-cols-3", className)}>{children}</section>;
+export function OSMetricGrid({
+  children,
+  className,
+  columns = 3,
+}: {
+  children: ReactNode;
+  className?: string;
+  columns?: 2 | 3 | 4 | 5;
+}) {
+  const columnClass =
+    columns === 2
+      ? "lg:grid-cols-2"
+      : columns === 4
+        ? "lg:grid-cols-4"
+        : columns === 5
+          ? "lg:grid-cols-5"
+          : "xl:grid-cols-3";
+
+  return (
+    <section className={cn("grid gap-4 sm:grid-cols-2", columnClass, className)}>
+      {children}
+    </section>
+  );
 }
 
 /* ── Data table ──────────────────────────────────────────── */

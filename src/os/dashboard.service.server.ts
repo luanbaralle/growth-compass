@@ -35,9 +35,11 @@ export interface OSDashboardData {
     }>;
   };
   finance: {
-    pendingCents: number;
+    receivableCents: number;
     overdueCents: number;
     paidThisMonthCents: number;
+    mrrCents: number;
+    mrrClientCount: number;
     overdueCount: number;
     overdueItems: Array<{
       id: string;
@@ -159,9 +161,11 @@ export async function getOSDashboardData(
       overdueItems: overdueProjects,
     },
     finance: {
-      pendingCents: financeSummary.pendingCents,
+      receivableCents: financeSummary.receivableCents,
       overdueCents: financeSummary.overdueCents,
       paidThisMonthCents: financeSummary.paidThisMonthCents,
+      mrrCents: financeSummary.mrrCents,
+      mrrClientCount: financeSummary.mrrClientCount,
       overdueCount: financeCounts.overdue,
       overdueItems: overdueFinance,
     },

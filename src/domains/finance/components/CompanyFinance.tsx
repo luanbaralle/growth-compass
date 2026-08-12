@@ -7,10 +7,11 @@ import {
   formatDueDate,
   formatMoney,
 } from "@/domains/finance/components/FinanceBadges";
+import { FinanceReceiptGeneratorDialog } from "@/domains/finance/components/FinanceReceiptGeneratorDialog";
 import { effectiveFinanceStatus } from "@/domains/finance/types";
 import { getErrorMessage, isUnauthorizedError } from "@/lib/api/client-errors";
 import { Button } from "@/components/ui/button";
-import { Check, Plus, Wallet } from "lucide-react";
+import { Check, FileText, Plus, Wallet } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -29,12 +30,15 @@ export function CompanyFinance({
     Awaited<ReturnType<typeof listFinanceEntries>>["entries"]
   >([]);
   const [summary, setSummary] = useState({
-    pendingCents: 0,
+    receivableCents: 0,
     overdueCents: 0,
     paidThisMonthCents: 0,
+    mrrCents: 0,
+    futurePendingCents: 0,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [receiptEntryId, setReceiptEntryId] = useState<string | null>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -77,9 +81,17 @@ export function CompanyFinance({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="text-sm text-muted-foreground">
           Financeiro de <strong className="text-foreground">{companyName}</strong>
+          {summary.mrrCents > 0 && (
+            <span className="ml-3">MRR: {formatMoney(summary.mrrCents)}</span>
+          )}
           <span className="ml-3">
-            A receber: {formatMoney(summary.pendingCents + summary.overdueCents)}
+            A receber: {formatMoney(summary.receivableCents)}
           </span>
+          {summary.futurePendingCents > 0 && (
+            <span className="ml-3 text-muted-foreground/80">
+              ({formatMoney(summary.futurePendingCents)} agendado)
+            </span>
+          )}
         </div>
         <Button size="sm" variant="outline" onClick={onCreateClick}>
           <Plus className="h-4 w-4" />
@@ -122,11 +134,30 @@ export function CompanyFinance({
                       <Check className="h-3.5 w-3.5 text-emerald-400" />
                     </Button>
                   )}
+                  {displayStatus === "paid" && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      title="Gerar recibo"
+                      onClick={() => setReceiptEntryId(entry.id)}
+                    >
+                      <FileText className="h-3.5 w-3.5 text-brand" />
+                    </Button>
+                  )}
                 </div>
               </li>
             );
           })}
         </ul>
+      )}
+
+      {receiptEntryId && (
+        <FinanceReceiptGeneratorDialog
+          open={!!receiptEntryId}
+          onOpenChange={(open) => !open && setReceiptEntryId(null)}
+          financeEntryId={receiptEntryId}
+          companyId={companyId}
+        />
       )}
     </div>
   );

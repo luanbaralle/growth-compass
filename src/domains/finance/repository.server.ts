@@ -1,4 +1,8 @@
 import { dbDelete, dbInsert, dbSelect, dbUpdate } from "@/lib/supabase/server";
+import {
+  monthEndIso,
+  summarizeFinanceEntries,
+} from "./finance-summary.server";
 import type {
   FinanceEntry,
   FinanceEntryStatus,
@@ -121,25 +125,18 @@ export async function getFinanceSummary(companyId?: string): Promise<FinanceSumm
 
   const all = await dbSelect<FinanceEntry>("finance_entries", encodeQuery(params));
   const monthStart = monthStartIso();
+  const monthEnd = monthEndIso();
 
-  let pendingCents = 0;
-  let overdueCents = 0;
-  let paidThisMonthCents = 0;
-
-  for (const entry of all) {
-    const status = effectiveFinanceStatus(entry);
-    if (status === "pending") pendingCents += entry.amount_cents;
-    if (status === "overdue") overdueCents += entry.amount_cents;
-    if (
-      entry.status === "paid" &&
-      entry.paid_at &&
-      entry.paid_at >= monthStart
-    ) {
-      paidThisMonthCents += entry.amount_cents;
-    }
+  let activeCompanyIds: Set<string> | undefined;
+  if (!companyId) {
+    const activeCompanies = await dbSelect<{ id: string }>(
+      "companies",
+      encodeQuery({ select: "id", stage: "eq.ativo" }),
+    );
+    activeCompanyIds = new Set(activeCompanies.map((company) => company.id));
   }
 
-  return { pendingCents, overdueCents, paidThisMonthCents };
+  return summarizeFinanceEntries(all, monthStart, monthEnd, activeCompanyIds);
 }
 
 export async function findFinanceEntryById(id: string): Promise<FinanceEntry | null> {

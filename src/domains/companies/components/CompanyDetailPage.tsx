@@ -195,13 +195,17 @@ export function CompanyDetailPage({ companyId }: { companyId: string }) {
   };
 
   const handleCreateFinance = async (form: FinanceFormValues, receipts: File[]) => {
-    const entry = await createFinanceEntry({
+    const result = await createFinanceEntry({
       data: { ...financeFormToPayload(form), companyId },
     });
     if (receipts.length > 0) {
-      await uploadFinanceReceiptFiles(companyId, entry.id, receipts);
+      await uploadFinanceReceiptFiles(companyId, result.entry.id, receipts);
     }
-    toast.success("Lançamento criado");
+    toast.success(
+      result.createdCount > 1
+        ? `${result.createdCount} cobranças criadas`
+        : "Lançamento criado",
+    );
     setFinanceRefresh((k) => k + 1);
     bumpOverview();
     await load();

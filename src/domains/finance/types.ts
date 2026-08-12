@@ -38,9 +38,17 @@ export interface FinanceStatusCounts {
 }
 
 export interface FinanceSummary {
-  pendingCents: number;
+  /** Pendentes com vencimento no mês corrente */
+  dueThisMonthCents: number;
   overdueCents: number;
+  /** Caixa operacional: vence este mês + atrasados */
+  receivableCents: number;
   paidThisMonthCents: number;
+  /** Receita recorrente mensal (clientes ativos) */
+  mrrCents: number;
+  mrrClientCount: number;
+  /** Pendentes com vencimento em meses futuros */
+  futurePendingCents: number;
 }
 
 export const FINANCE_TYPES: FinanceEntryType[] = ["monthly", "setup", "other"];
