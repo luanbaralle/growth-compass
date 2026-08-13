@@ -136,6 +136,20 @@ export const CHANNEL_ACCENT: Record<ContentChannel, string> = {
   tiktok: "bg-foreground/80",
 };
 
+export const CHANNEL_BADGE: Record<ContentChannel, string> = {
+  instagram: "bg-fuchsia-500/15 text-fuchsia-300 ring-fuchsia-500/30",
+  facebook: "bg-blue-500/15 text-blue-300 ring-blue-500/30",
+  youtube: "bg-red-500/15 text-red-300 ring-red-500/30",
+  tiktok: "bg-zinc-400/15 text-zinc-200 ring-zinc-400/25",
+};
+
+export const CHANNEL_DOT: Record<ContentChannel, string> = {
+  instagram: "bg-fuchsia-400",
+  facebook: "bg-blue-400",
+  youtube: "bg-red-400",
+  tiktok: "bg-zinc-300",
+};
+
 export function formatPostDate(date: string | null): string {
   if (!date) return "Sem data";
   const [y, m, d] = date.split("-");
@@ -145,6 +159,37 @@ export function formatPostDate(date: string | null): string {
 export function formatChannels(channels: ContentChannel[]): string {
   if (channels.length === 0) return "Sem canal";
   return channels.map((c) => CHANNEL_LABELS[c]).join(", ");
+}
+
+export function getStatusIndex(status: ContentTaskStatus): number {
+  return CONTENT_STATUSES.indexOf(status);
+}
+
+export function getAdjacentStatus(
+  status: ContentTaskStatus,
+  direction: "prev" | "next",
+): ContentTaskStatus | null {
+  const index = getStatusIndex(status);
+  if (index < 0) return null;
+  if (direction === "prev") {
+    return index > 0 ? CONTENT_STATUSES[index - 1] : null;
+  }
+  return index < CONTENT_STATUSES.length - 1 ? CONTENT_STATUSES[index + 1] : null;
+}
+
+export function isStatusBeforeProgramado(status: ContentTaskStatus): boolean {
+  const programadoIndex = getStatusIndex("programado");
+  return getStatusIndex(status) < programadoIndex;
+}
+
+export function formatTaskTimestamp(iso: string): string {
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(iso));
 }
 
 export function normalizeChannels(value: unknown): ContentChannel[] {

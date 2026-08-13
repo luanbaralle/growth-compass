@@ -1,14 +1,22 @@
-import type { ContentTaskWithCompany } from "@/domains/content-production/types";
+import type { ContentTaskWithCompany, ContentType } from "@/domains/content-production/types";
+import { ContentChannelBadge } from "@/domains/content-production/components/ContentChannelBadge";
 import {
-  CHANNEL_LABELS,
   formatPostDate,
   STATUS_ACCENT,
   TYPE_LABELS,
 } from "@/domains/content-production/types";
 import { TEAM_LABELS, type TeamMember } from "@/lib/auth/types";
 import { cn } from "@/lib/utils";
-import { Calendar, User } from "lucide-react";
+import { Calendar, Clapperboard, Film, Image, Layers, User, Video, type LucideIcon } from "lucide-react";
 import { useRef } from "react";
+
+const TYPE_ICONS: Record<ContentType, LucideIcon> = {
+  video_curto: Video,
+  video_medio: Film,
+  video_longo: Clapperboard,
+  imagem: Image,
+  carrossel: Layers,
+};
 
 export function ContentTaskCard({
   task,
@@ -24,6 +32,7 @@ export function ContentTaskCard({
   onClick?: () => void;
 }) {
   const blockClickRef = useRef(false);
+  const TypeIcon = TYPE_ICONS[task.content_type];
 
   return (
     <button
@@ -68,14 +77,10 @@ export function ContentTaskCard({
 
       <div className="mt-2.5 flex flex-wrap gap-1">
         {task.channels.map((channel) => (
-          <span
-            key={channel}
-            className="rounded-md bg-background/50 px-1.5 py-0.5 text-[10px] text-muted-foreground"
-          >
-            {CHANNEL_LABELS[channel]}
-          </span>
+          <ContentChannelBadge key={channel} channel={channel} />
         ))}
-        <span className="rounded-md bg-background/50 px-1.5 py-0.5 text-[10px] text-muted-foreground">
+        <span className="inline-flex items-center gap-1 rounded-md bg-background/50 px-1.5 py-0.5 text-[10px] text-muted-foreground ring-1 ring-border/20">
+          <TypeIcon className="h-2.5 w-2.5 opacity-60" />
           {TYPE_LABELS[task.content_type]}
         </span>
       </div>

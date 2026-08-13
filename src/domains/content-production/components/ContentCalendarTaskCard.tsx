@@ -1,4 +1,5 @@
 import type { ContentTaskWithCompany } from "@/domains/content-production/types";
+import { ContentChannelBadge } from "@/domains/content-production/components/ContentChannelBadge";
 import { STATUS_ACCENT, STATUS_LABELS } from "@/domains/content-production/types";
 import { TEAM_LABELS, type TeamMember } from "@/lib/auth/types";
 import { cn } from "@/lib/utils";
@@ -71,6 +72,14 @@ export function ContentCalendarTaskCard({
       <p className="truncate pl-1.5 text-[11px] font-semibold leading-snug text-foreground">
         {task.title}
       </p>
+
+      {task.channels.length > 0 && (
+        <div className="mt-1 flex flex-wrap gap-0.5 pl-1.5">
+          {task.channels.map((channel) => (
+            <ContentChannelBadge key={channel} channel={channel} showDot={false} className="!px-1 !py-0 text-[9px]" />
+          ))}
+        </div>
+      )}
 
       <div className="mt-1 space-y-0.5 pl-1.5">
         <p className="flex min-w-0 items-center gap-1 text-[10px] text-muted-foreground">
