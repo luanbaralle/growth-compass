@@ -1,9 +1,13 @@
 import type { ContentTaskWithCompany } from "@/domains/content-production/types";
 import { ContentChannelBadge } from "@/domains/content-production/components/ContentChannelBadge";
+import {
+  ContentTaskContextMenu,
+  type ContentTaskQuickActions,
+} from "@/domains/content-production/components/ContentTaskContextMenu";
 import { STATUS_ACCENT, STATUS_LABELS } from "@/domains/content-production/types";
 import { TEAM_LABELS, type TeamMember } from "@/lib/auth/types";
 import { cn } from "@/lib/utils";
-import { Building2, User } from "lucide-react";
+import { Building2, Copy, User } from "lucide-react";
 import { useRef } from "react";
 
 export function ContentCalendarTaskCard({
@@ -13,6 +17,8 @@ export function ContentCalendarTaskCard({
   dragging = false,
   onDragStart,
   onDragEnd,
+  onDuplicate,
+  taskActions,
 }: {
   task: ContentTaskWithCompany;
   onClick?: () => void;
@@ -20,6 +26,8 @@ export function ContentCalendarTaskCard({
   dragging?: boolean;
   onDragStart?: () => void;
   onDragEnd?: () => void;
+  onDuplicate?: (task: ContentTaskWithCompany) => void;
+  taskActions?: ContentTaskQuickActions;
 }) {
   const blockClickRef = useRef(false);
 
@@ -27,7 +35,13 @@ export function ContentCalendarTaskCard({
     ? (TEAM_LABELS[task.production_owner_id as TeamMember] ?? task.production_owner_id)
     : null;
 
-  return (
+  const actions: ContentTaskQuickActions = {
+    ...taskActions,
+    onOpen: taskActions?.onOpen ?? (onClick ? () => onClick() : undefined),
+    onDuplicate: taskActions?.onDuplicate ?? onDuplicate,
+  };
+
+  const card = (
     <div
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
@@ -64,6 +78,28 @@ export function ContentCalendarTaskCard({
         dragging && "scale-[0.98] opacity-40",
       )}
     >
+      {onDuplicate && (
+        <span
+          role="button"
+          tabIndex={0}
+          aria-label={`Duplicar ${task.title}`}
+          className="absolute right-1 top-1 z-10 rounded p-0.5 text-muted-foreground/50 opacity-0 transition-all hover:text-foreground group-hover/card:opacity-100"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDuplicate(task);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              e.stopPropagation();
+              onDuplicate(task);
+            }
+          }}
+        >
+          <Copy className="h-3 w-3" />
+        </span>
+      )}
+
       <span
         className={cn("absolute inset-y-0 left-0 w-0.5", STATUS_ACCENT[task.status])}
         aria-hidden
@@ -107,5 +143,13 @@ export function ContentCalendarTaskCard({
         </span>
       </div>
     </div>
+  );
+
+  if (!taskActions && !onDuplicate && !onClick) return card;
+
+  return (
+    <ContentTaskContextMenu task={task} actions={actions}>
+      {card}
+    </ContentTaskContextMenu>
   );
 }

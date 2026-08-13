@@ -236,7 +236,7 @@ export function OSMetricGrid({
 
 export function DataTable({ children }: { children: ReactNode }) {
   return (
-    <div className="os-table-wrap overflow-x-auto rounded-xl border border-border/25 bg-surface-elevated/20">
+    <div className="os-table-wrap rounded-xl border border-border/25 bg-surface-elevated/20">
       {children}
     </div>
   );

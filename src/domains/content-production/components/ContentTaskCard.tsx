@@ -1,13 +1,17 @@
 import type { ContentTaskWithCompany, ContentType } from "@/domains/content-production/types";
 import { ContentChannelBadge } from "@/domains/content-production/components/ContentChannelBadge";
 import {
+  ContentTaskContextMenu,
+  type ContentTaskQuickActions,
+} from "@/domains/content-production/components/ContentTaskContextMenu";
+import {
   formatPostDate,
   STATUS_ACCENT,
   TYPE_LABELS,
 } from "@/domains/content-production/types";
 import { TEAM_LABELS, type TeamMember } from "@/lib/auth/types";
 import { cn } from "@/lib/utils";
-import { Calendar, Clapperboard, Film, Image, Layers, User, Video, type LucideIcon } from "lucide-react";
+import { Calendar, Clapperboard, Copy, Film, Image, Layers, User, Video, type LucideIcon } from "lucide-react";
 import { useRef } from "react";
 
 const TYPE_ICONS: Record<ContentType, LucideIcon> = {
@@ -24,17 +28,27 @@ export function ContentTaskCard({
   onDragStart,
   onDragEnd,
   onClick,
+  onDuplicate,
+  taskActions,
 }: {
   task: ContentTaskWithCompany;
   dragging?: boolean;
   onDragStart?: () => void;
   onDragEnd?: () => void;
   onClick?: () => void;
+  onDuplicate?: (task: ContentTaskWithCompany) => void;
+  taskActions?: ContentTaskQuickActions;
 }) {
   const blockClickRef = useRef(false);
   const TypeIcon = TYPE_ICONS[task.content_type];
 
-  return (
+  const actions: ContentTaskQuickActions = {
+    ...taskActions,
+    onOpen: taskActions?.onOpen ?? (onClick ? () => onClick() : undefined),
+    onDuplicate: taskActions?.onDuplicate ?? onDuplicate,
+  };
+
+  const card = (
     <button
       type="button"
       draggable
@@ -55,11 +69,32 @@ export function ContentTaskCard({
         onClick?.();
       }}
       className={cn(
-        "group relative w-full cursor-grab overflow-hidden rounded-lg border border-border/30 bg-surface-elevated/80 p-3.5 text-left transition-all duration-200 active:cursor-grabbing",
+        "group/card relative w-full cursor-grab overflow-hidden rounded-lg border border-border/30 bg-surface-elevated/80 p-3.5 text-left transition-all duration-200 active:cursor-grabbing",
         "hover:border-border/50 hover:bg-surface-elevated hover:shadow-[0_4px_16px_-6px_oklch(0_0_0/0.5)]",
         dragging && "scale-[0.98] opacity-40 shadow-none",
       )}
     >
+      {onDuplicate && (
+        <span
+          role="button"
+          tabIndex={0}
+          aria-label={`Duplicar ${task.title}`}
+          className="absolute right-2 top-2 z-10 rounded-md p-1 text-muted-foreground/50 opacity-0 transition-all hover:bg-surface/80 hover:text-foreground group-hover/card:opacity-100"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDuplicate(task);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              e.stopPropagation();
+              onDuplicate(task);
+            }
+          }}
+        >
+          <Copy className="h-3.5 w-3.5" />
+        </span>
+      )}
       <div className="flex items-start gap-2">
         <span
           className={cn("mt-1 h-2 w-2 shrink-0 rounded-full", STATUS_ACCENT[task.status])}
@@ -104,5 +139,13 @@ export function ContentTaskCard({
         </p>
       )}
     </button>
+  );
+
+  if (!taskActions && !onDuplicate && !onClick) return card;
+
+  return (
+    <ContentTaskContextMenu task={task} actions={actions}>
+      {card}
+    </ContentTaskContextMenu>
   );
 }

@@ -1,5 +1,6 @@
 import { updateContentTask } from "@/domains/content-production/api.server";
 import { ContentCalendarTaskCard } from "@/domains/content-production/components/ContentCalendarTaskCard";
+import type { ContentTaskQuickActions } from "@/domains/content-production/components/ContentTaskContextMenu";
 import type { ContentTaskWithCompany } from "@/domains/content-production/types";
 import { cn } from "@/lib/utils";
 import {
@@ -25,11 +26,15 @@ export function ContentCalendar({
   onTaskClick,
   onDayClick,
   onRescheduled,
+  onDuplicate,
+  taskActions,
 }: {
   tasks: ContentTaskWithCompany[];
   onTaskClick: (task: ContentTaskWithCompany) => void;
   onDayClick: (date: string) => void;
   onRescheduled: () => void;
+  onDuplicate?: (task: ContentTaskWithCompany) => void;
+  taskActions?: ContentTaskQuickActions;
 }) {
   const [currentMonth, setCurrentMonth] = useState(() => startOfMonth(new Date()));
   const [expandedDates, setExpandedDates] = useState<Set<string>>(() => new Set());
@@ -115,6 +120,8 @@ export function ContentCalendar({
       onDragStart={() => setDraggingId(task.id)}
       onDragEnd={clearDragState}
       onClick={() => onTaskClick(task)}
+      onDuplicate={onDuplicate}
+      taskActions={taskActions}
     />
   );
 

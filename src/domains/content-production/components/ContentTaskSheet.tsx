@@ -3,6 +3,7 @@ import {
   deleteContentTask,
   updateContentTask,
 } from "@/domains/content-production/api.server";
+import { duplicateContentTask } from "@/domains/content-production/content-task-utils";
 import { ContentChannelBadge } from "@/domains/content-production/components/ContentChannelBadge";
 import type {
   ContentChannel,
@@ -78,6 +79,7 @@ import {
   ChevronRight,
   ChevronsUpDown,
   Clapperboard,
+  Copy,
   Film,
   Image,
   Layers,
@@ -195,6 +197,7 @@ export function ContentTaskSheet({
   const [baseline, setBaseline] = useState("");
   const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [duplicating, setDuplicating] = useState(false);
   const [error, setError] = useState("");
   const [discardOpen, setDiscardOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -347,6 +350,21 @@ export function ContentTaskSheet({
     }
   };
 
+  const handleDuplicate = async () => {
+    if (!task) return;
+    setDuplicating(true);
+    setError("");
+    try {
+      await duplicateContentTask(task);
+      onSaved();
+      onOpenChange(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro ao duplicar.");
+    } finally {
+      setDuplicating(false);
+    }
+  };
+
   const selectedCompany = companies.find((c) => c.id === form.companyId);
 
   return (
@@ -384,6 +402,17 @@ export function ContentTaskSheet({
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        disabled={duplicating || loading}
+                        onSelect={() => void handleDuplicate()}
+                      >
+                        {duplicating ? (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                          <Copy className="mr-2 h-4 w-4" />
+                        )}
+                        Duplicar tarefa
+                      </DropdownMenuItem>
                       <DropdownMenuItem
                         className="text-destructive focus:text-destructive"
                         onSelect={() => setDeleteOpen(true)}

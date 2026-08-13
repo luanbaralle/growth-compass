@@ -1,9 +1,21 @@
 import { listCompanies } from "@/domains/companies/api.server";
-import { listContentTasks } from "@/domains/content-production/api.server";
+import {
+  deleteContentTask,
+  listContentTasks,
+  moveContentTask,
+  updateContentTask,
+} from "@/domains/content-production/api.server";
 import { ContentCalendar } from "@/domains/content-production/components/ContentCalendar";
 import { ContentKanban } from "@/domains/content-production/components/ContentKanban";
+import { ContentTaskTable } from "@/domains/content-production/components/ContentTaskTable";
 import { ContentTaskSheet } from "@/domains/content-production/components/ContentTaskSheet";
-import type { ContentChannel, ContentTaskWithCompany } from "@/domains/content-production/types";
+import type { ContentTaskQuickActions } from "@/domains/content-production/components/ContentTaskContextMenu";
+import {
+  addChannel,
+  duplicateContentTask,
+  removeChannel,
+} from "@/domains/content-production/content-task-utils";
+import type { ContentChannel, ContentTaskStatus, ContentTaskWithCompany } from "@/domains/content-production/types";
 import { CHANNEL_LABELS, CONTENT_CHANNELS } from "@/domains/content-production/types";
 import { useOSContext } from "@/os/shell/use-os-context";
 import {
@@ -28,8 +40,8 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "@tanstack/react-router";
-import { CalendarDays, Clapperboard, LayoutGrid } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { CalendarDays, Clapperboard, LayoutGrid, List } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 export function ContentProductionPage() {
   const navigate = useNavigate();
@@ -42,7 +54,7 @@ export function ContentProductionPage() {
   const [channel, setChannel] = useState<ContentChannel | "all">("all");
   const [companyId, setCompanyId] = useState("");
   const [productionOwnerId, setProductionOwnerId] = useState<TeamMember | "all">("all");
-  const [view, setView] = useState<"kanban" | "calendar">("kanban");
+  const [view, setView] = useState<"kanban" | "calendar" | "list">("kanban");
   const [sheetOpen, setSheetOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<ContentTaskWithCompany | null>(null);
   const [defaultPostDate, setDefaultPostDate] = useState<string | undefined>();
@@ -86,11 +98,110 @@ export function ContentProductionPage() {
     setSheetOpen(true);
   };
 
-  const openEdit = (task: ContentTaskWithCompany) => {
+  const openEdit = useCallback((task: ContentTaskWithCompany) => {
     setSelectedTask(task);
     setDefaultPostDate(undefined);
     setSheetOpen(true);
-  };
+  }, []);
+
+  const handleDuplicate = useCallback(async (task: ContentTaskWithCompany) => {
+    try {
+      await duplicateContentTask(task);
+      await load();
+    } catch (err) {
+      if (isUnauthorizedError(err)) {
+        navigate({ to: "/os/login" });
+        return;
+      }
+      setError(getErrorMessage(err, "Erro ao duplicar tarefa."));
+    }
+  }, [load, navigate]);
+
+  const runTaskAction = useCallback(
+    async (action: () => Promise<void>, errorMessage: string) => {
+      try {
+        await action();
+        await load();
+      } catch (err) {
+        if (isUnauthorizedError(err)) {
+          navigate({ to: "/os/login" });
+          return;
+        }
+        setError(getErrorMessage(err, errorMessage));
+      }
+    },
+    [load, navigate],
+  );
+
+  const taskActions = useMemo<ContentTaskQuickActions>(
+    () => ({
+      onOpen: openEdit,
+      onDuplicate: handleDuplicate,
+      onDelete: async (task) => {
+        if (!window.confirm(`Excluir "${task.title}"?`)) return;
+        await runTaskAction(
+          () => deleteContentTask({ data: { id: task.id, companyId: task.company_id } }),
+          "Erro ao excluir tarefa.",
+        );
+      },
+      onStatusChange: async (task, status: ContentTaskStatus) => {
+        await runTaskAction(
+          () => moveContentTask({ data: { id: task.id, status } }),
+          "Erro ao alterar status.",
+        );
+      },
+      onPostDateChange: async (task, postDate) => {
+        await runTaskAction(
+          () =>
+            updateContentTask({
+              data: { id: task.id, companyId: task.company_id, postDate },
+            }),
+          "Erro ao alterar data.",
+        );
+      },
+      onClearPostDate: async (task) => {
+        await runTaskAction(
+          () =>
+            updateContentTask({
+              data: { id: task.id, companyId: task.company_id, postDate: "" },
+            }),
+          "Erro ao remover data.",
+        );
+      },
+      onAddChannel: async (task, channel: ContentChannel) => {
+        const channels = addChannel(task.channels, channel);
+        if (channels === task.channels) return;
+        await runTaskAction(
+          () =>
+            updateContentTask({
+              data: { id: task.id, companyId: task.company_id, channels },
+            }),
+          "Erro ao adicionar canal.",
+        );
+      },
+      onRemoveChannel: async (task, channel: ContentChannel) => {
+        const channels = removeChannel(task.channels, channel);
+        if (!channels || channels === task.channels) return;
+        await runTaskAction(
+          () =>
+            updateContentTask({
+              data: { id: task.id, companyId: task.company_id, channels },
+            }),
+          "Erro ao remover canal.",
+        );
+      },
+      onOwnerChange: async (task, owner) => {
+        await runTaskAction(
+          () =>
+            updateContentTask({
+              data: { id: task.id, companyId: task.company_id, productionOwnerId: owner },
+            }),
+          "Erro ao alterar responsável.",
+        );
+      },
+    }),
+    [openEdit, handleDuplicate, runTaskAction],
+  );
 
   if (loading && tasks.length === 0 && companies.length === 0) {
     return <PageSkeleton title="Produção" metricCount={0} />;
@@ -100,7 +211,7 @@ export function ContentProductionPage() {
     <OSPage>
       <PageHeader
         title="Produção de Conteúdo"
-        description="Kanban editorial e calendário de postagens — tudo sincronizado"
+        description="Kanban, calendário e lista — tudo sincronizado"
         icon={Clapperboard}
         actions={
           <>
@@ -112,7 +223,7 @@ export function ContentProductionPage() {
 
       {error && <EmptyState title="Erro" description={error} />}
 
-      <Tabs value={view} onValueChange={(v) => setView(v as "kanban" | "calendar")}>
+      <Tabs value={view} onValueChange={(v) => setView(v as "kanban" | "calendar" | "list")}>
         <TabsList>
           <TabsTrigger value="kanban" className="gap-1.5">
             <LayoutGrid className="h-3.5 w-3.5" />
@@ -121,6 +232,10 @@ export function ContentProductionPage() {
           <TabsTrigger value="calendar" className="gap-1.5">
             <CalendarDays className="h-3.5 w-3.5" />
             Calendário
+          </TabsTrigger>
+          <TabsTrigger value="list" className="gap-1.5">
+            <List className="h-3.5 w-3.5" />
+            Lista
           </TabsTrigger>
         </TabsList>
 
@@ -193,7 +308,12 @@ export function ContentProductionPage() {
                 description="Crie uma peça de conteúdo para começar o kanban."
               />
             ) : (
-              <ContentKanban tasks={tasks} onMoved={load} onTaskClick={openEdit} />
+              <ContentKanban
+                tasks={tasks}
+                onMoved={load}
+                onTaskClick={openEdit}
+                taskActions={taskActions}
+              />
             )}
           </TabsContent>
 
@@ -203,7 +323,25 @@ export function ContentProductionPage() {
               onTaskClick={openEdit}
               onDayClick={(date) => openCreate(date)}
               onRescheduled={load}
+              taskActions={taskActions}
             />
+          </TabsContent>
+
+          <TabsContent value="list" className="mt-0 px-6 py-6 sm:px-7">
+            {tasks.length === 0 && !loading ? (
+              <EmptyState
+                icon={Clapperboard}
+                title="Nenhuma tarefa"
+                description="Crie uma peça de conteúdo para ver na lista."
+              />
+            ) : (
+              <ContentTaskTable
+                tasks={tasks}
+                onTaskClick={openEdit}
+                onBulkChange={load}
+                taskActions={taskActions}
+              />
+            )}
           </TabsContent>
         </Section>
       </Tabs>

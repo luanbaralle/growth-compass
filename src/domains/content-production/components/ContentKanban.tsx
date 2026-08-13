@@ -1,5 +1,6 @@
 import { moveContentTask } from "@/domains/content-production/api.server";
 import { ContentTaskCard } from "@/domains/content-production/components/ContentTaskCard";
+import type { ContentTaskQuickActions } from "@/domains/content-production/components/ContentTaskContextMenu";
 import type { ContentTaskStatus, ContentTaskWithCompany } from "@/domains/content-production/types";
 import {
   CONTENT_PHASES,
@@ -14,10 +15,14 @@ export function ContentKanban({
   tasks,
   onMoved,
   onTaskClick,
+  onDuplicate,
+  taskActions,
 }: {
   tasks: ContentTaskWithCompany[];
   onMoved: () => void;
   onTaskClick: (task: ContentTaskWithCompany) => void;
+  onDuplicate?: (task: ContentTaskWithCompany) => void;
+  taskActions?: ContentTaskQuickActions;
 }) {
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [overColumn, setOverColumn] = useState<ContentTaskStatus | null>(null);
@@ -125,6 +130,8 @@ export function ContentKanban({
                           onDragStart={() => setDraggingId(task.id)}
                           onDragEnd={clearDragState}
                           onClick={() => onTaskClick(task)}
+                          onDuplicate={onDuplicate}
+                          taskActions={taskActions}
                         />
                       ))
                     )}
