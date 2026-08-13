@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import {
   Building2,
+  Clapperboard,
   FolderKanban,
   LayoutDashboard,
   LogOut,
@@ -39,6 +40,7 @@ const NAV_ITEMS = [
   { to: "/os/prospeccao", label: "Prospecção", icon: Target },
   { to: "/os/empresas", label: "Empresas", icon: Building2 },
   { to: "/os/projetos", label: "Projetos", icon: FolderKanban },
+  { to: "/os/producao", label: "Produção", icon: Clapperboard },
   { to: "/os/marketing", label: "Marketing", icon: Megaphone },
   { to: "/os/financeiro", label: "Financeiro", icon: Wallet },
   { to: "/os/configuracoes", label: "Configurações", icon: Settings },

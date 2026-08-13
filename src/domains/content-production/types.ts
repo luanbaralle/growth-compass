@@ -1,0 +1,160 @@
+import type { TeamMember } from "@/lib/auth/types";
+
+export type ContentTaskStatus =
+  | "ideia"
+  | "definicao"
+  | "agendamento"
+  | "gravacao"
+  | "edicao"
+  | "aprovacao"
+  | "correcao"
+  | "aprovado"
+  | "programado"
+  | "publicado";
+
+export type ContentChannel = "instagram" | "facebook" | "youtube" | "tiktok";
+
+export type ContentType =
+  | "video_curto"
+  | "video_medio"
+  | "video_longo"
+  | "imagem"
+  | "carrossel";
+
+export interface ContentTask {
+  id: string;
+  company_id: string;
+  title: string;
+  status: ContentTaskStatus;
+  channels: ContentChannel[];
+  theme_objective: string | null;
+  content_type: ContentType;
+  post_date: string | null;
+  production_owner_id: string | null;
+  notes: string | null;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ContentTaskWithCompany extends ContentTask {
+  companies: { name: string } | null;
+}
+
+export interface ContentTaskListFilters {
+  search?: string;
+  status?: ContentTaskStatus | "all";
+  channel?: ContentChannel | "all";
+  companyId?: string;
+  productionOwnerId?: TeamMember | "all";
+  postDateFrom?: string;
+  postDateTo?: string;
+}
+
+export const CONTENT_PHASES = [
+  {
+    id: "pre",
+    label: "Pré-Produção",
+    statuses: ["ideia", "definicao", "agendamento"] as ContentTaskStatus[],
+  },
+  {
+    id: "prod",
+    label: "Produção",
+    statuses: ["gravacao", "edicao", "aprovacao", "correcao"] as ContentTaskStatus[],
+  },
+  {
+    id: "final",
+    label: "Finalização",
+    statuses: ["aprovado", "programado", "publicado"] as ContentTaskStatus[],
+  },
+] as const;
+
+export const CONTENT_STATUSES: ContentTaskStatus[] = CONTENT_PHASES.flatMap(
+  (phase) => phase.statuses,
+);
+
+export const CONTENT_CHANNELS: ContentChannel[] = [
+  "instagram",
+  "facebook",
+  "youtube",
+  "tiktok",
+];
+
+export const CONTENT_TYPES: ContentType[] = [
+  "video_curto",
+  "video_medio",
+  "video_longo",
+  "imagem",
+  "carrossel",
+];
+
+export const STATUS_LABELS: Record<ContentTaskStatus, string> = {
+  ideia: "Ideia",
+  definicao: "Definição",
+  agendamento: "Agendamento",
+  gravacao: "Gravação",
+  edicao: "Edição",
+  aprovacao: "Aprovação",
+  correcao: "Correção",
+  aprovado: "Aprovado",
+  programado: "Programado",
+  publicado: "Publicado",
+};
+
+export const CHANNEL_LABELS: Record<ContentChannel, string> = {
+  instagram: "Instagram",
+  facebook: "Facebook",
+  youtube: "YouTube",
+  tiktok: "TikTok",
+};
+
+export const TYPE_LABELS: Record<ContentType, string> = {
+  video_curto: "Vídeo curto",
+  video_medio: "Vídeo médio",
+  video_longo: "Vídeo longo",
+  imagem: "Imagem",
+  carrossel: "Carrossel",
+};
+
+export const STATUS_ACCENT: Record<ContentTaskStatus, string> = {
+  ideia: "bg-sky-400",
+  definicao: "bg-indigo-400",
+  agendamento: "bg-violet-400",
+  gravacao: "bg-brand",
+  edicao: "bg-amber-400",
+  aprovacao: "bg-orange-400",
+  correcao: "bg-red-400/70",
+  aprovado: "bg-emerald-400",
+  programado: "bg-cyan-400",
+  publicado: "bg-green-500",
+};
+
+export const CHANNEL_ACCENT: Record<ContentChannel, string> = {
+  instagram: "bg-gradient-to-r from-purple-500 to-pink-500",
+  facebook: "bg-blue-500",
+  youtube: "bg-red-500",
+  tiktok: "bg-foreground/80",
+};
+
+export function formatPostDate(date: string | null): string {
+  if (!date) return "Sem data";
+  const [y, m, d] = date.split("-");
+  return `${d}/${m}/${y}`;
+}
+
+export function formatChannels(channels: ContentChannel[]): string {
+  if (channels.length === 0) return "Sem canal";
+  return channels.map((c) => CHANNEL_LABELS[c]).join(", ");
+}
+
+export function normalizeChannels(value: unknown): ContentChannel[] {
+  if (Array.isArray(value)) {
+    return value.filter((c): c is ContentChannel =>
+      CONTENT_CHANNELS.includes(c as ContentChannel),
+    );
+  }
+  if (typeof value === "string" && CONTENT_CHANNELS.includes(value as ContentChannel)) {
+    return [value as ContentChannel];
+  }
+  return ["instagram"];
+}

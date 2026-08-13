@@ -36,6 +36,7 @@ import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminLeadsRouteImport } from './routes/admin/leads'
 import { Route as OsProspeccaoIndexRouteImport } from './routes/os/prospeccao/index'
 import { Route as OsProjetosIndexRouteImport } from './routes/os/projetos/index'
+import { Route as OsProducaoIndexRouteImport } from './routes/os/producao/index'
 import { Route as OsMarketingIndexRouteImport } from './routes/os/marketing/index'
 import { Route as OsFinanceiroIndexRouteImport } from './routes/os/financeiro/index'
 import { Route as OsEmpresasIndexRouteImport } from './routes/os/empresas/index'
@@ -193,6 +194,11 @@ const OsProjetosIndexRoute = OsProjetosIndexRouteImport.update({
   path: '/projetos/',
   getParentRoute: () => OsRouteRoute,
 } as any)
+const OsProducaoIndexRoute = OsProducaoIndexRouteImport.update({
+  id: '/producao/',
+  path: '/producao/',
+  getParentRoute: () => OsRouteRoute,
+} as any)
 const OsMarketingIndexRoute = OsMarketingIndexRouteImport.update({
   id: '/marketing/',
   path: '/marketing/',
@@ -342,6 +348,7 @@ export interface FileRoutesByFullPath {
   '/os/empresas/': typeof OsEmpresasIndexRoute
   '/os/financeiro/': typeof OsFinanceiroIndexRoute
   '/os/marketing/': typeof OsMarketingIndexRoute
+  '/os/producao/': typeof OsProducaoIndexRoute
   '/os/projetos/': typeof OsProjetosIndexRoute
   '/os/prospeccao/': typeof OsProspeccaoIndexRoute
   '/admin/execucao/rituais/checkin': typeof AdminExecucaoRituaisCheckinRoute
@@ -389,6 +396,7 @@ export interface FileRoutesByTo {
   '/os/empresas': typeof OsEmpresasIndexRoute
   '/os/financeiro': typeof OsFinanceiroIndexRoute
   '/os/marketing': typeof OsMarketingIndexRoute
+  '/os/producao': typeof OsProducaoIndexRoute
   '/os/projetos': typeof OsProjetosIndexRoute
   '/os/prospeccao': typeof OsProspeccaoIndexRoute
   '/admin/execucao/rituais/checkin': typeof AdminExecucaoRituaisCheckinRoute
@@ -439,6 +447,7 @@ export interface FileRoutesById {
   '/os/empresas/': typeof OsEmpresasIndexRoute
   '/os/financeiro/': typeof OsFinanceiroIndexRoute
   '/os/marketing/': typeof OsMarketingIndexRoute
+  '/os/producao/': typeof OsProducaoIndexRoute
   '/os/projetos/': typeof OsProjetosIndexRoute
   '/os/prospeccao/': typeof OsProspeccaoIndexRoute
   '/admin/execucao/rituais/checkin': typeof AdminExecucaoRituaisCheckinRoute
@@ -490,6 +499,7 @@ export interface FileRouteTypes {
     | '/os/empresas/'
     | '/os/financeiro/'
     | '/os/marketing/'
+    | '/os/producao/'
     | '/os/projetos/'
     | '/os/prospeccao/'
     | '/admin/execucao/rituais/checkin'
@@ -537,6 +547,7 @@ export interface FileRouteTypes {
     | '/os/empresas'
     | '/os/financeiro'
     | '/os/marketing'
+    | '/os/producao'
     | '/os/projetos'
     | '/os/prospeccao'
     | '/admin/execucao/rituais/checkin'
@@ -586,6 +597,7 @@ export interface FileRouteTypes {
     | '/os/empresas/'
     | '/os/financeiro/'
     | '/os/marketing/'
+    | '/os/producao/'
     | '/os/projetos/'
     | '/os/prospeccao/'
     | '/admin/execucao/rituais/checkin'
@@ -811,6 +823,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OsProjetosIndexRouteImport
       parentRoute: typeof OsRouteRoute
     }
+    '/os/producao/': {
+      id: '/os/producao/'
+      path: '/producao'
+      fullPath: '/os/producao/'
+      preLoaderRoute: typeof OsProducaoIndexRouteImport
+      parentRoute: typeof OsRouteRoute
+    }
     '/os/marketing/': {
       id: '/os/marketing/'
       path: '/marketing'
@@ -1000,6 +1019,7 @@ interface OsRouteRouteChildren {
   OsEmpresasIndexRoute: typeof OsEmpresasIndexRoute
   OsFinanceiroIndexRoute: typeof OsFinanceiroIndexRoute
   OsMarketingIndexRoute: typeof OsMarketingIndexRoute
+  OsProducaoIndexRoute: typeof OsProducaoIndexRoute
   OsProjetosIndexRoute: typeof OsProjetosIndexRoute
   OsProspeccaoIndexRoute: typeof OsProspeccaoIndexRoute
   OsProspeccaoBibliotecaIndexRoute: typeof OsProspeccaoBibliotecaIndexRoute
@@ -1015,6 +1035,7 @@ const OsRouteRouteChildren: OsRouteRouteChildren = {
   OsEmpresasIndexRoute: OsEmpresasIndexRoute,
   OsFinanceiroIndexRoute: OsFinanceiroIndexRoute,
   OsMarketingIndexRoute: OsMarketingIndexRoute,
+  OsProducaoIndexRoute: OsProducaoIndexRoute,
   OsProjetosIndexRoute: OsProjetosIndexRoute,
   OsProspeccaoIndexRoute: OsProspeccaoIndexRoute,
   OsProspeccaoBibliotecaIndexRoute: OsProspeccaoBibliotecaIndexRoute,
