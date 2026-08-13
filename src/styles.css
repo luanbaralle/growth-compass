@@ -587,25 +587,34 @@
   color: oklch(0.65 0.01 60 / 0.55);
 }
 
+.os-scroll,
 .os-table-scroll {
   scrollbar-width: thin;
   scrollbar-color: oklch(1 0 0 / 0.12) transparent;
 }
 
+.os-scroll::-webkit-scrollbar,
 .os-table-scroll::-webkit-scrollbar {
   height: 4px;
+  width: 6px;
+}
+
+.os-table-scroll::-webkit-scrollbar {
   width: 4px;
 }
 
+.os-scroll::-webkit-scrollbar-track,
 .os-table-scroll::-webkit-scrollbar-track {
   background: transparent;
 }
 
+.os-scroll::-webkit-scrollbar-thumb,
 .os-table-scroll::-webkit-scrollbar-thumb {
   border-radius: 999px;
   background: oklch(1 0 0 / 0.08);
 }
 
+.os-scroll::-webkit-scrollbar-thumb:hover,
 .os-table-scroll::-webkit-scrollbar-thumb:hover {
   background: oklch(1 0 0 / 0.16);
 }
@@ -721,12 +730,72 @@
   border-radius: 0.875rem;
   border: 1px solid oklch(1 0 0 / 0.04);
   background: oklch(0.14 0.003 55 / 0.65);
+  transition:
+    border-color 220ms ease,
+    background-color 220ms ease,
+    box-shadow 220ms ease,
+    transform 220ms ease;
 }
 
 @utility pipeline-column-over {
-  border-color: oklch(0.72 0.19 48 / 0.35);
-  background: oklch(0.72 0.19 48 / 0.04);
-  box-shadow: 0 0 0 1px oklch(0.72 0.19 48 / 0.12);
+  border-color: oklch(0.72 0.19 48 / 0.45);
+  background: oklch(0.72 0.19 48 / 0.06);
+  box-shadow:
+    0 0 0 1px oklch(0.72 0.19 48 / 0.18),
+    0 8px 28px -12px oklch(0.72 0.19 48 / 0.35);
+  transform: translateY(-1px);
+}
+
+.pipeline-board-dragging .pipeline-column:not(.pipeline-column-over) {
+  opacity: 0.72;
+  filter: saturate(0.85);
+  transition:
+    opacity 220ms ease,
+    filter 220ms ease;
+}
+
+.content-task-card-source {
+  border-style: dashed !important;
+  border-color: oklch(0.72 0.19 48 / 0.35) !important;
+  background: oklch(0.72 0.19 48 / 0.04) !important;
+  opacity: 0.45 !important;
+  transform: scale(0.97);
+  box-shadow: none !important;
+}
+
+.content-task-drop-placeholder {
+  min-height: 5.5rem;
+  flex-shrink: 0;
+  border-radius: 0.625rem;
+  border: 1.5px dashed oklch(0.72 0.19 48 / 0.45);
+  background: oklch(0.72 0.19 48 / 0.06);
+  animation: pipeline-drop-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pipeline-drop-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.995);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.pipeline-drop-zone-active {
+  border-color: oklch(0.72 0.19 48 / 0.5) !important;
+  background: oklch(0.72 0.19 48 / 0.06) !important;
+  animation: pipeline-drop-pulse 1.2s ease-in-out infinite;
+}
+
+.pipeline-drop-zone-active svg {
+  color: oklch(0.72 0.19 48 / 0.7) !important;
+}
+
+.pipeline-drop-zone-active p {
+  color: oklch(0.72 0.19 48 / 0.85) !important;
 }
 
 @utility pipeline-column-header {
@@ -758,6 +827,9 @@
   border: 1px dashed oklch(1 0 0 / 0.07);
   padding: 1.5rem 0.75rem;
   text-align: center;
+  transition:
+    border-color 220ms ease,
+    background-color 220ms ease;
 }
 
 @utility pipeline-filters {

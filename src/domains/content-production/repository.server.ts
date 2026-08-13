@@ -1,6 +1,8 @@
 import { dbDelete, dbInsert, dbSelect, dbUpdate } from "@/lib/supabase/server";
 import type {
   ContentTask,
+  ContentTaskEvent,
+  ContentTaskEventType,
   ContentTaskListFilters,
   ContentTaskWithCompany,
 } from "./types";
@@ -117,4 +119,34 @@ export async function patchContentTask(
 export async function removeContentTask(id: string): Promise<boolean> {
   await dbDelete("content_tasks", `id=eq.${id}`);
   return true;
+}
+
+export async function findContentTaskEvents(taskId: string): Promise<ContentTaskEvent[]> {
+  return dbSelect<ContentTaskEvent>(
+    "content_task_events",
+    encodeQuery({
+      select: "*",
+      content_task_id: `eq.${taskId}`,
+      order: "created_at.desc",
+    }),
+  );
+}
+
+export async function insertContentTaskEvent(input: {
+  content_task_id: string;
+  type: ContentTaskEventType;
+  title: string;
+  body?: string | null;
+  metadata?: Record<string, unknown>;
+  author_id?: string | null;
+}): Promise<ContentTaskEvent> {
+  const [event] = await dbInsert<ContentTaskEvent>("content_task_events", {
+    content_task_id: input.content_task_id,
+    type: input.type,
+    title: input.title,
+    body: input.body ?? null,
+    metadata: input.metadata ?? {},
+    author_id: input.author_id ?? null,
+  });
+  return event;
 }

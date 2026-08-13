@@ -38,6 +38,9 @@ export function ContentKanban({
     {} as Record<ContentTaskStatus, ContentTaskWithCompany[]>,
   );
 
+  const draggingTask = draggingId ? tasks.find((t) => t.id === draggingId) : null;
+  const isDragging = !!draggingId;
+
   const clearDragState = () => {
     setDraggingId(null);
     setOverColumn(null);
@@ -59,7 +62,9 @@ export function ContentKanban({
   return (
     <div className="relative space-y-6">
       {moving && (
-        <div className="pointer-events-none absolute inset-0 z-10 rounded-xl bg-background/50 backdrop-blur-[1px]" />
+        <div className="pointer-events-none absolute inset-0 z-10 animate-in fade-in duration-200">
+          <div className="absolute inset-0 rounded-xl bg-background/30 backdrop-blur-[2px]" />
+        </div>
       )}
       {CONTENT_PHASES.map((phase) => (
         <div key={phase.id}>
@@ -69,14 +74,24 @@ export function ContentKanban({
             </p>
             <div className="h-px flex-1 bg-border/40" />
           </div>
-          <div className="pipeline-board -mx-6 px-6 sm:-mx-7 sm:px-7">
+          <div
+            className={cn(
+              "pipeline-board -mx-6 px-6 sm:-mx-7 sm:px-7",
+              isDragging && "pipeline-board-dragging",
+            )}
+          >
             {phase.statuses.map((status) => {
               const items = byStatus[status];
               const isOver = overColumn === status;
+              const isValidDrop = draggingTask != null && draggingTask.status !== status;
+              const showDropHint = isDragging && isOver && isValidDrop;
               return (
                 <div
                   key={status}
-                  className={cn("pipeline-column", isOver && "pipeline-column-over")}
+                  className={cn(
+                    "pipeline-column",
+                    showDropHint && "pipeline-column-over",
+                  )}
                   onDragOver={(e) => {
                     e.preventDefault();
                     e.dataTransfer.dropEffect = "move";
@@ -117,23 +132,30 @@ export function ContentKanban({
                   </div>
                   <div className="pipeline-column-body">
                     {items.length === 0 ? (
-                      <div className="pipeline-drop-zone">
+                      <div
+                        className={cn("pipeline-drop-zone", showDropHint && "pipeline-drop-zone-active")}
+                      >
                         <Inbox className="h-4 w-4 text-muted-foreground/40" strokeWidth={1.5} />
-                        <p className="text-[11px] text-muted-foreground/50">Arraste aqui</p>
+                        <p className="text-[11px] text-muted-foreground/50">
+                          {showDropHint ? "Solte aqui" : "Arraste aqui"}
+                        </p>
                       </div>
                     ) : (
-                      items.map((task) => (
-                        <ContentTaskCard
-                          key={task.id}
-                          task={task}
-                          dragging={draggingId === task.id}
-                          onDragStart={() => setDraggingId(task.id)}
-                          onDragEnd={clearDragState}
-                          onClick={() => onTaskClick(task)}
-                          onDuplicate={onDuplicate}
-                          taskActions={taskActions}
-                        />
-                      ))
+                      <>
+                        {items.map((task) => (
+                          <ContentTaskCard
+                            key={task.id}
+                            task={task}
+                            dragging={draggingId === task.id}
+                            onDragStart={() => setDraggingId(task.id)}
+                            onDragEnd={clearDragState}
+                            onClick={() => onTaskClick(task)}
+                            onDuplicate={onDuplicate}
+                            taskActions={taskActions}
+                          />
+                        ))}
+                        {showDropHint && <div className="content-task-drop-placeholder" aria-hidden />}
+                      </>
                     )}
                   </div>
                 </div>

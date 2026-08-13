@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { withAuth } from "@/lib/api/auth.server";
 import {
+  addContentTaskNoteSchema,
   createContentTaskSchema,
   deleteContentTaskSchema,
   listContentTasksSchema,
@@ -56,22 +57,8 @@ export const updateContentTask = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     return withAuth(async (author) => {
       const service = await import("@/domains/content-production/service.server");
-      const { id, companyId, ...patch } = data;
-      const task = await service.updateContentTask(
-        id,
-        companyId,
-        {
-          title: patch.title,
-          status: patch.status,
-          channels: patch.channels,
-          themeObjective: patch.themeObjective,
-          contentType: patch.contentType,
-          postDate: patch.postDate,
-          productionOwnerId: patch.productionOwnerId,
-          notes: patch.notes,
-        },
-        author,
-      );
+      const { id, ...patch } = data;
+      const task = await service.updateContentTask(id, patch, author);
       if (!task) throw new Error("Tarefa não encontrada.");
       return task;
     });
@@ -96,5 +83,27 @@ export const deleteContentTask = createServerFn({ method: "POST" })
       const removed = await service.deleteContentTask(data.id, data.companyId);
       if (!removed) throw new Error("Tarefa não encontrada.");
       return { ok: true };
+    });
+  });
+
+export const listContentTaskEvents = createServerFn({ method: "GET" })
+  .validator(contentTaskIdSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const service = await import("@/domains/content-production/service.server");
+      const result = await service.listContentTaskEvents(data.id);
+      if (!result) throw new Error("Tarefa não encontrada.");
+      return result;
+    });
+  });
+
+export const addContentTaskNote = createServerFn({ method: "POST" })
+  .validator(addContentTaskNoteSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async (author) => {
+      const service = await import("@/domains/content-production/service.server");
+      const event = await service.addContentTaskNote(data.taskId, data.body, author);
+      if (!event) throw new Error("Tarefa não encontrada.");
+      return event;
     });
   });

@@ -1,6 +1,7 @@
 import * as companyRepo from "@/domains/companies/repository.server";
 import type { TeamMember } from "@/lib/auth/types";
 import * as repo from "./repository.server";
+import { buildUpdateEvents, logEvents } from "./content-task-events.server";
 import type {
   ContentChannel,
   ContentTaskStatus,
@@ -51,6 +52,19 @@ export async function createContentTask(
     sort_order: 0,
   });
 
+  await logEvents(task.id, authorId, [
+    {
+      type: "created",
+      title: "Tarefa criada",
+      body: input.title,
+      metadata: {
+        status: task.status,
+        channels: input.channels,
+        contentType: input.contentType,
+      },
+    },
+  ]);
+
   await companyRepo.insertActivity({
     company_id: input.companyId,
     type: "note",
@@ -65,8 +79,8 @@ export async function createContentTask(
 
 export async function updateContentTask(
   id: string,
-  companyId: string,
   patch: Partial<{
+    companyId: string;
     title: string;
     status: ContentTaskStatus;
     channels: ContentChannel[];
@@ -79,9 +93,15 @@ export async function updateContentTask(
   authorId: TeamMember | null,
 ) {
   const existing = await repo.findContentTaskById(id);
-  if (!existing || existing.company_id !== companyId) return null;
+  if (!existing) return null;
+
+  if (patch.companyId !== undefined && patch.companyId !== existing.company_id) {
+    const company = await companyRepo.findCompanyById(patch.companyId);
+    if (!company) throw new Error("Empresa não encontrada.");
+  }
 
   const dbPatch: Record<string, unknown> = {};
+  if (patch.companyId !== undefined) dbPatch.company_id = patch.companyId;
   if (patch.title !== undefined) dbPatch.title = patch.title;
   if (patch.status !== undefined) dbPatch.status = patch.status;
   if (patch.channels !== undefined) dbPatch.channels = patch.channels;
@@ -96,9 +116,28 @@ export async function updateContentTask(
   const task = await repo.patchContentTask(id, dbPatch);
   if (!task) return null;
 
+  const events = buildUpdateEvents(existing, patch);
+
+  if (patch.companyId !== undefined && patch.companyId !== existing.company_id) {
+    const [fromCompany, toCompany] = await Promise.all([
+      companyRepo.findCompanyById(existing.company_id),
+      companyRepo.findCompanyById(patch.companyId),
+    ]);
+    events.push({
+      type: "company_changed",
+      title: "Cliente alterado",
+      body: `${fromCompany?.name ?? "—"} → ${toCompany?.name ?? "—"}`,
+      metadata: { from: existing.company_id, to: patch.companyId },
+    });
+  }
+
+  if (events.length > 0) {
+    await logEvents(id, authorId, events);
+  }
+
   if (patch.status && patch.status !== existing.status) {
     await companyRepo.insertActivity({
-      company_id: companyId,
+      company_id: task.company_id,
       type: "note",
       title: "Status de conteúdo atualizado",
       body: `"${task.title}": ${STATUS_LABELS[existing.status]} → ${STATUS_LABELS[patch.status]}`,
@@ -121,7 +160,6 @@ export async function moveContentTask(
 
   return updateContentTask(
     id,
-    existing.company_id,
     { status },
     authorId,
   );
@@ -133,3 +171,5 @@ export async function deleteContentTask(id: string, companyId: string) {
   await repo.removeContentTask(id);
   return true;
 }
+
+export { listContentTaskEvents, addContentTaskNote } from "./content-task-events.server";

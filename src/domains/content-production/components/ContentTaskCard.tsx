@@ -40,6 +40,7 @@ export function ContentTaskCard({
   taskActions?: ContentTaskQuickActions;
 }) {
   const blockClickRef = useRef(false);
+  const cardRef = useRef<HTMLButtonElement>(null);
   const TypeIcon = TYPE_ICONS[task.content_type];
 
   const actions: ContentTaskQuickActions = {
@@ -50,13 +51,31 @@ export function ContentTaskCard({
 
   const card = (
     <button
+      ref={cardRef}
       type="button"
       draggable
       onDragStart={(e) => {
         blockClickRef.current = true;
         e.dataTransfer.setData("text/content-task-id", task.id);
         e.dataTransfer.effectAllowed = "move";
-        onDragStart?.();
+
+        const card = cardRef.current;
+        if (card) {
+          const ghost = card.cloneNode(true) as HTMLElement;
+          ghost.style.position = "fixed";
+          ghost.style.top = "-1000px";
+          ghost.style.left = "-1000px";
+          ghost.style.width = `${card.offsetWidth}px`;
+          ghost.style.pointerEvents = "none";
+          ghost.style.transform = "rotate(2.5deg)";
+          ghost.style.boxShadow = "0 20px 40px -12px oklch(0 0 0 / 0.65), 0 0 0 1px oklch(0.72 0.19 48 / 0.25)";
+          ghost.style.opacity = "0.95";
+          document.body.appendChild(ghost);
+          e.dataTransfer.setDragImage(ghost, card.offsetWidth / 2, 28);
+          window.setTimeout(() => ghost.remove(), 0);
+        }
+
+        requestAnimationFrame(() => onDragStart?.());
       }}
       onDragEnd={() => {
         onDragEnd?.();
@@ -69,9 +88,11 @@ export function ContentTaskCard({
         onClick?.();
       }}
       className={cn(
-        "group/card relative w-full cursor-grab overflow-hidden rounded-lg border border-border/30 bg-surface-elevated/80 p-3.5 text-left transition-all duration-200 active:cursor-grabbing",
+        "group/card relative w-full cursor-grab overflow-hidden rounded-lg border border-border/30 bg-surface-elevated/80 p-3.5 text-left",
+        "transition-[transform,box-shadow,opacity,border-color,background-color] duration-200 ease-out",
         "hover:border-border/50 hover:bg-surface-elevated hover:shadow-[0_4px_16px_-6px_oklch(0_0_0/0.5)]",
-        dragging && "scale-[0.98] opacity-40 shadow-none",
+        "active:cursor-grabbing active:scale-[1.02] active:shadow-[0_12px_32px_-8px_oklch(0_0_0/0.55)]",
+        dragging && "content-task-card-source",
       )}
     >
       {onDuplicate && (

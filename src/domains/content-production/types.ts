@@ -41,6 +41,44 @@ export interface ContentTaskWithCompany extends ContentTask {
   companies: { name: string } | null;
 }
 
+export type ContentTaskEventType =
+  | "created"
+  | "status_changed"
+  | "title_changed"
+  | "channels_changed"
+  | "theme_changed"
+  | "content_type_changed"
+  | "post_date_changed"
+  | "production_owner_changed"
+  | "notes_changed"
+  | "company_changed"
+  | "note";
+
+export interface ContentTaskEvent {
+  id: string;
+  content_task_id: string;
+  type: ContentTaskEventType;
+  title: string;
+  body: string | null;
+  metadata: Record<string, unknown>;
+  author_id: string | null;
+  created_at: string;
+}
+
+export const CONTENT_TASK_EVENT_LABELS: Record<ContentTaskEventType, string> = {
+  created: "Criação",
+  status_changed: "Status",
+  title_changed: "Título",
+  channels_changed: "Canais",
+  theme_changed: "Tema",
+  content_type_changed: "Tipo",
+  post_date_changed: "Data",
+  production_owner_changed: "Produção",
+  notes_changed: "Observações",
+  company_changed: "Cliente",
+  note: "Nota",
+};
+
 export interface ContentTaskListFilters {
   search?: string;
   status?: ContentTaskStatus | "all";

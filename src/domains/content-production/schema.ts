@@ -31,12 +31,9 @@ export const createContentTaskSchema = z.object({
   notes: z.string().max(10000).optional(),
 });
 
-export const updateContentTaskSchema = createContentTaskSchema
-  .partial()
-  .extend({
-    id: z.string().uuid(),
-    companyId: z.string().uuid(),
-  });
+export const updateContentTaskSchema = createContentTaskSchema.partial().extend({
+  id: z.string().uuid(),
+});
 
 export const moveContentTaskSchema = z.object({
   id: z.string().uuid(),
@@ -58,4 +55,9 @@ export const listContentTasksSchema = z.object({
 export const deleteContentTaskSchema = z.object({
   id: z.string().uuid(),
   companyId: z.string().uuid(),
+});
+
+export const addContentTaskNoteSchema = z.object({
+  taskId: z.string().uuid(),
+  body: z.string().min(1).max(5000),
 });

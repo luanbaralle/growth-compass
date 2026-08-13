@@ -5,6 +5,7 @@ import {
 } from "@/domains/content-production/api.server";
 import { duplicateContentTask } from "@/domains/content-production/content-task-utils";
 import { ContentChannelBadge } from "@/domains/content-production/components/ContentChannelBadge";
+import { ContentTaskTimeline } from "@/domains/content-production/components/ContentTaskTimeline";
 import type {
   ContentChannel,
   ContentTaskStatus,
@@ -67,10 +68,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { LinkifiedText, textContainsUrl } from "@/lib/linkify";
+import { LinkifiedText } from "@/lib/linkify";
 import {
   Building2,
   Calendar,
@@ -83,6 +84,7 @@ import {
   Film,
   Image,
   Layers,
+  History,
   Loader2,
   MoreHorizontal,
   Trash2,
@@ -203,6 +205,8 @@ export function ContentTaskSheet({
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [companyOpen, setCompanyOpen] = useState(false);
   const [notesMode, setNotesMode] = useState<"edit" | "preview">("edit");
+  const [sheetTab, setSheetTab] = useState<"details" | "timeline">("details");
+  const [timelineKey, setTimelineKey] = useState(0);
 
   const formRef = useRef<HTMLFormElement>(null);
   const titleRef = useRef<HTMLInputElement>(null);
@@ -215,16 +219,17 @@ export function ContentTaskSheet({
   useEffect(() => {
     if (!open) return;
     setError("");
-    setNotesMode("edit");
-    setCompanyOpen(false);
     const nextForm = task
       ? taskToForm(task)
       : emptyForm({
           productionOwnerId: defaultOwnerId ?? "",
           ...defaultValues,
         });
+    setNotesMode(nextForm.notes.trim() ? "preview" : "edit");
+    setCompanyOpen(false);
     setForm(nextForm);
     setBaseline(serializeForm(nextForm));
+    setSheetTab("details");
   }, [open, task, defaultValues, defaultOwnerId]);
 
   useEffect(() => {
@@ -324,6 +329,9 @@ export function ContentTaskSheet({
             notes: form.notes,
           },
         });
+      }
+      if (isEdit) {
+        setTimelineKey((k) => k + 1);
       }
       onSaved();
       onOpenChange(false);
@@ -460,9 +468,35 @@ export function ContentTaskSheet({
               )}
             </div>
 
-            {/* Corpo */}
-            <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
-              <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5 sm:px-8">
+            <Tabs
+              value={isEdit ? sheetTab : "details"}
+              onValueChange={(v) => isEdit && setSheetTab(v as "details" | "timeline")}
+              className="flex min-h-0 flex-1 flex-col"
+            >
+              {isEdit && (
+                <div className="shrink-0 border-b border-border/40 px-6 sm:px-8">
+                  <TabsList className="h-9 rounded-none border-0 bg-transparent p-0">
+                    <TabsTrigger
+                      value="details"
+                      className="rounded-none border-b-2 border-transparent px-4 pb-2.5 pt-1 data-[state=active]:border-brand data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                    >
+                      Detalhes
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="timeline"
+                      className="rounded-none border-b-2 border-transparent px-4 pb-2.5 pt-1 data-[state=active]:border-brand data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                    >
+                      <History className="mr-1.5 h-3.5 w-3.5" />
+                      Timeline
+                    </TabsTrigger>
+                  </TabsList>
+                </div>
+              )}
+
+              {/* Corpo */}
+              <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+              <div className="os-scroll min-h-0 flex-1 overflow-y-auto px-6 py-5 sm:px-8">
+                <TabsContent value="details" className="mt-0 focus-visible:outline-none focus-visible:ring-0">
                 <div className="space-y-6">
                   <div className="space-y-2">
                     <Label
@@ -489,7 +523,7 @@ export function ContentTaskSheet({
                       >
                         Textos e observações
                       </Label>
-                      {form.notes.trim() && textContainsUrl(form.notes) && (
+                      {form.notes.trim() && (
                         <Tabs
                           value={notesMode}
                           onValueChange={(v) => setNotesMode(v as "edit" | "preview")}
@@ -521,10 +555,17 @@ export function ContentTaskSheet({
                     )}
                   </div>
                 </div>
+                </TabsContent>
+
+                {isEdit && task && (
+                  <TabsContent value="timeline" className="mt-0 focus-visible:outline-none focus-visible:ring-0">
+                    <ContentTaskTimeline key={`${task.id}-${timelineKey}`} taskId={task.id} />
+                  </TabsContent>
+                )}
               </div>
 
               <aside className="shrink-0 border-t border-border/40 bg-surface/20 lg:w-72 lg:border-l lg:border-t-0">
-                <div className="space-y-5 overflow-y-auto p-5 sm:p-6">
+                <div className="os-scroll space-y-5 overflow-y-auto p-5 sm:p-6">
                   <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/60">
                     Propriedades
                   </p>
@@ -749,7 +790,8 @@ export function ContentTaskSheet({
                   </div>
                 </div>
               </aside>
-            </div>
+              </div>
+            </Tabs>
 
             {/* Footer */}
             <div className="flex shrink-0 flex-col gap-2 border-t border-border/40 bg-surface/10 px-6 py-4 sm:px-8">
