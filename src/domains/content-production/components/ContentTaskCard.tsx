@@ -110,7 +110,13 @@ export function ContentTaskCard({
         </div>
       </div>
 
-      <div className="mt-2.5 flex flex-wrap gap-1">
+      {task.theme_objective && (
+        <p className="mt-2.5 line-clamp-2 w-full rounded-md bg-brand/8 px-2 py-1 text-[10px] leading-relaxed text-brand/90">
+          {task.theme_objective}
+        </p>
+      )}
+
+      <div className={cn("flex flex-wrap gap-1", task.theme_objective ? "mt-2" : "mt-2.5")}>
         {task.channels.map((channel) => (
           <ContentChannelBadge key={channel} channel={channel} />
         ))}
@@ -132,12 +138,6 @@ export function ContentTaskCard({
           </span>
         )}
       </div>
-
-      {task.theme_objective && (
-        <p className="mt-2 line-clamp-2 rounded-md bg-brand/8 px-2 py-1 text-[10px] leading-relaxed text-brand/90">
-          {task.theme_objective}
-        </p>
-      )}
     </button>
   );
 
