@@ -13,6 +13,16 @@ import {
 import { TEAM_LABELS, TEAM_MEMBERS, type TeamMember } from "@/lib/auth/types";
 import { cn } from "@/lib/utils";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
@@ -24,7 +34,7 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { Calendar, Copy, ExternalLink, Trash2, User } from "lucide-react";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 export type ContentTaskQuickActions = {
   onOpen?: (task: ContentTaskWithCompany) => void;
@@ -59,11 +69,25 @@ export function ContentTaskContextMenu({
   actions: ContentTaskQuickActions;
   children: ReactNode;
 }) {
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const hasChannels = actions.onAddChannel || actions.onRemoveChannel;
   const hasDate =
     actions.onPostDateChange || actions.onClearPostDate;
 
+  const handleConfirmDelete = async () => {
+    if (!actions.onDelete) return;
+    setDeleting(true);
+    try {
+      await actions.onDelete(task);
+      setDeleteOpen(false);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   return (
+    <>
     <ContextMenu>
       <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
       <ContextMenuContent className="w-56">
@@ -224,7 +248,7 @@ export function ContentTaskContextMenu({
             <ContextMenuSeparator />
             <ContextMenuItem
               className="text-destructive focus:text-destructive"
-              onSelect={() => runAction(() => actions.onDelete?.(task))}
+              onSelect={() => setDeleteOpen(true)}
             >
               <Trash2 className="mr-2 h-4 w-4" />
               Excluir
@@ -233,5 +257,31 @@ export function ContentTaskContextMenu({
         )}
       </ContextMenuContent>
     </ContextMenu>
+
+    <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Excluir tarefa?</AlertDialogTitle>
+          <AlertDialogDescription>
+            <span className="font-medium text-foreground">{task.title}</span> será removida do
+            kanban, calendário e lista. Esta ação não pode ser desfeita.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={deleting}>Cancelar</AlertDialogCancel>
+          <AlertDialogAction
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            disabled={deleting}
+            onClick={(event) => {
+              event.preventDefault();
+              void handleConfirmDelete();
+            }}
+          >
+            {deleting ? "Excluindo..." : "Excluir"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }

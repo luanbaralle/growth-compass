@@ -138,7 +138,6 @@ export function ContentProductionPage() {
       onOpen: openEdit,
       onDuplicate: handleDuplicate,
       onDelete: async (task) => {
-        if (!window.confirm(`Excluir "${task.title}"?`)) return;
         await runTaskAction(
           () => deleteContentTask({ data: { id: task.id, companyId: task.company_id } }),
           "Erro ao excluir tarefa.",
