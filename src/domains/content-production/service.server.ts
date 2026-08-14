@@ -8,6 +8,8 @@ import {
 } from "./content-domain-events.server";
 import type {
   ContentChannel,
+  ContentPublication,
+  ContentTaskFileType,
   ContentTaskStatus,
   ContentType,
 } from "./types";
@@ -36,6 +38,10 @@ export async function createContentTask(
     postDate?: string;
     productionOwnerId?: TeamMember;
     notes?: string;
+    briefingHook?: string;
+    briefingScript?: string;
+    briefingCta?: string;
+    briefingReferences?: string;
   },
   authorId: TeamMember | null,
 ) {
@@ -52,6 +58,13 @@ export async function createContentTask(
     post_date: input.postDate || null,
     production_owner_id: input.productionOwnerId ?? null,
     notes: input.notes ?? null,
+    briefing_hook: input.briefingHook ?? null,
+    briefing_script: input.briefingScript ?? null,
+    briefing_cta: input.briefingCta ?? null,
+    briefing_references: input.briefingReferences ?? null,
+    client_approved_at: null,
+    client_approved_by: null,
+    publication: {},
     sort_order: 0,
   });
 
@@ -76,6 +89,13 @@ export async function updateContentTask(
     postDate: string;
     productionOwnerId: TeamMember;
     notes: string;
+    briefingHook: string;
+    briefingScript: string;
+    briefingCta: string;
+    briefingReferences: string;
+    clientApprovedAt: string | null;
+    clientApprovedBy: string;
+    publication: ContentPublication;
   }>,
   authorId: TeamMember | null,
 ) {
@@ -99,6 +119,19 @@ export async function updateContentTask(
     dbPatch.production_owner_id = patch.productionOwnerId || null;
   }
   if (patch.notes !== undefined) dbPatch.notes = patch.notes || null;
+  if (patch.briefingHook !== undefined) dbPatch.briefing_hook = patch.briefingHook || null;
+  if (patch.briefingScript !== undefined) dbPatch.briefing_script = patch.briefingScript || null;
+  if (patch.briefingCta !== undefined) dbPatch.briefing_cta = patch.briefingCta || null;
+  if (patch.briefingReferences !== undefined) {
+    dbPatch.briefing_references = patch.briefingReferences || null;
+  }
+  if (patch.clientApprovedAt !== undefined) {
+    dbPatch.client_approved_at = patch.clientApprovedAt || null;
+  }
+  if (patch.clientApprovedBy !== undefined) {
+    dbPatch.client_approved_by = patch.clientApprovedBy || null;
+  }
+  if (patch.publication !== undefined) dbPatch.publication = patch.publication;
 
   const task = await repo.patchContentTask(id, dbPatch);
   if (!task) return null;
@@ -155,3 +188,84 @@ export async function deleteContentTask(id: string, companyId: string) {
 }
 
 export { listContentTaskEvents, addContentTaskNote } from "./content-task-events.server";
+
+const CONTENT_TASK_FILE_MAX_BYTES = 50 * 1024 * 1024;
+
+export async function listContentTaskFiles(taskId: string) {
+  const task = await repo.findContentTaskById(taskId);
+  if (!task) return null;
+  const files = await repo.findContentTaskFiles(taskId);
+  return { files };
+}
+
+export async function uploadContentTaskFile(
+  taskId: string,
+  name: string,
+  fileType: ContentTaskFileType,
+  mimeType: string,
+  base64: string,
+  authorId: TeamMember | null,
+) {
+  const task = await repo.findContentTaskById(taskId);
+  if (!task) throw new Error("Tarefa não encontrada.");
+
+  const buffer = Buffer.from(base64, "base64");
+  if (buffer.length > CONTENT_TASK_FILE_MAX_BYTES) {
+    throw new Error("Arquivo máximo: 50 MB.");
+  }
+
+  const file = await repo.uploadContentTaskFile(
+    taskId,
+    name,
+    fileType,
+    mimeType,
+    buffer,
+    authorId,
+  );
+
+  const { logEvents } = await import("./content-task-events.server");
+  await logEvents(taskId, authorId, [
+    {
+      type: "file_added",
+      title: "Arquivo adicionado",
+      body: file.name,
+      metadata: { fileType: file.file_type, fileId: file.id },
+    },
+  ]);
+
+  return file;
+}
+
+export async function deleteContentTaskFile(
+  taskId: string,
+  fileId: string,
+  authorId: TeamMember | null,
+) {
+  const task = await repo.findContentTaskById(taskId);
+  if (!task) return false;
+
+  const file = await repo.findContentTaskFile(fileId, taskId);
+  if (!file) return false;
+
+  const removed = await repo.removeContentTaskFile(fileId, taskId);
+  if (!removed) return false;
+
+  const { logEvents } = await import("./content-task-events.server");
+  await logEvents(taskId, authorId, [
+    {
+      type: "file_removed",
+      title: "Arquivo removido",
+      body: file.name,
+      metadata: { fileType: file.file_type, fileId: file.id },
+    },
+  ]);
+
+  return true;
+}
+
+export async function getContentTaskFileUrl(taskId: string, fileId: string) {
+  const file = await repo.findContentTaskFile(fileId, taskId);
+  if (!file) return null;
+  const url = await repo.getContentTaskFileSignedUrl(file.storage_path);
+  return { url, name: file.name };
+}

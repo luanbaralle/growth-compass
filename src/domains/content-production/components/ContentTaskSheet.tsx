@@ -5,9 +5,11 @@ import {
 } from "@/domains/content-production/api.server";
 import { duplicateContentTask } from "@/domains/content-production/content-task-utils";
 import { ContentChannelBadge } from "@/domains/content-production/components/ContentChannelBadge";
+import { ContentTaskFilesPanel } from "@/domains/content-production/components/ContentTaskFilesPanel";
 import { ContentTaskTimeline } from "@/domains/content-production/components/ContentTaskTimeline";
 import type {
   ContentChannel,
+  ContentPublication,
   ContentTaskStatus,
   ContentTaskWithCompany,
   ContentType,
@@ -18,8 +20,10 @@ import {
   CONTENT_CHANNELS,
   CONTENT_PHASES,
   CONTENT_TYPES,
+  emptyPublication,
   formatTaskTimestamp,
   getAdjacentStatus,
+  normalizePublication,
   STATUS_ACCENT,
   STATUS_LABELS,
   TYPE_LABELS,
@@ -59,6 +63,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -76,17 +81,21 @@ import {
   Building2,
   Calendar,
   Check,
+  CheckCircle2,
   ChevronLeft,
   ChevronRight,
   ChevronsUpDown,
   Clapperboard,
   Copy,
+  FileText,
   Film,
+  FolderOpen,
   Image,
   Layers,
   History,
   Loader2,
   MoreHorizontal,
+  Share2,
   Trash2,
   User,
   Video,
@@ -104,7 +113,16 @@ export interface ContentTaskFormValues {
   productionOwnerId: TeamMember | "";
   companyId: string;
   notes: string;
+  briefingHook: string;
+  briefingScript: string;
+  briefingCta: string;
+  briefingReferences: string;
+  clientApprovedAt: string;
+  clientApprovedBy: string;
+  publication: ContentPublication;
 }
+
+type SheetTab = "details" | "briefing" | "files" | "approval" | "publication" | "timeline";
 
 const TYPE_ICONS: Record<ContentType, LucideIcon> = {
   video_curto: Video,
@@ -124,8 +142,20 @@ const emptyForm = (defaults?: Partial<ContentTaskFormValues>): ContentTaskFormVa
   productionOwnerId: "",
   companyId: "",
   notes: "",
+  briefingHook: "",
+  briefingScript: "",
+  briefingCta: "",
+  briefingReferences: "",
+  clientApprovedAt: "",
+  clientApprovedBy: "",
+  publication: emptyPublication(),
   ...defaults,
 });
+
+function toApprovalDateInput(iso: string | null): string {
+  if (!iso) return "";
+  return iso.slice(0, 10);
+}
 
 function taskToForm(task: ContentTaskWithCompany): ContentTaskFormValues {
   return {
@@ -138,6 +168,13 @@ function taskToForm(task: ContentTaskWithCompany): ContentTaskFormValues {
     productionOwnerId: (task.production_owner_id as TeamMember) ?? "",
     companyId: task.company_id,
     notes: task.notes ?? "",
+    briefingHook: task.briefing_hook ?? "",
+    briefingScript: task.briefing_script ?? "",
+    briefingCta: task.briefing_cta ?? "",
+    briefingReferences: task.briefing_references ?? "",
+    clientApprovedAt: toApprovalDateInput(task.client_approved_at),
+    clientApprovedBy: task.client_approved_by ?? "",
+    publication: normalizePublication(task.publication),
   };
 }
 
@@ -145,6 +182,7 @@ function serializeForm(form: ContentTaskFormValues): string {
   return JSON.stringify({
     ...form,
     channels: [...form.channels].sort(),
+    publication: normalizePublication(form.publication),
   });
 }
 
@@ -205,7 +243,7 @@ export function ContentTaskSheet({
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [companyOpen, setCompanyOpen] = useState(false);
   const [notesMode, setNotesMode] = useState<"edit" | "preview">("edit");
-  const [sheetTab, setSheetTab] = useState<"details" | "timeline">("details");
+  const [sheetTab, setSheetTab] = useState<SheetTab>("details");
   const [timelineKey, setTimelineKey] = useState(0);
 
   const formRef = useRef<HTMLFormElement>(null);
@@ -282,6 +320,51 @@ export function ContentTaskSheet({
     });
   };
 
+  const setPublicationField = (
+    channel: ContentChannel,
+    field: "url" | "published_at",
+    value: string,
+  ) => {
+    setForm((prev) => {
+      const current = prev.publication[channel] ?? { url: null, published_at: null };
+      return {
+        ...prev,
+        publication: {
+          ...prev.publication,
+          [channel]: {
+            ...current,
+            [field]: value || null,
+          },
+        },
+      };
+    });
+  };
+
+  const buildSavePayload = () => {
+    const clientApprovedAt = form.clientApprovedAt
+      ? `${form.clientApprovedAt}T12:00:00.000Z`
+      : null;
+
+    return {
+      companyId: form.companyId,
+      title: form.title.trim(),
+      status: form.status,
+      channels: form.channels,
+      themeObjective: form.themeObjective,
+      contentType: form.contentType,
+      postDate: form.postDate,
+      productionOwnerId: form.productionOwnerId || undefined,
+      notes: form.notes,
+      briefingHook: form.briefingHook,
+      briefingScript: form.briefingScript,
+      briefingCta: form.briefingCta,
+      briefingReferences: form.briefingReferences,
+      clientApprovedAt,
+      clientApprovedBy: form.clientApprovedBy,
+      publication: normalizePublication(form.publication),
+    };
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title.trim()) {
@@ -304,30 +387,12 @@ export function ContentTaskSheet({
         await updateContentTask({
           data: {
             id: task.id,
-            companyId: form.companyId,
-            title: form.title.trim(),
-            status: form.status,
-            channels: form.channels,
-            themeObjective: form.themeObjective,
-            contentType: form.contentType,
-            postDate: form.postDate,
-            productionOwnerId: form.productionOwnerId || undefined,
-            notes: form.notes,
+            ...buildSavePayload(),
           },
         });
       } else {
         await createContentTask({
-          data: {
-            companyId: form.companyId,
-            title: form.title.trim(),
-            status: form.status,
-            channels: form.channels,
-            themeObjective: form.themeObjective,
-            contentType: form.contentType,
-            postDate: form.postDate,
-            productionOwnerId: form.productionOwnerId || undefined,
-            notes: form.notes,
-          },
+          data: buildSavePayload(),
         });
       }
       if (isEdit) {
@@ -470,21 +535,49 @@ export function ContentTaskSheet({
 
             <Tabs
               value={isEdit ? sheetTab : "details"}
-              onValueChange={(v) => isEdit && setSheetTab(v as "details" | "timeline")}
+              onValueChange={(v) => isEdit && setSheetTab(v as SheetTab)}
               className="flex min-h-0 flex-1 flex-col"
             >
               {isEdit && (
                 <div className="shrink-0 border-b border-border/40 px-6 sm:px-8">
-                  <TabsList className="h-9 rounded-none border-0 bg-transparent p-0">
+                  <TabsList className="h-auto min-h-9 flex-wrap rounded-none border-0 bg-transparent p-0">
                     <TabsTrigger
                       value="details"
-                      className="rounded-none border-b-2 border-transparent px-4 pb-2.5 pt-1 data-[state=active]:border-brand data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                      className="rounded-none border-b-2 border-transparent px-3 pb-2.5 pt-1 data-[state=active]:border-brand data-[state=active]:bg-transparent data-[state=active]:shadow-none"
                     >
                       Detalhes
                     </TabsTrigger>
                     <TabsTrigger
+                      value="briefing"
+                      className="rounded-none border-b-2 border-transparent px-3 pb-2.5 pt-1 data-[state=active]:border-brand data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                    >
+                      <FileText className="mr-1.5 h-3.5 w-3.5" />
+                      Briefing
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="files"
+                      className="rounded-none border-b-2 border-transparent px-3 pb-2.5 pt-1 data-[state=active]:border-brand data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                    >
+                      <FolderOpen className="mr-1.5 h-3.5 w-3.5" />
+                      Arquivos
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="approval"
+                      className="rounded-none border-b-2 border-transparent px-3 pb-2.5 pt-1 data-[state=active]:border-brand data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                    >
+                      <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" />
+                      Aprovação
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="publication"
+                      className="rounded-none border-b-2 border-transparent px-3 pb-2.5 pt-1 data-[state=active]:border-brand data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                    >
+                      <Share2 className="mr-1.5 h-3.5 w-3.5" />
+                      Publicação
+                    </TabsTrigger>
+                    <TabsTrigger
                       value="timeline"
-                      className="rounded-none border-b-2 border-transparent px-4 pb-2.5 pt-1 data-[state=active]:border-brand data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                      className="rounded-none border-b-2 border-transparent px-3 pb-2.5 pt-1 data-[state=active]:border-brand data-[state=active]:bg-transparent data-[state=active]:shadow-none"
                     >
                       <History className="mr-1.5 h-3.5 w-3.5" />
                       Timeline
@@ -556,6 +649,188 @@ export function ContentTaskSheet({
                   </div>
                 </div>
                 </TabsContent>
+
+                {isEdit && (
+                  <TabsContent value="briefing" className="mt-0 focus-visible:outline-none focus-visible:ring-0">
+                    <div className="space-y-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="ct-hook" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                          Hook
+                        </Label>
+                        <Textarea
+                          id="ct-hook"
+                          value={form.briefingHook}
+                          onChange={(e) => set("briefingHook", e.target.value)}
+                          placeholder="Abertura que prende atenção nos primeiros segundos..."
+                          rows={3}
+                          className="min-h-[80px] resize-y border-border/40 bg-surface/20 text-sm leading-relaxed"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="ct-script" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                          Roteiro
+                        </Label>
+                        <Textarea
+                          id="ct-script"
+                          value={form.briefingScript}
+                          onChange={(e) => set("briefingScript", e.target.value)}
+                          placeholder="Estrutura do vídeo, falas, cenas..."
+                          rows={8}
+                          className="min-h-[180px] resize-y border-border/40 bg-surface/20 font-mono text-sm leading-relaxed"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="ct-cta" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                          CTA
+                        </Label>
+                        <Input
+                          id="ct-cta"
+                          value={form.briefingCta}
+                          onChange={(e) => set("briefingCta", e.target.value)}
+                          placeholder="Ex.: Agende pelo link na bio"
+                          className="border-border/40 bg-surface/20"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="ct-references" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                          Referências
+                        </Label>
+                        <Textarea
+                          id="ct-references"
+                          value={form.briefingReferences}
+                          onChange={(e) => set("briefingReferences", e.target.value)}
+                          placeholder="Links, perfis, vídeos de referência..."
+                          rows={4}
+                          className="min-h-[100px] resize-y border-border/40 bg-surface/20 text-sm leading-relaxed"
+                        />
+                      </div>
+                    </div>
+                  </TabsContent>
+                )}
+
+                {isEdit && task && (
+                  <TabsContent value="files" className="mt-0 focus-visible:outline-none focus-visible:ring-0">
+                    <ContentTaskFilesPanel
+                      taskId={task.id}
+                      onChanged={() => setTimelineKey((k) => k + 1)}
+                    />
+                  </TabsContent>
+                )}
+
+                {isEdit && (
+                  <TabsContent value="approval" className="mt-0 focus-visible:outline-none focus-visible:ring-0">
+                    <div className="space-y-6">
+                      <div className="rounded-lg border border-border/40 bg-surface/20 p-4">
+                        <div className="flex items-start gap-3">
+                          <Checkbox
+                            id="ct-client-approved"
+                            checked={!!form.clientApprovedAt}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                set(
+                                  "clientApprovedAt",
+                                  form.clientApprovedAt || toDateInputValue(new Date()),
+                                );
+                              } else {
+                                set("clientApprovedAt", "");
+                              }
+                            }}
+                          />
+                          <div className="space-y-1">
+                            <Label htmlFor="ct-client-approved" className="text-sm font-medium">
+                              Cliente aprovou o conteúdo
+                            </Label>
+                            <p className="text-xs text-muted-foreground">
+                              Marque quando o cliente confirmar aprovação (WhatsApp, reunião, etc.).
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        <div className="space-y-2">
+                          <Label htmlFor="ct-approved-by">Aprovado por</Label>
+                          <Input
+                            id="ct-approved-by"
+                            value={form.clientApprovedBy}
+                            onChange={(e) => set("clientApprovedBy", e.target.value)}
+                            placeholder="Nome de quem aprovou"
+                            className="border-border/40 bg-surface/20"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="ct-approved-at">Data da aprovação</Label>
+                          <Input
+                            id="ct-approved-at"
+                            type="date"
+                            value={form.clientApprovedAt}
+                            onChange={(e) => set("clientApprovedAt", e.target.value)}
+                            disabled={!form.clientApprovedAt}
+                            className="border-border/40 bg-surface/20"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </TabsContent>
+                )}
+
+                {isEdit && (
+                  <TabsContent value="publication" className="mt-0 focus-visible:outline-none focus-visible:ring-0">
+                    <div className="space-y-4">
+                      <p className="text-sm text-muted-foreground">
+                        Registre links e datas de publicação por canal selecionado na sidebar.
+                      </p>
+                      {form.channels.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">Selecione ao menos um canal.</p>
+                      ) : (
+                        form.channels.map((channel) => {
+                          const entry = form.publication[channel] ?? { url: null, published_at: null };
+                          return (
+                            <div
+                              key={channel}
+                              className="space-y-3 rounded-lg border border-border/40 bg-surface/20 p-4"
+                            >
+                              <div className="flex items-center gap-2">
+                                <ContentChannelBadge channel={channel} size="sm" />
+                                <span className="text-sm font-medium">{CHANNEL_LABELS[channel]}</span>
+                              </div>
+                              <div className="grid gap-3 sm:grid-cols-2">
+                                <div className="space-y-2">
+                                  <Label htmlFor={`pub-url-${channel}`}>Link publicado</Label>
+                                  <Input
+                                    id={`pub-url-${channel}`}
+                                    value={entry.url ?? ""}
+                                    onChange={(e) =>
+                                      setPublicationField(channel, "url", e.target.value)
+                                    }
+                                    placeholder="https://..."
+                                    className="border-border/40 bg-surface/40"
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label htmlFor={`pub-date-${channel}`}>Data de publicação</Label>
+                                  <Input
+                                    id={`pub-date-${channel}`}
+                                    type="date"
+                                    value={toApprovalDateInput(entry.published_at)}
+                                    onChange={(e) =>
+                                      setPublicationField(
+                                        channel,
+                                        "published_at",
+                                        e.target.value ? `${e.target.value}T12:00:00.000Z` : "",
+                                      )
+                                    }
+                                    className="border-border/40 bg-surface/40"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  </TabsContent>
+                )}
 
                 {isEdit && task && (
                   <TabsContent value="timeline" className="mt-0 focus-visible:outline-none focus-visible:ring-0">

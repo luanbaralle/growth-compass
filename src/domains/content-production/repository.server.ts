@@ -1,12 +1,20 @@
 import { dbDelete, dbInsert, dbSelect, dbUpdate } from "@/lib/supabase/server";
+import { randomUUID } from "node:crypto";
+import {
+  storageDelete,
+  storageSignUrl,
+  storageUpload,
+} from "@/lib/supabase/server";
 import type {
   ContentTask,
   ContentTaskEvent,
   ContentTaskEventType,
+  ContentTaskFile,
+  ContentTaskFileType,
   ContentTaskListFilters,
   ContentTaskWithCompany,
 } from "./types";
-import { normalizeChannels } from "./types";
+import { normalizeChannels, normalizePublication } from "./types";
 
 function encodeQuery(params: Record<string, string>): string {
   return Object.entries(params)
@@ -19,6 +27,7 @@ function mapTaskRow(task: ContentTask & { channel?: string }): ContentTask {
   return {
     ...rest,
     channels: normalizeChannels(task.channels ?? task.channel),
+    publication: normalizePublication(task.publication),
   };
 }
 
@@ -77,7 +86,9 @@ export async function findContentTasks(
         t.title.toLowerCase().includes(q) ||
         t.companies?.name.toLowerCase().includes(q) ||
         t.theme_objective?.toLowerCase().includes(q) ||
-        t.notes?.toLowerCase().includes(q),
+        t.notes?.toLowerCase().includes(q) ||
+        t.briefing_hook?.toLowerCase().includes(q) ||
+        t.briefing_script?.toLowerCase().includes(q),
     );
   }
 
@@ -149,4 +160,84 @@ export async function insertContentTaskEvent(input: {
     author_id: input.author_id ?? null,
   });
   return event;
+}
+
+export async function findContentTaskFiles(taskId: string): Promise<ContentTaskFile[]> {
+  return dbSelect<ContentTaskFile>(
+    "content_task_files",
+    encodeQuery({
+      select: "*",
+      content_task_id: `eq.${taskId}`,
+      order: "created_at.desc",
+    }),
+  );
+}
+
+export async function findContentTaskFile(
+  fileId: string,
+  taskId: string,
+): Promise<ContentTaskFile | null> {
+  const rows = await dbSelect<ContentTaskFile>(
+    "content_task_files",
+    encodeQuery({
+      select: "*",
+      id: `eq.${fileId}`,
+      content_task_id: `eq.${taskId}`,
+      limit: "1",
+    }),
+  );
+  return rows[0] ?? null;
+}
+
+export async function insertContentTaskFile(input: {
+  content_task_id: string;
+  file_type: ContentTaskFileType;
+  name: string;
+  storage_path: string;
+  mime_type: string;
+  size_bytes: number;
+  uploaded_by: string | null;
+}): Promise<ContentTaskFile> {
+  const [row] = await dbInsert<ContentTaskFile>("content_task_files", input);
+  return row;
+}
+
+export async function uploadContentTaskFile(
+  taskId: string,
+  name: string,
+  fileType: ContentTaskFileType,
+  mimeType: string,
+  buffer: Buffer,
+  uploadedBy: string | null,
+): Promise<ContentTaskFile> {
+  const ext = name.includes(".") ? name.slice(name.lastIndexOf(".")) : "";
+  const storagePath = `content-tasks/${taskId}/${randomUUID()}${ext}`;
+
+  await storageUpload(storagePath, buffer, mimeType);
+
+  return insertContentTaskFile({
+    content_task_id: taskId,
+    file_type: fileType,
+    name,
+    storage_path: storagePath,
+    mime_type: mimeType,
+    size_bytes: buffer.length,
+    uploaded_by: uploadedBy,
+  });
+}
+
+export async function removeContentTaskFile(fileId: string, taskId: string): Promise<boolean> {
+  const file = await findContentTaskFile(fileId, taskId);
+  if (!file) return false;
+  try {
+    await storageDelete(file.storage_path);
+  } catch {
+    // storage may already be gone
+  }
+  await dbDelete("content_task_files", `id=eq.${fileId}`);
+  return true;
+}
+
+export async function getContentTaskFileSignedUrl(storagePath: string): Promise<string> {
+  return storageSignUrl(storagePath);
 }

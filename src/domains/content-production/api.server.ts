@@ -2,12 +2,14 @@ import { createServerFn } from "@tanstack/react-start";
 import { withAuth } from "@/lib/api/auth.server";
 import {
   addContentTaskNoteSchema,
+  contentTaskFileIdSchema,
   createContentTaskSchema,
   deleteContentTaskSchema,
   listContentTasksSchema,
   moveContentTaskSchema,
   contentTaskIdSchema,
   updateContentTaskSchema,
+  uploadContentTaskFileSchema,
 } from "@/domains/content-production/schema";
 
 export const listContentTasks = createServerFn({ method: "GET" })
@@ -46,6 +48,10 @@ export const createContentTask = createServerFn({ method: "POST" })
           postDate: data.postDate || undefined,
           productionOwnerId: data.productionOwnerId,
           notes: data.notes,
+          briefingHook: data.briefingHook,
+          briefingScript: data.briefingScript,
+          briefingCta: data.briefingCta,
+          briefingReferences: data.briefingReferences,
         },
         author,
       );
@@ -58,7 +64,17 @@ export const updateContentTask = createServerFn({ method: "POST" })
     return withAuth(async (author) => {
       const service = await import("@/domains/content-production/service.server");
       const { id, ...patch } = data;
-      const task = await service.updateContentTask(id, patch, author);
+      const task = await service.updateContentTask(
+        id,
+        {
+          ...patch,
+          clientApprovedAt:
+            patch.clientApprovedAt === undefined
+              ? undefined
+              : patch.clientApprovedAt || null,
+        },
+        author,
+      );
       if (!task) throw new Error("Tarefa não encontrada.");
       return task;
     });
@@ -105,5 +121,54 @@ export const addContentTaskNote = createServerFn({ method: "POST" })
       const event = await service.addContentTaskNote(data.taskId, data.body, author);
       if (!event) throw new Error("Tarefa não encontrada.");
       return event;
+    });
+  });
+
+export const listContentTaskFiles = createServerFn({ method: "GET" })
+  .validator(contentTaskIdSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const service = await import("@/domains/content-production/service.server");
+      const result = await service.listContentTaskFiles(data.id);
+      if (!result) throw new Error("Tarefa não encontrada.");
+      return result;
+    });
+  });
+
+export const uploadContentTaskFile = createServerFn({ method: "POST" })
+  .validator(uploadContentTaskFileSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async (author) => {
+      const service = await import("@/domains/content-production/service.server");
+      return service.uploadContentTaskFile(
+        data.taskId,
+        data.name,
+        data.fileType,
+        data.mimeType,
+        data.base64,
+        author,
+      );
+    });
+  });
+
+export const deleteContentTaskFile = createServerFn({ method: "POST" })
+  .validator(contentTaskFileIdSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async (author) => {
+      const service = await import("@/domains/content-production/service.server");
+      const removed = await service.deleteContentTaskFile(data.taskId, data.fileId, author);
+      if (!removed) throw new Error("Arquivo não encontrado.");
+      return { ok: true };
+    });
+  });
+
+export const getContentTaskFileUrl = createServerFn({ method: "GET" })
+  .validator(contentTaskFileIdSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const service = await import("@/domains/content-production/service.server");
+      const result = await service.getContentTaskFileUrl(data.taskId, data.fileId);
+      if (!result) throw new Error("Arquivo não encontrado.");
+      return result;
     });
   });
