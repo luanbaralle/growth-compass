@@ -107,8 +107,12 @@ export function ContentProductionPage({ initialTaskId }: { initialTaskId?: strin
   }, []);
 
   useEffect(() => {
-    if (!initialTaskId || loading) return;
-    if (openedTaskRef.current === initialTaskId && sheetOpen) return;
+    if (!initialTaskId) {
+      openedTaskRef.current = null;
+      return;
+    }
+    if (loading) return;
+    if (openedTaskRef.current === initialTaskId) return;
 
     const fromList = tasks.find((task) => task.id === initialTaskId);
     if (fromList) {
@@ -134,12 +138,11 @@ export function ContentProductionPage({ initialTaskId }: { initialTaskId?: strin
     return () => {
       cancelled = true;
     };
-  }, [initialTaskId, loading, tasks, openEdit, sheetOpen]);
+  }, [initialTaskId, loading, tasks, openEdit]);
 
   const handleSheetOpenChange = (open: boolean) => {
     setSheetOpen(open);
     if (!open && initialTaskId) {
-      openedTaskRef.current = null;
       navigate({ to: "/os/producao", search: {}, replace: true });
     }
   };
