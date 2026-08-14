@@ -2,7 +2,7 @@ import { useOSContext } from "@/os/shell/use-os-context";
 import { OSLogo } from "@/os/shell/OSLogo";
 import { OSNotificationsInbox } from "@/os/components/OSNotificationsInbox";
 import { persistedNotificationToDashboard } from "@/os/dashboard-notifications";
-import { useOSInbox } from "@/os/hooks/use-os-inbox";
+import { OSInboxProvider, useOSInbox } from "@/os/inbox/OSInboxProvider";
 import { TEAM_LABELS, type TeamMember } from "@/lib/auth/types";
 import { cn } from "@/lib/utils";
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
@@ -53,17 +53,44 @@ export function OSShell() {
   const location = useLocation();
   const navigate = useNavigate();
   const { activePerson, switchPerson, logout } = useOSContext();
-  const { inbox, loading: inboxLoading, markRead } = useOSInbox(activePerson);
-  const shellNotifications = inbox.map(persistedNotificationToDashboard);
-
-  if (location.pathname === "/os/login") {
-    return <Outlet />;
-  }
 
   const handleLogout = async () => {
     await logout();
     navigate({ to: "/os/login" });
   };
+
+  if (location.pathname === "/os/login") {
+    return <Outlet />;
+  }
+
+  return (
+    <OSInboxProvider activePerson={activePerson}>
+      <OSShellLayout
+        activePerson={activePerson}
+        switchPerson={switchPerson}
+        onLogout={handleLogout}
+        location={location}
+        navigate={navigate}
+      />
+    </OSInboxProvider>
+  );
+}
+
+function OSShellLayout({
+  activePerson,
+  switchPerson,
+  onLogout,
+  location,
+  navigate,
+}: {
+  activePerson: TeamMember | null;
+  switchPerson: (person: TeamMember, pin?: string) => Promise<void>;
+  onLogout: () => Promise<void>;
+  location: ReturnType<typeof useLocation>;
+  navigate: ReturnType<typeof useNavigate>;
+}) {
+  const { inbox, loading: inboxLoading, markRead } = useOSInbox();
+  const shellNotifications = inbox.map(persistedNotificationToDashboard);
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
@@ -124,7 +151,7 @@ export function OSShell() {
         <div className="border-t border-border/60 p-3">
           <button
             type="button"
-            onClick={handleLogout}
+            onClick={() => void onLogout()}
             className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-surface-elevated hover:text-foreground"
           >
             <LogOut className="h-4 w-4" />

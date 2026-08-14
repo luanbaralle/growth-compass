@@ -1,8 +1,10 @@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import type { OSDashboardNotification } from "@/os/dashboard-notifications";
+import { parseNotificationHref } from "@/os/inbox/notification-href";
 import { cn } from "@/lib/utils";
 import { Link } from "@tanstack/react-router";
 import { Bell } from "lucide-react";
+import { useState } from "react";
 
 export function OSNotificationsInbox({
   notifications,
@@ -13,14 +15,22 @@ export function OSNotificationsInbox({
 }: {
   notifications: OSDashboardNotification[];
   loading?: boolean;
-  onMarkRead?: (id: string, persisted: boolean) => void;
+  onMarkRead?: (id: string, persisted: boolean) => void | Promise<void>;
   emptyHint?: string;
   triggerClassName?: string;
 }) {
+  const [open, setOpen] = useState(false);
   const notificationCount = notifications.length;
 
+  const handleItemClick = (item: OSDashboardNotification) => {
+    setOpen(false);
+    if (item.persisted && onMarkRead) {
+      void onMarkRead(item.id, true);
+    }
+  };
+
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button
           type="button"
@@ -56,32 +66,32 @@ export function OSNotificationsInbox({
           <p className="px-4 py-6 text-sm text-muted-foreground">{emptyHint}</p>
         ) : (
           <ul className="max-h-72 divide-y divide-border/40 overflow-y-auto">
-            {notifications.map((item) => (
-              <li key={item.id}>
-                <Link
-                  to={item.href}
-                  className="block px-4 py-3 transition-colors hover:bg-surface-elevated/40"
-                  onClick={() => {
-                    if (item.persisted && onMarkRead) {
-                      void onMarkRead(item.id, true);
-                    }
-                  }}
-                >
-                  <p
-                    className={cn(
-                      "text-sm font-medium leading-snug",
-                      item.tone === "danger" && "text-red-400",
-                      item.tone === "warning" && "text-amber-400",
-                    )}
+            {notifications.map((item) => {
+              const { to, search } = parseNotificationHref(item.href);
+              return (
+                <li key={item.id}>
+                  <Link
+                    to={to}
+                    search={search}
+                    className="block px-4 py-3 transition-colors hover:bg-surface-elevated/40"
+                    onClick={() => handleItemClick(item)}
                   >
-                    {item.title}
-                  </p>
-                  {item.subtitle && (
-                    <p className="mt-0.5 text-xs text-muted-foreground">{item.subtitle}</p>
-                  )}
-                </Link>
-              </li>
-            ))}
+                    <p
+                      className={cn(
+                        "text-sm font-medium leading-snug",
+                        item.tone === "danger" && "text-red-400",
+                        item.tone === "warning" && "text-amber-400",
+                      )}
+                    >
+                      {item.title}
+                    </p>
+                    {item.subtitle && (
+                      <p className="mt-0.5 text-xs text-muted-foreground">{item.subtitle}</p>
+                    )}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         )}
       </PopoverContent>
