@@ -79,6 +79,7 @@ export type WorkQueueSource =
 
 export interface DomainEvent {
   id: string;
+  idempotency_key: string;
   event_key: DomainEventKey;
   entity_type: DomainEntityType;
   entity_id: string;
@@ -122,6 +123,8 @@ export interface WorkQueueItem {
 // ── Emit input (Sprint A service) ─────────────────────────────
 
 export interface EmitDomainEventInput {
+  /** Chave única da operação — evita duplicar side effects em retry */
+  idempotencyKey: string;
   eventKey: DomainEventKey;
   entityType: DomainEntityType;
   entityId: string;
@@ -139,7 +142,7 @@ export interface EmitDomainEventInput {
     actionUrl: string;
     urgency?: NotificationUrgency;
   }>;
-  /** Side effects Sprint A+ */
+  /** Side effects — tasks automáticas (sem emitir task.created) */
   tasks?: Array<{
     title: string;
     assigneeId: TeamMember;
@@ -147,6 +150,8 @@ export interface EmitDomainEventInput {
     companyId?: string | null;
     projectId?: string | null;
   }>;
+  /** Projections legadas — executadas só na primeira emissão (não duplicate) */
+  projections?: (event: DomainEvent) => Promise<void>;
 }
 
 // ── Event metadata helpers ────────────────────────────────────

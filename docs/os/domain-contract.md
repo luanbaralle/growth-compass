@@ -173,7 +173,7 @@ Convenção: `{entity}.{action}` em snake_case no banco, dot notation no código
 |-----------|------------------|----------------|-----------|-------|
 | `content.created` | Conteúdo criado | `{ channels, contentType }` | Não | Não |
 | `content.status_changed` | Qualquer mudança de status | `{ from, to }` | Condicional | Condicional |
-| `content.sent_for_approval` | → `aprovacao` | `{ title }` | Sim → comercial | Task p/ cliente (futuro) |
+| `content.sent_for_approval` | → `aprovacao` | `{ title }` | **Sim → produção** (aguardando cliente) | Não (Portal cria fluxo do cliente depois) |
 | `content.approved` | → `aprovado` | `{ title }` | Sim → produção | Task "Programar" |
 | `content.scheduled` | → `programado` | `{ postDate, channels }` | Sim → produção | Task "Publicar" |
 | `content.published` | → `publicado` | `{ channels }` | Não | Task "Analisar em 7d" |
@@ -259,7 +259,7 @@ interface WorkQueueItem {
 | Conteúdo (produção) | `content_task.production_owner_id` | `vini` |
 | Cobrança | Fixo financeiro | `luan` |
 | Lead captado | Comercial | `luan` |
-| Aprovação de conteúdo (cliente) | Externo — sem assignee interno | Notifica produção |
+| Aprovação de conteúdo (cliente) | Externo — sem assignee interno | `sent_for_approval` notifica **produção**; Portal (Fase 6) gera evento de aprovação do cliente |
 
 ---
 
@@ -302,10 +302,32 @@ Manter tabelas legadas como read-only projections por compatibilidade de UI exis
 
 ## Schema proposto — Sprint A
 
+### Idempotência (Sprint A — obrigatório)
+
+Todo `emitDomainEvent()` exige `idempotency_key` único por operação de negócio.
+
+```text
+Vini altera status → emitDomainEvent(idempotency_key)
+  → INSERT domain_events
+  → se duplicate → retorna evento existente, SEM recriar notification/task/projection
+  → se novo → side effects uma vez
+```
+
+Padrão de key: `{event_key}:{entity_type}:{entity_id}:{discriminador}`  
+Ex.: `content.status_changed:content_task:uuid:edicao→aprovacao`
+
+### Tasks automáticas vs `task.created`
+
+Tasks criadas por `emitDomainEvent()` recebem `source_event_id` e **não** disparam `task.created` nem notification duplicada.  
+`task.created` com notification só para tasks manuais (sem `source_event_id`).
+
+---
+
 ```sql
 -- domain_events: hub único
 create table domain_events (
   id uuid primary key default gen_random_uuid(),
+  idempotency_key text not null unique,
   event_key text not null,           -- 'content.status_changed'
   entity_type text not null,         -- 'content_task' | 'project' | ...
   entity_id uuid not null,
@@ -338,6 +360,9 @@ create table notifications (
 alter table tasks add column if not exists source_event_id uuid references domain_events(id);
 alter table tasks add column if not exists source_type text;
 alter table tasks add column if not exists urgency text default 'default';
+
+create unique index tasks_source_event_title_idx
+  on tasks (source_event_id, title) where source_event_id is not null;
 ```
 
 ---

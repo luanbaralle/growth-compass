@@ -2,12 +2,15 @@ import * as companyRepo from "@/domains/companies/repository.server";
 import type { TeamMember } from "@/lib/auth/types";
 import * as repo from "./repository.server";
 import { buildUpdateEvents, logEvents } from "./content-task-events.server";
+import {
+  emitContentCreated,
+  emitContentStatusChanged,
+} from "./content-domain-events.server";
 import type {
   ContentChannel,
   ContentTaskStatus,
   ContentType,
 } from "./types";
-import { formatChannels, STATUS_LABELS } from "./types";
 
 export async function listContentTasks(filters: Parameters<typeof repo.findContentTasks>[0]) {
   const tasks = await repo.findContentTasks(filters);
@@ -52,27 +55,11 @@ export async function createContentTask(
     sort_order: 0,
   });
 
-  await logEvents(task.id, authorId, [
-    {
-      type: "created",
-      title: "Tarefa criada",
-      body: input.title,
-      metadata: {
-        status: task.status,
-        channels: input.channels,
-        contentType: input.contentType,
-      },
-    },
-  ]);
-
-  await companyRepo.insertActivity({
-    company_id: input.companyId,
-    type: "note",
-    title: "Conteúdo criado",
-    body: `"${task.title}" — ${formatChannels(input.channels)}`,
-    metadata: { contentTaskId: task.id, channels: input.channels },
-    author_id: authorId,
-  });
+  await emitContentCreated(
+    task,
+    { channels: input.channels, contentType: input.contentType },
+    authorId,
+  );
 
   return task;
 }
@@ -131,19 +118,14 @@ export async function updateContentTask(
     });
   }
 
-  if (events.length > 0) {
-    await logEvents(id, authorId, events);
+  const nonStatusEvents = events.filter((event) => event.type !== "status_changed");
+
+  if (nonStatusEvents.length > 0) {
+    await logEvents(id, authorId, nonStatusEvents);
   }
 
   if (patch.status && patch.status !== existing.status) {
-    await companyRepo.insertActivity({
-      company_id: task.company_id,
-      type: "note",
-      title: "Status de conteúdo atualizado",
-      body: `"${task.title}": ${STATUS_LABELS[existing.status]} → ${STATUS_LABELS[patch.status]}`,
-      metadata: { contentTaskId: id, from: existing.status, to: patch.status },
-      author_id: authorId,
-    });
+    await emitContentStatusChanged(task, existing.status, patch.status, authorId);
   }
 
   return task;
