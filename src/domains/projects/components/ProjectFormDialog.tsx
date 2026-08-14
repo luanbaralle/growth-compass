@@ -1,7 +1,9 @@
 import { listCompanies } from "@/domains/companies/api.server";
 import type { Company } from "@/domains/companies/types";
-import type { ProjectPriority, ProjectStatus, ProjectType } from "@/domains/projects/types";
+import type { ProjectBlockedByType, ProjectPriority, ProjectStatus, ProjectType } from "@/domains/projects/types";
 import {
+  BLOCKED_BY_LABELS,
+  PROJECT_BLOCKED_BY_TYPES,
   PROJECT_PRIORITIES,
   PROJECT_STATUSES,
   PROJECT_TYPES,
@@ -40,6 +42,10 @@ export interface ProjectFormValues {
   priority: ProjectPriority;
   dueDate: string;
   description: string;
+  blockedByType: ProjectBlockedByType | "";
+  blockedByDetail: string;
+  nextAction: string;
+  nextActionDue: string;
 }
 
 const emptyForm: ProjectFormValues = {
@@ -51,6 +57,10 @@ const emptyForm: ProjectFormValues = {
   priority: "medium",
   dueDate: "",
   description: "",
+  blockedByType: "",
+  blockedByDetail: "",
+  nextAction: "",
+  nextActionDue: "",
 };
 
 export function ProjectFormDialog({
@@ -96,6 +106,16 @@ export function ProjectFormDialog({
     if (!form.title.trim() || !form.companyId) {
       setError("Título e empresa são obrigatórios.");
       return;
+    }
+    if (form.status === "blocked") {
+      if (!form.blockedByType) {
+        setError("Informe o motivo do bloqueio.");
+        return;
+      }
+      if (!form.blockedByDetail.trim()) {
+        setError("Descreva o bloqueio.");
+        return;
+      }
     }
     setLoading(true);
     setError("");
@@ -217,6 +237,65 @@ export function ProjectFormDialog({
               rows={3}
             />
           </div>
+
+          <div className="space-y-3 rounded-lg border border-border/40 bg-surface/20 p-4">
+            <div>
+              <p className="text-sm font-medium">Operação</p>
+              <p className="text-xs text-muted-foreground">
+                Próxima ação e bloqueio alimentam a Work Queue (Sprint E).
+              </p>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Próxima ação</Label>
+              <Input
+                value={form.nextAction}
+                onChange={(e) => set("nextAction", e.target.value)}
+                placeholder="Ex.: Cobrar acesso ao Meta Business"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Prazo da próxima ação</Label>
+              <Input
+                type="date"
+                value={form.nextActionDue}
+                onChange={(e) => set("nextActionDue", e.target.value)}
+              />
+            </div>
+
+            {form.status === "blocked" && (
+              <>
+                <div className="space-y-1.5">
+                  <Label>Motivo do bloqueio *</Label>
+                  <Select
+                    value={form.blockedByType || "none"}
+                    onValueChange={(v) => set("blockedByType", v === "none" ? "" : v)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecionar motivo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">—</SelectItem>
+                      {PROJECT_BLOCKED_BY_TYPES.map((type) => (
+                        <SelectItem key={type} value={type}>
+                          {BLOCKED_BY_LABELS[type]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Detalhe do bloqueio *</Label>
+                  <Textarea
+                    value={form.blockedByDetail}
+                    onChange={(e) => set("blockedByDetail", e.target.value)}
+                    placeholder="O que está impedindo o avanço?"
+                    rows={2}
+                  />
+                </div>
+              </>
+            )}
+          </div>
+
           {error && <p className="text-sm text-destructive">{error}</p>}
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
@@ -241,6 +320,10 @@ export function projectToFormValues(project: {
   priority: ProjectPriority;
   due_date: string | null;
   description: string | null;
+  blocked_by_type: ProjectBlockedByType | null;
+  blocked_by_detail: string | null;
+  next_action: string | null;
+  next_action_due: string | null;
 }): ProjectFormValues {
   return {
     companyId: project.company_id,
@@ -251,6 +334,10 @@ export function projectToFormValues(project: {
     priority: project.priority,
     dueDate: project.due_date ?? "",
     description: project.description ?? "",
+    blockedByType: project.blocked_by_type ?? "",
+    blockedByDetail: project.blocked_by_detail ?? "",
+    nextAction: project.next_action ?? "",
+    nextActionDue: project.next_action_due ?? "",
   };
 }
 
@@ -264,5 +351,10 @@ export function formToPayload(form: ProjectFormValues) {
     priority: form.priority,
     dueDate: form.dueDate || undefined,
     description: form.description.trim() || undefined,
+    blockedByType: form.status === "blocked" ? form.blockedByType || null : null,
+    blockedByDetail:
+      form.status === "blocked" ? form.blockedByDetail.trim() || null : null,
+    nextAction: form.nextAction.trim() || undefined,
+    nextActionDue: form.nextActionDue || undefined,
   };
 }

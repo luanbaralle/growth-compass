@@ -48,6 +48,10 @@ export const createProject = createServerFn({ method: "POST" })
           priority: data.priority,
           dueDate: data.dueDate || undefined,
           description: data.description,
+          blockedByType: data.blockedByType ?? undefined,
+          blockedByDetail: data.blockedByDetail ?? undefined,
+          nextAction: data.nextAction,
+          nextActionDue: data.nextActionDue || undefined,
         },
         author,
       );
@@ -71,6 +75,10 @@ export const updateProject = createServerFn({ method: "POST" })
           priority: patch.priority,
           dueDate: patch.dueDate,
           description: patch.description,
+          blockedByType: patch.blockedByType ?? undefined,
+          blockedByDetail: patch.blockedByDetail ?? undefined,
+          nextAction: patch.nextAction,
+          nextActionDue: patch.nextActionDue,
         },
         author,
       );

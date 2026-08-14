@@ -92,6 +92,11 @@ export function CompanyProjects({
                       · {formatDueDate(p.due_date)}
                     </span>
                   )}
+                  {p.next_action && (
+                    <span className="ml-2 block truncate sm:inline">
+                      → {p.next_action}
+                    </span>
+                  )}
                 </p>
               </div>
               <ProjectStatusBadge status={p.status} />

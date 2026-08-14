@@ -1,6 +1,17 @@
 import { cn } from "@/lib/utils";
-import type { ProjectPriority, ProjectStatus } from "@/domains/projects/types";
-import { PRIORITY_LABELS, STATUS_LABELS } from "@/domains/projects/types";
+import type { ProjectBlockedByType, ProjectPriority, ProjectStatus } from "@/domains/projects/types";
+import {
+  BLOCKED_BY_LABELS,
+  formatNextActionDue,
+  isDueOverdue,
+  PRIORITY_LABELS,
+  projectNeedsBlockReason,
+  projectNeedsNextAction,
+  STATUS_LABELS,
+} from "@/domains/projects/types";
+import { AlertTriangle } from "lucide-react";
+
+export { formatNextActionDue, isDueOverdue };
 
 const statusStyles: Record<ProjectStatus, string> = {
   pending: "border-zinc-400/40 text-zinc-300 bg-zinc-400/10",
@@ -52,14 +63,60 @@ export function ProjectPriorityLabel({
   );
 }
 
+export function ProjectBlockedByBadge({
+  type,
+  className,
+}: {
+  type: ProjectBlockedByType;
+  className?: string;
+}) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center rounded-full border border-red-400/30 bg-red-400/10 px-2.5 py-0.5 text-xs font-medium text-red-300",
+        className,
+      )}
+    >
+      {BLOCKED_BY_LABELS[type]}
+    </span>
+  );
+}
+
 export function formatDueDate(iso: string | null): string {
   if (!iso) return "—";
   const [y, m, d] = iso.split("-");
   return `${d}/${m}/${y}`;
 }
 
-export function isDueOverdue(dueDate: string | null, status: ProjectStatus): boolean {
-  if (!dueDate) return false;
-  if (status === "done" || status === "cancelled") return false;
-  return dueDate < new Date().toISOString().slice(0, 10);
+export function ProjectOperationalAlert({
+  project,
+}: {
+  project: {
+    due_date: string | null;
+    status: ProjectStatus;
+    next_action: string | null;
+    blocked_by_type: ProjectBlockedByType | null;
+  };
+}) {
+  const needsAction = projectNeedsNextAction(project);
+  const needsBlock = projectNeedsBlockReason(project);
+
+  if (!needsAction && !needsBlock) return null;
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {needsBlock && (
+        <span className="inline-flex items-center gap-1.5 rounded-lg border border-red-400/25 bg-red-400/10 px-2.5 py-1 text-xs text-red-300">
+          <AlertTriangle className="h-3.5 w-3.5" />
+          Bloqueado sem motivo registrado
+        </span>
+      )}
+      {needsAction && (
+        <span className="inline-flex items-center gap-1.5 rounded-lg border border-amber-400/25 bg-amber-400/10 px-2.5 py-1 text-xs text-amber-300">
+          <AlertTriangle className="h-3.5 w-3.5" />
+          Atrasado — defina a próxima ação
+        </span>
+      )}
+    </div>
+  );
 }
