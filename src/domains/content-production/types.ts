@@ -50,6 +50,7 @@ export interface ContentTask {
   briefing_script: string | null;
   briefing_cta: string | null;
   briefing_references: string | null;
+  briefing_caption: string | null;
   client_approved_at: string | null;
   client_approved_by: string | null;
   publication: ContentPublication;

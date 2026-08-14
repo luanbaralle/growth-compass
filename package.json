@@ -10,6 +10,8 @@
     "generate:rss": "npx tsx scripts/generate-rss.ts",
     "generate:seo": "npm run generate:rss && npm run generate:sitemap",
     "migrate:legacy": "npx tsx scripts/migrate-legacy-data.ts",
+    "cleanup:content-storage": "npx tsx scripts/cleanup-content-task-storage-orphans.ts",
+    "cleanup:content-storage:apply": "npx tsx scripts/cleanup-content-task-storage-orphans.ts --apply",
     "seed:commercial-library": "npx tsx scripts/seed-commercial-library.ts",
     "prebuild": "npm run generate:seo",
     "build": "vite build",

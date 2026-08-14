@@ -42,6 +42,7 @@ export async function createContentTask(
     briefingScript?: string;
     briefingCta?: string;
     briefingReferences?: string;
+    briefingCaption?: string;
   },
   authorId: TeamMember | null,
 ) {
@@ -62,6 +63,7 @@ export async function createContentTask(
     briefing_script: input.briefingScript ?? null,
     briefing_cta: input.briefingCta ?? null,
     briefing_references: input.briefingReferences ?? null,
+    briefing_caption: input.briefingCaption ?? null,
     client_approved_at: null,
     client_approved_by: null,
     publication: {},
@@ -93,6 +95,7 @@ export async function updateContentTask(
     briefingScript: string;
     briefingCta: string;
     briefingReferences: string;
+    briefingCaption: string;
     clientApprovedAt: string | null;
     clientApprovedBy: string;
     publication: ContentPublication;
@@ -124,6 +127,9 @@ export async function updateContentTask(
   if (patch.briefingCta !== undefined) dbPatch.briefing_cta = patch.briefingCta || null;
   if (patch.briefingReferences !== undefined) {
     dbPatch.briefing_references = patch.briefingReferences || null;
+  }
+  if (patch.briefingCaption !== undefined) {
+    dbPatch.briefing_caption = patch.briefingCaption || null;
   }
   if (patch.clientApprovedAt !== undefined) {
     dbPatch.client_approved_at = patch.clientApprovedAt || null;

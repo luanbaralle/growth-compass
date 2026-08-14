@@ -1,10 +1,13 @@
 import {
   createContentTask,
   deleteContentTask,
+  getContentTaskFileUrl,
+  listContentTaskFiles,
   updateContentTask,
 } from "@/domains/content-production/api.server";
 import { duplicateContentTask } from "@/domains/content-production/content-task-utils";
 import { ContentChannelBadge } from "@/domains/content-production/components/ContentChannelBadge";
+import { ContentPublicationChannelPreview } from "@/domains/content-production/components/ContentPublicationPreview";
 import { ContentTaskFilesPanel } from "@/domains/content-production/components/ContentTaskFilesPanel";
 import { ContentTaskTimeline } from "@/domains/content-production/components/ContentTaskTimeline";
 import type {
@@ -117,6 +120,7 @@ export interface ContentTaskFormValues {
   briefingScript: string;
   briefingCta: string;
   briefingReferences: string;
+  briefingCaption: string;
   clientApprovedAt: string;
   clientApprovedBy: string;
   publication: ContentPublication;
@@ -146,6 +150,7 @@ const emptyForm = (defaults?: Partial<ContentTaskFormValues>): ContentTaskFormVa
   briefingScript: "",
   briefingCta: "",
   briefingReferences: "",
+  briefingCaption: "",
   clientApprovedAt: "",
   clientApprovedBy: "",
   publication: emptyPublication(),
@@ -172,6 +177,7 @@ function taskToForm(task: ContentTaskWithCompany): ContentTaskFormValues {
     briefingScript: task.briefing_script ?? "",
     briefingCta: task.briefing_cta ?? "",
     briefingReferences: task.briefing_references ?? "",
+    briefingCaption: task.briefing_caption ?? "",
     clientApprovedAt: toApprovalDateInput(task.client_approved_at),
     clientApprovedBy: task.client_approved_by ?? "",
     publication: normalizePublication(task.publication),
@@ -245,6 +251,10 @@ export function ContentTaskSheet({
   const [notesMode, setNotesMode] = useState<"edit" | "preview">("edit");
   const [sheetTab, setSheetTab] = useState<SheetTab>("details");
   const [timelineKey, setTimelineKey] = useState(0);
+  const [previewMedia, setPreviewMedia] = useState<{
+    url: string;
+    mimeType: string | null;
+  } | null>(null);
 
   const formRef = useRef<HTMLFormElement>(null);
   const titleRef = useRef<HTMLInputElement>(null);
@@ -289,6 +299,48 @@ export function ContentTaskSheet({
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [open, loading, deleting]);
+
+  useEffect(() => {
+    if (!open || sheetTab !== "publication" || !task) {
+      setPreviewMedia(null);
+      return;
+    }
+
+    let cancelled = false;
+
+    async function loadPreviewMedia() {
+      try {
+        const { files } = await listContentTaskFiles({ data: { id: task!.id } });
+        const previewFile =
+          files.find((f) => f.file_type === "thumbnail") ??
+          files.find((f) => f.file_type === "edit") ??
+          files.find(
+            (f) =>
+              f.mime_type?.startsWith("image/") || f.mime_type?.startsWith("video/"),
+          );
+
+        if (!previewFile) {
+          if (!cancelled) setPreviewMedia(null);
+          return;
+        }
+
+        const { url } = await getContentTaskFileUrl({
+          data: { taskId: task!.id, fileId: previewFile.id },
+        });
+
+        if (!cancelled) {
+          setPreviewMedia({ url, mimeType: previewFile.mime_type });
+        }
+      } catch {
+        if (!cancelled) setPreviewMedia(null);
+      }
+    }
+
+    void loadPreviewMedia();
+    return () => {
+      cancelled = true;
+    };
+  }, [open, sheetTab, task?.id, timelineKey]);
 
   const set = <K extends keyof ContentTaskFormValues>(key: K, value: ContentTaskFormValues[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -359,6 +411,7 @@ export function ContentTaskSheet({
       briefingScript: form.briefingScript,
       briefingCta: form.briefingCta,
       briefingReferences: form.briefingReferences,
+      briefingCaption: form.briefingCaption,
       clientApprovedAt,
       clientApprovedBy: form.clientApprovedBy,
       publication: normalizePublication(form.publication),
@@ -653,6 +706,38 @@ export function ContentTaskSheet({
                 {isEdit && (
                   <TabsContent value="briefing" className="mt-0 focus-visible:outline-none focus-visible:ring-0">
                     <div className="space-y-6">
+                      <div className="space-y-3 rounded-lg border border-brand/20 bg-brand/5 p-4">
+                        <div>
+                          <Label
+                            htmlFor="ct-caption"
+                            className="text-xs font-semibold uppercase tracking-wide text-foreground"
+                          >
+                            Legenda da publicação
+                          </Label>
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            Texto que aparece no post nas redes. Separado do hook, roteiro e CTA
+                            internos — alimenta a prévia na aba Publicação.
+                          </p>
+                        </div>
+                        <Textarea
+                          id="ct-caption"
+                          value={form.briefingCaption}
+                          onChange={(e) => set("briefingCaption", e.target.value)}
+                          placeholder="Escreva a legenda com hashtags, menções e tom da marca..."
+                          rows={6}
+                          className="min-h-[140px] resize-y border-border/40 bg-surface/20 text-sm leading-relaxed"
+                        />
+                      </div>
+
+                      <div className="space-y-1">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                          Direção criativa
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Referência interna da produção — não vai direto para a legenda.
+                        </p>
+                      </div>
+
                       <div className="space-y-2">
                         <Label htmlFor="ct-hook" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                           Hook
@@ -778,50 +863,69 @@ export function ContentTaskSheet({
                   <TabsContent value="publication" className="mt-0 focus-visible:outline-none focus-visible:ring-0">
                     <div className="space-y-4">
                       <p className="text-sm text-muted-foreground">
-                        Registre links e datas de publicação por canal selecionado na sidebar.
+                        Registre links e datas de publicação. A prévia usa a legenda do briefing e
+                        os arquivos da tarefa.
                       </p>
                       {form.channels.length === 0 ? (
                         <p className="text-sm text-muted-foreground">Selecione ao menos um canal.</p>
                       ) : (
                         form.channels.map((channel) => {
                           const entry = form.publication[channel] ?? { url: null, published_at: null };
+                          const previewProps = {
+                            channel,
+                            contentType: form.contentType,
+                            companyName: selectedCompany?.name ?? "Cliente",
+                            title: form.title,
+                            briefingCaption: form.briefingCaption,
+                            mediaUrl: previewMedia?.url,
+                            mediaMimeType: previewMedia?.mimeType,
+                          };
+
                           return (
                             <div
                               key={channel}
-                              className="space-y-3 rounded-lg border border-border/40 bg-surface/20 p-4"
+                              className="rounded-lg border border-border/40 bg-surface/20 p-4"
                             >
-                              <div className="flex items-center gap-2">
+                              <div className="mb-4 flex items-center gap-2">
                                 <ContentChannelBadge channel={channel} size="sm" />
                                 <span className="text-sm font-medium">{CHANNEL_LABELS[channel]}</span>
                               </div>
-                              <div className="grid gap-3 sm:grid-cols-2">
-                                <div className="space-y-2">
-                                  <Label htmlFor={`pub-url-${channel}`}>Link publicado</Label>
-                                  <Input
-                                    id={`pub-url-${channel}`}
-                                    value={entry.url ?? ""}
-                                    onChange={(e) =>
-                                      setPublicationField(channel, "url", e.target.value)
-                                    }
-                                    placeholder="https://..."
-                                    className="border-border/40 bg-surface/40"
-                                  />
+                              <div className="grid gap-5 xl:grid-cols-2">
+                                <div className="space-y-3">
+                                  <div className="space-y-2">
+                                    <Label htmlFor={`pub-url-${channel}`}>Link publicado</Label>
+                                    <Input
+                                      id={`pub-url-${channel}`}
+                                      value={entry.url ?? ""}
+                                      onChange={(e) =>
+                                        setPublicationField(channel, "url", e.target.value)
+                                      }
+                                      placeholder="https://..."
+                                      className="border-border/40 bg-surface/40"
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <Label htmlFor={`pub-date-${channel}`}>Data de publicação</Label>
+                                    <Input
+                                      id={`pub-date-${channel}`}
+                                      type="date"
+                                      value={toApprovalDateInput(entry.published_at)}
+                                      onChange={(e) =>
+                                        setPublicationField(
+                                          channel,
+                                          "published_at",
+                                          e.target.value ? `${e.target.value}T12:00:00.000Z` : "",
+                                        )
+                                      }
+                                      className="border-border/40 bg-surface/40"
+                                    />
+                                  </div>
                                 </div>
-                                <div className="space-y-2">
-                                  <Label htmlFor={`pub-date-${channel}`}>Data de publicação</Label>
-                                  <Input
-                                    id={`pub-date-${channel}`}
-                                    type="date"
-                                    value={toApprovalDateInput(entry.published_at)}
-                                    onChange={(e) =>
-                                      setPublicationField(
-                                        channel,
-                                        "published_at",
-                                        e.target.value ? `${e.target.value}T12:00:00.000Z` : "",
-                                      )
-                                    }
-                                    className="border-border/40 bg-surface/40"
-                                  />
+                                <div className="flex flex-col gap-2">
+                                  <Label className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                                    Prévia
+                                  </Label>
+                                  <ContentPublicationChannelPreview {...previewProps} />
                                 </div>
                               </div>
                             </div>

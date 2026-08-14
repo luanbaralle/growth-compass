@@ -88,7 +88,8 @@ export async function findContentTasks(
         t.theme_objective?.toLowerCase().includes(q) ||
         t.notes?.toLowerCase().includes(q) ||
         t.briefing_hook?.toLowerCase().includes(q) ||
-        t.briefing_script?.toLowerCase().includes(q),
+        t.briefing_script?.toLowerCase().includes(q) ||
+        t.briefing_caption?.toLowerCase().includes(q),
     );
   }
 
@@ -127,7 +128,19 @@ export async function patchContentTask(
   return row ? mapTaskRow(row) : null;
 }
 
+export async function removeContentTaskStorage(taskId: string): Promise<void> {
+  const files = await findContentTaskFiles(taskId);
+  for (const file of files) {
+    try {
+      await storageDelete(file.storage_path);
+    } catch {
+      // storage may already be gone
+    }
+  }
+}
+
 export async function removeContentTask(id: string): Promise<boolean> {
+  await removeContentTaskStorage(id);
   await dbDelete("content_tasks", `id=eq.${id}`);
   return true;
 }

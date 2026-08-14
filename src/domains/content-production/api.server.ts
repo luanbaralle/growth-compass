@@ -52,6 +52,7 @@ export const createContentTask = createServerFn({ method: "POST" })
           briefingScript: data.briefingScript,
           briefingCta: data.briefingCta,
           briefingReferences: data.briefingReferences,
+          briefingCaption: data.briefingCaption,
         },
         author,
       );

@@ -124,6 +124,60 @@ export async function storageDelete(path: string): Promise<void> {
   await parseResponse(res, `STORAGE DELETE ${path}`);
 }
 
+type StorageListItem = {
+  name: string;
+  id: string | null;
+  metadata: { size?: number } | null;
+};
+
+export async function storageList(
+  prefix: string,
+  limit = 1000,
+  offset = 0,
+): Promise<StorageListItem[]> {
+  const { url } = requireSupabaseConfig();
+  const res = await fetch(`${url}/storage/v1/object/list/${STORAGE_BUCKET}`, {
+    method: "POST",
+    headers: buildHeaders(),
+    body: JSON.stringify({
+      prefix: prefix.replace(/^\//, ""),
+      limit,
+      offset,
+      sortBy: { column: "name", order: "asc" },
+    }),
+  });
+  const data = await parseResponse<StorageListItem[]>(res, `STORAGE LIST ${prefix}`);
+  return data ?? [];
+}
+
+export async function storageListAllFilePaths(rootPrefix: string): Promise<string[]> {
+  const normalized = rootPrefix.replace(/^\//, "").replace(/\/$/, "");
+  const paths: string[] = [];
+
+  async function walk(prefix: string): Promise<void> {
+    let offset = 0;
+    while (true) {
+      const items = await storageList(prefix, 1000, offset);
+      if (items.length === 0) break;
+
+      for (const item of items) {
+        const childPath = prefix ? `${prefix}/${item.name}` : item.name;
+        if (item.id === null) {
+          await walk(childPath);
+        } else {
+          paths.push(childPath);
+        }
+      }
+
+      if (items.length < 1000) break;
+      offset += items.length;
+    }
+  }
+
+  await walk(normalized);
+  return paths;
+}
+
 export async function storageSignUrl(path: string, expiresIn = 3600): Promise<string> {
   const { url } = requireSupabaseConfig();
   const res = await fetch(`${url}/storage/v1/object/sign/${STORAGE_BUCKET}/${path}`, {

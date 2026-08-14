@@ -53,6 +53,7 @@ export const createContentTaskSchema = z.object({
   briefingScript: optionalTextSchema,
   briefingCta: z.string().max(500).optional().or(z.literal("")),
   briefingReferences: optionalTextSchema,
+  briefingCaption: optionalTextSchema,
   clientApprovedAt: z.string().max(40).optional().or(z.literal("")).nullable(),
   clientApprovedBy: z.string().max(200).optional().or(z.literal("")),
   publication: contentPublicationSchema,

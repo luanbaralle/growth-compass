@@ -61,6 +61,7 @@ function buildUpdateEvents(
     briefingScript: string;
     briefingCta: string;
     briefingReferences: string;
+    briefingCaption: string;
     clientApprovedAt: string | null;
     clientApprovedBy: string;
     publication: ContentPublication;
@@ -158,7 +159,9 @@ function buildUpdateEvents(
     (patch.briefingCta !== undefined &&
       (patch.briefingCta || null) !== (existing.briefing_cta || null)) ||
     (patch.briefingReferences !== undefined &&
-      (patch.briefingReferences || null) !== (existing.briefing_references || null))
+      (patch.briefingReferences || null) !== (existing.briefing_references || null)) ||
+    (patch.briefingCaption !== undefined &&
+      (patch.briefingCaption || null) !== (existing.briefing_caption || null))
   ) {
     events.push({
       type: "briefing_changed",
