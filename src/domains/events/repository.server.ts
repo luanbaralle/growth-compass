@@ -145,3 +145,44 @@ export async function findTasksByEventId(domainEventId: string): Promise<OSTaskR
     }),
   );
 }
+
+export async function findUnreadNotificationsForAssignee(
+  assigneeId: TeamMember,
+  limit = 20,
+): Promise<OSNotification[]> {
+  return dbSelect<OSNotification>(
+    "notifications",
+    encodeQuery({
+      select: "*",
+      assignee_id: `eq.${assigneeId}`,
+      read_at: "is.null",
+      dismissed_at: "is.null",
+      order: "created_at.desc",
+      limit: String(limit),
+    }),
+  );
+}
+
+export async function findNotificationById(id: string): Promise<OSNotification | null> {
+  const rows = await dbSelect<OSNotification>(
+    "notifications",
+    encodeQuery({
+      select: "*",
+      id: `eq.${id}`,
+      limit: "1",
+    }),
+  );
+  return rows[0] ?? null;
+}
+
+export async function markNotificationRead(
+  id: string,
+  assigneeId: TeamMember,
+): Promise<OSNotification | null> {
+  const rows = await dbUpdate<OSNotification>(
+    "notifications",
+    `id=eq.${id}&assignee_id=eq.${assigneeId}`,
+    { read_at: new Date().toISOString() },
+  );
+  return rows[0] ?? null;
+}

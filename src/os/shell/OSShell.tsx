@@ -1,5 +1,8 @@
 import { useOSContext } from "@/os/shell/use-os-context";
 import { OSLogo } from "@/os/shell/OSLogo";
+import { OSNotificationsInbox } from "@/os/components/OSNotificationsInbox";
+import { persistedNotificationToDashboard } from "@/os/dashboard-notifications";
+import { useOSInbox } from "@/os/hooks/use-os-inbox";
 import { TEAM_LABELS, type TeamMember } from "@/lib/auth/types";
 import { cn } from "@/lib/utils";
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
@@ -50,6 +53,8 @@ export function OSShell() {
   const location = useLocation();
   const navigate = useNavigate();
   const { activePerson, switchPerson, logout } = useOSContext();
+  const { inbox, loading: inboxLoading, markRead } = useOSInbox(activePerson);
+  const shellNotifications = inbox.map(persistedNotificationToDashboard);
 
   if (location.pathname === "/os/login") {
     return <Outlet />;
@@ -64,7 +69,18 @@ export function OSShell() {
     <div className="flex min-h-screen bg-background text-foreground">
       <aside className="admin-sidebar hidden w-56 shrink-0 flex-col border-r border-border/60 md:flex">
         <div className="border-b border-border/60 px-4 py-4">
-          <OSLogo variant="sidebar" />
+          <div className="flex items-start justify-between gap-2">
+            <OSLogo variant="sidebar" />
+            {activePerson && (
+              <OSNotificationsInbox
+                notifications={shellNotifications}
+                loading={inboxLoading}
+                onMarkRead={(id) => void markRead(id)}
+                emptyHint="Alertas de produção e operação aparecem aqui."
+                triggerClassName="h-9 w-9"
+              />
+            )}
+          </div>
           {activePerson && (
             <div className="mt-4">
               <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/50">
@@ -127,7 +143,17 @@ export function OSShell() {
               </p>
             )}
           </div>
-          <Select
+          <div className="flex items-center gap-2">
+            {activePerson && (
+              <OSNotificationsInbox
+                notifications={shellNotifications}
+                loading={inboxLoading}
+                onMarkRead={(id) => void markRead(id)}
+                emptyHint="Alertas de produção e operação aparecem aqui."
+                triggerClassName="h-9 w-9"
+              />
+            )}
+            <Select
             value={location.pathname}
             onValueChange={(v) => navigate({ to: v })}
           >
@@ -142,6 +168,7 @@ export function OSShell() {
               ))}
             </SelectContent>
           </Select>
+          </div>
         </header>
         <main className="dashboard-page-bg flex-1 overflow-auto">
           <div className="mx-auto max-w-7xl animate-fade-up p-4 sm:p-6 lg:p-8">
