@@ -1,7 +1,7 @@
 import type { CompanyStageCounts } from "@/domains/companies/types";
 import { formatMoney as formatFinanceMoney } from "@/domains/finance/types";
 import { TEAM_LABELS, type TeamMember } from "@/lib/auth/types";
-import { cn } from "@/lib/utils";
+import { openOSSearch } from "@/os/global-search";
 import { Link } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -257,8 +257,14 @@ export function DashboardTopBar({
         <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/50" />
         <input
           type="search"
+          readOnly
           placeholder="Buscar no sistema..."
-          className="dashboard-control h-10 w-full pl-11 pr-14 text-sm outline-none placeholder:text-muted-foreground/50 focus:border-brand/20 focus:ring-1 focus:ring-brand/10"
+          onFocus={(event) => {
+            event.target.blur();
+            openOSSearch();
+          }}
+          onClick={() => openOSSearch()}
+          className="dashboard-control h-10 w-full cursor-pointer pl-11 pr-14 text-sm outline-none placeholder:text-muted-foreground/50 focus:border-brand/20 focus:ring-1 focus:ring-brand/10"
         />
         <kbd className="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 rounded-md border border-border/30 bg-surface-elevated/40 px-1.5 py-0.5 text-[10px] text-muted-foreground/60 md:inline">
           ⌘ K

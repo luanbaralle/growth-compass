@@ -1,5 +1,6 @@
 import { useOSContext } from "@/os/shell/use-os-context";
 import { OSLogo } from "@/os/shell/OSLogo";
+import { OSGlobalSearch, OSSearchTrigger } from "@/os/components/OSGlobalSearch";
 import { OSNotificationsInbox } from "@/os/components/OSNotificationsInbox";
 import { persistedNotificationToDashboard } from "@/os/dashboard-notifications";
 import { OSInboxProvider, useOSInbox } from "@/os/inbox/OSInboxProvider";
@@ -111,20 +112,23 @@ function OSShellLayout({
             )}
           </div>
           {activePerson && (
-            <div className="mt-4">
-              <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/50">
-                Você
-              </p>
-              <div className="mb-3 flex items-center gap-3 rounded-xl border border-border/30 bg-surface/30 p-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand/15 text-sm font-bold text-brand">
-                  {TEAM_LABELS[activePerson].charAt(0)}
+            <div className="mt-4 space-y-3">
+              <OSSearchTrigger />
+              <div>
+                <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/50">
+                  Você
+                </p>
+                <div className="mb-3 flex items-center gap-3 rounded-xl border border-border/30 bg-surface/30 p-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand/15 text-sm font-bold text-brand">
+                    {TEAM_LABELS[activePerson].charAt(0)}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold">{TEAM_LABELS[activePerson]}</p>
+                    <p className="text-[11px] text-muted-foreground">Administrador</p>
+                  </div>
                 </div>
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold">{TEAM_LABELS[activePerson]}</p>
-                  <p className="text-[11px] text-muted-foreground">Administrador</p>
-                </div>
+                <PersonSwitcher activePerson={activePerson} onSwitch={switchPerson} />
               </div>
-              <PersonSwitcher activePerson={activePerson} onSwitch={switchPerson} />
             </div>
           )}
         </div>
@@ -173,6 +177,7 @@ function OSShellLayout({
             )}
           </div>
           <div className="flex items-center gap-2">
+            <OSSearchTrigger compact className="md:hidden" />
             {activePerson && (
               <OSNotificationsInbox
                 notifications={shellNotifications}
@@ -205,6 +210,7 @@ function OSShellLayout({
           </div>
         </main>
       </div>
+      <OSGlobalSearch />
       <Toaster richColors position="top-right" />
     </div>
   );
