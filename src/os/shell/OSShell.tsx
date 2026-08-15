@@ -10,6 +10,7 @@ import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import {
   Activity,
   Building2,
+  CalendarDays,
   Clapperboard,
   FolderKanban,
   LayoutDashboard,
@@ -43,6 +44,7 @@ import { useState } from "react";
 const NAV_ITEMS = [
   { to: "/os", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/os/atividade", label: "Atividade", icon: Activity },
+  { to: "/os/agenda", label: "Agenda", icon: CalendarDays },
   { to: "/os/prospeccao", label: "Prospecção", icon: Target },
   { to: "/os/empresas", label: "Empresas", icon: Building2 },
   { to: "/os/projetos", label: "Projetos", icon: FolderKanban },

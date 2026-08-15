@@ -25,11 +25,13 @@ import {
   LayoutDashboard,
   Loader2,
   Target,
+  CalendarDays,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 const QUICK_NAV = [
   { label: "Dashboard", href: "/os", icon: LayoutDashboard },
+  { label: "Agenda", href: "/os/agenda", icon: CalendarDays },
   { label: "Atividade", href: "/os/atividade", icon: LayoutDashboard },
   { label: "Empresas", href: "/os/empresas", icon: Building2 },
   { label: "Projetos", href: "/os/projetos", icon: FolderKanban },
