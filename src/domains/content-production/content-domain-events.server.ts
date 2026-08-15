@@ -129,6 +129,74 @@ function buildContentStatusSideEffects(task: ContentTask, eventKey: DomainEventK
   }
 }
 
+export async function emitContentRevisionRequested(
+  task: ContentTask,
+  from: ContentTaskStatus,
+  message: string,
+  clientName: string,
+) {
+  const assignee = productionAssignee(task);
+  const actionUrl = contentActionUrl(task.id);
+
+  return emitDomainEvent({
+    idempotencyKey: buildIdempotencyKey(
+      "content.revision_requested",
+      "content_task",
+      task.id,
+      buildStatusChangeDiscriminator(from, "correcao"),
+    ),
+    eventKey: "content.revision_requested",
+    entityType: "content_task",
+    entityId: task.id,
+    companyId: task.company_id,
+    actorId: null,
+    payload: { from, to: "correcao", title: task.title, message, clientName },
+    activityTitle: "Cliente solicitou alteração",
+    activityBody: `"${task.title}": ${message}`,
+    notifications: [
+      {
+        assigneeId: assignee,
+        title: "Cliente solicitou alteração",
+        body: task.title,
+        actionUrl,
+        urgency: "warning",
+      },
+    ],
+    tasks: [
+      {
+        title: `Revisar feedback — ${task.title}`,
+        assigneeId: assignee,
+        companyId: task.company_id,
+      },
+    ],
+    projections: async () => {
+      await logEvents(task.id, null, [
+        {
+          type: "status_changed",
+          title: "Status alterado",
+          body: `${STATUS_LABELS[from]} → ${STATUS_LABELS.correcao}`,
+          metadata: { from, to: "correcao", clientRevision: true },
+        },
+        {
+          type: "note",
+          title: "Alteração solicitada pelo cliente",
+          body: message,
+          metadata: { clientName },
+        },
+      ]);
+
+      await companyRepo.insertActivity({
+        company_id: task.company_id,
+        type: "note",
+        title: "Alteração solicitada no conteúdo",
+        body: `"${task.title}": ${message}`,
+        metadata: { contentTaskId: task.id, clientName },
+        author_id: null,
+      });
+    },
+  });
+}
+
 export async function emitContentCreated(
   task: ContentTask,
   input: {
