@@ -18,8 +18,10 @@ import {
 } from "@/domains/companies/components/CompanyFormDialog";
 import { CompanyFiles } from "@/domains/companies/components/CompanyFiles";
 import { CompanyLinks } from "@/domains/companies/components/CompanyLinks";
+import { CompanyContentProduction } from "@/domains/companies/components/CompanyContentProduction";
 import { CompanyOverview } from "@/domains/companies/components/CompanyOverview";
 import { CompanyProfileHeader } from "@/domains/companies/components/CompanyProfileHeader";
+import { CompanyServices } from "@/domains/companies/components/CompanyServices";
 import { CompanyTimeline } from "@/domains/companies/components/CompanyTimeline";
 import { createProject } from "@/domains/projects/api.server";
 import { CompanyProjects } from "@/domains/projects/components/CompanyProjects";
@@ -47,6 +49,7 @@ import type {
   CompanyActivity,
   CompanyFile,
   CompanyLink,
+  CompanyService,
   CompanyStage,
   CompanyWithLogo,
 } from "@/domains/companies/types";
@@ -74,14 +77,22 @@ interface CompanyDetailData {
   activities: CompanyActivity[];
   files: CompanyFile[];
   links: CompanyLink[];
-  services: unknown[];
+  services: CompanyService[];
 }
 
-type CompanyTab = "panel" | "projects" | "finance" | "marketing" | "cadastro" | "history";
+type CompanyTab =
+  | "panel"
+  | "projects"
+  | "producao"
+  | "finance"
+  | "marketing"
+  | "cadastro"
+  | "history";
 
 const TABS: { id: CompanyTab; label: string }[] = [
   { id: "panel", label: "Painel" },
   { id: "projects", label: "Projetos" },
+  { id: "producao", label: "Produção" },
   { id: "finance", label: "Financeiro" },
   { id: "marketing", label: "Marketing" },
   { id: "cadastro", label: "Cadastro" },
@@ -236,7 +247,7 @@ export function CompanyDetailPage({ companyId }: { companyId: string }) {
     );
   }
 
-  const { company, activities, files, links } = data;
+  const { company, activities, files, links, services } = data;
 
   return (
     <OSPage className="company-detail-page space-y-6">
@@ -267,7 +278,7 @@ export function CompanyDetailPage({ companyId }: { companyId: string }) {
           company={company}
           activities={activities}
           links={links}
-          filesCount={files.length}
+          services={services}
           refreshKey={overviewRefresh}
           onGoToTab={(tab) => setActiveTab(tab as CompanyTab)}
           onCreateProject={() => setProjectOpen(true)}
@@ -284,6 +295,16 @@ export function CompanyDetailPage({ companyId }: { companyId: string }) {
             companyName={company.name}
             onCreateClick={() => setProjectOpen(true)}
             refreshKey={projectsRefresh}
+          />
+        </Section>
+      )}
+
+      {activeTab === "producao" && (
+        <Section title="Produção" description="Conteúdo em pipeline para este cliente">
+          <CompanyContentProduction
+            companyId={companyId}
+            companyName={company.name}
+            refreshKey={overviewRefresh}
           />
         </Section>
       )}
@@ -337,6 +358,13 @@ export function CompanyDetailPage({ companyId }: { companyId: string }) {
                 </div>
               )}
             </dl>
+          </Section>
+
+          <Section
+            title="Serviços contratados"
+            description="Escopo comercial e status de cada entrega"
+          >
+            <CompanyServices companyId={companyId} services={services} onRefresh={load} />
           </Section>
 
           <Section

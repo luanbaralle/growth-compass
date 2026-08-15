@@ -1,4 +1,4 @@
-import { dbInsert, dbSelect } from "@/lib/supabase/server";
+import { dbInsert, dbSelect, dbUpdate } from "@/lib/supabase/server";
 import type { TeamMember } from "@/lib/auth/types";
 import type {
   DomainEvent,
@@ -142,6 +142,21 @@ export async function findTasksByEventId(domainEventId: string): Promise<OSTaskR
       select: "*",
       source_event_id: `eq.${domainEventId}`,
       order: "created_at.asc",
+    }),
+  );
+}
+
+export async function findRecentDomainEvents(
+  sinceIso: string,
+  limit = 100,
+): Promise<DomainEvent[]> {
+  return dbSelect<DomainEvent>(
+    "domain_events",
+    encodeQuery({
+      select: "*",
+      occurred_at: `gte.${sinceIso}`,
+      order: "occurred_at.desc",
+      limit: String(limit),
     }),
   );
 }

@@ -7,6 +7,7 @@ import { TEAM_LABELS, type TeamMember } from "@/lib/auth/types";
 import { cn } from "@/lib/utils";
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import {
+  Activity,
   Building2,
   Clapperboard,
   FolderKanban,
@@ -40,6 +41,7 @@ import { useState } from "react";
 
 const NAV_ITEMS = [
   { to: "/os", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { to: "/os/atividade", label: "Atividade", icon: Activity },
   { to: "/os/prospeccao", label: "Prospecção", icon: Target },
   { to: "/os/empresas", label: "Empresas", icon: Building2 },
   { to: "/os/projetos", label: "Projetos", icon: FolderKanban },

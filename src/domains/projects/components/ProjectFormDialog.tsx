@@ -242,7 +242,7 @@ export function ProjectFormDialog({
             <div>
               <p className="text-sm font-medium">Operação</p>
               <p className="text-xs text-muted-foreground">
-                Próxima ação e bloqueio alimentam a Work Queue (Sprint E).
+                Registre o bloqueio e a próxima ação para manter o projeto operável.
               </p>
             </div>
             <div className="space-y-1.5">
