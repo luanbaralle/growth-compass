@@ -12,6 +12,7 @@ Site de captação segmentada + **Raise One OS** — sistema operacional interno
 |--------|-------|--------|
 | **Site / LP** | `/`, `/:segment`, `/blog`, etc. | Captação, diagnóstico, conteúdo |
 | **Raise One OS** | `/os/*` | Dashboard, Empresas, Projetos, Marketing, Financeiro, Config |
+| **Raise One Client** | `/client/*` | Portal do cliente — transparência, resultados, aprovação |
 
 ---
 
@@ -26,6 +27,9 @@ npm run dev
 **Login OS:** `/os/login`  
 **Home após login:** `/os`
 
+**Login Client:** `/client/login`  
+**Contrato:** `docs/client/portal-contract.md`
+
 ---
 
 ## Variáveis obrigatórias (OS)
@@ -37,6 +41,14 @@ npm run dev
 | `ADMIN_PASSWORD` | Senha do painel `/os/login` |
 | `SESSION_SECRET` | Assinatura dos cookies (mín. 32 caracteres) |
 | `VITE_WHATSAPP_NUMBER` | Links WhatsApp nos formulários |
+
+### Raise One Client (opcional até ativar portal)
+
+| Variável | Uso |
+|----------|-----|
+| `CLIENT_APP_URL` | URL base dos magic links (ex. `http://localhost:8080`) |
+| `RESEND_API_KEY` | Envio de e-mail de acesso (prod) |
+| `CLIENT_EMAIL_FROM` | Remetente (ex. `Raise One <acesso@...>`) |
 
 ---
 

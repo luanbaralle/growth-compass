@@ -103,6 +103,19 @@ export async function findContentTasks(
   return result;
 }
 
+export async function findScheduledContentTasks(): Promise<ContentTask[]> {
+  const tasks = await dbSelect<ContentTask & { channel?: string }>(
+    "content_tasks",
+    encodeQuery({
+      select: "*",
+      status: "eq.programado",
+      post_date: "not.is.null",
+      order: "post_date.asc,created_at.asc",
+    }),
+  );
+  return tasks.map(mapTaskRow);
+}
+
 export async function findContentTaskById(id: string): Promise<ContentTask | null> {
   const rows = await dbSelect<ContentTask & { channel?: string }>(
     "content_tasks",

@@ -47,6 +47,7 @@ export type DomainEventKey =
   | "content.status_changed"
   | "content.sent_for_approval"
   | "content.approved"
+  | "content.revision_requested"
   | "content.scheduled"
   | "content.published"
   | "content.note_added"

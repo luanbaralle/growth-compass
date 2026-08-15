@@ -22,6 +22,7 @@ export const EVENT_LABELS: Record<DomainEventKey, string> = {
   "content.status_changed": "Status do conteúdo",
   "content.sent_for_approval": "Enviado para aprovação",
   "content.approved": "Conteúdo aprovado",
+  "content.revision_requested": "Alteração solicitada",
   "content.scheduled": "Publicação programada",
   "content.published": "Conteúdo publicado",
   "content.note_added": "Nota no conteúdo",

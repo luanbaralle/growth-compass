@@ -16,10 +16,12 @@ import { Route as MetodologiaRouteImport } from './routes/metodologia'
 import { Route as DiagnosticoRouteImport } from './routes/diagnostico'
 import { Route as SegmentRouteImport } from './routes/$segment'
 import { Route as OsRouteRouteImport } from './routes/os/route'
+import { Route as ClientRouteRouteImport } from './routes/client/route'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SolucoesIndexRouteImport } from './routes/solucoes/index'
 import { Route as OsIndexRouteImport } from './routes/os/index'
+import { Route as ClientIndexRouteImport } from './routes/client/index'
 import { Route as CasesIndexRouteImport } from './routes/cases/index'
 import { Route as BlogIndexRouteImport } from './routes/blog/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
@@ -30,6 +32,7 @@ import { Route as SolucoesGoogleAdsRouteImport } from './routes/solucoes/google-
 import { Route as ProjetosPousadaRouteImport } from './routes/projetos/pousada'
 import { Route as ProjetosNobreRouteImport } from './routes/projetos/nobre'
 import { Route as OsLoginRouteImport } from './routes/os/login'
+import { Route as ClientLoginRouteImport } from './routes/client/login'
 import { Route as CasesSlugRouteImport } from './routes/cases/$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
@@ -43,11 +46,19 @@ import { Route as OsEmpresasIndexRouteImport } from './routes/os/empresas/index'
 import { Route as OsConfiguracoesIndexRouteImport } from './routes/os/configuracoes/index'
 import { Route as OsAtividadeIndexRouteImport } from './routes/os/atividade/index'
 import { Route as OsAgendaIndexRouteImport } from './routes/os/agenda/index'
+import { Route as ClientResultadosIndexRouteImport } from './routes/client/resultados/index'
+import { Route as ClientProjetosIndexRouteImport } from './routes/client/projetos/index'
+import { Route as ClientFinanceiroIndexRouteImport } from './routes/client/financeiro/index'
+import { Route as ClientConteudoIndexRouteImport } from './routes/client/conteudo/index'
 import { Route as PlaygroundCasesDecisionLanguageRouteImport } from './routes/playground/cases/decision-language'
 import { Route as OsProspeccaoIdRouteImport } from './routes/os/prospeccao/$id'
 import { Route as OsProjetosIdRouteImport } from './routes/os/projetos/$id'
 import { Route as OsEmpresasIdRouteImport } from './routes/os/empresas/$id'
+import { Route as ClientProjetosProjectIdRouteImport } from './routes/client/projetos/$projectId'
+import { Route as ClientConteudoTaskIdRouteImport } from './routes/client/conteudo/$taskId'
+import { Route as ClientAuthVerifyRouteImport } from './routes/client/auth/verify'
 import { Route as BlogCategoriaCategoryRouteImport } from './routes/blog/categoria/$category'
+import { Route as ApiCronPublishScheduledContentRouteImport } from './routes/api/cron/publish-scheduled-content'
 import { Route as AdminExecucaoReferenciaRouteImport } from './routes/admin/execucao/referencia'
 import { Route as AdminExecucaoProducaoRouteImport } from './routes/admin/execucao/producao'
 import { Route as AdminExecucaoPlanejamentoRouteImport } from './routes/admin/execucao/planejamento'
@@ -95,6 +106,11 @@ const OsRouteRoute = OsRouteRouteImport.update({
   path: '/os',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ClientRouteRoute = ClientRouteRouteImport.update({
+  id: '/client',
+  path: '/client',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRouteRoute = AdminRouteRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -114,6 +130,11 @@ const OsIndexRoute = OsIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => OsRouteRoute,
+} as any)
+const ClientIndexRoute = ClientIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ClientRouteRoute,
 } as any)
 const CasesIndexRoute = CasesIndexRouteImport.update({
   id: '/cases/',
@@ -165,6 +186,11 @@ const OsLoginRoute = OsLoginRouteImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => OsRouteRoute,
+} as any)
+const ClientLoginRoute = ClientLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => ClientRouteRoute,
 } as any)
 const CasesSlugRoute = CasesSlugRouteImport.update({
   id: '/cases/$slug',
@@ -231,6 +257,26 @@ const OsAgendaIndexRoute = OsAgendaIndexRouteImport.update({
   path: '/agenda/',
   getParentRoute: () => OsRouteRoute,
 } as any)
+const ClientResultadosIndexRoute = ClientResultadosIndexRouteImport.update({
+  id: '/resultados/',
+  path: '/resultados/',
+  getParentRoute: () => ClientRouteRoute,
+} as any)
+const ClientProjetosIndexRoute = ClientProjetosIndexRouteImport.update({
+  id: '/projetos/',
+  path: '/projetos/',
+  getParentRoute: () => ClientRouteRoute,
+} as any)
+const ClientFinanceiroIndexRoute = ClientFinanceiroIndexRouteImport.update({
+  id: '/financeiro/',
+  path: '/financeiro/',
+  getParentRoute: () => ClientRouteRoute,
+} as any)
+const ClientConteudoIndexRoute = ClientConteudoIndexRouteImport.update({
+  id: '/conteudo/',
+  path: '/conteudo/',
+  getParentRoute: () => ClientRouteRoute,
+} as any)
 const PlaygroundCasesDecisionLanguageRoute =
   PlaygroundCasesDecisionLanguageRouteImport.update({
     id: '/playground/cases/decision-language',
@@ -252,11 +298,32 @@ const OsEmpresasIdRoute = OsEmpresasIdRouteImport.update({
   path: '/empresas/$id',
   getParentRoute: () => OsRouteRoute,
 } as any)
+const ClientProjetosProjectIdRoute = ClientProjetosProjectIdRouteImport.update({
+  id: '/projetos/$projectId',
+  path: '/projetos/$projectId',
+  getParentRoute: () => ClientRouteRoute,
+} as any)
+const ClientConteudoTaskIdRoute = ClientConteudoTaskIdRouteImport.update({
+  id: '/conteudo/$taskId',
+  path: '/conteudo/$taskId',
+  getParentRoute: () => ClientRouteRoute,
+} as any)
+const ClientAuthVerifyRoute = ClientAuthVerifyRouteImport.update({
+  id: '/auth/verify',
+  path: '/auth/verify',
+  getParentRoute: () => ClientRouteRoute,
+} as any)
 const BlogCategoriaCategoryRoute = BlogCategoriaCategoryRouteImport.update({
   id: '/blog/categoria/$category',
   path: '/blog/categoria/$category',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCronPublishScheduledContentRoute =
+  ApiCronPublishScheduledContentRouteImport.update({
+    id: '/api/cron/publish-scheduled-content',
+    path: '/api/cron/publish-scheduled-content',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminExecucaoReferenciaRoute = AdminExecucaoReferenciaRouteImport.update({
   id: '/execucao/referencia',
   path: '/execucao/referencia',
@@ -322,6 +389,7 @@ const AdminExecucaoRituaisCheckinRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
+  '/client': typeof ClientRouteRouteWithChildren
   '/os': typeof OsRouteRouteWithChildren
   '/$segment': typeof SegmentRoute
   '/diagnostico': typeof DiagnosticoRoute
@@ -333,6 +401,7 @@ export interface FileRoutesByFullPath {
   '/admin/login': typeof AdminLoginRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/cases/$slug': typeof CasesSlugRoute
+  '/client/login': typeof ClientLoginRoute
   '/os/login': typeof OsLoginRoute
   '/projetos/nobre': typeof ProjetosNobreRoute
   '/projetos/pousada': typeof ProjetosPousadaRoute
@@ -343,6 +412,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/cases/': typeof CasesIndexRoute
+  '/client/': typeof ClientIndexRoute
   '/os/': typeof OsIndexRoute
   '/solucoes/': typeof SolucoesIndexRoute
   '/admin/execucao/capacidade': typeof AdminExecucaoCapacidadeRoute
@@ -351,11 +421,19 @@ export interface FileRoutesByFullPath {
   '/admin/execucao/planejamento': typeof AdminExecucaoPlanejamentoRoute
   '/admin/execucao/producao': typeof AdminExecucaoProducaoRoute
   '/admin/execucao/referencia': typeof AdminExecucaoReferenciaRoute
+  '/api/cron/publish-scheduled-content': typeof ApiCronPublishScheduledContentRoute
   '/blog/categoria/$category': typeof BlogCategoriaCategoryRoute
+  '/client/auth/verify': typeof ClientAuthVerifyRoute
+  '/client/conteudo/$taskId': typeof ClientConteudoTaskIdRoute
+  '/client/projetos/$projectId': typeof ClientProjetosProjectIdRoute
   '/os/empresas/$id': typeof OsEmpresasIdRoute
   '/os/projetos/$id': typeof OsProjetosIdRoute
   '/os/prospeccao/$id': typeof OsProspeccaoIdRoute
   '/playground/cases/decision-language': typeof PlaygroundCasesDecisionLanguageRoute
+  '/client/conteudo/': typeof ClientConteudoIndexRoute
+  '/client/financeiro/': typeof ClientFinanceiroIndexRoute
+  '/client/projetos/': typeof ClientProjetosIndexRoute
+  '/client/resultados/': typeof ClientResultadosIndexRoute
   '/os/agenda/': typeof OsAgendaIndexRoute
   '/os/atividade/': typeof OsAtividadeIndexRoute
   '/os/configuracoes/': typeof OsConfiguracoesIndexRoute
@@ -383,6 +461,7 @@ export interface FileRoutesByTo {
   '/admin/login': typeof AdminLoginRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/cases/$slug': typeof CasesSlugRoute
+  '/client/login': typeof ClientLoginRoute
   '/os/login': typeof OsLoginRoute
   '/projetos/nobre': typeof ProjetosNobreRoute
   '/projetos/pousada': typeof ProjetosPousadaRoute
@@ -393,6 +472,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/blog': typeof BlogIndexRoute
   '/cases': typeof CasesIndexRoute
+  '/client': typeof ClientIndexRoute
   '/os': typeof OsIndexRoute
   '/solucoes': typeof SolucoesIndexRoute
   '/admin/execucao/capacidade': typeof AdminExecucaoCapacidadeRoute
@@ -401,11 +481,19 @@ export interface FileRoutesByTo {
   '/admin/execucao/planejamento': typeof AdminExecucaoPlanejamentoRoute
   '/admin/execucao/producao': typeof AdminExecucaoProducaoRoute
   '/admin/execucao/referencia': typeof AdminExecucaoReferenciaRoute
+  '/api/cron/publish-scheduled-content': typeof ApiCronPublishScheduledContentRoute
   '/blog/categoria/$category': typeof BlogCategoriaCategoryRoute
+  '/client/auth/verify': typeof ClientAuthVerifyRoute
+  '/client/conteudo/$taskId': typeof ClientConteudoTaskIdRoute
+  '/client/projetos/$projectId': typeof ClientProjetosProjectIdRoute
   '/os/empresas/$id': typeof OsEmpresasIdRoute
   '/os/projetos/$id': typeof OsProjetosIdRoute
   '/os/prospeccao/$id': typeof OsProspeccaoIdRoute
   '/playground/cases/decision-language': typeof PlaygroundCasesDecisionLanguageRoute
+  '/client/conteudo': typeof ClientConteudoIndexRoute
+  '/client/financeiro': typeof ClientFinanceiroIndexRoute
+  '/client/projetos': typeof ClientProjetosIndexRoute
+  '/client/resultados': typeof ClientResultadosIndexRoute
   '/os/agenda': typeof OsAgendaIndexRoute
   '/os/atividade': typeof OsAtividadeIndexRoute
   '/os/configuracoes': typeof OsConfiguracoesIndexRoute
@@ -425,6 +513,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
+  '/client': typeof ClientRouteRouteWithChildren
   '/os': typeof OsRouteRouteWithChildren
   '/$segment': typeof SegmentRoute
   '/diagnostico': typeof DiagnosticoRoute
@@ -436,6 +525,7 @@ export interface FileRoutesById {
   '/admin/login': typeof AdminLoginRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/cases/$slug': typeof CasesSlugRoute
+  '/client/login': typeof ClientLoginRoute
   '/os/login': typeof OsLoginRoute
   '/projetos/nobre': typeof ProjetosNobreRoute
   '/projetos/pousada': typeof ProjetosPousadaRoute
@@ -446,6 +536,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/cases/': typeof CasesIndexRoute
+  '/client/': typeof ClientIndexRoute
   '/os/': typeof OsIndexRoute
   '/solucoes/': typeof SolucoesIndexRoute
   '/admin/execucao/capacidade': typeof AdminExecucaoCapacidadeRoute
@@ -454,11 +545,19 @@ export interface FileRoutesById {
   '/admin/execucao/planejamento': typeof AdminExecucaoPlanejamentoRoute
   '/admin/execucao/producao': typeof AdminExecucaoProducaoRoute
   '/admin/execucao/referencia': typeof AdminExecucaoReferenciaRoute
+  '/api/cron/publish-scheduled-content': typeof ApiCronPublishScheduledContentRoute
   '/blog/categoria/$category': typeof BlogCategoriaCategoryRoute
+  '/client/auth/verify': typeof ClientAuthVerifyRoute
+  '/client/conteudo/$taskId': typeof ClientConteudoTaskIdRoute
+  '/client/projetos/$projectId': typeof ClientProjetosProjectIdRoute
   '/os/empresas/$id': typeof OsEmpresasIdRoute
   '/os/projetos/$id': typeof OsProjetosIdRoute
   '/os/prospeccao/$id': typeof OsProspeccaoIdRoute
   '/playground/cases/decision-language': typeof PlaygroundCasesDecisionLanguageRoute
+  '/client/conteudo/': typeof ClientConteudoIndexRoute
+  '/client/financeiro/': typeof ClientFinanceiroIndexRoute
+  '/client/projetos/': typeof ClientProjetosIndexRoute
+  '/client/resultados/': typeof ClientResultadosIndexRoute
   '/os/agenda/': typeof OsAgendaIndexRoute
   '/os/atividade/': typeof OsAtividadeIndexRoute
   '/os/configuracoes/': typeof OsConfiguracoesIndexRoute
@@ -479,6 +578,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/client'
     | '/os'
     | '/$segment'
     | '/diagnostico'
@@ -490,6 +590,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/blog/$slug'
     | '/cases/$slug'
+    | '/client/login'
     | '/os/login'
     | '/projetos/nobre'
     | '/projetos/pousada'
@@ -500,6 +601,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/blog/'
     | '/cases/'
+    | '/client/'
     | '/os/'
     | '/solucoes/'
     | '/admin/execucao/capacidade'
@@ -508,11 +610,19 @@ export interface FileRouteTypes {
     | '/admin/execucao/planejamento'
     | '/admin/execucao/producao'
     | '/admin/execucao/referencia'
+    | '/api/cron/publish-scheduled-content'
     | '/blog/categoria/$category'
+    | '/client/auth/verify'
+    | '/client/conteudo/$taskId'
+    | '/client/projetos/$projectId'
     | '/os/empresas/$id'
     | '/os/projetos/$id'
     | '/os/prospeccao/$id'
     | '/playground/cases/decision-language'
+    | '/client/conteudo/'
+    | '/client/financeiro/'
+    | '/client/projetos/'
+    | '/client/resultados/'
     | '/os/agenda/'
     | '/os/atividade/'
     | '/os/configuracoes/'
@@ -540,6 +650,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/blog/$slug'
     | '/cases/$slug'
+    | '/client/login'
     | '/os/login'
     | '/projetos/nobre'
     | '/projetos/pousada'
@@ -550,6 +661,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/blog'
     | '/cases'
+    | '/client'
     | '/os'
     | '/solucoes'
     | '/admin/execucao/capacidade'
@@ -558,11 +670,19 @@ export interface FileRouteTypes {
     | '/admin/execucao/planejamento'
     | '/admin/execucao/producao'
     | '/admin/execucao/referencia'
+    | '/api/cron/publish-scheduled-content'
     | '/blog/categoria/$category'
+    | '/client/auth/verify'
+    | '/client/conteudo/$taskId'
+    | '/client/projetos/$projectId'
     | '/os/empresas/$id'
     | '/os/projetos/$id'
     | '/os/prospeccao/$id'
     | '/playground/cases/decision-language'
+    | '/client/conteudo'
+    | '/client/financeiro'
+    | '/client/projetos'
+    | '/client/resultados'
     | '/os/agenda'
     | '/os/atividade'
     | '/os/configuracoes'
@@ -581,6 +701,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/client'
     | '/os'
     | '/$segment'
     | '/diagnostico'
@@ -592,6 +713,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/blog/$slug'
     | '/cases/$slug'
+    | '/client/login'
     | '/os/login'
     | '/projetos/nobre'
     | '/projetos/pousada'
@@ -602,6 +724,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/blog/'
     | '/cases/'
+    | '/client/'
     | '/os/'
     | '/solucoes/'
     | '/admin/execucao/capacidade'
@@ -610,11 +733,19 @@ export interface FileRouteTypes {
     | '/admin/execucao/planejamento'
     | '/admin/execucao/producao'
     | '/admin/execucao/referencia'
+    | '/api/cron/publish-scheduled-content'
     | '/blog/categoria/$category'
+    | '/client/auth/verify'
+    | '/client/conteudo/$taskId'
+    | '/client/projetos/$projectId'
     | '/os/empresas/$id'
     | '/os/projetos/$id'
     | '/os/prospeccao/$id'
     | '/playground/cases/decision-language'
+    | '/client/conteudo/'
+    | '/client/financeiro/'
+    | '/client/projetos/'
+    | '/client/resultados/'
     | '/os/agenda/'
     | '/os/atividade/'
     | '/os/configuracoes/'
@@ -634,6 +765,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
+  ClientRouteRoute: typeof ClientRouteRouteWithChildren
   OsRouteRoute: typeof OsRouteRouteWithChildren
   SegmentRoute: typeof SegmentRoute
   DiagnosticoRoute: typeof DiagnosticoRoute
@@ -652,6 +784,7 @@ export interface RootRouteChildren {
   BlogIndexRoute: typeof BlogIndexRoute
   CasesIndexRoute: typeof CasesIndexRoute
   SolucoesIndexRoute: typeof SolucoesIndexRoute
+  ApiCronPublishScheduledContentRoute: typeof ApiCronPublishScheduledContentRoute
   BlogCategoriaCategoryRoute: typeof BlogCategoriaCategoryRoute
   PlaygroundCasesDecisionLanguageRoute: typeof PlaygroundCasesDecisionLanguageRoute
 }
@@ -707,6 +840,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OsRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/client': {
+      id: '/client'
+      path: '/client'
+      fullPath: '/client'
+      preLoaderRoute: typeof ClientRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin': {
       id: '/admin'
       path: '/admin'
@@ -734,6 +874,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/os/'
       preLoaderRoute: typeof OsIndexRouteImport
       parentRoute: typeof OsRouteRoute
+    }
+    '/client/': {
+      id: '/client/'
+      path: '/'
+      fullPath: '/client/'
+      preLoaderRoute: typeof ClientIndexRouteImport
+      parentRoute: typeof ClientRouteRoute
     }
     '/cases/': {
       id: '/cases/'
@@ -804,6 +951,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/os/login'
       preLoaderRoute: typeof OsLoginRouteImport
       parentRoute: typeof OsRouteRoute
+    }
+    '/client/login': {
+      id: '/client/login'
+      path: '/login'
+      fullPath: '/client/login'
+      preLoaderRoute: typeof ClientLoginRouteImport
+      parentRoute: typeof ClientRouteRoute
     }
     '/cases/$slug': {
       id: '/cases/$slug'
@@ -896,6 +1050,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OsAgendaIndexRouteImport
       parentRoute: typeof OsRouteRoute
     }
+    '/client/resultados/': {
+      id: '/client/resultados/'
+      path: '/resultados'
+      fullPath: '/client/resultados/'
+      preLoaderRoute: typeof ClientResultadosIndexRouteImport
+      parentRoute: typeof ClientRouteRoute
+    }
+    '/client/projetos/': {
+      id: '/client/projetos/'
+      path: '/projetos'
+      fullPath: '/client/projetos/'
+      preLoaderRoute: typeof ClientProjetosIndexRouteImport
+      parentRoute: typeof ClientRouteRoute
+    }
+    '/client/financeiro/': {
+      id: '/client/financeiro/'
+      path: '/financeiro'
+      fullPath: '/client/financeiro/'
+      preLoaderRoute: typeof ClientFinanceiroIndexRouteImport
+      parentRoute: typeof ClientRouteRoute
+    }
+    '/client/conteudo/': {
+      id: '/client/conteudo/'
+      path: '/conteudo'
+      fullPath: '/client/conteudo/'
+      preLoaderRoute: typeof ClientConteudoIndexRouteImport
+      parentRoute: typeof ClientRouteRoute
+    }
     '/playground/cases/decision-language': {
       id: '/playground/cases/decision-language'
       path: '/playground/cases/decision-language'
@@ -924,11 +1106,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OsEmpresasIdRouteImport
       parentRoute: typeof OsRouteRoute
     }
+    '/client/projetos/$projectId': {
+      id: '/client/projetos/$projectId'
+      path: '/projetos/$projectId'
+      fullPath: '/client/projetos/$projectId'
+      preLoaderRoute: typeof ClientProjetosProjectIdRouteImport
+      parentRoute: typeof ClientRouteRoute
+    }
+    '/client/conteudo/$taskId': {
+      id: '/client/conteudo/$taskId'
+      path: '/conteudo/$taskId'
+      fullPath: '/client/conteudo/$taskId'
+      preLoaderRoute: typeof ClientConteudoTaskIdRouteImport
+      parentRoute: typeof ClientRouteRoute
+    }
+    '/client/auth/verify': {
+      id: '/client/auth/verify'
+      path: '/auth/verify'
+      fullPath: '/client/auth/verify'
+      preLoaderRoute: typeof ClientAuthVerifyRouteImport
+      parentRoute: typeof ClientRouteRoute
+    }
     '/blog/categoria/$category': {
       id: '/blog/categoria/$category'
       path: '/blog/categoria/$category'
       fullPath: '/blog/categoria/$category'
       preLoaderRoute: typeof BlogCategoriaCategoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/cron/publish-scheduled-content': {
+      id: '/api/cron/publish-scheduled-content'
+      path: '/api/cron/publish-scheduled-content'
+      fullPath: '/api/cron/publish-scheduled-content'
+      preLoaderRoute: typeof ApiCronPublishScheduledContentRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/execucao/referencia': {
@@ -1047,6 +1257,34 @@ const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
   AdminRouteRouteChildren,
 )
 
+interface ClientRouteRouteChildren {
+  ClientLoginRoute: typeof ClientLoginRoute
+  ClientIndexRoute: typeof ClientIndexRoute
+  ClientAuthVerifyRoute: typeof ClientAuthVerifyRoute
+  ClientConteudoTaskIdRoute: typeof ClientConteudoTaskIdRoute
+  ClientProjetosProjectIdRoute: typeof ClientProjetosProjectIdRoute
+  ClientConteudoIndexRoute: typeof ClientConteudoIndexRoute
+  ClientFinanceiroIndexRoute: typeof ClientFinanceiroIndexRoute
+  ClientProjetosIndexRoute: typeof ClientProjetosIndexRoute
+  ClientResultadosIndexRoute: typeof ClientResultadosIndexRoute
+}
+
+const ClientRouteRouteChildren: ClientRouteRouteChildren = {
+  ClientLoginRoute: ClientLoginRoute,
+  ClientIndexRoute: ClientIndexRoute,
+  ClientAuthVerifyRoute: ClientAuthVerifyRoute,
+  ClientConteudoTaskIdRoute: ClientConteudoTaskIdRoute,
+  ClientProjetosProjectIdRoute: ClientProjetosProjectIdRoute,
+  ClientConteudoIndexRoute: ClientConteudoIndexRoute,
+  ClientFinanceiroIndexRoute: ClientFinanceiroIndexRoute,
+  ClientProjetosIndexRoute: ClientProjetosIndexRoute,
+  ClientResultadosIndexRoute: ClientResultadosIndexRoute,
+}
+
+const ClientRouteRouteWithChildren = ClientRouteRoute._addFileChildren(
+  ClientRouteRouteChildren,
+)
+
 interface OsRouteRouteChildren {
   OsLoginRoute: typeof OsLoginRoute
   OsIndexRoute: typeof OsIndexRoute
@@ -1089,6 +1327,7 @@ const OsRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRouteRoute: AdminRouteRouteWithChildren,
+  ClientRouteRoute: ClientRouteRouteWithChildren,
   OsRouteRoute: OsRouteRouteWithChildren,
   SegmentRoute: SegmentRoute,
   DiagnosticoRoute: DiagnosticoRoute,
@@ -1107,6 +1346,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogIndexRoute: BlogIndexRoute,
   CasesIndexRoute: CasesIndexRoute,
   SolucoesIndexRoute: SolucoesIndexRoute,
+  ApiCronPublishScheduledContentRoute: ApiCronPublishScheduledContentRoute,
   BlogCategoriaCategoryRoute: BlogCategoriaCategoryRoute,
   PlaygroundCasesDecisionLanguageRoute: PlaygroundCasesDecisionLanguageRoute,
 }
