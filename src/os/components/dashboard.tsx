@@ -1,6 +1,7 @@
 import type { CompanyStageCounts } from "@/domains/companies/types";
 import { formatMoney as formatFinanceMoney } from "@/domains/finance/types";
 import { TEAM_LABELS, type TeamMember } from "@/lib/auth/types";
+import { cn } from "@/lib/utils";
 import { openOSSearch } from "@/os/global-search";
 import { Link } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
