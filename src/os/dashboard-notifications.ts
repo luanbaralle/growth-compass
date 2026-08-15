@@ -1,3 +1,4 @@
+import type { OSNotification } from "@/domains/events/types";
 import {
   getNextActionUrgency,
   NEXT_ACTION_URGENCY_LABELS,
@@ -10,6 +11,37 @@ export interface OSDashboardNotification {
   subtitle?: string;
   href: string;
   tone: "default" | "warning" | "danger";
+  /** Persistida no banco — marcar como lida ao clicar */
+  persisted?: boolean;
+}
+
+export function persistedNotificationToDashboard(
+  notification: OSNotification,
+): OSDashboardNotification {
+  return {
+    id: notification.id,
+    title: notification.title,
+    subtitle: notification.body ?? undefined,
+    href: notification.action_url,
+    tone:
+      notification.urgency === "critical"
+        ? "danger"
+        : notification.urgency === "warning"
+          ? "warning"
+          : "default",
+    persisted: true,
+  };
+}
+
+export function mergeDashboardNotifications(
+  persisted: OSNotification[],
+  computed: OSDashboardNotification[],
+  limit = 20,
+): OSDashboardNotification[] {
+  const persistedItems = persisted.map(persistedNotificationToDashboard);
+  const hrefs = new Set(persistedItems.map((item) => item.href));
+  const dedupedComputed = computed.filter((item) => !hrefs.has(item.href));
+  return [...persistedItems, ...dedupedComputed].slice(0, limit);
 }
 
 export function buildDashboardNotifications(

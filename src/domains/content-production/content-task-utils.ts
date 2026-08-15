@@ -26,6 +26,11 @@ export function buildDuplicateCreatePayload(task: ContentTaskWithCompany) {
     postDate: task.post_date ?? "",
     productionOwnerId: (task.production_owner_id as TeamMember) || undefined,
     notes: task.notes ?? "",
+    briefingHook: task.briefing_hook ?? "",
+    briefingScript: task.briefing_script ?? "",
+    briefingCta: task.briefing_cta ?? "",
+    briefingReferences: task.briefing_references ?? "",
+    briefingCaption: task.briefing_caption ?? "",
   };
 }
 

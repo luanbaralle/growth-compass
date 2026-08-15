@@ -9,7 +9,10 @@ import {
 } from "@/domains/projects/api.server";
 import {
   formatDueDate,
+  formatNextActionDue,
   isDueOverdue,
+  ProjectBlockedByBadge,
+  ProjectOperationalAlert,
   ProjectPriorityLabel,
   ProjectStatusBadge,
 } from "@/domains/projects/components/ProjectBadges";
@@ -20,7 +23,7 @@ import {
   type ProjectFormValues,
 } from "@/domains/projects/components/ProjectFormDialog";
 import type { ProjectChecklistItem, ProjectComment } from "@/domains/projects/types";
-import { TYPE_LABELS } from "@/domains/projects/types";
+import { BLOCKED_BY_LABELS, TYPE_LABELS } from "@/domains/projects/types";
 import { TEAM_LABELS } from "@/lib/auth/types";
 import { getErrorMessage, isUnauthorizedError } from "@/lib/api/client-errors";
 import { PageHeader, PageSkeleton, Section, OSPage } from "@/os/ui";
@@ -186,7 +189,49 @@ export function ProjectDetailPage({ projectId }: { projectId: string }) {
             {TEAM_LABELS[project.owner_id as keyof typeof TEAM_LABELS]}
           </span>
         )}
+        {project.blocked_by_type && (
+          <ProjectBlockedByBadge type={project.blocked_by_type} />
+        )}
       </div>
+
+      <ProjectOperationalAlert project={project} />
+
+      {(project.next_action || project.status === "blocked") && (
+        <Section title="Operação">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                Próxima ação
+              </p>
+              <p className="mt-1 text-sm text-foreground/90">
+                {project.next_action || "—"}
+              </p>
+              {project.next_action_due && (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Prazo: {formatNextActionDue(project.next_action_due)}
+                </p>
+              )}
+            </div>
+            {project.status === "blocked" && (
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  Bloqueio
+                </p>
+                <p className="mt-1 text-sm text-foreground/90">
+                  {project.blocked_by_type
+                    ? BLOCKED_BY_LABELS[project.blocked_by_type]
+                    : "—"}
+                </p>
+                {project.blocked_by_detail && (
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {project.blocked_by_detail}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        </Section>
+      )}
 
       {project.description && (
         <Section title="Descrição">

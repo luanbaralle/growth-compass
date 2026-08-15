@@ -2,11 +2,11 @@ import type { CompanyStageCounts } from "@/domains/companies/types";
 import { formatMoney as formatFinanceMoney } from "@/domains/finance/types";
 import { TEAM_LABELS, type TeamMember } from "@/lib/auth/types";
 import { cn } from "@/lib/utils";
+import { openOSSearch } from "@/os/global-search";
 import { Link } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowRight,
-  Bell,
   Building2,
   Calendar,
   CheckCircle2,
@@ -34,6 +34,7 @@ import {
   type DashboardDatePreset,
 } from "@/os/dashboard-date";
 import type { OSDashboardNotification } from "@/os/dashboard-notifications";
+import { OSNotificationsInbox } from "@/os/components/OSNotificationsInbox";
 import { Calendar as CalendarPicker } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useState } from "react";
@@ -243,22 +244,28 @@ export function DashboardTopBar({
   supabaseConnected,
   notifications = [],
   notificationsLoading = false,
+  onNotificationMarkRead,
 }: {
   activePerson: TeamMember | null;
   supabaseConnected: boolean;
   notifications?: OSDashboardNotification[];
   notificationsLoading?: boolean;
+  onNotificationMarkRead?: (id: string) => void;
 }) {
-  const notificationCount = notifications.length;
-
   return (
     <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
       <div className="relative w-full lg:max-w-md lg:flex-1">
         <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/50" />
         <input
           type="search"
+          readOnly
           placeholder="Buscar no sistema..."
-          className="dashboard-control h-10 w-full pl-11 pr-14 text-sm outline-none placeholder:text-muted-foreground/50 focus:border-brand/20 focus:ring-1 focus:ring-brand/10"
+          onFocus={(event) => {
+            event.target.blur();
+            openOSSearch();
+          }}
+          onClick={() => openOSSearch()}
+          className="dashboard-control h-10 w-full cursor-pointer pl-11 pr-14 text-sm outline-none placeholder:text-muted-foreground/50 focus:border-brand/20 focus:ring-1 focus:ring-brand/10"
         />
         <kbd className="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 rounded-md border border-border/30 bg-surface-elevated/40 px-1.5 py-0.5 text-[10px] text-muted-foreground/60 md:inline">
           ⌘ K
@@ -283,66 +290,15 @@ export function DashboardTopBar({
           {supabaseConnected ? "Banco conectado" : "Banco offline"}
         </div>
 
-        <Popover>
-          <PopoverTrigger asChild>
-            <button
-              type="button"
-              className="dashboard-control relative flex h-10 w-10 shrink-0 items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-50"
-              aria-label="Notificações"
-              disabled={notificationsLoading}
-            >
-              <Bell className="h-4 w-4" />
-              {!notificationsLoading && notificationCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand px-1 text-[10px] font-bold leading-none text-brand-foreground">
-                  {notificationCount > 9 ? "9+" : notificationCount}
-                </span>
-              )}
-            </button>
-          </PopoverTrigger>
-          <PopoverContent align="end" className="w-80 p-0">
-            <div className="border-b border-border/40 px-4 py-3">
-              <p className="text-sm font-semibold">Notificações</p>
-              <p className="text-xs text-muted-foreground">
-                {notificationsLoading
-                  ? "Carregando..."
-                  : notificationCount > 0
-                    ? `${notificationCount} item(ns) precisam de atenção`
-                    : "Nada pendente no momento"}
-              </p>
-            </div>
-            {notificationsLoading ? (
-              <p className="px-4 py-6 text-sm text-muted-foreground">Carregando alertas...</p>
-            ) : notificationCount === 0 ? (
-              <p className="px-4 py-6 text-sm text-muted-foreground">
-                Leads, projetos atrasados e cobranças aparecem aqui.
-              </p>
-            ) : (
-              <ul className="max-h-72 overflow-y-auto divide-y divide-border/40">
-                {notifications.map((item) => (
-                  <li key={item.id}>
-                    <Link
-                      to={item.href}
-                      className="block px-4 py-3 transition-colors hover:bg-surface-elevated/40"
-                    >
-                      <p
-                        className={cn(
-                          "text-sm font-medium leading-snug",
-                          item.tone === "danger" && "text-red-400",
-                          item.tone === "warning" && "text-amber-400",
-                        )}
-                      >
-                        {item.title}
-                      </p>
-                      {item.subtitle && (
-                        <p className="mt-0.5 text-xs text-muted-foreground">{item.subtitle}</p>
-                      )}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </PopoverContent>
-        </Popover>
+        <OSNotificationsInbox
+          notifications={notifications}
+          loading={notificationsLoading}
+          onMarkRead={
+            onNotificationMarkRead
+              ? (id) => onNotificationMarkRead(id)
+              : undefined
+          }
+        />
 
         {activePerson && (
           <div className="dashboard-control flex h-10 items-center gap-2.5 px-2.5">

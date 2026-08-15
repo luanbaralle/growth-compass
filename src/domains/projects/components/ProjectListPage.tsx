@@ -10,7 +10,9 @@ import {
 } from "@/domains/projects/components/ProjectFormDialog";
 import {
   formatDueDate,
+  formatNextActionDue,
   isDueOverdue,
+  ProjectOperationalAlert,
   ProjectPriorityLabel,
   ProjectStatusBadge,
 } from "@/domains/projects/components/ProjectBadges";
@@ -165,6 +167,11 @@ export function ProjectListPage() {
             {counts.overdue} atrasado(s)
           </span>
         )}
+        {(counts.needsAction ?? 0) > 0 && (
+          <span className="rounded-lg border border-amber-400/25 bg-amber-400/10 px-3 py-1.5 text-xs font-medium text-amber-300">
+            {counts.needsAction} sem próxima ação
+          </span>
+        )}
       </FilterPillsRow>
 
       {loading ? (
@@ -185,6 +192,7 @@ export function ProjectListPage() {
                 <TableHead>Status</TableHead>
                 <TableHead>Prioridade</TableHead>
                 <TableHead>Prazo</TableHead>
+                <TableHead>Próxima ação</TableHead>
                 <TableHead>Resp.</TableHead>
                 <TableHead className="w-[60px]" />
               </TableRow>
@@ -226,6 +234,21 @@ export function ProjectListPage() {
                     >
                       {formatDueDate(project.due_date)}
                     </span>
+                  </TableCell>
+                  <TableCell>
+                    <div className="max-w-[220px] space-y-1">
+                      <p className="truncate text-sm">
+                        {project.next_action || (
+                          <span className="text-muted-foreground">—</span>
+                        )}
+                      </p>
+                      {project.next_action_due && (
+                        <p className="text-xs text-muted-foreground">
+                          {formatNextActionDue(project.next_action_due)}
+                        </p>
+                      )}
+                      <ProjectOperationalAlert project={project} />
+                    </div>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {project.owner_id

@@ -1,3 +1,13 @@
+import { buildCompanyPendencies } from "@/domains/companies/company-pendencies";
+import { CompanyPendencies } from "@/domains/companies/components/CompanyPendencies";
+import type { CompanyService } from "@/domains/companies/types";
+import { listContentTasks } from "@/domains/content-production/api.server";
+import { ContentChannelBadgeGroup } from "@/domains/content-production/components/ContentChannelBadgeGroup";
+import {
+  formatPostDate,
+  STATUS_ACCENT,
+  STATUS_LABELS,
+} from "@/domains/content-production/types";
 import { listFinanceEntries, markFinanceEntryPaid } from "@/domains/finance/api.server";
 import {
   FinanceStatusBadge,
@@ -29,6 +39,7 @@ import {
   AlertTriangle,
   ArrowRight,
   Check,
+  Clapperboard,
   ExternalLink,
   FolderKanban,
   Megaphone,
@@ -46,11 +57,29 @@ function formatActivityTime(iso: string): string {
   }).format(new Date(iso));
 }
 
+const SERVICE_STATUS_LABELS: Record<CompanyService["status"], string> = {
+  active: "Ativo",
+  paused: "Pausado",
+  completed: "Concluído",
+};
+
+const CONTENT_PIPELINE_STATUSES = new Set([
+  "ideia",
+  "definicao",
+  "agendamento",
+  "gravacao",
+  "edicao",
+  "aprovacao",
+  "correcao",
+  "aprovado",
+  "programado",
+]);
+
 export function CompanyOverview({
   company,
   activities,
   links,
-  filesCount,
+  services,
   refreshKey = 0,
   onGoToTab,
   onCreateProject,
@@ -61,7 +90,7 @@ export function CompanyOverview({
   company: Company;
   activities: CompanyActivity[];
   links: CompanyLink[];
-  filesCount: number;
+  services: CompanyService[];
   refreshKey?: number;
   onGoToTab: (tab: string) => void;
   onCreateProject: () => void;
@@ -82,6 +111,9 @@ export function CompanyOverview({
     mrrCents: 0,
     futurePendingCents: 0,
   });
+  const [contentTasks, setContentTasks] = useState<
+    Awaited<ReturnType<typeof listContentTasks>>["tasks"]
+  >([]);
   const [snapshots, setSnapshots] = useState<
     Awaited<ReturnType<typeof listMarketingSnapshots>>["snapshots"]
   >([]);
@@ -99,14 +131,16 @@ export function CompanyOverview({
     Promise.all([
       listProjects({ data: { companyId: company.id, sort: "due_date", order: "asc" } }),
       listFinanceEntries({ data: { companyId: company.id, sort: "due_date", order: "asc" } }),
+      listContentTasks({ data: { companyId: company.id } }),
       listMarketingSnapshots({
         data: { companyId: company.id, sort: "period_start", order: "desc" },
       }),
     ])
-      .then(([projectsResult, financeResult, marketingResult]) => {
+      .then(([projectsResult, financeResult, contentResult, marketingResult]) => {
         setProjects(projectsResult.projects);
         setFinanceEntries(financeResult.entries);
         setFinanceSummary(financeResult.summary);
+        setContentTasks(contentResult.tasks);
         setSnapshots(marketingResult.snapshots);
         setMarketingSummary(marketingResult.summary);
       })
@@ -133,6 +167,23 @@ export function CompanyOverview({
   );
 
   const overdueFinance = openFinance.filter((e) => effectiveFinanceStatus(e) === "overdue");
+  const pipelineContent = useMemo(
+    () => contentTasks.filter((task) => CONTENT_PIPELINE_STATUSES.has(task.status)),
+    [contentTasks],
+  );
+  const activeServices = useMemo(
+    () => services.filter((service) => service.status === "active"),
+    [services],
+  );
+  const pendencies = useMemo(
+    () =>
+      buildCompanyPendencies({
+        projects,
+        financeEntries,
+        contentTasks,
+      }),
+    [projects, financeEntries, contentTasks],
+  );
   const latestSnapshot = snapshots[0] ?? null;
   const recentActivities = activities.slice(0, 5);
 
@@ -200,6 +251,8 @@ export function CompanyOverview({
         </div>
       )}
 
+      <CompanyPendencies pendencies={pendencies} onGoToTab={onGoToTab} />
+
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           label="Projetos ativos"
@@ -229,11 +282,15 @@ export function CompanyOverview({
           accent="purple"
         />
         <StatCard
-          label="Recursos"
-          value={String(links.length + filesCount)}
-          sub={`${links.length} link(s) · ${filesCount} arquivo(s)`}
-          icon={ExternalLink}
-          accent="info"
+          label="Produção"
+          value={String(pipelineContent.length)}
+          sub={
+            pipelineContent.filter((task) => task.status === "aprovacao").length > 0
+              ? `${pipelineContent.filter((task) => task.status === "aprovacao").length} em aprovação`
+              : `${contentTasks.filter((task) => task.status === "publicado").length} publicado(s)`
+          }
+          icon={Clapperboard}
+          accent={pipelineContent.length > 0 ? "brand" : "neutral"}
         />
       </section>
 
@@ -288,6 +345,109 @@ export function CompanyOverview({
                   </li>
                 ))}
               </ul>
+            )}
+          </Section>
+
+          <Section
+            title="Produção de conteúdo"
+            description="Peças em pipeline para este cliente"
+            action={
+              <button type="button" onClick={() => onGoToTab("producao")} className="dashboard-link">
+                Ver produção
+                <ArrowRight className="h-3 w-3" />
+              </button>
+            }
+          >
+            {pipelineContent.length === 0 ? (
+              <div className="flex flex-col items-center gap-3 py-6 text-center">
+                <Clapperboard className="h-8 w-8 text-muted-foreground/40" />
+                <p className="text-sm text-muted-foreground">Nenhuma peça em produção.</p>
+                <Link to="/os/producao" className="dashboard-btn-primary h-9 px-3 text-xs">
+                  <Plus className="h-3.5 w-3.5" />
+                  Abrir produção
+                </Link>
+              </div>
+            ) : (
+              <ul className="divide-y divide-border/40">
+                {pipelineContent.slice(0, 4).map((task) => (
+                  <li key={task.id}>
+                    <Link
+                      to="/os/producao"
+                      search={{ task: task.id }}
+                      className="flex items-center justify-between gap-3 py-3 transition-colors hover:text-brand"
+                    >
+                      <div className="min-w-0">
+                        <p className="font-medium">{task.title}</p>
+                        <div className="mt-1 flex flex-wrap items-center gap-2">
+                          <ContentChannelBadgeGroup channels={task.channels} maxVisible={2} />
+                          {task.post_date && (
+                            <span className="text-xs text-muted-foreground">
+                              {formatPostDate(task.post_date)}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border/50 bg-muted/30 px-2.5 py-0.5 text-xs font-medium">
+                        <span
+                          className={cn("h-1.5 w-1.5 rounded-full", STATUS_ACCENT[task.status])}
+                        />
+                        {STATUS_LABELS[task.status]}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Section>
+
+          <Section
+            title="Serviços contratados"
+            description="Escopo comercial ativo neste cliente"
+            action={
+              <button type="button" onClick={() => onGoToTab("cadastro")} className="dashboard-link">
+                Gerenciar
+                <ArrowRight className="h-3 w-3" />
+              </button>
+            }
+          >
+            {services.length === 0 ? (
+              <p className="py-4 text-sm text-muted-foreground">
+                Nenhum serviço cadastrado. Registre no cadastro do cliente.
+              </p>
+            ) : (
+              <ul className="divide-y divide-border/40">
+                {services.slice(0, 4).map((service) => (
+                  <li
+                    key={service.id}
+                    className="flex items-center justify-between gap-3 py-3"
+                  >
+                    <div className="min-w-0">
+                      <p className="font-medium">{service.name}</p>
+                      {service.description && (
+                        <p className="truncate text-xs text-muted-foreground">{service.description}</p>
+                      )}
+                    </div>
+                    <span
+                      className={cn(
+                        "shrink-0 rounded-full border px-2.5 py-0.5 text-xs font-medium",
+                        service.status === "active" &&
+                          "border-emerald-400/30 bg-emerald-400/10 text-emerald-300",
+                        service.status === "paused" &&
+                          "border-amber-400/30 bg-amber-400/10 text-amber-300",
+                        service.status === "completed" &&
+                          "border-zinc-400/30 bg-zinc-400/10 text-zinc-300",
+                      )}
+                    >
+                      {SERVICE_STATUS_LABELS[service.status]}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {activeServices.length > 0 && services.length > activeServices.length && (
+              <p className="mt-2 text-xs text-muted-foreground">
+                {activeServices.length} serviço(s) ativo(s) de {services.length} cadastrado(s).
+              </p>
             )}
           </Section>
 
@@ -350,6 +510,10 @@ export function CompanyOverview({
               <button type="button" onClick={onCreateMarketing} className="company-quick-action">
                 <Megaphone className="h-4 w-4 text-violet-400" />
                 Métricas de marketing
+              </button>
+              <button type="button" onClick={() => onGoToTab("producao")} className="company-quick-action">
+                <Clapperboard className="h-4 w-4 text-brand" />
+                Produção de conteúdo
               </button>
             </div>
           </Section>

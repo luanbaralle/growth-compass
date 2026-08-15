@@ -41,6 +41,8 @@ import { Route as OsMarketingIndexRouteImport } from './routes/os/marketing/inde
 import { Route as OsFinanceiroIndexRouteImport } from './routes/os/financeiro/index'
 import { Route as OsEmpresasIndexRouteImport } from './routes/os/empresas/index'
 import { Route as OsConfiguracoesIndexRouteImport } from './routes/os/configuracoes/index'
+import { Route as OsAtividadeIndexRouteImport } from './routes/os/atividade/index'
+import { Route as OsAgendaIndexRouteImport } from './routes/os/agenda/index'
 import { Route as PlaygroundCasesDecisionLanguageRouteImport } from './routes/playground/cases/decision-language'
 import { Route as OsProspeccaoIdRouteImport } from './routes/os/prospeccao/$id'
 import { Route as OsProjetosIdRouteImport } from './routes/os/projetos/$id'
@@ -219,6 +221,16 @@ const OsConfiguracoesIndexRoute = OsConfiguracoesIndexRouteImport.update({
   path: '/configuracoes/',
   getParentRoute: () => OsRouteRoute,
 } as any)
+const OsAtividadeIndexRoute = OsAtividadeIndexRouteImport.update({
+  id: '/atividade/',
+  path: '/atividade/',
+  getParentRoute: () => OsRouteRoute,
+} as any)
+const OsAgendaIndexRoute = OsAgendaIndexRouteImport.update({
+  id: '/agenda/',
+  path: '/agenda/',
+  getParentRoute: () => OsRouteRoute,
+} as any)
 const PlaygroundCasesDecisionLanguageRoute =
   PlaygroundCasesDecisionLanguageRouteImport.update({
     id: '/playground/cases/decision-language',
@@ -344,6 +356,8 @@ export interface FileRoutesByFullPath {
   '/os/projetos/$id': typeof OsProjetosIdRoute
   '/os/prospeccao/$id': typeof OsProspeccaoIdRoute
   '/playground/cases/decision-language': typeof PlaygroundCasesDecisionLanguageRoute
+  '/os/agenda/': typeof OsAgendaIndexRoute
+  '/os/atividade/': typeof OsAtividadeIndexRoute
   '/os/configuracoes/': typeof OsConfiguracoesIndexRoute
   '/os/empresas/': typeof OsEmpresasIndexRoute
   '/os/financeiro/': typeof OsFinanceiroIndexRoute
@@ -392,6 +406,8 @@ export interface FileRoutesByTo {
   '/os/projetos/$id': typeof OsProjetosIdRoute
   '/os/prospeccao/$id': typeof OsProspeccaoIdRoute
   '/playground/cases/decision-language': typeof PlaygroundCasesDecisionLanguageRoute
+  '/os/agenda': typeof OsAgendaIndexRoute
+  '/os/atividade': typeof OsAtividadeIndexRoute
   '/os/configuracoes': typeof OsConfiguracoesIndexRoute
   '/os/empresas': typeof OsEmpresasIndexRoute
   '/os/financeiro': typeof OsFinanceiroIndexRoute
@@ -443,6 +459,8 @@ export interface FileRoutesById {
   '/os/projetos/$id': typeof OsProjetosIdRoute
   '/os/prospeccao/$id': typeof OsProspeccaoIdRoute
   '/playground/cases/decision-language': typeof PlaygroundCasesDecisionLanguageRoute
+  '/os/agenda/': typeof OsAgendaIndexRoute
+  '/os/atividade/': typeof OsAtividadeIndexRoute
   '/os/configuracoes/': typeof OsConfiguracoesIndexRoute
   '/os/empresas/': typeof OsEmpresasIndexRoute
   '/os/financeiro/': typeof OsFinanceiroIndexRoute
@@ -495,6 +513,8 @@ export interface FileRouteTypes {
     | '/os/projetos/$id'
     | '/os/prospeccao/$id'
     | '/playground/cases/decision-language'
+    | '/os/agenda/'
+    | '/os/atividade/'
     | '/os/configuracoes/'
     | '/os/empresas/'
     | '/os/financeiro/'
@@ -543,6 +563,8 @@ export interface FileRouteTypes {
     | '/os/projetos/$id'
     | '/os/prospeccao/$id'
     | '/playground/cases/decision-language'
+    | '/os/agenda'
+    | '/os/atividade'
     | '/os/configuracoes'
     | '/os/empresas'
     | '/os/financeiro'
@@ -593,6 +615,8 @@ export interface FileRouteTypes {
     | '/os/projetos/$id'
     | '/os/prospeccao/$id'
     | '/playground/cases/decision-language'
+    | '/os/agenda/'
+    | '/os/atividade/'
     | '/os/configuracoes/'
     | '/os/empresas/'
     | '/os/financeiro/'
@@ -858,6 +882,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OsConfiguracoesIndexRouteImport
       parentRoute: typeof OsRouteRoute
     }
+    '/os/atividade/': {
+      id: '/os/atividade/'
+      path: '/atividade'
+      fullPath: '/os/atividade/'
+      preLoaderRoute: typeof OsAtividadeIndexRouteImport
+      parentRoute: typeof OsRouteRoute
+    }
+    '/os/agenda/': {
+      id: '/os/agenda/'
+      path: '/agenda'
+      fullPath: '/os/agenda/'
+      preLoaderRoute: typeof OsAgendaIndexRouteImport
+      parentRoute: typeof OsRouteRoute
+    }
     '/playground/cases/decision-language': {
       id: '/playground/cases/decision-language'
       path: '/playground/cases/decision-language'
@@ -1015,6 +1053,8 @@ interface OsRouteRouteChildren {
   OsEmpresasIdRoute: typeof OsEmpresasIdRoute
   OsProjetosIdRoute: typeof OsProjetosIdRoute
   OsProspeccaoIdRoute: typeof OsProspeccaoIdRoute
+  OsAgendaIndexRoute: typeof OsAgendaIndexRoute
+  OsAtividadeIndexRoute: typeof OsAtividadeIndexRoute
   OsConfiguracoesIndexRoute: typeof OsConfiguracoesIndexRoute
   OsEmpresasIndexRoute: typeof OsEmpresasIndexRoute
   OsFinanceiroIndexRoute: typeof OsFinanceiroIndexRoute
@@ -1031,6 +1071,8 @@ const OsRouteRouteChildren: OsRouteRouteChildren = {
   OsEmpresasIdRoute: OsEmpresasIdRoute,
   OsProjetosIdRoute: OsProjetosIdRoute,
   OsProspeccaoIdRoute: OsProspeccaoIdRoute,
+  OsAgendaIndexRoute: OsAgendaIndexRoute,
+  OsAtividadeIndexRoute: OsAtividadeIndexRoute,
   OsConfiguracoesIndexRoute: OsConfiguracoesIndexRoute,
   OsEmpresasIndexRoute: OsEmpresasIndexRoute,
   OsFinanceiroIndexRoute: OsFinanceiroIndexRoute,

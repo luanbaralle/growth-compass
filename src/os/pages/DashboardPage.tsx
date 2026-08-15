@@ -22,10 +22,11 @@ import {
   Users,
   Wallet,
 } from "@/os/components/dashboard";
-import { getOSDashboard } from "@/os/dashboard.functions";
 import type { OSDashboardData } from "@/os/dashboard.service.server";
+import { getOSDashboard } from "@/os/dashboard.functions";
 import { getLeadsKpiCopy, dashboardDateFilterToApiParams, DEFAULT_DASHBOARD_DATE_FILTER, type DashboardDateFilter } from "@/os/dashboard-date";
-import { buildDashboardNotifications } from "@/os/dashboard-notifications";
+import { buildDashboardNotifications, mergeDashboardNotifications } from "@/os/dashboard-notifications";
+import { useOSInbox } from "@/os/inbox/OSInboxProvider";
 import { useOSContext } from "@/os/shell/use-os-context";
 import { EmptyState } from "@/os/ui";
 import { Link, useNavigate } from "@tanstack/react-router";
@@ -110,7 +111,13 @@ export function DashboardPage() {
   const projectsOverdue = data?.projects.overdue ?? 0;
   const receivableCents = data?.finance.receivableCents ?? 0;
   const overdueFinanceCents = data?.finance.overdueCents ?? 0;
-  const notifications = useMemo(() => buildDashboardNotifications(data), [data]);
+  const { inbox, loading: inboxLoading, markRead } = useOSInbox();
+  const computedNotifications = useMemo(() => buildDashboardNotifications(data), [data]);
+  const notifications = useMemo(
+    () => mergeDashboardNotifications(inbox, computedNotifications),
+    [inbox, computedNotifications],
+  );
+  const notificationsLoading = loading || inboxLoading;
 
   const quickAccessItems = [
     {
@@ -170,7 +177,8 @@ export function DashboardPage() {
         activePerson={activePerson}
         supabaseConnected={setup?.supabaseConfigured ?? false}
         notifications={notifications}
-        notificationsLoading={loading}
+        notificationsLoading={notificationsLoading}
+        onNotificationMarkRead={(id) => void markRead(id)}
       />
 
       {setup && !setup.supabaseConfigured && (

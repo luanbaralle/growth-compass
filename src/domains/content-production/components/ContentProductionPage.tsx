@@ -1,6 +1,7 @@
 import { listCompanies } from "@/domains/companies/api.server";
 import {
   deleteContentTask,
+  getContentTask,
   listContentTasks,
   moveContentTask,
   updateContentTask,
@@ -41,9 +42,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "@tanstack/react-router";
 import { CalendarDays, Clapperboard, LayoutGrid, List } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-export function ContentProductionPage() {
+export function ContentProductionPage({ initialTaskId }: { initialTaskId?: string }) {
   const navigate = useNavigate();
   const { activePerson } = useOSContext();
   const [tasks, setTasks] = useState<ContentTaskWithCompany[]>([]);
@@ -58,6 +59,7 @@ export function ContentProductionPage() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<ContentTaskWithCompany | null>(null);
   const [defaultPostDate, setDefaultPostDate] = useState<string | undefined>();
+  const openedTaskRef = useRef<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -103,6 +105,47 @@ export function ContentProductionPage() {
     setDefaultPostDate(undefined);
     setSheetOpen(true);
   }, []);
+
+  useEffect(() => {
+    if (!initialTaskId) {
+      openedTaskRef.current = null;
+      return;
+    }
+    if (loading) return;
+    if (openedTaskRef.current === initialTaskId) return;
+
+    const fromList = tasks.find((task) => task.id === initialTaskId);
+    if (fromList) {
+      openedTaskRef.current = initialTaskId;
+      openEdit(fromList);
+      return;
+    }
+
+    let cancelled = false;
+    void getContentTask({ data: { id: initialTaskId } })
+      .then((result) => {
+        if (cancelled) return;
+        openedTaskRef.current = initialTaskId;
+        openEdit({
+          ...result.task,
+          companies: result.company ? { name: result.company.name } : null,
+        });
+      })
+      .catch(() => {
+        /* task inválido ou removido — ignora deep link */
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [initialTaskId, loading, tasks, openEdit]);
+
+  const handleSheetOpenChange = (open: boolean) => {
+    setSheetOpen(open);
+    if (!open && initialTaskId) {
+      navigate({ to: "/os/producao", search: {}, replace: true });
+    }
+  };
 
   const handleDuplicate = useCallback(async (task: ContentTaskWithCompany) => {
     try {
@@ -347,7 +390,7 @@ export function ContentProductionPage() {
 
       <ContentTaskSheet
         open={sheetOpen}
-        onOpenChange={setSheetOpen}
+        onOpenChange={handleSheetOpenChange}
         task={selectedTask}
         companies={companies}
         defaultValues={defaultPostDate ? { postDate: defaultPostDate } : undefined}

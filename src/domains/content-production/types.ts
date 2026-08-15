@@ -21,6 +21,20 @@ export type ContentType =
   | "imagem"
   | "carrossel";
 
+export type ContentTaskFileType =
+  | "raw_video"
+  | "edit"
+  | "thumbnail"
+  | "script"
+  | "other";
+
+export type ContentPublicationEntry = {
+  published_at: string | null;
+  url: string | null;
+};
+
+export type ContentPublication = Partial<Record<ContentChannel, ContentPublicationEntry>>;
+
 export interface ContentTask {
   id: string;
   company_id: string;
@@ -32,9 +46,29 @@ export interface ContentTask {
   post_date: string | null;
   production_owner_id: string | null;
   notes: string | null;
+  briefing_hook: string | null;
+  briefing_script: string | null;
+  briefing_cta: string | null;
+  briefing_references: string | null;
+  briefing_caption: string | null;
+  client_approved_at: string | null;
+  client_approved_by: string | null;
+  publication: ContentPublication;
   sort_order: number;
   created_at: string;
   updated_at: string;
+}
+
+export interface ContentTaskFile {
+  id: string;
+  content_task_id: string;
+  file_type: ContentTaskFileType;
+  name: string;
+  storage_path: string;
+  mime_type: string | null;
+  size_bytes: number | null;
+  uploaded_by: string | null;
+  created_at: string;
 }
 
 export interface ContentTaskWithCompany extends ContentTask {
@@ -52,6 +86,11 @@ export type ContentTaskEventType =
   | "production_owner_changed"
   | "notes_changed"
   | "company_changed"
+  | "briefing_changed"
+  | "approval_changed"
+  | "publication_changed"
+  | "file_added"
+  | "file_removed"
   | "note";
 
 export interface ContentTaskEvent {
@@ -76,8 +115,29 @@ export const CONTENT_TASK_EVENT_LABELS: Record<ContentTaskEventType, string> = {
   production_owner_changed: "Produção",
   notes_changed: "Observações",
   company_changed: "Cliente",
+  briefing_changed: "Briefing",
+  approval_changed: "Aprovação",
+  publication_changed: "Publicação",
+  file_added: "Arquivo",
+  file_removed: "Arquivo",
   note: "Nota",
 };
+
+export const CONTENT_TASK_FILE_TYPE_LABELS: Record<ContentTaskFileType, string> = {
+  raw_video: "Vídeo bruto",
+  edit: "Edição",
+  thumbnail: "Thumbnail",
+  script: "Roteiro",
+  other: "Outro",
+};
+
+export const CONTENT_TASK_FILE_TYPES: ContentTaskFileType[] = [
+  "raw_video",
+  "edit",
+  "thumbnail",
+  "script",
+  "other",
+];
 
 export interface ContentTaskListFilters {
   search?: string;
@@ -228,6 +288,26 @@ export function formatTaskTimestamp(iso: string): string {
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(iso));
+}
+
+export function emptyPublication(): ContentPublication {
+  return {};
+}
+
+export function normalizePublication(value: unknown): ContentPublication {
+  if (!value || typeof value !== "object") return emptyPublication();
+  const raw = value as Record<string, unknown>;
+  const result: ContentPublication = {};
+  for (const channel of CONTENT_CHANNELS) {
+    const entry = raw[channel];
+    if (!entry || typeof entry !== "object") continue;
+    const row = entry as Record<string, unknown>;
+    result[channel] = {
+      published_at: typeof row.published_at === "string" ? row.published_at : null,
+      url: typeof row.url === "string" ? row.url : null,
+    };
+  }
+  return result;
 }
 
 export function normalizeChannels(value: unknown): ContentChannel[] {

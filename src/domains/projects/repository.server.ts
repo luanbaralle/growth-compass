@@ -8,7 +8,7 @@ import type {
   ProjectStatusCounts,
   ProjectWithCompany,
 } from "./types";
-import { ACTIVE_STATUSES, PROJECT_STATUSES } from "./types";
+import { ACTIVE_STATUSES, PROJECT_STATUSES, isDueOverdue, projectNeedsNextAction } from "./types";
 
 function encodeQuery(params: Record<string, string>): string {
   return Object.entries(params)
@@ -17,9 +17,7 @@ function encodeQuery(params: Record<string, string>): string {
 }
 
 function isOverdue(project: Project): boolean {
-  if (!project.due_date) return false;
-  if (project.status === "done" || project.status === "cancelled") return false;
-  return project.due_date < new Date().toISOString().slice(0, 10);
+  return isDueOverdue(project.due_date, project.status);
 }
 
 export async function findProjects(filters: ProjectListFilters = {}): Promise<ProjectWithCompany[]> {
@@ -72,7 +70,9 @@ export async function findProjects(filters: ProjectListFilters = {}): Promise<Pr
       (p) =>
         p.title.toLowerCase().includes(q) ||
         p.companies?.name.toLowerCase().includes(q) ||
-        p.description?.toLowerCase().includes(q),
+        p.description?.toLowerCase().includes(q) ||
+        p.next_action?.toLowerCase().includes(q) ||
+        p.blocked_by_detail?.toLowerCase().includes(q),
     );
   }
 
@@ -89,6 +89,7 @@ export async function countProjectsByStatus(): Promise<ProjectStatusCounts> {
     blocked: 0,
     cancelled: 0,
     overdue: 0,
+    needsAction: 0,
   };
 
   const all = await dbSelect<Project>("projects", encodeQuery({ select: "*" }));
@@ -98,6 +99,7 @@ export async function countProjectsByStatus(): Promise<ProjectStatusCounts> {
       counts[row.status as ProjectStatus]++;
     }
     if (isOverdue(row)) counts.overdue++;
+    if (projectNeedsNextAction(row)) counts.needsAction++;
   }
   return counts;
 }

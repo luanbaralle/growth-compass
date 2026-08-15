@@ -3,9 +3,11 @@ import type { ContentTask, ContentTaskEventType } from "./types";
 import {
   formatChannels,
   formatPostDate,
+  normalizePublication,
   STATUS_LABELS,
   TYPE_LABELS,
   type ContentChannel,
+  type ContentPublication,
   type ContentTaskStatus,
   type ContentType,
 } from "./types";
@@ -40,6 +42,10 @@ function channelsEqual(a: ContentChannel[], b: ContentChannel[]): boolean {
   return sortedA.every((value, index) => value === sortedB[index]);
 }
 
+function publicationEqual(a: ContentPublication, b: ContentPublication): boolean {
+  return JSON.stringify(normalizePublication(a)) === JSON.stringify(normalizePublication(b));
+}
+
 function buildUpdateEvents(
   existing: ContentTask,
   patch: Partial<{
@@ -51,6 +57,14 @@ function buildUpdateEvents(
     postDate: string;
     productionOwnerId: TeamMember;
     notes: string;
+    briefingHook: string;
+    briefingScript: string;
+    briefingCta: string;
+    briefingReferences: string;
+    briefingCaption: string;
+    clientApprovedAt: string | null;
+    clientApprovedBy: string;
+    publication: ContentPublication;
   }>,
 ): EventDraft[] {
   const events: EventDraft[] = [];
@@ -134,6 +148,48 @@ function buildUpdateEvents(
     events.push({
       type: "notes_changed",
       title: "Observações atualizadas",
+    });
+  }
+
+  if (
+    (patch.briefingHook !== undefined &&
+      (patch.briefingHook || null) !== (existing.briefing_hook || null)) ||
+    (patch.briefingScript !== undefined &&
+      (patch.briefingScript || null) !== (existing.briefing_script || null)) ||
+    (patch.briefingCta !== undefined &&
+      (patch.briefingCta || null) !== (existing.briefing_cta || null)) ||
+    (patch.briefingReferences !== undefined &&
+      (patch.briefingReferences || null) !== (existing.briefing_references || null)) ||
+    (patch.briefingCaption !== undefined &&
+      (patch.briefingCaption || null) !== (existing.briefing_caption || null))
+  ) {
+    events.push({
+      type: "briefing_changed",
+      title: "Briefing atualizado",
+    });
+  }
+
+  if (
+    (patch.clientApprovedAt !== undefined &&
+      (patch.clientApprovedAt || null) !== (existing.client_approved_at || null)) ||
+    (patch.clientApprovedBy !== undefined &&
+      (patch.clientApprovedBy || null) !== (existing.client_approved_by || null))
+  ) {
+    const approved = patch.clientApprovedAt ?? existing.client_approved_at;
+    events.push({
+      type: "approval_changed",
+      title: approved ? "Aprovação do cliente registrada" : "Aprovação do cliente removida",
+      body: patch.clientApprovedBy || existing.client_approved_by || undefined,
+    });
+  }
+
+  if (
+    patch.publication !== undefined &&
+    !publicationEqual(patch.publication, existing.publication)
+  ) {
+    events.push({
+      type: "publication_changed",
+      title: "Publicação atualizada",
     });
   }
 

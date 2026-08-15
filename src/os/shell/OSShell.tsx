@@ -1,10 +1,16 @@
 import { useOSContext } from "@/os/shell/use-os-context";
 import { OSLogo } from "@/os/shell/OSLogo";
+import { OSGlobalSearch, OSSearchTrigger } from "@/os/components/OSGlobalSearch";
+import { OSNotificationsInbox } from "@/os/components/OSNotificationsInbox";
+import { persistedNotificationToDashboard } from "@/os/dashboard-notifications";
+import { OSInboxProvider, useOSInbox } from "@/os/inbox/OSInboxProvider";
 import { TEAM_LABELS, type TeamMember } from "@/lib/auth/types";
 import { cn } from "@/lib/utils";
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import {
+  Activity,
   Building2,
+  CalendarDays,
   Clapperboard,
   FolderKanban,
   LayoutDashboard,
@@ -37,6 +43,8 @@ import { useState } from "react";
 
 const NAV_ITEMS = [
   { to: "/os", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { to: "/os/atividade", label: "Atividade", icon: Activity },
+  { to: "/os/agenda", label: "Agenda", icon: CalendarDays },
   { to: "/os/prospeccao", label: "Prospecção", icon: Target },
   { to: "/os/empresas", label: "Empresas", icon: Building2 },
   { to: "/os/projetos", label: "Projetos", icon: FolderKanban },
@@ -51,35 +59,78 @@ export function OSShell() {
   const navigate = useNavigate();
   const { activePerson, switchPerson, logout } = useOSContext();
 
-  if (location.pathname === "/os/login") {
-    return <Outlet />;
-  }
-
   const handleLogout = async () => {
     await logout();
     navigate({ to: "/os/login" });
   };
 
+  if (location.pathname === "/os/login") {
+    return <Outlet />;
+  }
+
+  return (
+    <OSInboxProvider activePerson={activePerson}>
+      <OSShellLayout
+        activePerson={activePerson}
+        switchPerson={switchPerson}
+        onLogout={handleLogout}
+        location={location}
+        navigate={navigate}
+      />
+    </OSInboxProvider>
+  );
+}
+
+function OSShellLayout({
+  activePerson,
+  switchPerson,
+  onLogout,
+  location,
+  navigate,
+}: {
+  activePerson: TeamMember | null;
+  switchPerson: (person: TeamMember, pin?: string) => Promise<void>;
+  onLogout: () => Promise<void>;
+  location: ReturnType<typeof useLocation>;
+  navigate: ReturnType<typeof useNavigate>;
+}) {
+  const { inbox, loading: inboxLoading, markRead } = useOSInbox();
+  const shellNotifications = inbox.map(persistedNotificationToDashboard);
+
   return (
     <div className="flex min-h-screen bg-background text-foreground">
       <aside className="admin-sidebar hidden w-56 shrink-0 flex-col border-r border-border/60 md:flex">
         <div className="border-b border-border/60 px-4 py-4">
-          <OSLogo variant="sidebar" />
+          <div className="flex items-start justify-between gap-2">
+            <OSLogo variant="sidebar" />
+            {activePerson && (
+              <OSNotificationsInbox
+                notifications={shellNotifications}
+                loading={inboxLoading}
+                onMarkRead={(id) => void markRead(id)}
+                emptyHint="Alertas de produção e operação aparecem aqui."
+                triggerClassName="h-9 w-9"
+              />
+            )}
+          </div>
           {activePerson && (
-            <div className="mt-4">
-              <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/50">
-                Você
-              </p>
-              <div className="mb-3 flex items-center gap-3 rounded-xl border border-border/30 bg-surface/30 p-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand/15 text-sm font-bold text-brand">
-                  {TEAM_LABELS[activePerson].charAt(0)}
+            <div className="mt-4 space-y-3">
+              <OSSearchTrigger />
+              <div>
+                <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/50">
+                  Você
+                </p>
+                <div className="mb-3 flex items-center gap-3 rounded-xl border border-border/30 bg-surface/30 p-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand/15 text-sm font-bold text-brand">
+                    {TEAM_LABELS[activePerson].charAt(0)}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold">{TEAM_LABELS[activePerson]}</p>
+                    <p className="text-[11px] text-muted-foreground">Administrador</p>
+                  </div>
                 </div>
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold">{TEAM_LABELS[activePerson]}</p>
-                  <p className="text-[11px] text-muted-foreground">Administrador</p>
-                </div>
+                <PersonSwitcher activePerson={activePerson} onSwitch={switchPerson} />
               </div>
-              <PersonSwitcher activePerson={activePerson} onSwitch={switchPerson} />
             </div>
           )}
         </div>
@@ -108,7 +159,7 @@ export function OSShell() {
         <div className="border-t border-border/60 p-3">
           <button
             type="button"
-            onClick={handleLogout}
+            onClick={() => void onLogout()}
             className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-surface-elevated hover:text-foreground"
           >
             <LogOut className="h-4 w-4" />
@@ -127,7 +178,18 @@ export function OSShell() {
               </p>
             )}
           </div>
-          <Select
+          <div className="flex items-center gap-2">
+            <OSSearchTrigger compact className="md:hidden" />
+            {activePerson && (
+              <OSNotificationsInbox
+                notifications={shellNotifications}
+                loading={inboxLoading}
+                onMarkRead={(id) => void markRead(id)}
+                emptyHint="Alertas de produção e operação aparecem aqui."
+                triggerClassName="h-9 w-9"
+              />
+            )}
+            <Select
             value={location.pathname}
             onValueChange={(v) => navigate({ to: v })}
           >
@@ -142,6 +204,7 @@ export function OSShell() {
               ))}
             </SelectContent>
           </Select>
+          </div>
         </header>
         <main className="dashboard-page-bg flex-1 overflow-auto">
           <div className="mx-auto max-w-7xl animate-fade-up p-4 sm:p-6 lg:p-8">
@@ -149,6 +212,7 @@ export function OSShell() {
           </div>
         </main>
       </div>
+      <OSGlobalSearch />
       <Toaster richColors position="top-right" />
     </div>
   );
