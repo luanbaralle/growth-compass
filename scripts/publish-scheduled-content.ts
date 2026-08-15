@@ -6,6 +6,9 @@
  * Uso:
  *   npx tsx scripts/publish-scheduled-content.ts
  *
+ * Agendamento — cron na Vercel (1x/dia no Hobby; ver vercel.json).
+ * Horário alvo: após 22h em America/Sao_Paulo na data de postagem.
+ *
  * Requer: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY no .env
  */
 
