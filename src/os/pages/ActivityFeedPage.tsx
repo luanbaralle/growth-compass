@@ -102,9 +102,8 @@ export function ActivityFeedPage() {
             key={option.id}
             active={window === option.id}
             onClick={() => setWindow(option.id)}
-          >
-            {option.label}
-          </FilterPill>
+            label={option.label}
+          />
         ))}
       </FilterPillsRow>
 

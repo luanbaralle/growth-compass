@@ -193,12 +193,16 @@ export function AgendaPage() {
       </form>
 
       <FilterPillsRow>
-        <FilterPill active={view === "pending"} onClick={() => setView("pending")}>
-          Pendentes ({pendingTotal})
-        </FilterPill>
-        <FilterPill active={view === "done"} onClick={() => setView("done")}>
-          Concluídas ({summary.done})
-        </FilterPill>
+        <FilterPill
+          active={view === "pending"}
+          onClick={() => setView("pending")}
+          label={`Pendentes (${pendingTotal})`}
+        />
+        <FilterPill
+          active={view === "done"}
+          onClick={() => setView("done")}
+          label={`Concluídas (${summary.done})`}
+        />
       </FilterPillsRow>
 
       {error && <EmptyState title="Erro ao carregar" description={error} />}
