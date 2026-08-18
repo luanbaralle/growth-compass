@@ -9,7 +9,7 @@ import {
   reprocessCopilotSession,
   startCopilotSession,
 } from "@/domains/copilot/api.server";
-import { createProposalFromCopilot } from "@/domains/proposals/api.server";
+import { createProposalFromCopilot, getProposalForCopilotSession, publishProposal } from "@/domains/proposals/api.server";
 import { getLiveStatusLine } from "@/domains/copilot/engine/session-processor";
 import type { CopilotSessionDetail } from "@/domains/copilot/meeting/types";
 import type { CopilotSessionSnapshot, SuggestionCard, TranscriptSegment } from "@/domains/copilot/types";
@@ -49,6 +49,7 @@ import {
   FileText,
   Loader2,
   Send,
+  Presentation,
   RefreshCw,
   Square,
   X,
@@ -98,6 +99,9 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
   const [exportingPdf, setExportingPdf] = useState(false);
   const [exportingBrief, setExportingBrief] = useState(false);
   const [creatingProposal, setCreatingProposal] = useState(false);
+  const [linkedProposalId, setLinkedProposalId] = useState<string | null>(null);
+  const [linkedProposalStatus, setLinkedProposalStatus] = useState<"draft" | "published" | "archived" | null>(null);
+  const [publishingProposal, setPublishingProposal] = useState(false);
   const [pushingToCompany, setPushingToCompany] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [manualOpen, setManualOpen] = useState(false);
@@ -112,6 +116,17 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
     try {
       const data = await getCopilotSession({ data: { sessionId } });
       setDetail(data);
+      if (data.status === "completed") {
+        try {
+          const proposal = await getProposalForCopilotSession({ data: { sessionId } });
+          setLinkedProposalId(proposal?.id ?? null);
+          setLinkedProposalStatus(proposal?.status ?? null);
+        } catch {
+          setLinkedProposalId(null);
+        }
+      } else {
+        setLinkedProposalId(null);
+      }
     } catch (err) {
       toast.error(getErrorMessage(err, "Erro ao carregar sessão."));
     } finally {
@@ -250,7 +265,7 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
     try {
       const data = await reprocessCopilotSession({ data: { sessionId } });
       setDetail(data);
-      toast.success("Transcript reprocessado — diagnóstico atualizado.");
+      toast.success("Transcript reprocessado — diagnóstico e proposta vinculada atualizados.");
     } catch (err) {
       toast.error(getErrorMessage(err, "Erro ao reprocessar sessão."));
     } finally {
@@ -294,6 +309,8 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
     setCreatingProposal(true);
     try {
       const proposal = await createProposalFromCopilot({ data: { sessionId } });
+      setLinkedProposalId(proposal.id);
+      setLinkedProposalStatus(proposal.status);
       toast.success("Rascunho de proposta criado.");
       await navigate({ to: "/os/propostas/$id", params: { id: proposal.id } });
     } catch (err) {
@@ -301,6 +318,28 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
     } finally {
       setCreatingProposal(false);
     }
+  };
+
+  const handlePublishProposal = async () => {
+    if (!linkedProposalId) return;
+    setPublishingProposal(true);
+    try {
+      await publishProposal({ data: { id: linkedProposalId } });
+      setLinkedProposalStatus("published");
+      toast.success("Proposta publicada — link pronto para a Reunião 2.");
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Erro ao publicar proposta."));
+    } finally {
+      setPublishingProposal(false);
+    }
+  };
+
+  const handleStartPresentation = async () => {
+    if (!linkedProposalId) return;
+    await navigate({
+      to: "/os/propostas/$id/apresentacao",
+      params: { id: linkedProposalId },
+    });
   };
 
   const handlePushToCompany = async () => {
@@ -451,19 +490,47 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
           </div>
           {isCompleted && detail.artifact && (
             <>
-              <Button
-                variant="default"
-                size="sm"
-                onClick={() => void handleCreateProposal()}
-                disabled={creatingProposal || detail.status === "processing"}
-              >
-                {creatingProposal ? (
-                  <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <FileText className="mr-1.5 h-3.5 w-3.5" />
-                )}
-                Criar proposta
-              </Button>
+              {linkedProposalId ? (
+                <>
+                  <Button variant="default" size="sm" onClick={() => void handleStartPresentation()}>
+                    <Presentation className="mr-1.5 h-3.5 w-3.5" />
+                    Apresentar
+                  </Button>
+                  {linkedProposalStatus === "draft" && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => void handlePublishProposal()}
+                      disabled={publishingProposal}
+                    >
+                      {publishingProposal ? (
+                        <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                      ) : null}
+                      Publicar proposta
+                    </Button>
+                  )}
+                  <Button variant="outline" size="sm" asChild>
+                    <Link to="/os/propostas/$id" params={{ id: linkedProposalId }}>
+                      <FileText className="mr-1.5 h-3.5 w-3.5" />
+                      Abrir proposta
+                    </Link>
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => void handleCreateProposal()}
+                  disabled={creatingProposal || detail.status === "processing"}
+                >
+                  {creatingProposal ? (
+                    <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <FileText className="mr-1.5 h-3.5 w-3.5" />
+                  )}
+                  Criar proposta
+                </Button>
+              )}
               <Button
                 variant="outline"
                 size="sm"

@@ -1,6 +1,43 @@
 import { dbSelect, requireSupabaseConfig } from "@/lib/supabase/server";
-import type { OSPreferences } from "./types";
-import { DEFAULT_OS_PREFERENCES, OS_PREFERENCES_KEY } from "./types";
+import type { OSCommercialDefaults, OSPreferences } from "./types";
+import { DEFAULT_OS_COMMERCIAL, DEFAULT_OS_PREFERENCES, OS_PREFERENCES_KEY } from "./types";
+
+function parseCommercial(raw: unknown): OSCommercialDefaults {
+  if (!raw || typeof raw !== "object") return { ...DEFAULT_OS_COMMERCIAL };
+  const o = raw as Record<string, unknown>;
+  return {
+    implementationAmount:
+      typeof o.implementationAmount === "string"
+        ? o.implementationAmount
+        : DEFAULT_OS_COMMERCIAL.implementationAmount,
+    mediaAmount:
+      typeof o.mediaAmount === "string" ? o.mediaAmount : DEFAULT_OS_COMMERCIAL.mediaAmount,
+    managementAmount:
+      typeof o.managementAmount === "string"
+        ? o.managementAmount
+        : DEFAULT_OS_COMMERCIAL.managementAmount,
+    simulatorMediaBudgetCents:
+      typeof o.simulatorMediaBudgetCents === "number"
+        ? o.simulatorMediaBudgetCents
+        : DEFAULT_OS_COMMERCIAL.simulatorMediaBudgetCents,
+    simulatorCpcCents:
+      typeof o.simulatorCpcCents === "number"
+        ? o.simulatorCpcCents
+        : DEFAULT_OS_COMMERCIAL.simulatorCpcCents,
+    simulatorLeadRatePercent:
+      typeof o.simulatorLeadRatePercent === "number"
+        ? o.simulatorLeadRatePercent
+        : DEFAULT_OS_COMMERCIAL.simulatorLeadRatePercent,
+    simulatorConversionRatePercent:
+      typeof o.simulatorConversionRatePercent === "number"
+        ? o.simulatorConversionRatePercent
+        : DEFAULT_OS_COMMERCIAL.simulatorConversionRatePercent,
+    simulatorLtvCents:
+      typeof o.simulatorLtvCents === "number"
+        ? o.simulatorLtvCents
+        : DEFAULT_OS_COMMERCIAL.simulatorLtvCents,
+  };
+}
 
 function encodeQuery(params: Record<string, string>): string {
   return Object.entries(params)
@@ -60,6 +97,7 @@ export async function getOSPreferences(): Promise<OSPreferences> {
       typeof raw.issuerEmail === "string" ? raw.issuerEmail : DEFAULT_OS_PREFERENCES.issuerEmail,
     issuerPhone:
       typeof raw.issuerPhone === "string" ? raw.issuerPhone : DEFAULT_OS_PREFERENCES.issuerPhone,
+    commercial: parseCommercial(raw.commercial),
   };
 }
 

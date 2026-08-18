@@ -404,6 +404,22 @@ async function finalizeSession(
       proposalStatus: enriched.proposalReadiness.status,
       actorId: actor,
     });
+
+    try {
+      const { createDraftFromCopilotSession } = await import("@/domains/proposals/service.server");
+      await createDraftFromCopilotSession(sessionId);
+    } catch (err) {
+      console.warn("[copilot] rascunho de proposta não criado:", err);
+    }
+  }
+
+  if (mode === "reprocess") {
+    try {
+      const { syncProposalFromCopilotSession } = await import("@/domains/proposals/service.server");
+      await syncProposalFromCopilotSession(sessionId);
+    } catch (err) {
+      console.warn("[copilot] proposta vinculada não sincronizada:", err);
+    }
   }
 
   return (await getSession(sessionId))!;
@@ -732,6 +748,16 @@ export async function pushSessionToCompany(
     } catch (err) {
       console.warn("[copilot] falha ao vincular meeting à empresa:", err);
     }
+  }
+
+  try {
+    const proposalRepo = await import("@/domains/proposals/repository.server");
+    const proposal = await proposalRepo.findProposalByCopilotSession(sessionId);
+    if (proposal && !proposal.company_id) {
+      await proposalRepo.patchProposal(proposal.id, { company_id: companyId });
+    }
+  } catch (err) {
+    console.warn("[copilot] falha ao vincular proposta à empresa:", err);
   }
 
   return { companyId, created };

@@ -1,11 +1,13 @@
 import { createServerFn } from "@tanstack/react-start";
 import { withAuth } from "@/lib/api/auth.server";
 import {
+  copilotSessionIdParamSchema,
   createProposalFromCopilotSchema,
   listProposalsSchema,
   proposalIdSchema,
   proposalSlugSchema,
   updateProposalSchema,
+  saveProposalPresentationSchema,
 } from "./schema";
 
 export const listProposals = createServerFn({ method: "GET" })
@@ -42,7 +44,29 @@ export const createProposalFromCopilot = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     return withAuth(async (author) => {
       const service = await import("@/domains/proposals/service.server");
-      return service.createDraftFromCopilotSession(data.sessionId, { slug: data.slug }, author);
+      return service.createDraftFromCopilotSession(
+        data.sessionId,
+        { slug: data.slug, enrichWithLlm: data.enrichWithLlm },
+        author,
+      );
+    });
+  });
+
+export const getProposalForCopilotSession = createServerFn({ method: "GET" })
+  .validator(copilotSessionIdParamSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const service = await import("@/domains/proposals/service.server");
+      return service.getProposalByCopilotSession(data.sessionId);
+    });
+  });
+
+export const enrichProposalFromCopilot = createServerFn({ method: "POST" })
+  .validator(proposalIdSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const service = await import("@/domains/proposals/service.server");
+      return service.enrichProposalFromCopilot(data.id);
     });
   });
 
@@ -64,6 +88,21 @@ export const publishProposal = createServerFn({ method: "POST" })
     return withAuth(async () => {
       const service = await import("@/domains/proposals/service.server");
       const updated = await service.publishProposal(data.id);
+      if (!updated) throw new Error("Proposta não encontrada.");
+      return updated;
+    });
+  });
+
+export const saveProposalPresentation = createServerFn({ method: "POST" })
+  .validator(saveProposalPresentationSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const service = await import("@/domains/proposals/service.server");
+      const updated = await service.saveProposalPresentation(data.id, {
+        outcome: data.outcome,
+        notes: data.notes,
+        publishFirst: data.publishFirst,
+      });
       if (!updated) throw new Error("Proposta não encontrada.");
       return updated;
     });

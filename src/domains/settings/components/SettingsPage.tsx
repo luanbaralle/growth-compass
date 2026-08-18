@@ -1,5 +1,6 @@
 import { getSettings, updateSettings } from "@/domains/settings/api.server";
-import type { SettingsPageData } from "@/domains/settings/types";
+import type { OSCommercialDefaults, SettingsPageData } from "@/domains/settings/types";
+import { DEFAULT_OS_COMMERCIAL } from "@/domains/settings/types";
 import { TEAM_LABELS } from "@/lib/auth/types";
 import { getErrorMessage, isUnauthorizedError } from "@/lib/api/client-errors";
 import { useOSContext } from "@/os/shell/use-os-context";
@@ -28,6 +29,7 @@ export function SettingsPage() {
   const [issuerCpf, setIssuerCpf] = useState("");
   const [issuerEmail, setIssuerEmail] = useState("");
   const [issuerPhone, setIssuerPhone] = useState("");
+  const [commercial, setCommercial] = useState<OSCommercialDefaults>({ ...DEFAULT_OS_COMMERCIAL });
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -43,6 +45,7 @@ export function SettingsPage() {
       setIssuerCpf(result.preferences.issuerCpf);
       setIssuerEmail(result.preferences.issuerEmail);
       setIssuerPhone(result.preferences.issuerPhone);
+      setCommercial({ ...result.preferences.commercial });
     } catch (err) {
       if (isUnauthorizedError(err)) {
         navigate({ to: "/os/login" });
@@ -71,6 +74,7 @@ export function SettingsPage() {
           issuerCpf,
           issuerEmail,
           issuerPhone,
+          commercial,
         },
       });
       toast.success("Preferências salvas");
@@ -130,7 +134,7 @@ export function SettingsPage() {
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="default-whatsapp" className="text-[11px] font-medium text-muted-foreground/70">
-                WhatsApp padrão (interno)
+                WhatsApp comercial (propostas e operação)
               </Label>
               <Input
                 id="default-whatsapp"
@@ -141,8 +145,143 @@ export function SettingsPage() {
                 inputMode="tel"
               />
               <p className="text-xs text-muted-foreground/70">
-                Referência operacional. Links do site usam VITE_WHATSAPP_NUMBER no .env.
+                Usado nos CTAs das propostas. Se vazio, cai no VITE_WHATSAPP_NUMBER do .env.
               </p>
+            </div>
+            <div className="border-t border-border/30 pt-4">
+              <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground/70">
+                Propostas comerciais (R1)
+              </p>
+              <div className="space-y-4">
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="impl-amount" className="text-[11px] font-medium text-muted-foreground/70">
+                      Implementação
+                    </Label>
+                    <Input
+                      id="impl-amount"
+                      className="h-9"
+                      value={commercial.implementationAmount}
+                      onChange={(e) =>
+                        setCommercial((p) => ({ ...p, implementationAmount: e.target.value }))
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="media-amount" className="text-[11px] font-medium text-muted-foreground/70">
+                      Mídia (mensal)
+                    </Label>
+                    <Input
+                      id="media-amount"
+                      className="h-9"
+                      value={commercial.mediaAmount}
+                      onChange={(e) => setCommercial((p) => ({ ...p, mediaAmount: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="mgmt-amount" className="text-[11px] font-medium text-muted-foreground/70">
+                      Gestão (mensal)
+                    </Label>
+                    <Input
+                      id="mgmt-amount"
+                      className="h-9"
+                      value={commercial.managementAmount}
+                      onChange={(e) =>
+                        setCommercial((p) => ({ ...p, managementAmount: e.target.value }))
+                      }
+                    />
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground/70">
+                  Defaults para novas propostas de aceleração. Propostas existentes mantêm valores
+                  salvos; rascunhos sem preço usam estes valores ao visualizar.
+                </p>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-1.5">
+                    <Label className="text-[11px] font-medium text-muted-foreground/70">
+                      Verba mídia simulador (R$)
+                    </Label>
+                    <Input
+                      className="h-9"
+                      type="number"
+                      value={commercial.simulatorMediaBudgetCents / 100}
+                      onChange={(e) =>
+                        setCommercial((p) => ({
+                          ...p,
+                          simulatorMediaBudgetCents: Math.round(Number(e.target.value || 0) * 100),
+                        }))
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[11px] font-medium text-muted-foreground/70">
+                      CPC simulador (R$)
+                    </Label>
+                    <Input
+                      className="h-9"
+                      type="number"
+                      step="0.01"
+                      value={commercial.simulatorCpcCents / 100}
+                      onChange={(e) =>
+                        setCommercial((p) => ({
+                          ...p,
+                          simulatorCpcCents: Math.round(Number(e.target.value || 0) * 100),
+                        }))
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[11px] font-medium text-muted-foreground/70">
+                      Taxa lead (%)
+                    </Label>
+                    <Input
+                      className="h-9"
+                      type="number"
+                      step="0.1"
+                      value={commercial.simulatorLeadRatePercent}
+                      onChange={(e) =>
+                        setCommercial((p) => ({
+                          ...p,
+                          simulatorLeadRatePercent: Number(e.target.value || 0),
+                        }))
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[11px] font-medium text-muted-foreground/70">
+                      Taxa conversão (%)
+                    </Label>
+                    <Input
+                      className="h-9"
+                      type="number"
+                      step="0.1"
+                      value={commercial.simulatorConversionRatePercent}
+                      onChange={(e) =>
+                        setCommercial((p) => ({
+                          ...p,
+                          simulatorConversionRatePercent: Number(e.target.value || 0),
+                        }))
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1.5 sm:col-span-2">
+                    <Label className="text-[11px] font-medium text-muted-foreground/70">
+                      LTV simulador (R$)
+                    </Label>
+                    <Input
+                      className="h-9"
+                      type="number"
+                      value={commercial.simulatorLtvCents / 100}
+                      onChange={(e) =>
+                        setCommercial((p) => ({
+                          ...p,
+                          simulatorLtvCents: Math.round(Number(e.target.value || 0) * 100),
+                        }))
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="ops-notes" className="text-[11px] font-medium text-muted-foreground/70">

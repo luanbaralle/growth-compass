@@ -14,6 +14,8 @@ export const updateSettings = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     return withAuth(async () => {
       const settingsService = await import("@/domains/settings/service.server");
+      const existing = await settingsService.getSettingsPageData();
+      const commercialInput = data.commercial ?? {};
       return settingsService.updateOSPreferences({
         agencyName: data.agencyName.trim(),
         defaultWhatsApp: data.defaultWhatsApp?.trim() ?? "",
@@ -23,6 +25,29 @@ export const updateSettings = createServerFn({ method: "POST" })
         issuerCpf: data.issuerCpf?.trim() ?? "",
         issuerEmail: data.issuerEmail?.trim() ?? "",
         issuerPhone: data.issuerPhone?.trim() ?? "",
+        commercial: {
+          implementationAmount:
+            commercialInput.implementationAmount?.trim() ??
+            existing.preferences.commercial.implementationAmount,
+          mediaAmount:
+            commercialInput.mediaAmount?.trim() ?? existing.preferences.commercial.mediaAmount,
+          managementAmount:
+            commercialInput.managementAmount?.trim() ??
+            existing.preferences.commercial.managementAmount,
+          simulatorMediaBudgetCents:
+            commercialInput.simulatorMediaBudgetCents ??
+            existing.preferences.commercial.simulatorMediaBudgetCents,
+          simulatorCpcCents:
+            commercialInput.simulatorCpcCents ?? existing.preferences.commercial.simulatorCpcCents,
+          simulatorLeadRatePercent:
+            commercialInput.simulatorLeadRatePercent ??
+            existing.preferences.commercial.simulatorLeadRatePercent,
+          simulatorConversionRatePercent:
+            commercialInput.simulatorConversionRatePercent ??
+            existing.preferences.commercial.simulatorConversionRatePercent,
+          simulatorLtvCents:
+            commercialInput.simulatorLtvCents ?? existing.preferences.commercial.simulatorLtvCents,
+        },
       });
     });
   });

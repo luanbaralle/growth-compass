@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AccelerationProposalPage } from "@/domains/proposals/components/AccelerationProposalPage";
+import { PublicProposalPage } from "@/domains/proposals/components/PublicProposalPage";
 import { getProposalBySlug } from "@/domains/proposals/api.server";
 
 export const Route = createFileRoute("/propostas/$slug")({
@@ -33,5 +33,5 @@ function PublicProposalRoute() {
     );
   }
 
-  return <AccelerationProposalPage proposal={proposal} />;
+  return <PublicProposalPage proposal={proposal} />;
 }
