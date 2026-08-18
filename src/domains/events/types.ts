@@ -62,7 +62,13 @@ export type DomainEventKey =
   // Task / Meeting
   | "task.created"
   | "task.completed"
-  | "meeting.scheduled";
+  | "meeting.scheduled"
+  | "meeting.started"
+  | "meeting.discovery_captured"
+  | "meeting.insight_detected"
+  | "meeting.inconsistency_detected"
+  | "meeting.completed"
+  | "meeting.diagnosis_ready";
 
 export type NotificationUrgency = "critical" | "warning" | "default";
 
@@ -182,7 +188,7 @@ export const ENTITY_ROUTES: Record<DomainEntityType, (id: string) => string> = {
   finance_entry: () => `/os/financeiro`,
   marketing_snapshot: () => `/os/marketing`,
   task: () => `/os/agenda`,
-  meeting: () => `/os/agenda`,
+  meeting: (id) => `/os/copilot/${id}`,
 };
 
 /** Responsável fallback quando entidade não tem owner */

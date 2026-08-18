@@ -35,6 +35,12 @@ export const EVENT_LABELS: Record<DomainEventKey, string> = {
   "task.created": "Tarefa criada",
   "task.completed": "Tarefa concluída",
   "meeting.scheduled": "Reunião agendada",
+  "meeting.started": "Copilot iniciado",
+  "meeting.discovery_captured": "Descoberta registrada",
+  "meeting.insight_detected": "Insight detectado",
+  "meeting.inconsistency_detected": "Inconsistência detectada",
+  "meeting.completed": "Reunião encerrada",
+  "meeting.diagnosis_ready": "Diagnóstico pronto",
 };
 
 export const ENTITY_TYPE_LABELS: Record<DomainEntityType, string> = {
