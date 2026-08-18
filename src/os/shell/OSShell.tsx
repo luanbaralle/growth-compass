@@ -17,6 +17,7 @@ import {
   LogOut,
   Megaphone,
   Settings,
+  Sparkles,
   Target,
   Wallet,
 } from "lucide-react";
@@ -46,6 +47,7 @@ const NAV_ITEMS = [
   { to: "/os/atividade", label: "Atividade", icon: Activity },
   { to: "/os/agenda", label: "Agenda", icon: CalendarDays },
   { to: "/os/prospeccao", label: "Prospecção", icon: Target },
+  { to: "/os/copilot", label: "Copilot", icon: Sparkles },
   { to: "/os/empresas", label: "Empresas", icon: Building2 },
   { to: "/os/projetos", label: "Projetos", icon: FolderKanban },
   { to: "/os/producao", label: "Produção", icon: Clapperboard },

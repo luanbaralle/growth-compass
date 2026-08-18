@@ -43,6 +43,7 @@ import { Route as OsProducaoIndexRouteImport } from './routes/os/producao/index'
 import { Route as OsMarketingIndexRouteImport } from './routes/os/marketing/index'
 import { Route as OsFinanceiroIndexRouteImport } from './routes/os/financeiro/index'
 import { Route as OsEmpresasIndexRouteImport } from './routes/os/empresas/index'
+import { Route as OsCopilotIndexRouteImport } from './routes/os/copilot/index'
 import { Route as OsConfiguracoesIndexRouteImport } from './routes/os/configuracoes/index'
 import { Route as OsAtividadeIndexRouteImport } from './routes/os/atividade/index'
 import { Route as OsAgendaIndexRouteImport } from './routes/os/agenda/index'
@@ -54,6 +55,7 @@ import { Route as PlaygroundCasesDecisionLanguageRouteImport } from './routes/pl
 import { Route as OsProspeccaoIdRouteImport } from './routes/os/prospeccao/$id'
 import { Route as OsProjetosIdRouteImport } from './routes/os/projetos/$id'
 import { Route as OsEmpresasIdRouteImport } from './routes/os/empresas/$id'
+import { Route as OsCopilotSessionIdRouteImport } from './routes/os/copilot/$sessionId'
 import { Route as ClientProjetosProjectIdRouteImport } from './routes/client/projetos/$projectId'
 import { Route as ClientConteudoTaskIdRouteImport } from './routes/client/conteudo/$taskId'
 import { Route as ClientAuthVerifyRouteImport } from './routes/client/auth/verify'
@@ -242,6 +244,11 @@ const OsEmpresasIndexRoute = OsEmpresasIndexRouteImport.update({
   path: '/empresas/',
   getParentRoute: () => OsRouteRoute,
 } as any)
+const OsCopilotIndexRoute = OsCopilotIndexRouteImport.update({
+  id: '/copilot/',
+  path: '/copilot/',
+  getParentRoute: () => OsRouteRoute,
+} as any)
 const OsConfiguracoesIndexRoute = OsConfiguracoesIndexRouteImport.update({
   id: '/configuracoes/',
   path: '/configuracoes/',
@@ -296,6 +303,11 @@ const OsProjetosIdRoute = OsProjetosIdRouteImport.update({
 const OsEmpresasIdRoute = OsEmpresasIdRouteImport.update({
   id: '/empresas/$id',
   path: '/empresas/$id',
+  getParentRoute: () => OsRouteRoute,
+} as any)
+const OsCopilotSessionIdRoute = OsCopilotSessionIdRouteImport.update({
+  id: '/copilot/$sessionId',
+  path: '/copilot/$sessionId',
   getParentRoute: () => OsRouteRoute,
 } as any)
 const ClientProjetosProjectIdRoute = ClientProjetosProjectIdRouteImport.update({
@@ -426,6 +438,7 @@ export interface FileRoutesByFullPath {
   '/client/auth/verify': typeof ClientAuthVerifyRoute
   '/client/conteudo/$taskId': typeof ClientConteudoTaskIdRoute
   '/client/projetos/$projectId': typeof ClientProjetosProjectIdRoute
+  '/os/copilot/$sessionId': typeof OsCopilotSessionIdRoute
   '/os/empresas/$id': typeof OsEmpresasIdRoute
   '/os/projetos/$id': typeof OsProjetosIdRoute
   '/os/prospeccao/$id': typeof OsProspeccaoIdRoute
@@ -437,6 +450,7 @@ export interface FileRoutesByFullPath {
   '/os/agenda/': typeof OsAgendaIndexRoute
   '/os/atividade/': typeof OsAtividadeIndexRoute
   '/os/configuracoes/': typeof OsConfiguracoesIndexRoute
+  '/os/copilot/': typeof OsCopilotIndexRoute
   '/os/empresas/': typeof OsEmpresasIndexRoute
   '/os/financeiro/': typeof OsFinanceiroIndexRoute
   '/os/marketing/': typeof OsMarketingIndexRoute
@@ -486,6 +500,7 @@ export interface FileRoutesByTo {
   '/client/auth/verify': typeof ClientAuthVerifyRoute
   '/client/conteudo/$taskId': typeof ClientConteudoTaskIdRoute
   '/client/projetos/$projectId': typeof ClientProjetosProjectIdRoute
+  '/os/copilot/$sessionId': typeof OsCopilotSessionIdRoute
   '/os/empresas/$id': typeof OsEmpresasIdRoute
   '/os/projetos/$id': typeof OsProjetosIdRoute
   '/os/prospeccao/$id': typeof OsProspeccaoIdRoute
@@ -497,6 +512,7 @@ export interface FileRoutesByTo {
   '/os/agenda': typeof OsAgendaIndexRoute
   '/os/atividade': typeof OsAtividadeIndexRoute
   '/os/configuracoes': typeof OsConfiguracoesIndexRoute
+  '/os/copilot': typeof OsCopilotIndexRoute
   '/os/empresas': typeof OsEmpresasIndexRoute
   '/os/financeiro': typeof OsFinanceiroIndexRoute
   '/os/marketing': typeof OsMarketingIndexRoute
@@ -550,6 +566,7 @@ export interface FileRoutesById {
   '/client/auth/verify': typeof ClientAuthVerifyRoute
   '/client/conteudo/$taskId': typeof ClientConteudoTaskIdRoute
   '/client/projetos/$projectId': typeof ClientProjetosProjectIdRoute
+  '/os/copilot/$sessionId': typeof OsCopilotSessionIdRoute
   '/os/empresas/$id': typeof OsEmpresasIdRoute
   '/os/projetos/$id': typeof OsProjetosIdRoute
   '/os/prospeccao/$id': typeof OsProspeccaoIdRoute
@@ -561,6 +578,7 @@ export interface FileRoutesById {
   '/os/agenda/': typeof OsAgendaIndexRoute
   '/os/atividade/': typeof OsAtividadeIndexRoute
   '/os/configuracoes/': typeof OsConfiguracoesIndexRoute
+  '/os/copilot/': typeof OsCopilotIndexRoute
   '/os/empresas/': typeof OsEmpresasIndexRoute
   '/os/financeiro/': typeof OsFinanceiroIndexRoute
   '/os/marketing/': typeof OsMarketingIndexRoute
@@ -615,6 +633,7 @@ export interface FileRouteTypes {
     | '/client/auth/verify'
     | '/client/conteudo/$taskId'
     | '/client/projetos/$projectId'
+    | '/os/copilot/$sessionId'
     | '/os/empresas/$id'
     | '/os/projetos/$id'
     | '/os/prospeccao/$id'
@@ -626,6 +645,7 @@ export interface FileRouteTypes {
     | '/os/agenda/'
     | '/os/atividade/'
     | '/os/configuracoes/'
+    | '/os/copilot/'
     | '/os/empresas/'
     | '/os/financeiro/'
     | '/os/marketing/'
@@ -675,6 +695,7 @@ export interface FileRouteTypes {
     | '/client/auth/verify'
     | '/client/conteudo/$taskId'
     | '/client/projetos/$projectId'
+    | '/os/copilot/$sessionId'
     | '/os/empresas/$id'
     | '/os/projetos/$id'
     | '/os/prospeccao/$id'
@@ -686,6 +707,7 @@ export interface FileRouteTypes {
     | '/os/agenda'
     | '/os/atividade'
     | '/os/configuracoes'
+    | '/os/copilot'
     | '/os/empresas'
     | '/os/financeiro'
     | '/os/marketing'
@@ -738,6 +760,7 @@ export interface FileRouteTypes {
     | '/client/auth/verify'
     | '/client/conteudo/$taskId'
     | '/client/projetos/$projectId'
+    | '/os/copilot/$sessionId'
     | '/os/empresas/$id'
     | '/os/projetos/$id'
     | '/os/prospeccao/$id'
@@ -749,6 +772,7 @@ export interface FileRouteTypes {
     | '/os/agenda/'
     | '/os/atividade/'
     | '/os/configuracoes/'
+    | '/os/copilot/'
     | '/os/empresas/'
     | '/os/financeiro/'
     | '/os/marketing/'
@@ -1029,6 +1053,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OsEmpresasIndexRouteImport
       parentRoute: typeof OsRouteRoute
     }
+    '/os/copilot/': {
+      id: '/os/copilot/'
+      path: '/copilot'
+      fullPath: '/os/copilot/'
+      preLoaderRoute: typeof OsCopilotIndexRouteImport
+      parentRoute: typeof OsRouteRoute
+    }
     '/os/configuracoes/': {
       id: '/os/configuracoes/'
       path: '/configuracoes'
@@ -1104,6 +1135,13 @@ declare module '@tanstack/react-router' {
       path: '/empresas/$id'
       fullPath: '/os/empresas/$id'
       preLoaderRoute: typeof OsEmpresasIdRouteImport
+      parentRoute: typeof OsRouteRoute
+    }
+    '/os/copilot/$sessionId': {
+      id: '/os/copilot/$sessionId'
+      path: '/copilot/$sessionId'
+      fullPath: '/os/copilot/$sessionId'
+      preLoaderRoute: typeof OsCopilotSessionIdRouteImport
       parentRoute: typeof OsRouteRoute
     }
     '/client/projetos/$projectId': {
@@ -1288,12 +1326,14 @@ const ClientRouteRouteWithChildren = ClientRouteRoute._addFileChildren(
 interface OsRouteRouteChildren {
   OsLoginRoute: typeof OsLoginRoute
   OsIndexRoute: typeof OsIndexRoute
+  OsCopilotSessionIdRoute: typeof OsCopilotSessionIdRoute
   OsEmpresasIdRoute: typeof OsEmpresasIdRoute
   OsProjetosIdRoute: typeof OsProjetosIdRoute
   OsProspeccaoIdRoute: typeof OsProspeccaoIdRoute
   OsAgendaIndexRoute: typeof OsAgendaIndexRoute
   OsAtividadeIndexRoute: typeof OsAtividadeIndexRoute
   OsConfiguracoesIndexRoute: typeof OsConfiguracoesIndexRoute
+  OsCopilotIndexRoute: typeof OsCopilotIndexRoute
   OsEmpresasIndexRoute: typeof OsEmpresasIndexRoute
   OsFinanceiroIndexRoute: typeof OsFinanceiroIndexRoute
   OsMarketingIndexRoute: typeof OsMarketingIndexRoute
@@ -1306,12 +1346,14 @@ interface OsRouteRouteChildren {
 const OsRouteRouteChildren: OsRouteRouteChildren = {
   OsLoginRoute: OsLoginRoute,
   OsIndexRoute: OsIndexRoute,
+  OsCopilotSessionIdRoute: OsCopilotSessionIdRoute,
   OsEmpresasIdRoute: OsEmpresasIdRoute,
   OsProjetosIdRoute: OsProjetosIdRoute,
   OsProspeccaoIdRoute: OsProspeccaoIdRoute,
   OsAgendaIndexRoute: OsAgendaIndexRoute,
   OsAtividadeIndexRoute: OsAtividadeIndexRoute,
   OsConfiguracoesIndexRoute: OsConfiguracoesIndexRoute,
+  OsCopilotIndexRoute: OsCopilotIndexRoute,
   OsEmpresasIndexRoute: OsEmpresasIndexRoute,
   OsFinanceiroIndexRoute: OsFinanceiroIndexRoute,
   OsMarketingIndexRoute: OsMarketingIndexRoute,

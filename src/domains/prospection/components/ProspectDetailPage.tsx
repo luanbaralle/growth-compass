@@ -54,6 +54,7 @@ import {
   Loader2,
   MapPin,
   MessageSquare,
+  Sparkles,
   Target,
   Trash2,
 } from "lucide-react";
@@ -201,6 +202,18 @@ export function ProspectDetailPage() {
             <Link to="/os/prospeccao" className="dashboard-btn-ghost">
               <ArrowLeft className="h-4 w-4" />
               Pipeline
+            </Link>
+            <Link
+              to="/os/copilot"
+              search={{
+                prospectName: prospect.name,
+                companyName: prospect.name,
+                prospectId: prospect.id,
+              }}
+              className="dashboard-btn-ghost"
+            >
+              <Sparkles className="h-4 w-4" />
+              Copilot
             </Link>
             {prospect.company_id ? (
               <Link
