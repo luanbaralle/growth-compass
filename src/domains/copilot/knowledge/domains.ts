@@ -1,18 +1,18 @@
 import type { DiagnosticDomain } from "../types";
 
 export const DIAGNOSTIC_DOMAIN_LABELS: Record<DiagnosticDomain, string> = {
-  business: "Business",
-  offer: "Offer",
+  business: "Negócio",
+  offer: "Oferta",
   customer: "ICP",
-  commercial: "Commercial",
-  economics: "Economics",
-  acquisition: "Acquisition",
+  commercial: "Comercial",
+  economics: "Economia",
+  acquisition: "Aquisição",
   marketing: "Marketing",
-  brand: "Brand",
-  content: "Content",
-  goals: "Objectives",
-  expectations: "Expectations",
-  investment: "Investment",
+  brand: "Marca",
+  content: "Conteúdo",
+  goals: "Objetivos",
+  expectations: "Expectativas",
+  investment: "Investimento",
 };
 
 export const DIAGNOSTIC_DOMAIN_ORDER: DiagnosticDomain[] = [
@@ -32,16 +32,34 @@ export const DIAGNOSTIC_DOMAIN_ORDER: DiagnosticDomain[] = [
 
 /** Clarity scores derivados da cobertura por domínio */
 export const DOMAIN_CLARITY_LABELS: Record<DiagnosticDomain, string> = {
-  business: "Business Clarity",
-  offer: "Offer Clarity",
-  customer: "ICP Clarity",
-  commercial: "Commercial Clarity",
-  economics: "Economics Clarity",
-  acquisition: "Acquisition Clarity",
-  marketing: "Marketing Clarity",
-  brand: "Brand Clarity",
-  content: "Content Clarity",
-  goals: "Goal Clarity",
-  expectations: "Expectations Clarity",
-  investment: "Investment Clarity",
+  business: "Clareza do negócio",
+  offer: "Clareza da oferta",
+  customer: "Clareza do ICP",
+  commercial: "Clareza comercial",
+  economics: "Clareza econômica",
+  acquisition: "Clareza de aquisição",
+  marketing: "Clareza de marketing",
+  brand: "Clareza de marca",
+  content: "Clareza de conteúdo",
+  goals: "Clareza de objetivos",
+  expectations: "Clareza de expectativas",
+  investment: "Clareza de investimento",
 };
+
+const EXTRA_DOMAIN_LABELS: Record<string, string> = {
+  company: "Empresa",
+  contact: "Contato",
+  products: "Produtos",
+  risks: "Riscos",
+  opportunities: "Oportunidades",
+};
+
+/** Rótulo localizado — ignora label persistido em inglês no snapshot/DB. */
+export function resolveDomainLabel(domain: string, fallback?: string): string {
+  return (
+    DIAGNOSTIC_DOMAIN_LABELS[domain as DiagnosticDomain] ??
+    EXTRA_DOMAIN_LABELS[domain] ??
+    fallback ??
+    domain
+  );
+}

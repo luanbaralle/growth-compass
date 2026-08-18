@@ -243,7 +243,20 @@ export function MeetingArtifactPanel({
                           </button>
                         )}
                       </div>
-                      <p className="mt-1.5 text-sm leading-snug text-foreground/85">{item.text}</p>
+                      {item.title ? (
+                        <>
+                          <p className="mt-1.5 text-sm font-semibold leading-snug text-foreground/90">
+                            {item.title}
+                          </p>
+                          <p className="mt-1 text-sm leading-snug text-muted-foreground">
+                            {item.text}
+                          </p>
+                        </>
+                      ) : (
+                        <p className="mt-1.5 text-sm leading-snug text-foreground/85">
+                          {item.text}
+                        </p>
+                      )}
                     </div>
                   </li>
                 );

@@ -1,4 +1,5 @@
 import type { BusinessProfile, BusinessProfileNode } from "../types";
+import { resolveDomainLabel } from "../knowledge/domains";
 import { cn } from "@/lib/utils";
 import { Building2, Network, Search } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -93,7 +94,9 @@ function DomainCard({
             {icon}
           </span>
           <div>
-            <h3 className="text-sm font-semibold text-foreground">{node.label}</h3>
+            <h3 className="text-sm font-semibold text-foreground">
+              {resolveDomainLabel(node.key, node.label)}
+            </h3>
             <p className="text-[11px] text-muted-foreground">
               {facts.length} {facts.length === 1 ? "atributo" : "atributos"}
             </p>
@@ -210,7 +213,7 @@ export function BusinessGraphPanel({
                 className="inline-flex items-center gap-1.5 rounded-full border border-border/40 bg-background/60 px-2.5 py-1 text-[11px] text-muted-foreground"
               >
                 <span>{DOMAIN_ICONS[section.key] ?? "·"}</span>
-                {section.label}
+                {resolveDomainLabel(section.key, section.label)}
                 <span className="tabular-nums opacity-60">{count}</span>
               </span>
             );

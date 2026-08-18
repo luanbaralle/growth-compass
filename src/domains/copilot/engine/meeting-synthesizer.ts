@@ -28,6 +28,7 @@ import { computeKnowledgeDepth } from "./knowledge-depth";
 import { applyGraphToDiagnosticState, enrichGraphWithObjectiveKeys } from "./graph-objective-mapper";
 import { buildBusinessProfileFromGraph } from "./business-profile-builder";
 import { computeDomainCoverage, computeOverallCoverage, computeProposalReadiness } from "./diagnostic-engine";
+import { normalizeEvidenceGraphValues } from "../utils/evidence-normalizer";
 
 const OBJECTIVE_KEYS = getAllObjectiveKeys();
 
@@ -274,6 +275,7 @@ REGRAS:
    - operation_structure / service_capacity → equipe e capacidade
    - monthly_marketing_budget / avg_sale_value / avg_commission → economics
 11. recommendedEngagement: proposta R1 personalizada com 2-4 fases e itens concretos baseados na reunião (não use template genérico).
+12. Data de referência: use a data de hoje informada no prompt para calcular tempo de mercado, idade da empresa ou durações derivadas de ano de fundação (ex.: "desde 2008" → calcule os anos até hoje).
 
 JSON:
 {
@@ -288,7 +290,7 @@ JSON:
       },
       {
         role: "user",
-        content: `Prospect: ${input.prospectName}\nEmpresa: ${input.companyName}\nTurnos refinados: ${refined.length || normalized.length}\n\nTRANSCRIPT REFINADO:\n${truncated}`,
+        content: `Prospect: ${input.prospectName}\nEmpresa: ${input.companyName}\nData de hoje: ${new Date().toISOString().slice(0, 10)}\nTurnos refinados: ${refined.length || normalized.length}\n\nTRANSCRIPT REFINADO:\n${truncated}`,
       },
     ],
     temperature: 0.2,
@@ -303,7 +305,9 @@ JSON:
     return fallbackSynthesis(turns, input.prospectName, input.companyName, reason);
   }
 
-  const graph = enrichGraphWithObjectiveKeys(llmItemsToGraph(parsed.items ?? [], turns));
+  const graph = normalizeEvidenceGraphValues(
+    enrichGraphWithObjectiveKeys(llmItemsToGraph(parsed.items ?? [], turns)),
+  );
   const knowledgeDepth = computeKnowledgeDepth(graph);
 
   const synthesis: MeetingSynthesis = {

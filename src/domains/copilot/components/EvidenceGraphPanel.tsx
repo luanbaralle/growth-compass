@@ -1,26 +1,11 @@
 import type { EvidenceGraphItem, EvidenceKind } from "../types";
+import { resolveDomainLabel } from "../knowledge/domains";
+import { normalizeDerivedDurations } from "../utils/evidence-normalizer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { GitBranch, Quote, Search, X } from "lucide-react";
 import { useMemo, useState } from "react";
-
-const DOMAIN_LABELS: Record<string, string> = {
-  business: "Negócio",
-  offer: "Oferta",
-  customer: "Cliente",
-  commercial: "Comercial",
-  economics: "Economics",
-  acquisition: "Aquisição",
-  marketing: "Marketing",
-  brand: "Marca",
-  content: "Conteúdo",
-  goals: "Objetivos",
-  expectations: "Expectativas",
-  investment: "Investimento",
-  risks: "Riscos",
-  opportunities: "Oportunidades",
-};
 
 const DOMAIN_DOTS: Record<string, string> = {
   business: "bg-violet-500",
@@ -140,7 +125,9 @@ function EvidenceCard({
         </span>
       </div>
       <p className="mt-2 text-sm font-semibold leading-snug text-foreground">{item.label}</p>
-      <p className="mt-1 line-clamp-3 text-xs leading-relaxed text-muted-foreground">{item.value}</p>
+      <p className="mt-1 line-clamp-3 text-xs leading-relaxed text-muted-foreground">
+        {normalizeDerivedDurations(item.value)}
+      </p>
       {item.quote && (
         <p className="mt-2 line-clamp-2 text-[11px] italic text-muted-foreground/80">
           &ldquo;{item.quote}&rdquo;
@@ -164,7 +151,7 @@ function EvidenceDetail({
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/70">
-            {DOMAIN_LABELS[item.domain] ?? item.domain} · detalhe
+            {resolveDomainLabel(item.domain)} · detalhe
           </p>
           <h3 className="mt-1 text-lg font-semibold text-foreground">{item.label}</h3>
         </div>
@@ -178,7 +165,9 @@ function EvidenceDetail({
         </button>
       </div>
 
-      <p className="mt-3 text-sm leading-relaxed text-foreground/90">{item.value}</p>
+      <p className="mt-3 text-sm leading-relaxed text-foreground/90">
+        {normalizeDerivedDurations(item.value)}
+      </p>
 
       {item.quote && (
         <blockquote className="mt-4 flex gap-2 rounded-lg border border-border/40 bg-muted/20 px-4 py-3">
@@ -255,7 +244,7 @@ export function EvidenceGraphPanel({
         item.label.toLowerCase().includes(q) ||
         item.value.toLowerCase().includes(q) ||
         (item.quote?.toLowerCase().includes(q) ?? false) ||
-        (DOMAIN_LABELS[item.domain]?.toLowerCase().includes(q) ?? false)
+        resolveDomainLabel(item.domain).toLowerCase().includes(q)
       );
     });
   }, [items, kindFilter, query]);
@@ -420,7 +409,7 @@ function DomainColumn({
       <div className="mb-3 flex items-center gap-2 px-1">
         <span className={cn("h-2 w-2 rounded-full", DOMAIN_DOTS[domain] ?? "bg-muted-foreground")} />
         <h3 className="text-xs font-semibold uppercase tracking-wide text-foreground/85">
-          {DOMAIN_LABELS[domain] ?? domain}
+          {resolveDomainLabel(domain)}
         </h3>
         <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] tabular-nums text-muted-foreground">
           {items.length}

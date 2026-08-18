@@ -1,4 +1,5 @@
 import type { DomainCoverage, ProposalReadiness } from "../types";
+import { resolveDomainLabel } from "../knowledge/domains";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -70,7 +71,9 @@ export function CoveragePanel({
             {sorted.map((item) => (
               <div key={item.domain}>
                 <div className="mb-1 flex items-center justify-between gap-2 text-xs">
-                  <span className="truncate text-muted-foreground">{item.label}</span>
+                  <span className="truncate text-muted-foreground">
+                    {resolveDomainLabel(item.domain, item.label)}
+                  </span>
                   <span className="shrink-0 tabular-nums font-medium text-foreground/75">
                     {item.percent}%
                   </span>

@@ -1,4 +1,5 @@
 import type { EvidenceGraphItem, EvidenceKind, ProposalReadiness } from "../types";
+import { normalizeDerivedDurations } from "../utils/evidence-normalizer";
 
 export function computeProposalReadinessPercent(readiness: ProposalReadiness): number {
   if (readiness.items.length === 0) return 0;
@@ -46,6 +47,7 @@ export function inferKindFromText(text: string): EvidenceKind {
 
 export interface LearnedDisplayItem {
   id: string;
+  title?: string;
   text: string;
   kind: EvidenceKind;
   segmentIds: string[];
@@ -64,17 +66,26 @@ export function buildLearnedItems(
     };
     return [...evidenceGraph]
       .sort((a, b) => priority[a.kind] - priority[b.kind])
-      .map((item) => ({
-        id: item.id,
-        text: item.value || item.label,
-        kind: item.kind,
-        segmentIds: item.segmentIds,
-      }));
+      .map((item) => {
+        const rawText = item.value || item.label;
+        const text = normalizeDerivedDurations(rawText);
+        const title =
+          item.label && item.value && item.label.trim() !== item.value.trim()
+            ? item.label
+            : undefined;
+        return {
+          id: item.id,
+          title,
+          text,
+          kind: item.kind,
+          segmentIds: item.segmentIds,
+        };
+      });
   }
 
   return whatWeLearned.map((text, index) => ({
     id: `learned-${index}`,
-    text,
+    text: normalizeDerivedDurations(text),
     kind: inferKindFromText(text),
     segmentIds: [],
   }));
