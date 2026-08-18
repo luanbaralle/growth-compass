@@ -24,8 +24,9 @@ import { useMeetingAudioCapture } from "@/domains/copilot/stt/use-meeting-audio-
 import { useMeetingRecorder } from "@/domains/copilot/stt/use-meeting-recorder";
 import { getErrorMessage } from "@/lib/api/client-errors";
 import { OSPage, PageHeader, PageSkeleton } from "@/os/ui";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { Link } from "@tanstack/react-router";
@@ -36,6 +37,7 @@ import {
   Clock,
   Loader2,
   Send,
+  RefreshCw,
   Square,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -64,6 +66,7 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
   const [overrideValue, setOverrideValue] = useState("");
   const [skippedSuggestions, setSkippedSuggestions] = useState<string[]>([]);
   const [reprocessing, setReprocessing] = useState(false);
+  const [manualOpen, setManualOpen] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [lastTranscript, setLastTranscript] = useState("");
   const autoListenStarted = useRef(false);
@@ -254,10 +257,11 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
   }
 
   return (
-    <OSPage className="max-w-6xl">
-      <header className="mb-6 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" asChild>
+    <OSPage className="max-w-7xl">
+      {/* ── Header ── */}
+      <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex items-start gap-3">
+          <Button variant="ghost" size="icon" className="mt-0.5 shrink-0" asChild>
             <Link
               to={detail.prospectId ? "/os/prospeccao/$id" : "/os/copilot"}
               {...(detail.prospectId ? { params: { id: detail.prospectId } } : {})}
@@ -265,13 +269,57 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
               <ArrowLeft className="h-4 w-4" />
             </Link>
           </Button>
-          <PageHeader title="Raise One Copilot" description={session.meetingObjective.title} />
+          <div>
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="text-xl font-semibold tracking-tight">Raise One Copilot</h1>
+              {isCompleted && (
+                <Badge
+                  variant="outline"
+                  className="border-emerald-500/25 bg-emerald-500/8 text-emerald-600 dark:text-emerald-400"
+                >
+                  Reunião encerrada
+                </Badge>
+              )}
+              {isLive && (
+                <Badge
+                  variant="outline"
+                  className="border-red-500/25 bg-red-500/8 text-red-500 animate-pulse"
+                >
+                  Ao vivo
+                </Badge>
+              )}
+            </div>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {session.meetingObjective.title}
+            </p>
+            {session.meetingObjective.companyName && (
+              <p className="mt-0.5 text-xs text-muted-foreground/70">
+                {session.meetingObjective.prospectName} · {session.meetingObjective.companyName}
+              </p>
+            )}
+          </div>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 text-sm tabular-nums text-muted-foreground">
-            <Clock className="h-4 w-4" />
+
+        <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+          <div className="flex items-center gap-2 rounded-lg border border-border/50 bg-muted/15 px-3 py-1.5 text-sm tabular-nums text-muted-foreground">
+            <Clock className="h-3.5 w-3.5" />
             {formatElapsed(session.elapsedSeconds)}
           </div>
+          {isCompleted && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => void handleReprocess()}
+              disabled={reprocessing || detail.status === "processing"}
+            >
+              {reprocessing ? (
+                <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
+              )}
+              Reprocessar
+            </Button>
+          )}
           {isLive && (
             <Button
               variant="outline"
@@ -290,192 +338,168 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
         </div>
       </header>
 
-      <div className="mb-6 rounded-xl border border-border/50 bg-muted/20 px-5 py-4">
-        <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
-          Meeting objective
-        </p>
-        <p className="mt-2 text-sm text-foreground/90">{session.meetingObjective.purpose}</p>
-        {isLive && (
-          <div className="mt-3">
-            <MeetingPhaseBadge session={session} />
+      {/* ── Meeting objective strip ── */}
+      <Card className="mb-6 border-border/50 bg-muted/10 shadow-sm">
+        <CardContent className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/55">
+              Objetivo da reunião
+            </p>
+            <p className="mt-1.5 text-sm leading-relaxed text-foreground/90">
+              {session.meetingObjective.purpose}
+            </p>
           </div>
-        )}
-      </div>
+          {isLive && <MeetingPhaseBadge session={session} />}
+        </CardContent>
+      </Card>
 
-      {detail.artifact && <MeetingArtifactPanel artifact={detail.artifact} />}
-
-      {isCompleted && (
-        <div className="mb-4 flex justify-end">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => void handleReprocess()}
-            disabled={reprocessing || detail.status === "processing"}
-          >
-            {reprocessing ? (
-              <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
-            ) : null}
-            Reprocessar transcript
-          </Button>
+      {/* ── Completed: briefing layout ── */}
+      {isCompleted && detail.artifact && (
+        <div className="grid gap-6 lg:grid-cols-[1fr_300px] lg:items-start">
+          <div className="min-w-0 space-y-5">
+            <MeetingArtifactPanel artifact={detail.artifact} />
+            <MeetingTranscriptPanel
+              transcript={savedTranscript}
+              prospectName={prospectName}
+              completed
+              summary={detail.artifact.transcript_summary}
+              refinedTranscript={detail.artifact.meeting_synthesis?.refinedTranscript}
+              defaultCollapsed
+            />
+          </div>
+          <aside className="hidden space-y-4 lg:sticky lg:top-6 lg:block">
+            <CoveragePanel
+              coverage={session.coverage}
+              overall={session.overallCoverage}
+              knowledgeDepth={session.knowledgeDepth}
+              proposalStatus={session.proposalReadiness.status}
+            />
+            <BusinessGraphPanel profile={session.businessProfile} />
+          </aside>
         </div>
       )}
 
-      {isCompleted && (
-        <MeetingTranscriptPanel
-          transcript={savedTranscript}
-          prospectName={prospectName}
-          completed
-          summary={detail.artifact?.transcript_summary}
-        />
-      )}
-
-      <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_220px]">
-        <div className="space-y-6">
-          {isCompleted && (
-            <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-400">
-              Reunião encerrada — transcript e diagnóstico salvos no OS.
-            </div>
-          )}
-
-          {isLive && (
-            <>
-              <div className="flex flex-col items-center py-2 text-center">
-                <CopilotOrb state={displayOrb} />
-                <p className="mt-5 max-w-md text-sm text-muted-foreground">{displayStatusLine}</p>
-                {session.suppressReason && session.copilotAction === "observe" && (
-                  <p className="mt-2 text-xs italic text-muted-foreground/70">
-                    {session.suppressReason}
-                  </p>
-                )}
-              </div>
-
-              <LiveListenBar
-                status={audioStatus}
-                callAudioConnected={callAudioConnected}
-                statusHint={statusHint}
-                lastTranscript={lastTranscript}
-                speakerLabel={
-                  speakerMode === "auto"
-                    ? "Automático"
-                    : speakerMode === "consultant"
-                      ? "Consultor"
-                      : prospectName
-                }
-                onToggle={toggleAudioCapture}
-                disabled={false}
-              />
-
-              <MeetingTranscriptPanel
-                transcript={savedTranscript}
-                prospectName={prospectName}
-              />
-
-              <CopilotChatPanel
-                messages={session.narratorMessages ?? []}
-                isLive={isLive}
-                processing={analyzing}
-                onAskSuggestion={(q) => submitSegment(q, "manual_paste")}
-                onSkipSuggestion={handleSkipSuggestion}
-              />
-            </>
-          )}
-
-          {isLive && (
-            <>
-              <details className="rounded-xl border border-border/40 px-4 py-3">
-                <summary className="cursor-pointer text-xs text-muted-foreground">
-                  Correção de falante (opcional)
-                </summary>
-                <div className="mt-3 flex gap-2">
-                  {(["auto", "consultant", "prospect"] as const).map((mode) => (
-                    <Button
-                      key={mode}
-                      size="sm"
-                      variant={speakerMode === mode ? "secondary" : "ghost"}
-                      onClick={() => setSpeakerMode(mode)}
-                    >
-                      {mode === "auto"
-                        ? "Automático"
-                        : mode === "consultant"
-                          ? "Você"
-                          : prospectName}
-                    </Button>
-                  ))}
-                </div>
-                <p className="mt-2 text-[11px] text-muted-foreground/70">
-                  A gravação nunca para. Use só se a identificação automática errar.
+      {/* ── Live session ── */}
+      {isLive && (
+        <div className="grid gap-8 lg:grid-cols-[1fr_300px]">
+          <div className="space-y-6">
+            <div className="flex flex-col items-center rounded-2xl border border-border/40 bg-gradient-to-b from-muted/20 to-transparent py-8 text-center">
+              <CopilotOrb state={displayOrb} />
+              <p className="mt-5 max-w-md text-sm text-muted-foreground">{displayStatusLine}</p>
+              {session.suppressReason && session.copilotAction === "observe" && (
+                <p className="mt-2 text-xs italic text-muted-foreground/70">
+                  {session.suppressReason}
                 </p>
-              </details>
-
-              <div className="rounded-xl border border-border/40">
-                <button
-                  type="button"
-                  className="flex w-full items-center justify-between px-4 py-3 text-left text-xs text-muted-foreground hover:text-foreground"
-                  onClick={() => setManualOpen((o) => !o)}
-                >
-                  Entrada manual
-                  {manualOpen ? (
-                    <ChevronUp className="h-4 w-4" />
-                  ) : (
-                    <ChevronDown className="h-4 w-4" />
-                  )}
-                </button>
-                {manualOpen && (
-                  <div className="space-y-3 border-t border-border/40 p-4">
-                    <Textarea
-                      placeholder="Digite o que foi dito…"
-                      value={draft}
-                      onChange={(e) => setDraft(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && !e.shiftKey) {
-                          e.preventDefault();
-                          submitSegment(draft);
-                        }
-                      }}
-                      rows={2}
-                    />
-                    <Button size="sm" onClick={() => submitSegment(draft)} disabled={!draft.trim()}>
-                      <Send className="mr-1.5 h-3.5 w-3.5" />
-                      Adicionar
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </>
-          )}
-
-          {!isCompleted && (
-            <details className="rounded-xl border border-border/40 px-4 py-3">
-            <summary className="cursor-pointer text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
-              Human override
-            </summary>
-            <div className="mt-3 flex flex-col gap-2 sm:flex-row">
-              <Input
-                placeholder="objectiveKey"
-                value={overrideKey}
-                onChange={(e) => setOverrideKey(e.target.value)}
-              />
-              <Input
-                placeholder="Valor correto"
-                value={overrideValue}
-                onChange={(e) => setOverrideValue(e.target.value)}
-              />
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={() => void handleOverride()}
-                disabled={analyzing}
-              >
-                Verificar
-              </Button>
+              )}
             </div>
-          </details>
-          )}
 
-          {!detail.artifact && <ProposalReadinessPanel session={session} />}
+            <LiveListenBar
+              status={audioStatus}
+              callAudioConnected={callAudioConnected}
+              statusHint={statusHint}
+              lastTranscript={lastTranscript}
+              speakerLabel={
+                speakerMode === "auto"
+                  ? "Automático"
+                  : speakerMode === "consultant"
+                    ? "Consultor"
+                    : prospectName
+              }
+              onToggle={toggleAudioCapture}
+              disabled={false}
+            />
+
+            <MeetingTranscriptPanel transcript={savedTranscript} prospectName={prospectName} />
+
+            <CopilotChatPanel
+              messages={session.narratorMessages ?? []}
+              isLive={isLive}
+              processing={analyzing}
+              onAskSuggestion={(q) => submitSegment(q, "manual_paste")}
+              onSkipSuggestion={handleSkipSuggestion}
+            />
+
+            <details className="rounded-xl border border-border/40 px-4 py-3">
+              <summary className="cursor-pointer text-xs text-muted-foreground">
+                Correção de falante (opcional)
+              </summary>
+              <div className="mt-3 flex gap-2">
+                {(["auto", "consultant", "prospect"] as const).map((mode) => (
+                  <Button
+                    key={mode}
+                    size="sm"
+                    variant={speakerMode === mode ? "secondary" : "ghost"}
+                    onClick={() => setSpeakerMode(mode)}
+                  >
+                    {mode === "auto"
+                      ? "Automático"
+                      : mode === "consultant"
+                        ? "Você"
+                        : prospectName}
+                  </Button>
+                ))}
+              </div>
+              <p className="mt-2 text-[11px] text-muted-foreground/70">
+                A gravação nunca para. Use só se a identificação automática errar.
+              </p>
+            </details>
+
+            <div className="rounded-xl border border-border/40">
+              <button
+                type="button"
+                className="flex w-full items-center justify-between px-4 py-3 text-left text-xs text-muted-foreground hover:text-foreground"
+                onClick={() => setManualOpen((o) => !o)}
+              >
+                Entrada manual
+                {manualOpen ? (
+                  <ChevronUp className="h-4 w-4" />
+                ) : (
+                  <ChevronDown className="h-4 w-4" />
+                )}
+              </button>
+              {manualOpen && (
+                <div className="space-y-3 border-t border-border/40 p-4">
+                  <Textarea
+                    placeholder="Digite o que foi dito…"
+                    value={draft}
+                    onChange={(e) => setDraft(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        submitSegment(draft);
+                      }
+                    }}
+                    rows={2}
+                  />
+                  <Button size="sm" onClick={() => submitSegment(draft)} disabled={!draft.trim()}>
+                    <Send className="mr-1.5 h-3.5 w-3.5" />
+                    Adicionar
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <aside className="space-y-4 lg:sticky lg:top-6 lg:self-start">
+            <CoveragePanel
+              coverage={session.coverage}
+              overall={session.overallCoverage}
+              knowledgeDepth={session.knowledgeDepth}
+              proposalStatus={session.proposalReadiness.status}
+            />
+            <BusinessGraphPanel profile={session.businessProfile} />
+          </aside>
         </div>
+      )}
 
-        <aside className="space-y-6 lg:sticky lg:top-6 lg:self-start">
+      {/* ── Live without artifact: readiness ── */}
+      {isLive && !detail.artifact && (
+        <ProposalReadinessPanel session={session} />
+      )}
+
+      {/* Mobile metrics for completed */}
+      {isCompleted && (
+        <div className="mt-6 space-y-4 lg:hidden">
           <CoveragePanel
             coverage={session.coverage}
             overall={session.overallCoverage}
@@ -483,41 +507,43 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
             proposalStatus={session.proposalReadiness.status}
           />
           <BusinessGraphPanel profile={session.businessProfile} />
-        </aside>
-      </div>
+        </div>
+      )}
     </OSPage>
   );
 }
 
 function ProposalReadinessPanel({ session }: { session: CopilotSessionSnapshot }) {
   return (
-    <div className="rounded-xl border border-border/40 px-4 py-4">
-      <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
-        Proposal readiness
-      </p>
-      <div className="mt-3 grid gap-2 sm:grid-cols-2">
-        {session.proposalReadiness.items.map((item) => (
-          <div key={item.key} className="flex items-center gap-2 text-xs">
-            <span
-              className={cn(
-                "font-mono",
-                item.status === "ready" && "text-emerald-500",
-                item.status === "partial" && "text-amber-500",
-                item.status === "missing" && "text-red-400/80",
-              )}
-            >
-              {item.status === "ready" ? "✓" : item.status === "partial" ? "⚠" : "✕"}
-            </span>
-            <span className="text-muted-foreground">{item.label}</span>
-          </div>
-        ))}
-      </div>
-      {session.proposalReadiness.blockers[0] && (
-        <p className="mt-3 text-xs text-amber-600/90 dark:text-amber-400">
-          {session.proposalReadiness.blockers[0]}
+    <Card className="border-border/50 shadow-sm">
+      <CardContent className="px-5 py-4">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/55">
+          Prontidão para proposta
         </p>
-      )}
-    </div>
+        <div className="mt-3 grid gap-2 sm:grid-cols-2">
+          {session.proposalReadiness.items.map((item) => (
+            <div key={item.key} className="flex items-center gap-2 text-xs">
+              <span
+                className={cn(
+                  "flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold",
+                  item.status === "ready" && "bg-emerald-500/15 text-emerald-500",
+                  item.status === "partial" && "bg-amber-500/15 text-amber-500",
+                  item.status === "missing" && "bg-red-500/10 text-red-400/80",
+                )}
+              >
+                {item.status === "ready" ? "✓" : item.status === "partial" ? "!" : "·"}
+              </span>
+              <span className="text-muted-foreground">{item.label}</span>
+            </div>
+          ))}
+        </div>
+        {session.proposalReadiness.blockers[0] && (
+          <p className="mt-3 rounded-lg border border-amber-500/15 bg-amber-500/5 px-3 py-2 text-xs text-amber-600/90 dark:text-amber-400">
+            {session.proposalReadiness.blockers[0]}
+          </p>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 

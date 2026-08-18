@@ -31,6 +31,7 @@ export function TranscriptTimeline({
   maxHeight = "max-h-64",
   emptyMessage = "Aguardando conversa…",
   showHeader = true,
+  showTimestamps = true,
 }: {
   transcript: TranscriptSegment[];
   prospectName: string;
@@ -40,6 +41,7 @@ export function TranscriptTimeline({
   maxHeight?: string;
   emptyMessage?: string;
   showHeader?: boolean;
+  showTimestamps?: boolean;
 }) {
   return (
     <section className={cn("rounded-xl border border-border/40 bg-background/50", className)}>
@@ -55,10 +57,18 @@ export function TranscriptTimeline({
           <p className="text-sm text-muted-foreground/60">{emptyMessage}</p>
         ) : (
           transcript.map((seg) => (
-            <div key={seg.id} className="grid grid-cols-[72px_1fr] gap-3 text-sm">
-              <time className="pt-0.5 font-mono text-[11px] tabular-nums text-muted-foreground/60">
-                {formatTime(seg.startedAt)}
-              </time>
+            <div
+              key={seg.id}
+              className={cn(
+                "grid gap-3 text-sm",
+                showTimestamps ? "grid-cols-[72px_1fr]" : "grid-cols-1",
+              )}
+            >
+              {showTimestamps && (
+                <time className="pt-0.5 font-mono text-[11px] tabular-nums text-muted-foreground/60">
+                  {formatTime(seg.startedAt)}
+                </time>
+              )}
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/70">
                   {speakerLabel(seg.speaker, prospectName)}

@@ -1,5 +1,5 @@
-import { getKnowledgeGraph } from "../knowledge";
 import { isObjectiveSatisfied } from "../engine/diagnostic-engine";
+import { buildPrioritizedUnknowns, formatOpportunityItem } from "../engine/artifact-utils";
 import type { CopilotSessionSnapshot, EvidenceGraphItem, MeetingSynthesis } from "../types";
 import type { CopilotMeetingArtifact } from "./types";
 
@@ -37,12 +37,14 @@ export function buildMeetingArtifact(
 
   for (const item of graph) {
     if (item.kind === "opportunity") {
+      const formatted = formatOpportunityItem(item);
       opportunities.push({
-        label: item.label,
+        label: formatted.label,
         value: item.value,
+        summary: formatted.summary,
+        detail: formatted.detail,
         source: item.source,
         confidence: item.confidence,
-        rationale: item.quote,
       });
     }
     if (item.kind === "hypothesis") {
@@ -62,21 +64,12 @@ export function buildMeetingArtifact(
     goals.push(synthesis.diagnosis.opportunity);
   }
 
-  if (synthesis?.criticalUnknowns?.length) {
-    unknowns.push(...synthesis.criticalUnknowns);
-  }
-  if (synthesis?.secondaryUnknowns?.length) {
-    unknowns.push(...synthesis.secondaryUnknowns);
-  }
-
-  for (const obj of getKnowledgeGraph()) {
-    const record = snapshot.diagnosticState[obj.key];
-    if (!record || record.state === "unknown" || record.state === "exploring") {
-      if (obj.proposalCritical && !unknowns.includes(obj.label)) {
-        unknowns.push(obj.label);
-      }
-    }
-  }
+  const { critical, secondary } = buildPrioritizedUnknowns(
+    synthesis?.criticalUnknowns ?? [],
+    synthesis?.secondaryUnknowns ?? [],
+    snapshot.diagnosticState,
+  );
+  unknowns.push(...critical, ...secondary);
 
   const diagnosis = {
     company: snapshot.meetingObjective.companyName,

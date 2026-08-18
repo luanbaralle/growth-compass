@@ -24,7 +24,7 @@ import {
   type RefinedTurn,
 } from "./transcript-refiner";
 import { computeKnowledgeDepth } from "./knowledge-depth";
-import { upsertEvidence } from "./diagnostic-engine";
+import { applyGraphToDiagnosticState, enrichGraphWithObjectiveKeys } from "./graph-objective-mapper";
 import { buildBusinessProfileFromGraph } from "./business-profile-builder";
 import { computeDomainCoverage, computeOverallCoverage, computeProposalReadiness } from "./diagnostic-engine";
 
@@ -109,42 +109,34 @@ function llmItemsToGraph(
       confidence: i.confidence ?? "medium",
       quote: i.quote,
       segmentIds: findSegmentIdsForQuote(i.quote, turns),
-      objectiveKey:
-        i.objectiveKey && OBJECTIVE_KEYS.includes(i.objectiveKey)
-          ? i.objectiveKey
-          : undefined,
+      objectiveKey: inferObjectiveKeyFromItem(i) ?? undefined,
     }));
+}
+
+function inferObjectiveKeyFromItem(i: SynthesisLlmItem): string | undefined {
+  if (i.objectiveKey && OBJECTIVE_KEYS.includes(i.objectiveKey)) return i.objectiveKey;
+  return enrichGraphWithObjectiveKeys([
+    {
+      id: "",
+      domain: i.domain as EvidenceGraphItem["domain"],
+      label: i.label,
+      value: i.value,
+      kind: i.kind as EvidenceKind,
+      source: mapSource(i.source),
+      status: "tentative",
+      confidence: i.confidence ?? "medium",
+      quote: i.quote,
+      segmentIds: [],
+      objectiveKey: undefined,
+    },
+  ])[0]?.objectiveKey;
 }
 
 function mergeIntoDiagnosticState(
   diagnosticState: DiagnosticState,
   graph: EvidenceGraphItem[],
 ): DiagnosticState {
-  let state = { ...diagnosticState };
-
-  for (const item of graph) {
-    if (!item.objectiveKey) continue;
-    if (item.source === "consultant_statement" || item.source === "r1_team") {
-      if (item.kind !== "fact") continue;
-    }
-    if (item.kind === "opportunity" || item.kind === "hypothesis") continue;
-
-    const existing = state[item.objectiveKey];
-    if (existing?.state === "verified") continue;
-
-    state = upsertEvidence(state, item.objectiveKey, {
-      value: item.value,
-      confidence: item.confidence,
-      source: item.source,
-      kind: item.kind === "opportunity" ? "inference" : item.kind,
-      status: item.status,
-      quote: item.quote ?? item.value,
-      capturedAt: new Date().toISOString(),
-      segmentIds: item.segmentIds,
-    });
-  }
-
-  return state;
+  return applyGraphToDiagnosticState(diagnosticState, graph);
 }
 
 function fallbackSynthesis(
@@ -241,6 +233,15 @@ REGRAS:
 7. criticalUnknowns: o que falta para proposta (comissão, ticket, orçamento, conversão).
 8. secondaryUnknowns: gaps secundários.
 9. items: máximo 40 itens, priorize fatos do prospect.
+10. objectiveKey: preencha SEMPRE que possível. Exemplos:
+   - lead_volume → volume de contatos/leads por mês
+   - referral_dependency / primary_acquisition_channel → indicação, Google, etc.
+   - product_portfolio / most_profitable_product → produtos e rentabilidade
+   - business_history / differentiator → tempo de mercado e diferenciais
+   - agency_history / digital_presence_perception → marketing digital
+   - help_seeking_reason / six_month_success_vision / numeric_growth_target → objetivos
+   - operation_structure / service_capacity → equipe e capacidade
+   - monthly_marketing_budget / avg_sale_value / avg_commission → economics
 
 JSON:
 {
@@ -269,7 +270,7 @@ JSON:
     return fallbackSynthesis(turns, input.prospectName, input.companyName, reason);
   }
 
-  const graph = llmItemsToGraph(parsed.items ?? [], turns);
+  const graph = enrichGraphWithObjectiveKeys(llmItemsToGraph(parsed.items ?? [], turns));
   const knowledgeDepth = computeKnowledgeDepth(graph);
 
   const synthesis: MeetingSynthesis = {
@@ -284,7 +285,7 @@ JSON:
     secondaryUnknowns: parsed.secondaryUnknowns ?? [],
     synthesizedAt: new Date().toISOString(),
     refinedTurnCount: refined.length || normalized.length,
-    refinedTranscript: refined.slice(0, 120).map((t) => ({
+    refinedTranscript: refined.map((t) => ({
       speaker: t.speaker,
       text: t.text,
     })),
