@@ -5,6 +5,7 @@ import {
   getProspect,
   updateProspect,
 } from "@/domains/prospection/api.server";
+import { ProspectCopilotSessions } from "@/domains/copilot/components/ProspectCopilotSessions";
 import { ConversationAssistant } from "@/domains/prospection/components/ConversationAssistant";
 import { ProspectChecklist } from "@/domains/prospection/components/ProspectChecklist";
 import { ProspectOpportunities } from "@/domains/prospection/components/ProspectOpportunities";
@@ -305,6 +306,11 @@ export function ProspectDetailPage() {
           <Section title="Próxima ação">
             <NextActionForm prospect={prospect} onSaved={load} />
           </Section>
+          <ProspectCopilotSessions
+            prospectId={prospect.id}
+            prospectName={prospect.name}
+            companyName={prospect.name}
+          />
         </div>
 
         <div className="space-y-5">

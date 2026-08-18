@@ -1,16 +1,25 @@
 import {
+  cancelCopilotSession,
   endCopilotSession,
+  exportCopilotBriefingPdf,
+  exportCopilotCreativeBriefPdf,
   getCopilotSession,
   overrideCopilotEvidence,
+  pushCopilotSessionToCompany,
   reprocessCopilotSession,
   startCopilotSession,
 } from "@/domains/copilot/api.server";
+import { createProposalFromCopilot } from "@/domains/proposals/api.server";
 import { getLiveStatusLine } from "@/domains/copilot/engine/session-processor";
 import type { CopilotSessionDetail } from "@/domains/copilot/meeting/types";
 import type { CopilotSessionSnapshot, SuggestionCard, TranscriptSegment } from "@/domains/copilot/types";
+import { BriefingQaPanel } from "./BriefingQaPanel";
 import { BusinessGraphPanel } from "./BusinessGraphPanel";
 import { CopilotOrb } from "./CopilotOrb";
+import { CopilotProcessingView } from "./CopilotProcessingView";
 import { CoveragePanel } from "./CoveragePanel";
+import { EvidenceGraphPanel } from "./EvidenceGraphPanel";
+import { EvidenceOverridePanel } from "./EvidenceOverridePanel";
 import {
   LiveListenBar,
   resolveDisplayOrbState,
@@ -29,16 +38,20 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import {
   ArrowLeft,
+  Building2,
   ChevronDown,
   ChevronUp,
   Clock,
+  FileDown,
+  FileText,
   Loader2,
   Send,
   RefreshCw,
   Square,
+  X,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -56,7 +69,23 @@ function resolveSpeakerForRecording(mode: SpeakerMode): TranscriptSegment["speak
   return mode;
 }
 
+function downloadBase64File(base64: string, filename: string, mimeType: string): void {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i += 1) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  const blob = new Blob([bytes], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
 export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
+  const navigate = useNavigate();
   const [detail, setDetail] = useState<CopilotSessionDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
@@ -66,6 +95,11 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
   const [overrideValue, setOverrideValue] = useState("");
   const [skippedSuggestions, setSkippedSuggestions] = useState<string[]>([]);
   const [reprocessing, setReprocessing] = useState(false);
+  const [exportingPdf, setExportingPdf] = useState(false);
+  const [exportingBrief, setExportingBrief] = useState(false);
+  const [creatingProposal, setCreatingProposal] = useState(false);
+  const [pushingToCompany, setPushingToCompany] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
   const [manualOpen, setManualOpen] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [lastTranscript, setLastTranscript] = useState("");
@@ -90,6 +124,14 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
   }, [load]);
 
   useEffect(() => {
+    if (detail?.status !== "processing") return;
+    const t = setInterval(() => {
+      void load();
+    }, 2500);
+    return () => clearInterval(t);
+  }, [detail?.status, load]);
+
+  useEffect(() => {
     if (!detail || detail.status !== "live") return;
     const t = setInterval(() => {
       setDetail((d) =>
@@ -110,7 +152,9 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
   const session = detail?.session;
   const prospectName = session?.meetingObjective.prospectName ?? "Prospect";
   const isLive = detail?.status === "live";
+  const isProcessing = detail?.status === "processing";
   const isCompleted = detail?.status === "completed";
+  const isCancelled = detail?.status === "cancelled";
 
   const savedTranscript = useMemo((): TranscriptSegment[] => {
     const live = session?.transcript ?? [];
@@ -118,6 +162,11 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
     if (isCompleted && archived.length > 0) return archived;
     return live;
   }, [session?.transcript, detail?.artifact?.transcript_segments, isCompleted]);
+
+  const evidenceGraphItems = useMemo(() => {
+    if (detail?.artifact?.evidence_graph?.length) return detail.artifact.evidence_graph;
+    return session?.evidenceGraph ?? [];
+  }, [detail?.artifact?.evidence_graph, session?.evidenceGraph]);
 
   const onSessionUpdate = useCallback((data: CopilotSessionDetail) => {
     setDetail(data);
@@ -209,17 +258,99 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
     }
   };
 
+  const handleExportPdf = async () => {
+    setExportingPdf(true);
+    try {
+      const { filename, base64 } = await exportCopilotBriefingPdf({ data: { sessionId } });
+      downloadBase64File(base64, filename, "application/pdf");
+      toast.success("Briefing exportado em PDF.");
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Erro ao exportar briefing."));
+    } finally {
+      setExportingPdf(false);
+    }
+  };
+
+  const handleExportCreativeBrief = async () => {
+    setExportingBrief(true);
+    try {
+      const { filename, base64, brief } = await exportCopilotCreativeBriefPdf({
+        data: { sessionId },
+      });
+      downloadBase64File(base64, filename, "application/pdf");
+      toast.success(
+        brief.generationError
+          ? "Brief exportado com avisos — revise o PDF."
+          : `Brief criativo gerado (${brief.sections.length} seções).`,
+      );
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Erro ao gerar brief criativo."));
+    } finally {
+      setExportingBrief(false);
+    }
+  };
+
+  const handleCreateProposal = async () => {
+    setCreatingProposal(true);
+    try {
+      const proposal = await createProposalFromCopilot({ data: { sessionId } });
+      toast.success("Rascunho de proposta criado.");
+      await navigate({ to: "/os/propostas/$id", params: { id: proposal.id } });
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Erro ao criar proposta."));
+    } finally {
+      setCreatingProposal(false);
+    }
+  };
+
+  const handlePushToCompany = async () => {
+    setPushingToCompany(true);
+    try {
+      const result = await pushCopilotSessionToCompany({ data: { sessionId } });
+      toast.success(
+        result.created
+          ? "Empresa criada com o diagnóstico do Copilot."
+          : "Diagnóstico registrado na empresa.",
+      );
+      await navigate({ to: "/os/empresas/$id", params: { id: result.companyId } });
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Erro ao enviar para Empresas."));
+    } finally {
+      setPushingToCompany(false);
+    }
+  };
+
   const handleEnd = async () => {
     stopAudioCapture();
     setAnalyzing(true);
     try {
-      const data = await endCopilotSession({ data: { sessionId } });
+      const data = await endCopilotSession({
+        data: {
+          sessionId,
+          elapsedSeconds: session?.elapsedSeconds ?? 0,
+        },
+      });
       setDetail(data);
       toast.success("Sessão encerrada — diagnóstico gerado.");
     } catch (err) {
       toast.error(getErrorMessage(err, "Erro ao encerrar sessão."));
     } finally {
       setAnalyzing(false);
+    }
+  };
+
+  const handleCancel = async () => {
+    if (!window.confirm("Cancelar a sessão sem gerar diagnóstico?")) return;
+    stopAudioCapture();
+    setCancelling(true);
+    try {
+      const data = await cancelCopilotSession({ data: { sessionId } });
+      setDetail(data);
+      toast.success("Sessão cancelada.");
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Erro ao cancelar sessão."));
+    } finally {
+      setCancelling(false);
     }
   };
 
@@ -272,6 +403,14 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
           <div>
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="text-xl font-semibold tracking-tight">Raise One Copilot</h1>
+              {isProcessing && (
+                <Badge
+                  variant="outline"
+                  className="border-amber-500/25 bg-amber-500/8 text-amber-600"
+                >
+                  Processando
+                </Badge>
+              )}
               {isCompleted && (
                 <Badge
                   variant="outline"
@@ -286,6 +425,11 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
                   className="border-red-500/25 bg-red-500/8 text-red-500 animate-pulse"
                 >
                   Ao vivo
+                </Badge>
+              )}
+              {isCancelled && (
+                <Badge variant="outline" className="border-muted-foreground/25 text-muted-foreground">
+                  Cancelada
                 </Badge>
               )}
             </div>
@@ -305,6 +449,64 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
             <Clock className="h-3.5 w-3.5" />
             {formatElapsed(session.elapsedSeconds)}
           </div>
+          {isCompleted && detail.artifact && (
+            <>
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => void handleCreateProposal()}
+                disabled={creatingProposal || detail.status === "processing"}
+              >
+                {creatingProposal ? (
+                  <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <FileText className="mr-1.5 h-3.5 w-3.5" />
+                )}
+                Criar proposta
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => void handleExportCreativeBrief()}
+                disabled={exportingBrief || detail.status === "processing"}
+              >
+                {exportingBrief ? (
+                  <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <FileText className="mr-1.5 h-3.5 w-3.5" />
+                )}
+                Brief criativo
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => void handleExportPdf()}
+                disabled={exportingPdf || detail.status === "processing"}
+              >
+                {exportingPdf ? (
+                  <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <FileDown className="mr-1.5 h-3.5 w-3.5" />
+                )}
+                Exportar PDF
+              </Button>
+              {detail.prospectId && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => void handlePushToCompany()}
+                  disabled={pushingToCompany || detail.status === "processing"}
+                >
+                  {pushingToCompany ? (
+                    <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Building2 className="mr-1.5 h-3.5 w-3.5" />
+                  )}
+                  Enviar p/ Empresa
+                </Button>
+              )}
+            </>
+          )}
           {isCompleted && (
             <Button
               variant="outline"
@@ -321,19 +523,34 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
             </Button>
           )}
           {isLive && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => void handleEnd()}
-              disabled={analyzing}
-            >
-              {analyzing ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Square className="h-3.5 w-3.5" />
-              )}
-              Encerrar
-            </Button>
+            <>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => void handleCancel()}
+                disabled={analyzing || cancelling}
+              >
+                {cancelling ? (
+                  <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <X className="mr-1.5 h-3.5 w-3.5" />
+                )}
+                Cancelar
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => void handleEnd()}
+                disabled={analyzing || cancelling}
+              >
+                {analyzing ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Square className="h-3.5 w-3.5" />
+                )}
+                Encerrar
+              </Button>
+            </>
           )}
         </div>
       </header>
@@ -353,8 +570,13 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
         </CardContent>
       </Card>
 
+      {/* ── Processing ── */}
+      {isProcessing && (
+        <CopilotProcessingView mode={reprocessing ? "reprocess" : "end"} />
+      )}
+
       {/* ── Completed: briefing layout ── */}
-      {isCompleted && detail.artifact && (
+      {isCompleted && detail.artifact && !isProcessing && (
         <div className="grid gap-6 lg:grid-cols-[1fr_300px] lg:items-start">
           <div className="min-w-0 space-y-5">
             <MeetingArtifactPanel artifact={detail.artifact} />
@@ -366,6 +588,11 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
               refinedTranscript={detail.artifact.meeting_synthesis?.refinedTranscript}
               defaultCollapsed
             />
+            <BriefingQaPanel
+              sessionId={sessionId}
+              messages={detail.briefingQaMessages}
+              onUpdated={setDetail}
+            />
           </div>
           <aside className="hidden space-y-4 lg:sticky lg:top-6 lg:block">
             <CoveragePanel
@@ -375,12 +602,48 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
               proposalStatus={session.proposalReadiness.status}
             />
             <BusinessGraphPanel profile={session.businessProfile} />
+            <EvidenceGraphPanel items={evidenceGraphItems} />
+            <EvidenceOverridePanel sessionId={sessionId} onUpdated={() => void load()} />
           </aside>
         </div>
       )}
 
+      {isCancelled && !isProcessing && (
+        <Card className="border-border/50 shadow-sm">
+          <CardContent className="px-6 py-10 text-center">
+            <p className="text-sm text-muted-foreground">
+              Sessão cancelada — nenhum diagnóstico foi gerado.
+            </p>
+            {savedTranscript.length > 0 && (
+              <div className="mt-6 text-left">
+                <MeetingTranscriptPanel transcript={savedTranscript} prospectName={prospectName} />
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {isCompleted && !detail.artifact && !isProcessing && (
+        <Card className="border-amber-500/20 shadow-sm">
+          <CardContent className="flex flex-col items-center gap-4 px-6 py-10 text-center">
+            <p className="text-sm text-foreground/85">
+              Diagnóstico não disponível — a síntese pode ter falhado ou as migrations 023/024
+              podem não estar aplicadas.
+            </p>
+            <Button variant="outline" onClick={() => void handleReprocess()} disabled={reprocessing}>
+              {reprocessing ? (
+                <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
+              )}
+              Reprocessar transcript
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
       {/* ── Live session ── */}
-      {isLive && (
+      {isLive && !isProcessing && (
         <div className="grid gap-8 lg:grid-cols-[1fr_300px]">
           <div className="space-y-6">
             <div className="flex flex-col items-center rounded-2xl border border-border/40 bg-gradient-to-b from-muted/20 to-transparent py-8 text-center">
@@ -488,17 +751,19 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
               proposalStatus={session.proposalReadiness.status}
             />
             <BusinessGraphPanel profile={session.businessProfile} />
+            <EvidenceGraphPanel items={evidenceGraphItems} />
+            <EvidenceOverridePanel sessionId={sessionId} onUpdated={() => void load()} />
           </aside>
         </div>
       )}
 
       {/* ── Live without artifact: readiness ── */}
-      {isLive && !detail.artifact && (
+      {isLive && !detail.artifact && !isProcessing && (
         <ProposalReadinessPanel session={session} />
       )}
 
       {/* Mobile metrics for completed */}
-      {isCompleted && (
+      {isCompleted && !isProcessing && (
         <div className="mt-6 space-y-4 lg:hidden">
           <CoveragePanel
             coverage={session.coverage}
@@ -507,6 +772,7 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
             proposalStatus={session.proposalReadiness.status}
           />
           <BusinessGraphPanel profile={session.businessProfile} />
+          <EvidenceGraphPanel items={evidenceGraphItems} />
         </div>
       )}
     </OSPage>

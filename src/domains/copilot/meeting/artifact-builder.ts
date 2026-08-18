@@ -1,7 +1,45 @@
 import { isObjectiveSatisfied } from "../engine/diagnostic-engine";
 import { buildPrioritizedUnknowns, formatOpportunityItem } from "../engine/artifact-utils";
-import type { CopilotSessionSnapshot, EvidenceGraphItem, MeetingSynthesis } from "../types";
+import type {
+  CopilotSessionSnapshot,
+  EvidenceGraphItem,
+  MeetingSynthesis,
+  RecommendedEngagement,
+} from "../types";
 import type { CopilotMeetingArtifact } from "./types";
+
+function buildDefaultEngagement(
+  snapshot: CopilotSessionSnapshot,
+  synthesis: MeetingSynthesis | null | undefined,
+  knowledgeDepth: number,
+): RecommendedEngagement | null {
+  const hasSignal =
+    (synthesis?.diagnosis.opportunity?.trim().length ?? 0) > 0 ||
+    knowledgeDepth >= 40 ||
+    snapshot.overallCoverage >= 25;
+  if (!hasSignal) return null;
+
+  return {
+    strategy: synthesis?.diagnosis.opportunity ?? "Growth Foundation + Demand Generation",
+    phases: [
+      { name: "Fase 1 — Fundação", items: ["Diagnóstico", "Posicionamento", "Landing", "Tracking"] },
+      { name: "Fase 2 — Demanda", items: ["Google Ads", "Funil comercial"] },
+      { name: "Fase 3 — Escala", items: ["CRM", "Conteúdo", "Otimização"] },
+    ],
+    confidence: Math.min(95, Math.round((knowledgeDepth + snapshot.overallCoverage) / 2)),
+  };
+}
+
+function resolveRecommendedEngagement(
+  snapshot: CopilotSessionSnapshot,
+  synthesis: MeetingSynthesis | null | undefined,
+  knowledgeDepth: number,
+): RecommendedEngagement | null {
+  if (synthesis?.recommendedEngagement?.phases?.length) {
+    return synthesis.recommendedEngagement;
+  }
+  return buildDefaultEngagement(snapshot, synthesis, knowledgeDepth);
+}
 
 export function buildMeetingArtifact(
   snapshot: CopilotSessionSnapshot,
@@ -113,18 +151,7 @@ export function buildMeetingArtifact(
     diagnosis,
     opportunities,
     unknowns: [...new Set(unknowns)],
-    recommended_engagement:
-      opportunities.length > 0 || knowledgeDepth >= 40
-        ? {
-            strategy: synthesis?.diagnosis.opportunity ?? "Growth Foundation + Demand Generation",
-            phases: [
-              { name: "Fase 1", items: ["Diagnóstico", "Posicionamento", "Landing", "Tracking"] },
-              { name: "Fase 2", items: ["Google Ads", "Funil comercial"] },
-              { name: "Fase 3", items: ["CRM", "Conteúdo", "Otimização"] },
-            ],
-            confidence: Math.min(95, Math.round((knowledgeDepth + snapshot.overallCoverage) / 2)),
-          }
-        : null,
+    recommended_engagement: resolveRecommendedEngagement(snapshot, synthesis, knowledgeDepth),
     pain_points: painPoints,
     goals,
     hypotheses,

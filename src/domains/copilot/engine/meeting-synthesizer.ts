@@ -11,6 +11,7 @@ import type {
   EvidenceKind,
   EvidenceSource,
   MeetingSynthesis,
+  RecommendedEngagement,
   TranscriptSegment,
 } from "../types";
 import {
@@ -58,6 +59,11 @@ interface SynthesisLlmItem {
   objectiveKey?: string;
 }
 
+interface SynthesisLlmEngagementPhase {
+  name?: string;
+  items?: string[];
+}
+
 interface SynthesisLlmResponse {
   items?: SynthesisLlmItem[];
   diagnosis?: {
@@ -69,7 +75,32 @@ interface SynthesisLlmResponse {
   whatWeLearned?: string[];
   criticalUnknowns?: string[];
   secondaryUnknowns?: string[];
+  recommendedEngagement?: {
+    strategy?: string;
+    phases?: SynthesisLlmEngagementPhase[];
+    confidence?: number;
+  };
   summary?: string;
+}
+
+function parseRecommendedEngagement(
+  raw: SynthesisLlmResponse["recommendedEngagement"],
+): RecommendedEngagement | null {
+  if (!raw?.strategy?.trim()) return null;
+  const phases = (raw.phases ?? [])
+    .filter((p) => p.name?.trim())
+    .map((p) => ({
+      name: p.name!.trim(),
+      items: (p.items ?? []).map((i) => i.trim()).filter(Boolean),
+    }))
+    .filter((p) => p.items.length > 0);
+  if (phases.length === 0) return null;
+  const confidence = Math.min(100, Math.max(0, Math.round(Number(raw.confidence) || 0)));
+  return {
+    strategy: raw.strategy.trim(),
+    phases,
+    confidence: confidence > 0 ? confidence : 50,
+  };
 }
 
 function mapSource(s: SynthesisLlmItem["source"]): EvidenceSource {
@@ -242,6 +273,7 @@ REGRAS:
    - help_seeking_reason / six_month_success_vision / numeric_growth_target → objetivos
    - operation_structure / service_capacity → equipe e capacidade
    - monthly_marketing_budget / avg_sale_value / avg_commission → economics
+11. recommendedEngagement: proposta R1 personalizada com 2-4 fases e itens concretos baseados na reunião (não use template genérico).
 
 JSON:
 {
@@ -250,6 +282,7 @@ JSON:
   "whatWeLearned": ["..."],
   "criticalUnknowns": ["..."],
   "secondaryUnknowns": ["..."],
+  "recommendedEngagement": { "strategy": "nome da estratégia R1", "phases": [{ "name": "Fase 1 — ...", "items": ["item concreto", "..."] }], "confidence": 0-100 },
   "summary": "3-5 frases para o consultor"
 }`,
       },
@@ -283,6 +316,7 @@ JSON:
     whatWeLearned: parsed.whatWeLearned ?? [],
     criticalUnknowns: parsed.criticalUnknowns ?? [],
     secondaryUnknowns: parsed.secondaryUnknowns ?? [],
+    recommendedEngagement: parseRecommendedEngagement(parsed.recommendedEngagement),
     synthesizedAt: new Date().toISOString(),
     refinedTurnCount: refined.length || normalized.length,
     refinedTranscript: refined.map((t) => ({

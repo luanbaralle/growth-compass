@@ -28,7 +28,7 @@ import {
 import type { CopilotSessionDetail } from "./meeting/types";
 import type { Evidence, MeetingMode, TranscriptSegment } from "./types";
 import type { TeamMember } from "@/lib/auth/types";
-import { dbInsert } from "@/lib/supabase/server";
+import { dbInsert, dbUpdate } from "@/lib/supabase/server";
 import { transcribeAudioBase64, isSttConfigured } from "@/lib/llm/openrouter-stt.server";
 
 export async function startSession(
@@ -92,6 +92,7 @@ export async function startSession(
     last_intelligence_at: null,
     knowledge_depth: 0,
     evidence_graph: [],
+    briefing_qa_messages: [],
     started_at: new Date().toISOString(),
   });
 
@@ -107,6 +108,7 @@ export async function startSession(
     prospectId: input.prospectId ?? null,
     status: "live",
     artifact: null,
+    briefingQaMessages: [],
   };
 }
 
@@ -153,6 +155,7 @@ export async function getSession(sessionId: string): Promise<CopilotSessionDetai
     prospectId: row.prospect_id,
     status: row.status,
     artifact,
+    briefingQaMessages: row.briefing_qa_messages ?? [],
   };
 }
 
@@ -310,8 +313,9 @@ export async function addTurn(
 export async function endSession(
   sessionId: string,
   actor: TeamMember | null,
+  options?: { elapsedSeconds?: number },
 ): Promise<CopilotSessionDetail> {
-  return finalizeSession(sessionId, actor, "end");
+  return finalizeSession(sessionId, actor, "end", options);
 }
 
 export async function reprocessSession(
@@ -321,10 +325,23 @@ export async function reprocessSession(
   return finalizeSession(sessionId, actor, "reprocess");
 }
 
+async function syncLinkedMeeting(
+  meetingId: string | null | undefined,
+  patch: { status: string; notes?: string | null },
+): Promise<void> {
+  if (!meetingId) return;
+  try {
+    await dbUpdate("meetings", `id=eq.${meetingId}`, patch);
+  } catch (err) {
+    console.warn("[copilot] falha ao sincronizar meeting:", err);
+  }
+}
+
 async function finalizeSession(
   sessionId: string,
   actor: TeamMember | null,
   mode: "end" | "reprocess",
+  options?: { elapsedSeconds?: number },
 ): Promise<CopilotSessionDetail> {
   const detail = await getSession(sessionId);
   if (!detail) throw new Error("Sessão não encontrada.");
@@ -335,7 +352,12 @@ async function finalizeSession(
     throw new Error("Só é possível reprocessar sessões encerradas.");
   }
 
-  await repo.updateSession(sessionId, { status: "processing" });
+  const sessionRow = await repo.findSessionById(sessionId);
+
+  await repo.updateSession(sessionId, {
+    status: "processing",
+    ...(options?.elapsedSeconds != null ? { elapsed_seconds: options.elapsedSeconds } : {}),
+  });
 
   const synthesisResult = await (
     await import("./engine/meeting-synthesizer")
@@ -369,6 +391,11 @@ async function finalizeSession(
   });
 
   if (mode === "end") {
+    await syncLinkedMeeting(sessionRow?.meeting_id, {
+      status: "completed",
+      notes: synthesisResult.summary?.slice(0, 2000) ?? null,
+    });
+
     await events.emitCopilotSessionCompleted({
       sessionId,
       prospectId: detail.prospectId,
@@ -406,8 +433,11 @@ export async function overrideEvidence(
   );
 
   const { buildBusinessProfile } = await import("./engine/business-profile-builder");
-  const { computeDomainCoverage, computeProposalReadiness } =
-    await import("./engine/diagnostic-engine");
+  const {
+    computeDomainCoverage,
+    computeOverallCoverage,
+    computeProposalReadiness,
+  } = await import("./engine/diagnostic-engine");
 
   const businessProfile = buildBusinessProfile(diagnosticState, {
     companyName: detail.session.meetingObjective.companyName,
@@ -415,6 +445,7 @@ export async function overrideEvidence(
   });
   const coverage = computeDomainCoverage(diagnosticState);
   const proposalReadiness = computeProposalReadiness(diagnosticState);
+  const overallCoverage = computeOverallCoverage(coverage);
 
   await repo.updateSession(sessionId, {
     diagnostic_state: diagnosticState,
@@ -422,6 +453,25 @@ export async function overrideEvidence(
     coverage,
     proposal_readiness: proposalReadiness,
   });
+
+  const artifact = await repo.findArtifact(sessionId);
+  if (artifact) {
+    const updatedSnapshot = {
+      ...detail.session,
+      diagnosticState,
+      businessProfile,
+      coverage,
+      overallCoverage,
+      proposalReadiness,
+    };
+    const artifactData = buildMeetingArtifact(updatedSnapshot, {
+      llmSummary: artifact.transcript_summary,
+      synthesis: artifact.meeting_synthesis,
+      evidenceGraph: artifact.evidence_graph,
+      knowledgeDepth: artifact.knowledge_depth,
+    });
+    await repo.upsertArtifact(artifactData);
+  }
 
   const obj = getObjectiveByKey(input.objectiveKey);
   await events.emitCopilotEvidenceVerified({
@@ -431,6 +481,88 @@ export async function overrideEvidence(
     label: obj?.label ?? input.objectiveKey,
     actor: actor,
   });
+
+  return (await getSession(sessionId))!;
+}
+
+export async function askBriefingQuestion(
+  sessionId: string,
+  question: string,
+): Promise<CopilotSessionDetail> {
+  const detail = await getSession(sessionId);
+  if (!detail) throw new Error("Sessão não encontrada.");
+  if (detail.status !== "completed") {
+    throw new Error("Q&A disponível apenas após encerrar a reunião.");
+  }
+  if (!detail.artifact) {
+    throw new Error("Briefing indisponível — reprocesse a sessão.");
+  }
+
+  const trimmed = question.trim();
+  if (!trimmed) throw new Error("Digite uma pergunta.");
+
+  const { buildBriefingQaContext, answerBriefingQuestion } = await import(
+    "./engine/briefing-qa.server"
+  );
+
+  const context = buildBriefingQaContext({
+    session: detail.session,
+    artifact: detail.artifact,
+  });
+
+  const answer = await answerBriefingQuestion({
+    question: trimmed,
+    context,
+    history: detail.briefingQaMessages,
+    prospectName: detail.session.meetingObjective.prospectName,
+    companyName: detail.session.meetingObjective.companyName,
+  });
+
+  const now = new Date().toISOString();
+  const nextMessages = [
+    ...detail.briefingQaMessages,
+    { id: randomUUID(), role: "user" as const, content: trimmed, createdAt: now },
+    { id: randomUUID(), role: "assistant" as const, content: answer, createdAt: now },
+  ];
+
+  try {
+    await repo.updateSession(sessionId, { briefing_qa_messages: nextMessages });
+  } catch (err) {
+    console.warn("[copilot] falha ao persistir briefing_qa — aplique migration 025:", err);
+  }
+
+  return {
+    ...detail,
+    briefingQaMessages: nextMessages,
+  };
+}
+
+export async function cancelSession(
+  sessionId: string,
+  _actor: TeamMember | null,
+): Promise<CopilotSessionDetail> {
+  const detail = await getSession(sessionId);
+  if (!detail) throw new Error("Sessão não encontrada.");
+  if (detail.status !== "live") {
+    throw new Error("Só é possível cancelar sessões ao vivo.");
+  }
+
+  const sessionRow = await repo.findSessionById(sessionId);
+
+  await repo.updateSession(sessionId, {
+    status: "cancelled",
+    ended_at: new Date().toISOString(),
+    orb_state: "idle",
+    meeting_phase: "closing",
+  });
+
+  if (sessionRow?.meeting_id) {
+    try {
+      await dbUpdate("meetings", `id=eq.${sessionRow.meeting_id}`, { status: "cancelled" });
+    } catch (err) {
+      console.warn("[copilot] falha ao cancelar meeting vinculada:", err);
+    }
+  }
 
   return (await getSession(sessionId))!;
 }
@@ -445,6 +577,164 @@ export async function transcribeAudioChunk(input: {
   const text = await transcribeAudioBase64(input.audioBase64, input.format);
   if (!text) return null;
   return { text };
+}
+
+export async function exportBriefingPdf(sessionId: string): Promise<{ filename: string; base64: string }> {
+  const detail = await getSession(sessionId);
+  if (!detail) throw new Error("Sessão não encontrada.");
+  if (!detail.artifact) {
+    throw new Error("Briefing indisponível — aguarde o processamento ou reprocesse a sessão.");
+  }
+
+  const { buildBriefingPdf, buildBriefingFileName } = await import("./engine/briefing-pdf.server");
+  const pdfBytes = await buildBriefingPdf({
+    artifact: detail.artifact,
+    sessionTitle: detail.session.meetingObjective.title,
+  });
+  const filename = buildBriefingFileName(
+    detail.session.meetingObjective.companyName,
+    detail.session.meetingObjective.prospectName,
+  );
+
+  return {
+    filename,
+    base64: Buffer.from(pdfBytes).toString("base64"),
+  };
+}
+
+export async function exportCreativeBriefPdf(sessionId: string): Promise<{
+  filename: string;
+  base64: string;
+  brief: import("./types").CreativeBrief;
+}> {
+  const detail = await getSession(sessionId);
+  if (!detail) throw new Error("Sessão não encontrada.");
+  if (!detail.artifact) {
+    throw new Error("Brief criativo indisponível — reprocesse a sessão.");
+  }
+
+  const { generateCreativeBrief } = await import("./engine/creative-brief.server");
+  const brief = await generateCreativeBrief({
+    session: detail.session,
+    artifact: detail.artifact,
+  });
+
+  const { buildCreativeBriefPdf, buildCreativeBriefFileName } = await import(
+    "./engine/creative-brief-pdf.server"
+  );
+  const pdfBytes = await buildCreativeBriefPdf(brief);
+  const filename = buildCreativeBriefFileName(detail.session.meetingObjective.companyName);
+
+  return {
+    filename,
+    base64: Buffer.from(pdfBytes).toString("base64"),
+    brief,
+  };
+}
+
+function buildHandoffSummary(detail: CopilotSessionDetail): string {
+  const diagnosis = (detail.artifact?.diagnosis ?? {}) as Record<string, unknown>;
+  const parts = [
+    String(diagnosis.situation ?? detail.artifact?.transcript_summary ?? ""),
+    diagnosis.mainProblem ? `Problema: ${String(diagnosis.mainProblem)}` : "",
+    diagnosis.opportunity ? `Oportunidade: ${String(diagnosis.opportunity)}` : "",
+  ].filter(Boolean);
+  return parts.join("\n\n").slice(0, 4000);
+}
+
+export async function pushSessionToCompany(
+  sessionId: string,
+  actor: TeamMember | null,
+): Promise<{ companyId: string; created: boolean }> {
+  const detail = await getSession(sessionId);
+  if (!detail) throw new Error("Sessão não encontrada.");
+  if (detail.status !== "completed" || !detail.artifact) {
+    throw new Error("Envie para Empresas apenas após o diagnóstico estar pronto.");
+  }
+  if (!detail.prospectId) {
+    throw new Error("Vincule um prospect à sessão antes de enviar para Empresas.");
+  }
+
+  const prospectRepo = await import("@/domains/prospection/repository.server");
+  const companyRepo = await import("@/domains/companies/repository.server");
+
+  const prospect = await prospectRepo.findProspectById(detail.prospectId);
+  if (!prospect) throw new Error("Prospect não encontrado.");
+
+  const summary = buildHandoffSummary(detail);
+  const title = `Copilot — ${detail.session.meetingObjective.title}`;
+  const metadata = {
+    copilotSessionId: sessionId,
+    coverage: detail.session.overallCoverage,
+    knowledgeDepth: detail.session.knowledgeDepth,
+    proposalReadiness: detail.session.proposalReadiness.status,
+    unknowns: detail.artifact.unknowns.slice(0, 12),
+    whatWeLearned: detail.artifact.what_we_learned.slice(0, 15),
+  };
+
+  let companyId = prospect.company_id;
+  let created = false;
+
+  if (!companyId) {
+    const company = await companyRepo.insertCompany({
+      name: prospect.name,
+      legal_name: null,
+      cnpj: null,
+      city: prospect.city,
+      city_state: prospect.state,
+      responsible_name: detail.session.meetingObjective.prospectName,
+      whatsapp: prospect.whatsapp ?? prospect.phone,
+      email: null,
+      website: prospect.website,
+      origin: prospect.source ?? "copilot",
+      segment: prospect.category,
+      stage: "proposta",
+      notes: summary,
+      utm_source: null,
+      utm_medium: null,
+      utm_campaign: null,
+      utm_content: null,
+      utm_term: null,
+      template_slug: null,
+      microvertical_id: null,
+      match_level: null,
+    });
+    companyId = company.id;
+    created = true;
+    await prospectRepo.patchProspect(detail.prospectId, { company_id: companyId });
+  } else {
+    const company = await companyRepo.findCompanyById(companyId);
+    if (company) {
+      const stamp = new Date().toLocaleDateString("pt-BR");
+      const notesAppend = `\n\n--- Copilot ${stamp} ---\n${summary.slice(0, 1500)}`;
+      const nextStage =
+        company.stage === "lead" || company.stage === "contato" ? "proposta" : company.stage;
+      await companyRepo.patchCompany(companyId, {
+        notes: `${company.notes ?? ""}${notesAppend}`.trim(),
+        stage: nextStage,
+      });
+    }
+  }
+
+  await companyRepo.insertActivity({
+    company_id: companyId,
+    type: "meeting",
+    title,
+    body: summary,
+    metadata,
+    author_id: actor,
+  });
+
+  const sessionRow = await repo.findSessionById(sessionId);
+  if (sessionRow?.meeting_id) {
+    try {
+      await dbUpdate("meetings", `id=eq.${sessionRow.meeting_id}`, { company_id: companyId });
+    } catch (err) {
+      console.warn("[copilot] falha ao vincular meeting à empresa:", err);
+    }
+  }
+
+  return { companyId, created };
 }
 
 export async function listRecentSessions(limit = 25) {
@@ -463,5 +753,21 @@ export async function listRecentSessions(limit = 25) {
 }
 
 export async function listProspectSessions(prospectId: string) {
-  return repo.findSessionsByProspect(prospectId);
+  const { computeOverallCoverage } = await import("./engine/diagnostic-engine");
+  const rows = await repo.findSessionsByProspect(prospectId);
+  return rows.map((row) => {
+    const coverage = Array.isArray(row.coverage) ? row.coverage : [];
+    return {
+      id: row.id,
+      status: row.status,
+      title: row.meeting_objective.title,
+      prospectName: row.meeting_objective.prospectName,
+      companyName: row.meeting_objective.companyName,
+      startedAt: row.started_at,
+      endedAt: row.ended_at,
+      elapsedSeconds: row.elapsed_seconds,
+      overallCoverage: computeOverallCoverage(coverage),
+      knowledgeDepth: row.knowledge_depth ?? 0,
+    };
+  });
 }

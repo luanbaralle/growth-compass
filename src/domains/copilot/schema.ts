@@ -19,6 +19,11 @@ export const copilotSessionIdSchema = z.object({
   sessionId: z.string().uuid(),
 });
 
+export const endCopilotSessionSchema = z.object({
+  sessionId: z.string().uuid(),
+  elapsedSeconds: z.number().int().min(0).optional(),
+});
+
 export const appendCopilotSegmentSchema = z.object({
   sessionId: z.string().uuid(),
   segmentId: z.string().uuid().optional(),
@@ -52,6 +57,11 @@ export const overrideCopilotEvidenceSchema = z.object({
   sessionId: z.string().uuid(),
   objectiveKey: z.string().min(1),
   value: z.string().min(1),
+});
+
+export const askCopilotBriefingQuestionSchema = z.object({
+  sessionId: z.string().uuid(),
+  question: z.string().min(1).max(2000),
 });
 
 export const prospectIdParamSchema = z.object({

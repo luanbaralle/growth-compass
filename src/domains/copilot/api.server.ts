@@ -5,7 +5,9 @@ import {
   analyzeCopilotSegmentSchema,
   appendCopilotSegmentSchema,
   copilotSessionIdSchema,
+  endCopilotSessionSchema,
   overrideCopilotEvidenceSchema,
+  askCopilotBriefingQuestionSchema,
   prospectIdParamSchema,
   transcribeCopilotAudioSchema,
   startCopilotSessionSchema,
@@ -74,11 +76,13 @@ export const transcribeCopilotAudio = createServerFn({ method: "POST" })
   });
 
 export const endCopilotSession = createServerFn({ method: "POST" })
-  .validator(copilotSessionIdSchema)
+  .validator(endCopilotSessionSchema)
   .handler(async ({ data }) => {
     return withAuth(async (author) => {
       const service = await import("@/domains/copilot/service.server");
-      return service.endSession(data.sessionId, author);
+      return service.endSession(data.sessionId, author, {
+        elapsedSeconds: data.elapsedSeconds,
+      });
     });
   });
 
@@ -114,5 +118,51 @@ export const listProspectCopilotSessions = createServerFn({ method: "GET" })
     return withAuth(async () => {
       const service = await import("@/domains/copilot/service.server");
       return service.listProspectSessions(data.prospectId);
+    });
+  });
+
+export const exportCopilotBriefingPdf = createServerFn({ method: "GET" })
+  .validator(copilotSessionIdSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const service = await import("@/domains/copilot/service.server");
+      return service.exportBriefingPdf(data.sessionId);
+    });
+  });
+
+export const exportCopilotCreativeBriefPdf = createServerFn({ method: "POST" })
+  .validator(copilotSessionIdSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const service = await import("@/domains/copilot/service.server");
+      return service.exportCreativeBriefPdf(data.sessionId);
+    });
+  });
+
+export const pushCopilotSessionToCompany = createServerFn({ method: "POST" })
+  .validator(copilotSessionIdSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async (author) => {
+      const service = await import("@/domains/copilot/service.server");
+      return service.pushSessionToCompany(data.sessionId, author);
+    });
+  });
+
+export const askCopilotBriefingQuestion = createServerFn({ method: "POST" })
+  .validator(askCopilotBriefingQuestionSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const service = await import("@/domains/copilot/service.server");
+      const { sessionId, question } = data;
+      return service.askBriefingQuestion(sessionId, question);
+    });
+  });
+
+export const cancelCopilotSession = createServerFn({ method: "POST" })
+  .validator(copilotSessionIdSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async (author) => {
+      const service = await import("@/domains/copilot/service.server");
+      return service.cancelSession(data.sessionId, author);
     });
   });

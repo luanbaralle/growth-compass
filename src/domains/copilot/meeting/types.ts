@@ -14,6 +14,7 @@ import type {
   ConversationThread,
   TranscriptSegment,
   CopilotNarratorMessage,
+  BriefingQaMessage,
 } from "../types";
 
 export type CopilotSessionStatus = "live" | "processing" | "completed" | "cancelled";
@@ -37,6 +38,7 @@ export interface CopilotSessionRow {
   inconsistencies: DataInconsistency[];
   elapsed_seconds: number;
   narrator_messages: CopilotNarratorMessage[];
+  briefing_qa_messages: BriefingQaMessage[];
   meeting_phase: import("../types").MeetingPhase;
   copilot_action: import("../types").CopilotAction;
   last_intelligence_at: string | null;
@@ -87,4 +89,5 @@ export interface CopilotSessionDetail {
   prospectId: string | null;
   status: CopilotSessionStatus;
   artifact: CopilotMeetingArtifact | null;
+  briefingQaMessages: BriefingQaMessage[];
 }

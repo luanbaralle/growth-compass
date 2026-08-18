@@ -218,11 +218,23 @@ export interface MeetingSynthesisDiagnosis {
   opportunity: string;
 }
 
+export interface RecommendedEngagementPhase {
+  name: string;
+  items: string[];
+}
+
+export interface RecommendedEngagement {
+  strategy: string;
+  phases: RecommendedEngagementPhase[];
+  confidence: number;
+}
+
 export interface MeetingSynthesis {
   diagnosis: MeetingSynthesisDiagnosis;
   whatWeLearned: string[];
   criticalUnknowns: string[];
   secondaryUnknowns: string[];
+  recommendedEngagement?: RecommendedEngagement | null;
   synthesizedAt: string;
   refinedTurnCount?: number;
   synthesisError?: string;
@@ -244,6 +256,36 @@ export interface CopilotNarratorMessage {
   objectiveKey?: string;
   createdAt: string;
   turnSegmentId?: string;
+}
+
+export interface BriefingQaMessage {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  createdAt: string;
+}
+
+export type CreativeBriefArchetype = "acceleration" | "custom_solution";
+
+export interface CreativeBriefSection {
+  key: string;
+  number: string;
+  title: string;
+  narrative: string;
+  bullets: string[];
+  editorNotes?: string;
+}
+
+export interface CreativeBrief {
+  clientName: string;
+  companyName: string;
+  projectTitle: string;
+  templateArchetype: CreativeBriefArchetype;
+  sections: CreativeBriefSection[];
+  gapsForMeeting2: string[];
+  suggestedProjectName: string;
+  generatedAt: string;
+  generationError?: string;
 }
 
 export type CopilotNarratorTone =
