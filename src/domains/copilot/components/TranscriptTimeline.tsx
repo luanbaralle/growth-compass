@@ -1,5 +1,6 @@
 import type { CopilotSessionSnapshot, TranscriptSegment } from "../types";
 import { cn } from "@/lib/utils";
+import { useEffect, useRef } from "react";
 
 function formatTime(iso: string): string {
   try {
@@ -32,6 +33,8 @@ export function TranscriptTimeline({
   emptyMessage = "Aguardando conversa…",
   showHeader = true,
   showTimestamps = true,
+  highlightSegmentIds = [],
+  searchQuery = "",
 }: {
   transcript: TranscriptSegment[];
   prospectName: string;
@@ -42,7 +45,26 @@ export function TranscriptTimeline({
   emptyMessage?: string;
   showHeader?: boolean;
   showTimestamps?: boolean;
+  highlightSegmentIds?: string[];
+  searchQuery?: string;
 }) {
+  const highlightSet = new Set(highlightSegmentIds);
+  const firstHighlightRef = useRef<HTMLDivElement>(null);
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+
+  useEffect(() => {
+    if (highlightSegmentIds.length === 0) return;
+    firstHighlightRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [highlightSegmentIds]);
+
+  const filtered = normalizedQuery
+    ? transcript.filter(
+        (seg) =>
+          seg.text.toLowerCase().includes(normalizedQuery) ||
+          speakerLabel(seg.speaker, prospectName).toLowerCase().includes(normalizedQuery),
+      )
+    : transcript;
+
   return (
     <section className={cn("rounded-xl border border-border/40 bg-background/50", className)}>
       {showHeader && (
@@ -53,35 +75,46 @@ export function TranscriptTimeline({
         </div>
       )}
       <div className={cn(maxHeight, "space-y-3 overflow-y-auto p-4")}>
-        {transcript.length === 0 && !interimText ? (
-          <p className="text-sm text-muted-foreground/60">{emptyMessage}</p>
+        {filtered.length === 0 && !interimText ? (
+          <p className="text-sm text-muted-foreground/60">
+            {normalizedQuery ? "Nenhum segmento corresponde à busca." : emptyMessage}
+          </p>
         ) : (
-          transcript.map((seg) => (
-            <div
-              key={seg.id}
-              className={cn(
-                "grid gap-3 text-sm",
-                showTimestamps ? "grid-cols-[72px_1fr]" : "grid-cols-1",
-              )}
-            >
-              {showTimestamps && (
-                <time className="pt-0.5 font-mono text-[11px] tabular-nums text-muted-foreground/60">
-                  {formatTime(seg.startedAt)}
-                </time>
-              )}
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/70">
-                  {speakerLabel(seg.speaker, prospectName)}
-                  {seg.sequence != null && (
-                    <span className="ml-2 font-normal normal-case text-muted-foreground/40">
-                      #{seg.sequence}
-                    </span>
-                  )}
-                </p>
-                <p className="mt-0.5 leading-relaxed text-foreground/85">{seg.text}</p>
+          filtered.map((seg) => {
+            const isHighlighted = highlightSet.has(seg.id);
+            const isFirstHighlight =
+              isHighlighted && seg.id === highlightSegmentIds[0];
+
+            return (
+              <div
+                key={seg.id}
+                ref={isFirstHighlight ? firstHighlightRef : undefined}
+                className={cn(
+                  "grid gap-3 rounded-lg text-sm transition-colors",
+                  showTimestamps ? "grid-cols-[72px_1fr]" : "grid-cols-1",
+                  isHighlighted &&
+                    "border border-violet-500/30 bg-violet-500/8 px-2 py-2 -mx-2",
+                )}
+              >
+                {showTimestamps && (
+                  <time className="pt-0.5 font-mono text-[11px] tabular-nums text-muted-foreground/60">
+                    {formatTime(seg.startedAt)}
+                  </time>
+                )}
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/70">
+                    {speakerLabel(seg.speaker, prospectName)}
+                    {seg.sequence != null && (
+                      <span className="ml-2 font-normal normal-case text-muted-foreground/40">
+                        #{seg.sequence}
+                      </span>
+                    )}
+                  </p>
+                  <p className="mt-0.5 leading-relaxed text-foreground/85">{seg.text}</p>
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
         {interimText && (
           <div className="grid grid-cols-[72px_1fr] gap-3 text-sm italic opacity-70">

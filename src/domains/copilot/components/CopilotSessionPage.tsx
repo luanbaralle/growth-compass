@@ -33,6 +33,13 @@ import { useMeetingAudioCapture } from "@/domains/copilot/stt/use-meeting-audio-
 import { useMeetingRecorder } from "@/domains/copilot/stt/use-meeting-recorder";
 import { getErrorMessage } from "@/lib/api/client-errors";
 import { OSPage, PageHeader, PageSkeleton } from "@/os/ui";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -48,6 +55,7 @@ import {
   FileDown,
   FileText,
   Loader2,
+  MoreHorizontal,
   Send,
   Presentation,
   RefreshCw,
@@ -108,6 +116,11 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [lastTranscript, setLastTranscript] = useState("");
   const autoListenStarted = useRef(false);
+  const [diagnosisValidated, setDiagnosisValidated] = useState(false);
+  const [highlightSegmentIds, setHighlightSegmentIds] = useState<string[]>([]);
+  const [transcriptExpandSignal, setTranscriptExpandSignal] = useState(0);
+  const evidenceSectionRef = useRef<HTMLDivElement>(null);
+  const transcriptSectionRef = useRef<HTMLDivElement>(null);
 
   const { recordSegment } = useMeetingRecorder(sessionId);
 
@@ -182,6 +195,28 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
     if (detail?.artifact?.evidence_graph?.length) return detail.artifact.evidence_graph;
     return session?.evidenceGraph ?? [];
   }, [detail?.artifact?.evidence_graph, session?.evidenceGraph]);
+
+  const handleViewInTranscript = useCallback((segmentIds: string[]) => {
+    if (segmentIds.length === 0) return;
+    setHighlightSegmentIds(segmentIds);
+    setTranscriptExpandSignal((n) => n + 1);
+    requestAnimationFrame(() => {
+      transcriptSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }, []);
+
+  const handleScrollToEvidence = useCallback(() => {
+    evidenceSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
+
+  const handleValidateDiagnosis = useCallback(() => {
+    setDiagnosisValidated(true);
+    toast.success("Diagnóstico validado.", {
+      description: linkedProposalId
+        ? "Pronto para revisar a proposta vinculada."
+        : "Gere a proposta quando quiser avançar comercialmente.",
+    });
+  }, [linkedProposalId]);
 
   const onSessionUpdate = useCallback((data: CopilotSessionDetail) => {
     setDetail(data);
@@ -496,6 +531,12 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
                     <Presentation className="mr-1.5 h-3.5 w-3.5" />
                     Apresentar
                   </Button>
+                  <Button variant="outline" size="sm" asChild>
+                    <Link to="/os/propostas/$id" params={{ id: linkedProposalId }}>
+                      <FileText className="mr-1.5 h-3.5 w-3.5" />
+                      Abrir proposta
+                    </Link>
+                  </Button>
                   {linkedProposalStatus === "draft" && (
                     <Button
                       variant="outline"
@@ -509,12 +550,6 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
                       Publicar proposta
                     </Button>
                   )}
-                  <Button variant="outline" size="sm" asChild>
-                    <Link to="/os/propostas/$id" params={{ id: linkedProposalId }}>
-                      <FileText className="mr-1.5 h-3.5 w-3.5" />
-                      Abrir proposta
-                    </Link>
-                  </Button>
                 </>
               ) : (
                 <Button
@@ -528,66 +563,68 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
                   ) : (
                     <FileText className="mr-1.5 h-3.5 w-3.5" />
                   )}
-                  Criar proposta
+                  Gerar proposta
                 </Button>
               )}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => void handleExportCreativeBrief()}
-                disabled={exportingBrief || detail.status === "processing"}
-              >
-                {exportingBrief ? (
-                  <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <FileText className="mr-1.5 h-3.5 w-3.5" />
-                )}
-                Brief criativo
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => void handleExportPdf()}
-                disabled={exportingPdf || detail.status === "processing"}
-              >
-                {exportingPdf ? (
-                  <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <FileDown className="mr-1.5 h-3.5 w-3.5" />
-                )}
-                Exportar PDF
-              </Button>
-              {detail.prospectId && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => void handlePushToCompany()}
-                  disabled={pushingToCompany || detail.status === "processing"}
-                >
-                  {pushingToCompany ? (
-                    <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
-                  ) : (
-                    <Building2 className="mr-1.5 h-3.5 w-3.5" />
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <MoreHorizontal className="mr-1.5 h-3.5 w-3.5" />
+                    Mais
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-52">
+                  <DropdownMenuItem
+                    disabled={exportingBrief || detail.status === "processing"}
+                    onClick={() => void handleExportCreativeBrief()}
+                  >
+                    {exportingBrief ? (
+                      <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <FileText className="mr-2 h-3.5 w-3.5" />
+                    )}
+                    Brief criativo
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    disabled={exportingPdf || detail.status === "processing"}
+                    onClick={() => void handleExportPdf()}
+                  >
+                    {exportingPdf ? (
+                      <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <FileDown className="mr-2 h-3.5 w-3.5" />
+                    )}
+                    Exportar PDF
+                  </DropdownMenuItem>
+                  {detail.prospectId && (
+                    <DropdownMenuItem
+                      disabled={pushingToCompany || detail.status === "processing"}
+                      onClick={() => void handlePushToCompany()}
+                    >
+                      {pushingToCompany ? (
+                        <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Building2 className="mr-2 h-3.5 w-3.5" />
+                      )}
+                      Enviar p/ Empresa
+                    </DropdownMenuItem>
                   )}
-                  Enviar p/ Empresa
-                </Button>
-              )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    disabled={reprocessing || detail.status === "processing"}
+                    onClick={() => void handleReprocess()}
+                  >
+                    {reprocessing ? (
+                      <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <RefreshCw className="mr-2 h-3.5 w-3.5" />
+                    )}
+                    Reprocessar
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </>
-          )}
-          {isCompleted && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => void handleReprocess()}
-              disabled={reprocessing || detail.status === "processing"}
-            >
-              {reprocessing ? (
-                <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
-              ) : (
-                <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
-              )}
-              Reprocessar
-            </Button>
           )}
           {isLive && (
             <>
@@ -646,17 +683,36 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
       {isCompleted && detail.artifact && !isProcessing && (
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_260px] xl:items-start">
           <div className="min-w-0 space-y-6">
-            <MeetingArtifactPanel artifact={detail.artifact} />
-            <BusinessGraphPanel profile={session.businessProfile} />
-            <EvidenceGraphPanel items={evidenceGraphItems} />
-            <MeetingTranscriptPanel
-              transcript={savedTranscript}
-              prospectName={prospectName}
-              completed
-              summary={detail.artifact.transcript_summary}
-              refinedTranscript={detail.artifact.meeting_synthesis?.refinedTranscript}
-              defaultCollapsed
+            <MeetingArtifactPanel
+              artifact={detail.artifact}
+              overallCoverage={session.overallCoverage}
+              knowledgeDepth={session.knowledgeDepth}
+              proposalReadiness={session.proposalReadiness}
+              evidenceItems={evidenceGraphItems}
+              onScrollToEvidence={handleScrollToEvidence}
+              onViewInTranscript={handleViewInTranscript}
+              diagnosisValidated={diagnosisValidated}
+              onValidateDiagnosis={handleValidateDiagnosis}
             />
+            <BusinessGraphPanel profile={session.businessProfile} />
+            <div ref={evidenceSectionRef}>
+              <EvidenceGraphPanel
+                items={evidenceGraphItems}
+                onViewInTranscript={handleViewInTranscript}
+              />
+            </div>
+            <div ref={transcriptSectionRef}>
+              <MeetingTranscriptPanel
+                transcript={savedTranscript}
+                prospectName={prospectName}
+                completed
+                summary={detail.artifact.transcript_summary}
+                refinedTranscript={detail.artifact.meeting_synthesis?.refinedTranscript}
+                defaultCollapsed
+                highlightSegmentIds={highlightSegmentIds}
+                expandSignal={transcriptExpandSignal}
+              />
+            </div>
             <BriefingQaPanel
               sessionId={sessionId}
               messages={detail.briefingQaMessages}
@@ -668,7 +724,7 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
               coverage={session.coverage}
               overall={session.overallCoverage}
               knowledgeDepth={session.knowledgeDepth}
-              proposalStatus={session.proposalReadiness.status}
+              proposalReadiness={session.proposalReadiness}
             />
             <EvidenceOverridePanel sessionId={sessionId} onUpdated={() => void load()} />
           </aside>
@@ -823,7 +879,7 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
               coverage={session.coverage}
               overall={session.overallCoverage}
               knowledgeDepth={session.knowledgeDepth}
-              proposalStatus={session.proposalReadiness.status}
+              proposalReadiness={session.proposalReadiness}
             />
             <EvidenceOverridePanel sessionId={sessionId} onUpdated={() => void load()} />
           </aside>

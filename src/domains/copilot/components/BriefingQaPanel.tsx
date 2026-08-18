@@ -4,13 +4,13 @@ import { getErrorMessage } from "@/lib/api/client-errors";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { Bot, Loader2, MessageCircleQuestion, Send, User } from "lucide-react";
+import { Bot, Brain, Loader2, Send, User } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 const STARTER_QUESTIONS = [
+  "O principal problema do negócio em uma frase?",
   "Quais lacunas impedem montar uma proposta?",
-  "Qual o principal problema do negócio em uma frase?",
   "O que a R1 deveria priorizar nos próximos 90 dias?",
   "Resuma as oportunidades identificadas.",
 ];
@@ -55,13 +55,13 @@ export function BriefingQaPanel({
     <section className="rounded-xl border border-border/50 bg-background/60 shadow-sm">
       <div className="border-b border-border/40 px-5 py-4">
         <div className="flex items-center gap-2">
-          <MessageCircleQuestion className="h-4 w-4 text-violet-500/80" />
+          <Brain className="h-4 w-4 text-violet-500/80" />
           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/55">
-            Perguntas sobre o briefing
+            Refinar diagnóstico
           </p>
         </div>
         <p className="mt-1.5 text-xs text-muted-foreground">
-          Tire dúvidas com base no diagnóstico, evidências e transcript — sem inventar dados.
+          A IA tem uma hipótese — valide, corrija ou aprofunde com base nas evidências da reunião.
         </p>
       </div>
 
@@ -69,7 +69,7 @@ export function BriefingQaPanel({
         {messages.length === 0 ? (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground/70">
-              Exemplos para começar:
+              Confirme ou ajuste o diagnóstico:
             </p>
             <div className="flex flex-wrap gap-2">
               {STARTER_QUESTIONS.map((prompt) => (
@@ -120,7 +120,7 @@ export function BriefingQaPanel({
 
       <div className="space-y-3 border-t border-border/40 px-5 py-4">
         <Textarea
-          placeholder="Ex.: Qual ticket médio foi mencionado? O prospect falou sobre orçamento?"
+          placeholder="Ex.: O problema principal é baixa demanda previsível? Confirme a oportunidade em consórcio náutico."
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
           rows={2}
@@ -140,7 +140,7 @@ export function BriefingQaPanel({
             ) : (
               <Send className="mr-1.5 h-3.5 w-3.5" />
             )}
-            Perguntar
+            Validar
           </Button>
         </div>
       </div>

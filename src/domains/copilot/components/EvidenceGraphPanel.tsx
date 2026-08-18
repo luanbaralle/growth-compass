@@ -1,5 +1,6 @@
 import type { EvidenceGraphItem, EvidenceKind } from "../types";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { GitBranch, Quote, Search, X } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -149,7 +150,15 @@ function EvidenceCard({
   );
 }
 
-function EvidenceDetail({ item, onClose }: { item: EvidenceGraphItem; onClose: () => void }) {
+function EvidenceDetail({
+  item,
+  onClose,
+  onViewInTranscript,
+}: {
+  item: EvidenceGraphItem;
+  onClose: () => void;
+  onViewInTranscript?: (segmentIds: string[]) => void;
+}) {
   return (
     <div className="rounded-xl border border-violet-500/20 bg-gradient-to-br from-violet-500/[0.06] to-transparent p-5">
       <div className="flex items-start justify-between gap-3">
@@ -198,6 +207,16 @@ function EvidenceDetail({ item, onClose }: { item: EvidenceGraphItem; onClose: (
             {item.objectiveKey}
           </Badge>
         )}
+        {item.segmentIds.length > 0 && onViewInTranscript && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-7 text-xs"
+            onClick={() => onViewInTranscript(item.segmentIds)}
+          >
+            Ver no transcript
+          </Button>
+        )}
       </div>
     </div>
   );
@@ -206,9 +225,11 @@ function EvidenceDetail({ item, onClose }: { item: EvidenceGraphItem; onClose: (
 export function EvidenceGraphPanel({
   items,
   className,
+  onViewInTranscript,
 }: {
   items: EvidenceGraphItem[];
   className?: string;
+  onViewInTranscript?: (segmentIds: string[]) => void;
 }) {
   const [kindFilter, setKindFilter] = useState<KindFilter>("all");
   const [query, setQuery] = useState("");
@@ -326,7 +347,11 @@ export function EvidenceGraphPanel({
 
       {selected && (
         <div className="border-b border-border/40 px-5 py-4 sm:px-6">
-          <EvidenceDetail item={selected} onClose={() => setSelectedId(null)} />
+          <EvidenceDetail
+            item={selected}
+            onClose={() => setSelectedId(null)}
+            onViewInTranscript={onViewInTranscript}
+          />
         </div>
       )}
 

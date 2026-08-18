@@ -1,4 +1,5 @@
 import type { CopilotMeetingArtifact } from "../meeting/types";
+import type { EvidenceGraphItem, ProposalReadiness } from "../types";
 import {
   Accordion,
   AccordionContent,
@@ -6,18 +7,27 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import {
   AlertTriangle,
+  ArrowRight,
   CheckCircle2,
+  GitBranch,
   HelpCircle,
   Lightbulb,
   Sparkles,
   Target,
   TrendingUp,
 } from "lucide-react";
+import {
+  buildLearnedItems,
+  computeProposalReadinessPercent,
+  groupUnknowns,
+  KIND_META,
+} from "./diagnosis-helpers";
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -27,44 +37,53 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-function ReadinessBadge({ status }: { status?: string }) {
-  const normalized = status?.replace("_", " ") ?? "unknown";
-  const variant =
-    status === "ready"
-      ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-      : status === "partial"
-        ? "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400"
-        : "border-red-500/25 bg-red-500/10 text-red-500/90 dark:text-red-400";
-
-  return (
-    <span
-      className={cn(
-        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-medium capitalize",
-        variant,
-      )}
-    >
-      {normalized}
-    </span>
-  );
-}
-
-export function MeetingArtifactPanel({ artifact }: { artifact: CopilotMeetingArtifact }) {
+export function MeetingArtifactPanel({
+  artifact,
+  overallCoverage,
+  knowledgeDepth: knowledgeDepthProp,
+  proposalReadiness,
+  evidenceItems = [],
+  onScrollToEvidence,
+  onViewInTranscript,
+  diagnosisValidated,
+  onValidateDiagnosis,
+}: {
+  artifact: CopilotMeetingArtifact;
+  overallCoverage?: number;
+  knowledgeDepth?: number;
+  proposalReadiness?: ProposalReadiness;
+  evidenceItems?: EvidenceGraphItem[];
+  onScrollToEvidence?: () => void;
+  onViewInTranscript?: (segmentIds: string[]) => void;
+  diagnosisValidated?: boolean;
+  onValidateDiagnosis?: () => void;
+}) {
   const diagnosis = artifact.diagnosis as Record<string, unknown>;
   const engagement = artifact.recommended_engagement as Record<string, unknown> | null;
-  const knowledgeDepth = artifact.knowledge_depth ?? (diagnosis.knowledgeDepth as number) ?? 0;
-  const overallCoverage = (diagnosis.diagnosticCoverage as number) ?? 0;
-  const whatWeLearned = artifact.what_we_learned ?? [];
+  const knowledgeDepth =
+    knowledgeDepthProp ?? artifact.knowledge_depth ?? (diagnosis.knowledgeDepth as number) ?? 0;
+  const coverage = overallCoverage ?? (diagnosis.diagnosticCoverage as number) ?? 0;
   const synthesis = artifact.meeting_synthesis;
   const synthesisError = synthesis?.synthesisError ?? null;
-  const criticalUnknowns = synthesis?.criticalUnknowns ?? [];
-  const secondaryUnknowns = synthesis?.secondaryUnknowns ?? [];
-  const displayUnknowns =
-    criticalUnknowns.length > 0 || secondaryUnknowns.length > 0
-      ? [...criticalUnknowns, ...secondaryUnknowns.filter((s) => !criticalUnknowns.includes(s))]
-      : artifact.unknowns;
 
+  const unknownGroups = groupUnknowns({
+    critical: synthesis?.criticalUnknowns ?? [],
+    secondary: synthesis?.secondaryUnknowns ?? [],
+    all: artifact.unknowns,
+  });
+  const totalGaps =
+    unknownGroups.critical.length +
+    unknownGroups.important.length +
+    unknownGroups.secondary.length;
+
+  const learnedItems = buildLearnedItems(artifact.what_we_learned ?? [], evidenceItems);
+  const readinessPercent = proposalReadiness
+    ? computeProposalReadinessPercent(proposalReadiness)
+    : null;
   const confidence =
     engagement?.confidence != null ? Number(engagement.confidence) : null;
+  const companyName = String(diagnosis.company ?? "");
+  const contactName = String(diagnosis.contact ?? "Prospect");
 
   return (
     <div className="space-y-5">
@@ -82,150 +101,210 @@ export function MeetingArtifactPanel({ artifact }: { artifact: CopilotMeetingArt
         </div>
       )}
 
-      {/* Hero diagnosis */}
-      <Card className="overflow-hidden border-border/50 bg-gradient-to-br from-card via-card to-muted/20 shadow-sm">
+      {/* Executive summary */}
+      <Card className="overflow-hidden border-border/50 bg-gradient-to-br from-card via-card to-muted/15 shadow-sm">
         <div className="h-1 bg-gradient-to-r from-amber-500/80 via-amber-400/40 to-transparent" />
-        <CardHeader className="pb-3">
+        <CardContent className="space-y-5 p-5 sm:p-6">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <SectionLabel>Diagnóstico comercial</SectionLabel>
-              <CardTitle className="mt-1.5 text-lg font-semibold tracking-tight">
-                {String(diagnosis.contact ?? "Prospect")}
-                {diagnosis.company ? (
-                  <span className="font-normal text-muted-foreground">
-                    {" "}
-                    · {String(diagnosis.company)}
-                  </span>
-                ) : null}
-              </CardTitle>
+              <SectionLabel>Resumo executivo</SectionLabel>
+              <h2 className="mt-1 text-xl font-semibold tracking-tight sm:text-2xl">
+                {companyName || contactName}
+              </h2>
+              {companyName && contactName !== companyName && (
+                <p className="mt-0.5 text-sm text-muted-foreground">{contactName}</p>
+              )}
             </div>
             <div className="flex flex-wrap gap-2">
-              {knowledgeDepth > 0 && (
-                <Badge
-                  variant="outline"
-                  className="border-emerald-500/25 bg-emerald-500/8 text-emerald-600 dark:text-emerald-400"
+              {onValidateDiagnosis && (
+                <Button
+                  size="sm"
+                  variant={diagnosisValidated ? "secondary" : "default"}
+                  className={cn(!diagnosisValidated && "bg-emerald-600 hover:bg-emerald-500")}
+                  onClick={onValidateDiagnosis}
                 >
-                  Profundidade {knowledgeDepth}%
-                </Badge>
+                  <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" />
+                  {diagnosisValidated ? "Diagnóstico validado" : "Validar diagnóstico"}
+                </Button>
               )}
-              <ReadinessBadge status={String(diagnosis.proposalReadiness ?? "")} />
             </div>
           </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-sm leading-relaxed text-foreground/90">
-            {String(diagnosis.situation ?? artifact.transcript_summary)}
-          </p>
+
+          <div>
+            <SectionLabel>O que descobrimos</SectionLabel>
+            <p className="mt-2 text-sm leading-relaxed text-foreground/90 sm:text-base">
+              {String(diagnosis.situation ?? artifact.transcript_summary)}
+            </p>
+          </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
             {artifact.pain_points[0] && (
-              <div className="rounded-lg border border-red-500/15 bg-red-500/5 px-3.5 py-3">
-                <div className="mb-1.5 flex items-center gap-2 text-xs font-semibold text-red-600/90 dark:text-red-400">
-                  <AlertTriangle className="h-3.5 w-3.5" />
-                  Principal problema
-                </div>
-                <p className="text-sm leading-relaxed text-foreground/85">
+              <div className="rounded-xl border border-red-500/15 bg-red-500/5 px-4 py-3.5">
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-red-600/90 dark:text-red-400">
+                  Problema
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-foreground/90">
                   {artifact.pain_points[0]}
                 </p>
               </div>
             )}
             {diagnosis.opportunity && (
-              <div className="rounded-lg border border-amber-500/15 bg-amber-500/5 px-3.5 py-3">
-                <div className="mb-1.5 flex items-center gap-2 text-xs font-semibold text-amber-600/90 dark:text-amber-400">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  Oportunidade R1
-                </div>
-                <p className="text-sm leading-relaxed text-foreground/85">
+              <div className="rounded-xl border border-emerald-500/15 bg-emerald-500/5 px-4 py-3.5">
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-emerald-600/90 dark:text-emerald-400">
+                  Oportunidade
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-foreground/90">
                   {String(diagnosis.opportunity)}
                 </p>
               </div>
             )}
           </div>
 
+          {engagement?.strategy && (
+            <div className="rounded-xl border border-border/40 bg-muted/10 px-4 py-3.5">
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                Recomendação
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-foreground/90">
+                {String(engagement.strategy)}
+              </p>
+            </div>
+          )}
+
           {diagnosis.constraint && (
-            <p className="rounded-lg border border-border/40 bg-muted/15 px-3.5 py-2.5 text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               <span className="font-semibold text-foreground/70">Restrição: </span>
               {String(diagnosis.constraint)}
             </p>
           )}
+
+          <div className="grid gap-3 border-t border-border/40 pt-4 sm:grid-cols-3">
+            <MetricBlock label="Cobertura diagnóstica" value={`${coverage}%`} progress={coverage} />
+            <MetricBlock
+              label="Confiança do conhecimento"
+              value={`${knowledgeDepth}%`}
+              progress={knowledgeDepth}
+              accent="emerald"
+            />
+            {readinessPercent != null && (
+              <MetricBlock
+                label="Prontidão p/ proposta"
+                value={`${readinessPercent}%`}
+                progress={readinessPercent}
+                accent="amber"
+                sub={
+                  totalGaps > 0
+                    ? `${totalGaps} ponto${totalGaps === 1 ? "" : "s"} a validar`
+                    : undefined
+                }
+              />
+            )}
+          </div>
         </CardContent>
       </Card>
 
-      {/* What we learned — grid cards */}
-      {whatWeLearned.length > 0 && (
+      {learnedItems.length > 0 && (
         <Card className="border-border/50 shadow-sm">
-          <CardHeader className="pb-2">
+          <CardContent className="p-5 sm:p-6">
             <div className="flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-              <CardTitle className="text-sm font-semibold">O que aprendemos</CardTitle>
+              <h3 className="text-sm font-semibold">O que aprendemos</h3>
               <Badge variant="secondary" className="ml-auto text-[10px]">
-                {whatWeLearned.length}
+                {learnedItems.length}
               </Badge>
             </div>
-          </CardHeader>
-          <CardContent>
-            <ul className="grid gap-2 sm:grid-cols-2">
-              {whatWeLearned.map((item, i) => (
-                <li
-                  key={`${item.slice(0, 40)}-${i}`}
-                  className="flex gap-2.5 rounded-lg border border-border/35 bg-muted/10 px-3 py-2.5 text-sm leading-snug text-foreground/85"
-                >
-                  <span className="mt-0.5 shrink-0 text-emerald-500/80">✓</span>
-                  <span>{item}</span>
-                </li>
-              ))}
+            <p className="mt-1 text-xs text-muted-foreground">
+              Separação entre fato, inferência, hipótese e oportunidade.
+            </p>
+            <ul className="mt-4 space-y-2">
+              {learnedItems.map((item) => {
+                const meta = KIND_META[item.kind];
+                return (
+                  <li
+                    key={item.id}
+                    className="flex gap-3 rounded-lg border border-border/35 bg-muted/10 px-3 py-2.5"
+                  >
+                    <span
+                      className={cn("mt-1.5 h-2 w-2 shrink-0 rounded-full", meta.dot)}
+                      title={meta.label}
+                    />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge variant="outline" className={cn("text-[10px]", meta.badge)}>
+                          {meta.label}
+                        </Badge>
+                        {item.segmentIds.length > 0 && onViewInTranscript && (
+                          <button
+                            type="button"
+                            onClick={() => onViewInTranscript(item.segmentIds)}
+                            className="text-[10px] font-medium text-violet-600 hover:underline dark:text-violet-400"
+                          >
+                            Ver no transcript
+                          </button>
+                        )}
+                      </div>
+                      <p className="mt-1.5 text-sm leading-snug text-foreground/85">{item.text}</p>
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           </CardContent>
         </Card>
       )}
 
-      {/* Unknowns + Engagement row */}
       <div className="grid gap-5 lg:grid-cols-2">
-        {displayUnknowns.length > 0 && (
+        {totalGaps > 0 && (
           <Card className="border-amber-500/15 shadow-sm">
-            <CardHeader className="pb-2">
+            <CardContent className="p-5 sm:p-6">
               <div className="flex items-center gap-2">
                 <HelpCircle className="h-4 w-4 text-amber-500" />
-                <CardTitle className="text-sm font-semibold">Ainda desconhecido</CardTitle>
+                <h3 className="text-sm font-semibold">O que falta descobrir</h3>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Esclarecer antes de fechar a proposta
+              <p className="mt-1 text-xs text-muted-foreground">
+                Priorize o que validar antes da proposta comercial.
               </p>
-            </CardHeader>
-            <CardContent>
-              <ul className="flex flex-wrap gap-2">
-                {displayUnknowns.slice(0, 10).map((u) => (
-                  <li
-                    key={u}
-                    className="rounded-full border border-amber-500/20 bg-amber-500/8 px-3 py-1 text-xs text-foreground/80"
-                  >
-                    {u}
-                  </li>
-                ))}
-              </ul>
+              <div className="mt-4 space-y-4">
+                <GapGroup
+                  label="Crítico"
+                  tone="red"
+                  items={unknownGroups.critical}
+                />
+                <GapGroup
+                  label="Importante"
+                  tone="amber"
+                  items={unknownGroups.important}
+                />
+                <GapGroup
+                  label="Secundário"
+                  tone="muted"
+                  items={unknownGroups.secondary}
+                />
+              </div>
             </CardContent>
           </Card>
         )}
 
         {engagement && (
           <Card className="border-border/50 shadow-sm">
-            <CardHeader className="pb-2">
+            <CardContent className="p-5 sm:p-6">
               <div className="flex items-center gap-2">
-                <Target className="h-4 w-4 text-foreground/70" />
-                <CardTitle className="text-sm font-semibold">Engajamento sugerido</CardTitle>
+                <Target className="h-4 w-4 text-violet-500/80" />
+                <h3 className="text-sm font-semibold">Hipótese de solução</h3>
                 {confidence != null && (
                   <Badge variant="outline" className="ml-auto tabular-nums">
                     {confidence}% confiança
                   </Badge>
                 )}
               </div>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <p className="text-sm leading-relaxed text-foreground/85">
-                {String(engagement.strategy ?? "Estratégia recomendada")}
+              <p className="mt-1 text-xs text-muted-foreground">
+                Proposta inicial da IA — validar antes de fechar escopo.
+              </p>
+              <p className="mt-3 text-sm leading-relaxed text-foreground/85">
+                {String(engagement.strategy ?? "Estratégia em elaboração")}
               </p>
               {Array.isArray(engagement.phases) && (
-                <div className="space-y-2">
+                <div className="mt-4 space-y-2">
                   {(engagement.phases as Array<{ name: string; items: string[] }>).map(
                     (phase, idx) => (
                       <div
@@ -246,12 +325,23 @@ export function MeetingArtifactPanel({ artifact }: { artifact: CopilotMeetingArt
                   )}
                 </div>
               )}
+              {onScrollToEvidence && evidenceItems.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-4"
+                  onClick={onScrollToEvidence}
+                >
+                  <GitBranch className="mr-1.5 h-3.5 w-3.5" />
+                  Ver evidências
+                  <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+                </Button>
+              )}
             </CardContent>
           </Card>
         )}
       </div>
 
-      {/* Collapsible secondary sections */}
       {(artifact.opportunities.length > 0 || artifact.hypotheses.length > 0) && (
         <Accordion type="multiple" className="rounded-xl border border-border/50 px-1">
           {artifact.opportunities.length > 0 && (
@@ -272,7 +362,6 @@ export function MeetingArtifactPanel({ artifact }: { artifact: CopilotMeetingArt
                       label?: string;
                       value?: string;
                       summary?: string;
-                      detail?: string;
                     };
                     const text = opp.summary ?? opp.value ?? opp.label ?? "Oportunidade";
                     return (
@@ -293,7 +382,7 @@ export function MeetingArtifactPanel({ artifact }: { artifact: CopilotMeetingArt
               <AccordionTrigger className="py-3 text-sm font-semibold hover:no-underline">
                 <span className="flex items-center gap-2">
                   <Lightbulb className="h-4 w-4 text-muted-foreground" />
-                  Hipóteses
+                  Hipóteses adicionais
                   <Badge variant="secondary" className="ml-1 text-[10px]">
                     {artifact.hypotheses.length}
                   </Badge>
@@ -313,23 +402,82 @@ export function MeetingArtifactPanel({ artifact }: { artifact: CopilotMeetingArt
           )}
         </Accordion>
       )}
+    </div>
+  );
+}
 
-      {/* Coverage mini strip in artifact when no sidebar visible on mobile */}
-      <div className="flex flex-wrap gap-4 rounded-xl border border-border/40 bg-muted/10 px-4 py-3 lg:hidden">
-        <div className="flex items-center gap-2 text-xs">
-          <span className="text-muted-foreground">Coverage</span>
-          <span className="font-semibold tabular-nums">{overallCoverage}%</span>
-          <Progress value={overallCoverage} className="h-1.5 w-20" />
-        </div>
-        {knowledgeDepth > 0 && (
-          <div className="flex items-center gap-2 text-xs">
-            <span className="text-muted-foreground">Profundidade</span>
-            <span className="font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">
-              {knowledgeDepth}%
-            </span>
-          </div>
+function MetricBlock({
+  label,
+  value,
+  progress,
+  accent,
+  sub,
+}: {
+  label: string;
+  value: string;
+  progress: number;
+  accent?: "emerald" | "amber";
+  sub?: string;
+}) {
+  return (
+    <div className="rounded-xl border border-border/35 bg-background/50 px-3 py-3">
+      <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+        {label}
+      </p>
+      <p
+        className={cn(
+          "mt-1 text-xl font-bold tabular-nums",
+          accent === "emerald" && "text-emerald-600 dark:text-emerald-400",
+          accent === "amber" && "text-amber-600 dark:text-amber-400",
         )}
-      </div>
+      >
+        {value}
+      </p>
+      <Progress
+        value={progress}
+        className={cn(
+          "mt-2 h-1.5",
+          accent === "emerald" && "[&>div]:bg-emerald-500",
+          accent === "amber" && "[&>div]:bg-amber-500",
+        )}
+      />
+      {sub && <p className="mt-1.5 text-[10px] text-muted-foreground">{sub}</p>}
+    </div>
+  );
+}
+
+function GapGroup({
+  label,
+  tone,
+  items,
+}: {
+  label: string;
+  tone: "red" | "amber" | "muted";
+  items: string[];
+}) {
+  if (items.length === 0) return null;
+  const toneClass =
+    tone === "red"
+      ? "text-red-600 dark:text-red-400"
+      : tone === "amber"
+        ? "text-amber-600 dark:text-amber-400"
+        : "text-muted-foreground";
+
+  return (
+    <div>
+      <p className={cn("text-[10px] font-semibold uppercase tracking-wide", toneClass)}>
+        {label}
+      </p>
+      <ul className="mt-2 flex flex-wrap gap-2">
+        {items.map((item) => (
+          <li
+            key={item}
+            className="rounded-full border border-border/40 bg-muted/15 px-3 py-1 text-xs text-foreground/80"
+          >
+            {item}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

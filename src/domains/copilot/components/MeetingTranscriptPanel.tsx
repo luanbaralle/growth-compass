@@ -2,12 +2,14 @@ import type { MeetingSynthesis, TranscriptSegment } from "../types";
 import { TranscriptTimeline } from "./TranscriptTimeline";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { Copy, FileText } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Copy, FileText, Search } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 type TranscriptView = "original" | "refined";
+type SpeakerFilter = "all" | TranscriptSegment["speaker"];
 
 function buildPlainTextTranscript(
   segments: TranscriptSegment[],
@@ -40,6 +42,14 @@ function refinedToSegments(
   }));
 }
 
+function estimateDurationMinutes(segments: TranscriptSegment[]): number | null {
+  if (segments.length < 2) return null;
+  const first = new Date(segments[0]!.startedAt).getTime();
+  const last = new Date(segments[segments.length - 1]!.startedAt).getTime();
+  if (!Number.isFinite(first) || !Number.isFinite(last) || last <= first) return null;
+  return Math.max(1, Math.round((last - first) / 60_000));
+}
+
 export function MeetingTranscriptPanel({
   transcript,
   prospectName,
@@ -47,6 +57,8 @@ export function MeetingTranscriptPanel({
   summary,
   refinedTranscript,
   defaultCollapsed,
+  highlightSegmentIds = [],
+  expandSignal = 0,
 }: {
   transcript: TranscriptSegment[];
   prospectName: string;
@@ -54,10 +66,18 @@ export function MeetingTranscriptPanel({
   summary?: string | null;
   refinedTranscript?: MeetingSynthesis["refinedTranscript"];
   defaultCollapsed?: boolean;
+  highlightSegmentIds?: string[];
+  expandSignal?: number;
 }) {
   const hasRefined = (refinedTranscript?.length ?? 0) > 0;
   const [view, setView] = useState<TranscriptView>(hasRefined ? "refined" : "original");
   const [collapsed, setCollapsed] = useState(defaultCollapsed ?? false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [speakerFilter, setSpeakerFilter] = useState<SpeakerFilter>("all");
+
+  useEffect(() => {
+    if (expandSignal > 0) setCollapsed(false);
+  }, [expandSignal]);
 
   const displayTranscript = useMemo(() => {
     if (view === "refined" && refinedTranscript?.length) {
@@ -65,6 +85,16 @@ export function MeetingTranscriptPanel({
     }
     return transcript;
   }, [view, refinedTranscript, transcript]);
+
+  const speakerFiltered = useMemo(() => {
+    if (speakerFilter === "all") return displayTranscript;
+    return displayTranscript.filter((seg) => seg.speaker === speakerFilter);
+  }, [displayTranscript, speakerFilter]);
+
+  const durationMinutes = useMemo(
+    () => estimateDurationMinutes(transcript),
+    [transcript],
+  );
 
   const handleCopy = async () => {
     if (displayTranscript.length === 0) return;
@@ -103,10 +133,11 @@ export function MeetingTranscriptPanel({
             <span className="text-sm font-semibold">Transcript da reunião</span>
             <span className="text-xs text-muted-foreground">
               · {transcript.length} segmentos
+              {durationMinutes != null ? ` · ~${durationMinutes} min` : ""}
               {hasRefined ? ` · ${refinedTranscript!.length} turnos corrigidos` : ""}
             </span>
           </div>
-          <span className="text-xs text-muted-foreground">Expandir</span>
+          <span className="text-xs text-muted-foreground">Expandir transcript</span>
         </button>
       </Card>
     );
@@ -127,7 +158,7 @@ export function MeetingTranscriptPanel({
               <p className="mt-1.5 text-xs text-muted-foreground">
                 {view === "refined" && refinedTranscript?.length
                   ? `${refinedTranscript.length} turnos corrigidos (STT + speakers)`
-                  : `${transcript.length} segmentos salvos no OS`}
+                  : `${transcript.length} segmentos${durationMinutes != null ? ` · ~${durationMinutes} min processados` : ""}`}
               </p>
             )}
             {summary && completed && (
@@ -172,14 +203,54 @@ export function MeetingTranscriptPanel({
             )}
           </div>
         </div>
+
+        {completed && displayTranscript.length > 0 && (
+          <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="relative min-w-0 flex-1">
+              <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground/60" />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Buscar no transcript…"
+                className="h-8 pl-8 text-xs"
+              />
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {(
+                [
+                  ["all", "Todos"],
+                  ["consultant", "Você"],
+                  ["prospect", prospectName],
+                  ["unknown", "Desconhecido"],
+                ] as const
+              ).map(([value, label]) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setSpeakerFilter(value)}
+                  className={cn(
+                    "rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors",
+                    speakerFilter === value
+                      ? "border-foreground/20 bg-secondary text-foreground"
+                      : "border-border/50 text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </CardHeader>
       <CardContent className="p-0">
         <TranscriptTimeline
-          transcript={displayTranscript}
+          transcript={speakerFiltered}
           prospectName={prospectName}
           className="border-0 bg-transparent"
           maxHeight={completed ? "max-h-[420px]" : "max-h-64"}
           showTimestamps={view === "original"}
+          highlightSegmentIds={highlightSegmentIds}
+          searchQuery={searchQuery}
           emptyMessage={
             completed ? "Nenhum segmento registrado nesta reunião." : "Aguardando conversa…"
           }
