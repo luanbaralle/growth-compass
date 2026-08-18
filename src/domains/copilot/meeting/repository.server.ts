@@ -1,4 +1,4 @@
-import { dbInsert, dbSelect, dbUpdate } from "@/lib/supabase/server";
+import { dbDelete, dbInsert, dbSelect, dbUpdate } from "@/lib/supabase/server";
 import type {
   CopilotMeetingArtifact,
   CopilotSessionRow,
@@ -155,7 +155,7 @@ async function upsertArtifactRow(
   };
 }
 
-export async function findRecentSessions(limit = 25): Promise<CopilotSessionRow[]> {
+export async function findRecentSessions(limit = 50): Promise<CopilotSessionRow[]> {
   return dbSelect<CopilotSessionRow>(
     "copilot_sessions",
     encodeQuery({
@@ -164,6 +164,10 @@ export async function findRecentSessions(limit = 25): Promise<CopilotSessionRow[
       limit: String(limit),
     }),
   );
+}
+
+export async function deleteSession(id: string): Promise<void> {
+  await dbDelete("copilot_sessions", `id=eq.${id}`);
 }
 
 export async function findArtifact(sessionId: string): Promise<CopilotMeetingArtifact | null> {

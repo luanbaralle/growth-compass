@@ -1,11 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { ProposalDetailPage } from "@/domains/proposals/components/ProposalDetailPage";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/os/propostas/$id")({
-  component: ProposalDetailRoute,
+  component: () => <Outlet />,
 });
-
-function ProposalDetailRoute() {
-  const { id } = Route.useParams();
-  return <ProposalDetailPage proposalId={id} />;
-}

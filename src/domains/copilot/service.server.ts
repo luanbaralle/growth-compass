@@ -763,19 +763,45 @@ export async function pushSessionToCompany(
   return { companyId, created };
 }
 
-export async function listRecentSessions(limit = 25) {
+export async function listRecentSessions(limit = 50) {
+  const { computeOverallCoverage } = await import("./engine/diagnostic-engine");
   const rows = await repo.findRecentSessions(limit);
-  return rows.map((row) => ({
-    id: row.id,
-    prospectId: row.prospect_id,
-    status: row.status,
-    title: row.meeting_objective.title,
-    prospectName: row.meeting_objective.prospectName,
-    companyName: row.meeting_objective.companyName,
-    startedAt: row.started_at,
-    endedAt: row.ended_at,
-    elapsedSeconds: row.elapsed_seconds,
-  }));
+  const proposalRepo = await import("@/domains/proposals/repository.server");
+  const proposals = await proposalRepo.findProposalsByCopilotSessionIds(rows.map((row) => row.id));
+  const proposalBySession = new Map(
+    proposals
+      .filter((p) => p.copilot_session_id)
+      .map((p) => [p.copilot_session_id!, p]),
+  );
+
+  return rows.map((row) => {
+    const coverage = Array.isArray(row.coverage) ? row.coverage : [];
+    const linked = proposalBySession.get(row.id);
+    return {
+      id: row.id,
+      prospectId: row.prospect_id,
+      status: row.status,
+      title: row.meeting_objective.title,
+      prospectName: row.meeting_objective.prospectName,
+      companyName: row.meeting_objective.companyName,
+      startedAt: row.started_at,
+      endedAt: row.ended_at,
+      elapsedSeconds: row.elapsed_seconds,
+      overallCoverage: computeOverallCoverage(coverage),
+      knowledgeDepth: row.knowledge_depth ?? 0,
+      proposalId: linked?.id ?? null,
+      proposalStatus: linked?.status ?? null,
+    };
+  });
+}
+
+export async function deleteSession(sessionId: string): Promise<void> {
+  const row = await repo.findSessionById(sessionId);
+  if (!row) throw new Error("Sessão não encontrada.");
+  if (row.status === "processing") {
+    throw new Error("Aguarde o processamento terminar antes de excluir.");
+  }
+  await repo.deleteSession(sessionId);
 }
 
 export async function listProspectSessions(prospectId: string) {

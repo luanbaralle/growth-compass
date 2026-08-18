@@ -158,6 +158,16 @@ export const askCopilotBriefingQuestion = createServerFn({ method: "POST" })
     });
   });
 
+export const deleteCopilotSession = createServerFn({ method: "POST" })
+  .validator(copilotSessionIdSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const service = await import("@/domains/copilot/service.server");
+      await service.deleteSession(data.sessionId);
+      return { ok: true as const };
+    });
+  });
+
 export const cancelCopilotSession = createServerFn({ method: "POST" })
   .validator(copilotSessionIdSchema)
   .handler(async ({ data }) => {

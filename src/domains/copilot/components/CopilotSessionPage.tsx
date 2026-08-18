@@ -644,9 +644,11 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
 
       {/* ── Completed: briefing layout ── */}
       {isCompleted && detail.artifact && !isProcessing && (
-        <div className="grid gap-6 lg:grid-cols-[1fr_300px] lg:items-start">
-          <div className="min-w-0 space-y-5">
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_260px] xl:items-start">
+          <div className="min-w-0 space-y-6">
             <MeetingArtifactPanel artifact={detail.artifact} />
+            <BusinessGraphPanel profile={session.businessProfile} />
+            <EvidenceGraphPanel items={evidenceGraphItems} />
             <MeetingTranscriptPanel
               transcript={savedTranscript}
               prospectName={prospectName}
@@ -661,15 +663,13 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
               onUpdated={setDetail}
             />
           </div>
-          <aside className="hidden space-y-4 lg:sticky lg:top-6 lg:block">
+          <aside className="hidden space-y-4 xl:sticky xl:top-6 xl:block">
             <CoveragePanel
               coverage={session.coverage}
               overall={session.overallCoverage}
               knowledgeDepth={session.knowledgeDepth}
               proposalStatus={session.proposalReadiness.status}
             />
-            <BusinessGraphPanel profile={session.businessProfile} />
-            <EvidenceGraphPanel items={evidenceGraphItems} />
             <EvidenceOverridePanel sessionId={sessionId} onUpdated={() => void load()} />
           </aside>
         </div>
@@ -711,8 +711,8 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
 
       {/* ── Live session ── */}
       {isLive && !isProcessing && (
-        <div className="grid gap-8 lg:grid-cols-[1fr_300px]">
-          <div className="space-y-6">
+        <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_260px]">
+          <div className="min-w-0 space-y-6">
             <div className="flex flex-col items-center rounded-2xl border border-border/40 bg-gradient-to-b from-muted/20 to-transparent py-8 text-center">
               <CopilotOrb state={displayOrb} />
               <p className="mt-5 max-w-md text-sm text-muted-foreground">{displayStatusLine}</p>
@@ -808,17 +808,23 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
                 </div>
               )}
             </div>
+
+            {session.businessProfile.roots.some((r) => r.children?.length || r.value) && (
+              <BusinessGraphPanel profile={session.businessProfile} />
+            )}
+
+            {evidenceGraphItems.length > 0 && (
+              <EvidenceGraphPanel items={evidenceGraphItems} />
+            )}
           </div>
 
-          <aside className="space-y-4 lg:sticky lg:top-6 lg:self-start">
+          <aside className="space-y-4 xl:sticky xl:top-6 xl:self-start">
             <CoveragePanel
               coverage={session.coverage}
               overall={session.overallCoverage}
               knowledgeDepth={session.knowledgeDepth}
               proposalStatus={session.proposalReadiness.status}
             />
-            <BusinessGraphPanel profile={session.businessProfile} />
-            <EvidenceGraphPanel items={evidenceGraphItems} />
             <EvidenceOverridePanel sessionId={sessionId} onUpdated={() => void load()} />
           </aside>
         </div>
@@ -831,15 +837,14 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
 
       {/* Mobile metrics for completed */}
       {isCompleted && !isProcessing && (
-        <div className="mt-6 space-y-4 lg:hidden">
+        <div className="mt-6 space-y-4 xl:hidden">
           <CoveragePanel
             coverage={session.coverage}
             overall={session.overallCoverage}
             knowledgeDepth={session.knowledgeDepth}
             proposalStatus={session.proposalReadiness.status}
           />
-          <BusinessGraphPanel profile={session.businessProfile} />
-          <EvidenceGraphPanel items={evidenceGraphItems} />
+          <EvidenceOverridePanel sessionId={sessionId} onUpdated={() => void load()} />
         </div>
       )}
     </OSPage>

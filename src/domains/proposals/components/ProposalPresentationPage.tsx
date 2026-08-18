@@ -103,7 +103,7 @@ export function ProposalPresentationPage({ proposalId }: { proposalId: string })
         {proposal.status === "draft" && <ProposalDraftBanner />}
         <div className="sticky top-0 z-50 flex items-center gap-2 border-b border-white/10 bg-[#070708]/90 px-4 py-2 backdrop-blur-md lg:hidden">
           <Button variant="ghost" size="sm" asChild className="text-white/70">
-            <Link to="/os/propostas/$id" params={{ id: proposalId }}>
+            <Link to="/os/propostas/$id/" params={{ id: proposalId }}>
               <ArrowLeft className="mr-1.5 h-4 w-4" />
               Voltar
             </Link>
@@ -220,7 +220,7 @@ export function ProposalPresentationPage({ proposalId }: { proposalId: string })
 
         <div className="hidden border-t border-white/10 px-5 py-4 lg:block">
           <Button variant="ghost" size="sm" asChild className="text-white/60">
-            <Link to="/os/propostas/$id" params={{ id: proposalId }}>
+            <Link to="/os/propostas/$id/" params={{ id: proposalId }}>
               <ArrowLeft className="mr-1.5 h-4 w-4" />
               Voltar ao editor
             </Link>

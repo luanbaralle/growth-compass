@@ -71,8 +71,9 @@ import { Route as AdminExecucaoHojeRouteImport } from './routes/admin/execucao/h
 import { Route as AdminExecucaoClientesRouteImport } from './routes/admin/execucao/clientes'
 import { Route as AdminExecucaoCapacidadeRouteImport } from './routes/admin/execucao/capacidade'
 import { Route as OsProspeccaoBibliotecaIndexRouteImport } from './routes/os/prospeccao/biblioteca/index'
+import { Route as OsPropostasIdIndexRouteImport } from './routes/os/propostas/$id/index'
 import { Route as AdminExecucaoRituaisIndexRouteImport } from './routes/admin/execucao/rituais/index'
-import { Route as OsPropostasIdApresentacaoRouteImport } from './routes/os/propostas/$id.apresentacao'
+import { Route as OsPropostasIdApresentacaoRouteImport } from './routes/os/propostas/$id/apresentacao'
 import { Route as AdminExecucaoRituaisReviewRouteImport } from './routes/admin/execucao/rituais/review'
 import { Route as AdminExecucaoRituaisPlanningRouteImport } from './routes/admin/execucao/rituais/planning'
 import { Route as AdminExecucaoRituaisCheckinRouteImport } from './routes/admin/execucao/rituais/checkin'
@@ -392,6 +393,11 @@ const OsProspeccaoBibliotecaIndexRoute =
     path: '/prospeccao/biblioteca/',
     getParentRoute: () => OsRouteRoute,
   } as any)
+const OsPropostasIdIndexRoute = OsPropostasIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => OsPropostasIdRoute,
+} as any)
 const AdminExecucaoRituaisIndexRoute =
   AdminExecucaoRituaisIndexRouteImport.update({
     id: '/execucao/rituais/',
@@ -490,6 +496,7 @@ export interface FileRoutesByFullPath {
   '/admin/execucao/rituais/review': typeof AdminExecucaoRituaisReviewRoute
   '/os/propostas/$id/apresentacao': typeof OsPropostasIdApresentacaoRoute
   '/admin/execucao/rituais/': typeof AdminExecucaoRituaisIndexRoute
+  '/os/propostas/$id/': typeof OsPropostasIdIndexRoute
   '/os/prospeccao/biblioteca/': typeof OsProspeccaoBibliotecaIndexRoute
 }
 export interface FileRoutesByTo {
@@ -533,7 +540,6 @@ export interface FileRoutesByTo {
   '/os/copilot/$sessionId': typeof OsCopilotSessionIdRoute
   '/os/empresas/$id': typeof OsEmpresasIdRoute
   '/os/projetos/$id': typeof OsProjetosIdRoute
-  '/os/propostas/$id': typeof OsPropostasIdRouteWithChildren
   '/os/prospeccao/$id': typeof OsProspeccaoIdRoute
   '/playground/cases/decision-language': typeof PlaygroundCasesDecisionLanguageRoute
   '/client/conteudo': typeof ClientConteudoIndexRoute
@@ -556,6 +562,7 @@ export interface FileRoutesByTo {
   '/admin/execucao/rituais/review': typeof AdminExecucaoRituaisReviewRoute
   '/os/propostas/$id/apresentacao': typeof OsPropostasIdApresentacaoRoute
   '/admin/execucao/rituais': typeof AdminExecucaoRituaisIndexRoute
+  '/os/propostas/$id': typeof OsPropostasIdIndexRoute
   '/os/prospeccao/biblioteca': typeof OsProspeccaoBibliotecaIndexRoute
 }
 export interface FileRoutesById {
@@ -626,6 +633,7 @@ export interface FileRoutesById {
   '/admin/execucao/rituais/review': typeof AdminExecucaoRituaisReviewRoute
   '/os/propostas/$id/apresentacao': typeof OsPropostasIdApresentacaoRoute
   '/admin/execucao/rituais/': typeof AdminExecucaoRituaisIndexRoute
+  '/os/propostas/$id/': typeof OsPropostasIdIndexRoute
   '/os/prospeccao/biblioteca/': typeof OsProspeccaoBibliotecaIndexRoute
 }
 export interface FileRouteTypes {
@@ -697,6 +705,7 @@ export interface FileRouteTypes {
     | '/admin/execucao/rituais/review'
     | '/os/propostas/$id/apresentacao'
     | '/admin/execucao/rituais/'
+    | '/os/propostas/$id/'
     | '/os/prospeccao/biblioteca/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -740,7 +749,6 @@ export interface FileRouteTypes {
     | '/os/copilot/$sessionId'
     | '/os/empresas/$id'
     | '/os/projetos/$id'
-    | '/os/propostas/$id'
     | '/os/prospeccao/$id'
     | '/playground/cases/decision-language'
     | '/client/conteudo'
@@ -763,6 +771,7 @@ export interface FileRouteTypes {
     | '/admin/execucao/rituais/review'
     | '/os/propostas/$id/apresentacao'
     | '/admin/execucao/rituais'
+    | '/os/propostas/$id'
     | '/os/prospeccao/biblioteca'
   id:
     | '__root__'
@@ -832,6 +841,7 @@ export interface FileRouteTypes {
     | '/admin/execucao/rituais/review'
     | '/os/propostas/$id/apresentacao'
     | '/admin/execucao/rituais/'
+    | '/os/propostas/$id/'
     | '/os/prospeccao/biblioteca/'
   fileRoutesById: FileRoutesById
 }
@@ -1299,6 +1309,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OsProspeccaoBibliotecaIndexRouteImport
       parentRoute: typeof OsRouteRoute
     }
+    '/os/propostas/$id/': {
+      id: '/os/propostas/$id/'
+      path: '/'
+      fullPath: '/os/propostas/$id/'
+      preLoaderRoute: typeof OsPropostasIdIndexRouteImport
+      parentRoute: typeof OsPropostasIdRoute
+    }
     '/admin/execucao/rituais/': {
       id: '/admin/execucao/rituais/'
       path: '/execucao/rituais'
@@ -1403,10 +1420,12 @@ const ClientRouteRouteWithChildren = ClientRouteRoute._addFileChildren(
 
 interface OsPropostasIdRouteChildren {
   OsPropostasIdApresentacaoRoute: typeof OsPropostasIdApresentacaoRoute
+  OsPropostasIdIndexRoute: typeof OsPropostasIdIndexRoute
 }
 
 const OsPropostasIdRouteChildren: OsPropostasIdRouteChildren = {
   OsPropostasIdApresentacaoRoute: OsPropostasIdApresentacaoRoute,
+  OsPropostasIdIndexRoute: OsPropostasIdIndexRoute,
 }
 
 const OsPropostasIdRouteWithChildren = OsPropostasIdRoute._addFileChildren(

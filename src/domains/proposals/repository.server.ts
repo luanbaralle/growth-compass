@@ -43,6 +43,20 @@ export async function findProposalByCopilotSession(sessionId: string): Promise<P
   return rows[0] ?? null;
 }
 
+export async function findProposalsByCopilotSessionIds(
+  sessionIds: string[],
+): Promise<Array<Pick<Proposal, "id" | "copilot_session_id" | "status">>> {
+  if (sessionIds.length === 0) return [];
+  const filter = sessionIds.join(",");
+  return dbSelect<Pick<Proposal, "id" | "copilot_session_id" | "status">>(
+    "proposals",
+    encodeQuery({
+      select: "id,copilot_session_id,status",
+      copilot_session_id: `in.(${filter})`,
+    }),
+  );
+}
+
 export async function insertProposal(
   data: Omit<Proposal, "id" | "created_at" | "updated_at" | "published_at"> & {
     published_at?: string | null;
