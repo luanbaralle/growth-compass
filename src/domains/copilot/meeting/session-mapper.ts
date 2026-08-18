@@ -20,6 +20,8 @@ export function rowToSnapshot(
             row.coverage.reduce((a, c) => a + c.percent, 0) / row.coverage.length,
           )
         : 0,
+    knowledgeDepth: row.knowledge_depth ?? 0,
+    evidenceGraph: row.evidence_graph ?? [],
     proposalReadiness: row.proposal_readiness,
     currentThread: row.current_thread,
     latestInsight: row.latest_insight,
@@ -51,6 +53,8 @@ export function snapshotToRowPatch(snapshot: CopilotSessionSnapshot): Partial<Co
     meeting_phase: snapshot.meetingPhase,
     copilot_action: snapshot.copilotAction,
     meeting_objective: snapshot.meetingObjective,
+    knowledge_depth: snapshot.knowledgeDepth,
+    evidence_graph: snapshot.evidenceGraph,
   };
 }
 

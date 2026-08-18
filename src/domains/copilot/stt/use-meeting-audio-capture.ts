@@ -3,6 +3,7 @@
  */
 import { useCallback, useRef, useState } from "react";
 import { transcribeCopilotAudio } from "@/domains/copilot/api.server";
+import { cleanSttSegmentText } from "@/domains/copilot/engine/transcript-normalizer";
 import { blobToWavBase64 } from "./audio-wav-encoder";
 import {
   acquireCallAudioStream,
@@ -21,7 +22,7 @@ export type MeetingAudioStatus =
   | "call_audio_missing"
   | "stt_error";
 
-const CHUNK_MS = 5000;
+const CHUNK_MS = 8000;
 const MIN_BLOB_BYTES = 2000;
 
 export function useMeetingAudioCapture(options: {
@@ -65,9 +66,11 @@ export function useMeetingAudioCapture(options: {
           });
 
           if (result?.text) {
+            const cleaned = cleanSttSegmentText(result.text);
+            if (!cleaned) return;
             sttFailuresRef.current = 0;
             setStatusHint("");
-            onTranscriptRef.current(result.text);
+            onTranscriptRef.current(cleaned);
           } else {
             sttFailuresRef.current += 1;
           }

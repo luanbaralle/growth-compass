@@ -5,9 +5,11 @@ import type {
   DataInconsistency,
   DiagnosticState,
   DomainCoverage,
+  EvidenceGraphItem,
   InsightCard,
   MeetingMode,
   MeetingObjective,
+  MeetingSynthesis,
   ProposalReadiness,
   ConversationThread,
   TranscriptSegment,
@@ -38,6 +40,8 @@ export interface CopilotSessionRow {
   meeting_phase: import("../types").MeetingPhase;
   copilot_action: import("../types").CopilotAction;
   last_intelligence_at: string | null;
+  knowledge_depth: number;
+  evidence_graph: EvidenceGraphItem[];
   started_at: string;
   ended_at: string | null;
   created_at: string;
@@ -71,6 +75,10 @@ export interface CopilotMeetingArtifact {
   pain_points: string[];
   goals: string[];
   hypotheses: string[];
+  what_we_learned: string[];
+  evidence_graph: EvidenceGraphItem[];
+  knowledge_depth: number;
+  meeting_synthesis: MeetingSynthesis | null;
   created_at: string;
 }
 

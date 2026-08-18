@@ -1,14 +1,20 @@
-import { getObjectiveByKey, getKnowledgeGraph } from "../knowledge";
+import { getKnowledgeGraph } from "../knowledge";
 import { isObjectiveSatisfied } from "../engine/diagnostic-engine";
-import type { CopilotSessionSnapshot } from "../types";
+import type { CopilotSessionSnapshot, EvidenceGraphItem, MeetingSynthesis } from "../types";
 import type { CopilotMeetingArtifact } from "./types";
 
 export function buildMeetingArtifact(
   snapshot: CopilotSessionSnapshot,
-  llmSummary?: string | null,
+  options?: {
+    llmSummary?: string | null;
+    synthesis?: MeetingSynthesis | null;
+    evidenceGraph?: EvidenceGraphItem[];
+    knowledgeDepth?: number;
+  },
 ): Omit<CopilotMeetingArtifact, "created_at"> {
-  const { diagnosticState, businessProfile, proposalReadiness, transcript, meetingObjective } =
-    snapshot;
+  const synthesis = options?.synthesis;
+  const graph = options?.evidenceGraph ?? snapshot.evidenceGraph ?? [];
+  const knowledgeDepth = options?.knowledgeDepth ?? snapshot.knowledgeDepth ?? 0;
 
   const painPoints: string[] = [];
   const goals: string[] = [];
@@ -16,67 +22,90 @@ export function buildMeetingArtifact(
   const hypotheses: string[] = [];
   const opportunities: unknown[] = [];
 
-  const referral = diagnosticState.referral_dependency;
-  if (isObjectiveSatisfied(referral)) {
+  if (synthesis?.diagnosis.mainProblem) {
+    painPoints.push(synthesis.diagnosis.mainProblem);
+  }
+
+  const referral = snapshot.diagnosticState.referral_dependency;
+  if (isObjectiveSatisfied(referral) && !painPoints.length) {
     painPoints.push("Dependência de canal (indicação)");
-    hypotheses.push("Diversificar aquisição com Google Search + landing page");
   }
 
-  const googleAds = diagnosticState.google_ads_history;
-  if (googleAds?.evidence?.value === "Nunca fez Google Ads") {
-    opportunities.push({
-      label: "Google Search + Landing Page + Tracking",
-      confidence: "medium",
-      rationale: "Sem histórico de mídia paga — oportunidade de aquisição previsível.",
-    });
+  if (synthesis?.diagnosis.constraint) {
+    hypotheses.push(`Restrição: ${synthesis.diagnosis.constraint}`);
   }
 
-  const goal = diagnosticState.numeric_growth_target;
-  if (goal?.evidence) {
-    goals.push(String(goal.evidence.value));
+  for (const item of graph) {
+    if (item.kind === "opportunity") {
+      opportunities.push({
+        label: item.label,
+        value: item.value,
+        source: item.source,
+        confidence: item.confidence,
+        rationale: item.quote,
+      });
+    }
+    if (item.kind === "hypothesis") {
+      hypotheses.push(`${item.label}: ${item.value}`);
+    }
   }
 
-  const helpReason = diagnosticState.help_seeking_reason;
+  const helpReason = snapshot.diagnosticState.help_seeking_reason;
   if (helpReason?.evidence?.value) {
     goals.push(String(helpReason.evidence.value));
   }
-
-  for (const obj of getKnowledgeGraph()) {
-    const record = diagnosticState[obj.key];
-    if (!record || record.state === "unknown" || record.state === "exploring") {
-      if (obj.proposalCritical) unknowns.push(obj.label);
-    }
-    if (record?.evidence?.kind === "hypothesis") {
-      hypotheses.push(`${obj.label}: ${record.evidence.value}`);
-    }
+  const goal = snapshot.diagnosticState.primary_desired_result;
+  if (goal?.evidence?.value) {
+    goals.push(String(goal.evidence.value));
+  }
+  if (synthesis?.diagnosis.opportunity) {
+    goals.push(synthesis.diagnosis.opportunity);
   }
 
-  if (proposalReadiness.blockers.length > 1) {
-    unknowns.push(...proposalReadiness.blockers.slice(1));
+  if (synthesis?.criticalUnknowns?.length) {
+    unknowns.push(...synthesis.criticalUnknowns);
+  }
+  if (synthesis?.secondaryUnknowns?.length) {
+    unknowns.push(...synthesis.secondaryUnknowns);
+  }
+
+  for (const obj of getKnowledgeGraph()) {
+    const record = snapshot.diagnosticState[obj.key];
+    if (!record || record.state === "unknown" || record.state === "exploring") {
+      if (obj.proposalCritical && !unknowns.includes(obj.label)) {
+        unknowns.push(obj.label);
+      }
+    }
   }
 
   const diagnosis = {
-    company: meetingObjective.companyName,
-    contact: meetingObjective.prospectName,
-    situation: summarizeSituation(snapshot),
-    mainProblem: painPoints[0] ?? null,
+    company: snapshot.meetingObjective.companyName,
+    contact: snapshot.meetingObjective.prospectName,
+    situation: synthesis?.diagnosis.situation ?? summarizeSituation(snapshot),
+    mainProblem: synthesis?.diagnosis.mainProblem ?? painPoints[0] ?? null,
+    constraint: synthesis?.diagnosis.constraint ?? null,
+    opportunity: synthesis?.diagnosis.opportunity ?? null,
     objective: goal?.evidence?.value ?? null,
-    capacity: diagnosticState.service_capacity?.evidence?.value ?? null,
+    capacity: snapshot.diagnosticState.service_capacity?.evidence?.value ?? null,
     diagnosticCoverage: snapshot.overallCoverage,
-    proposalReadiness: proposalReadiness.status,
-    businessProfile,
+    knowledgeDepth,
+    proposalReadiness: snapshot.proposalReadiness.status,
+    businessProfile: snapshot.businessProfile,
   };
 
   const transcriptSummary =
-    llmSummary ??
-    (transcript.length > 0
-      ? `${transcript.length} turnos registrados. Último: ${transcript[transcript.length - 1]?.text.slice(0, 120)}…`
+    options?.llmSummary ??
+    synthesis?.diagnosis.situation ??
+    (snapshot.transcript.length > 0
+      ? `${snapshot.transcript.length} turnos registrados.`
       : "Reunião sem transcript registrado.");
+
+  const whatWeLearned = synthesis?.whatWeLearned ?? [];
 
   return {
     session_id: snapshot.id,
     transcript_summary: transcriptSummary,
-    transcript_segments: transcript.map((seg) => ({
+    transcript_segments: snapshot.transcript.map((seg) => ({
       id: seg.id,
       speaker: seg.speaker,
       text: seg.text,
@@ -92,20 +121,24 @@ export function buildMeetingArtifact(
     opportunities,
     unknowns: [...new Set(unknowns)],
     recommended_engagement:
-      opportunities.length > 0
+      opportunities.length > 0 || knowledgeDepth >= 40
         ? {
-            strategy: "Growth Foundation + Demand Generation",
+            strategy: synthesis?.diagnosis.opportunity ?? "Growth Foundation + Demand Generation",
             phases: [
-              { name: "Fase 1", items: ["BrandCore", "Posicionamento", "Landing Page", "Tracking"] },
-              { name: "Fase 2", items: ["Conteúdo", "Google Ads"] },
-              { name: "Fase 3", items: ["Otimização", "CRM", "Automação"] },
+              { name: "Fase 1", items: ["Diagnóstico", "Posicionamento", "Landing", "Tracking"] },
+              { name: "Fase 2", items: ["Google Ads", "Funil comercial"] },
+              { name: "Fase 3", items: ["CRM", "Conteúdo", "Otimização"] },
             ],
-            confidence: Math.min(95, snapshot.overallCoverage + 20),
+            confidence: Math.min(95, Math.round((knowledgeDepth + snapshot.overallCoverage) / 2)),
           }
         : null,
     pain_points: painPoints,
     goals,
     hypotheses,
+    what_we_learned: whatWeLearned,
+    evidence_graph: graph,
+    knowledge_depth: knowledgeDepth,
+    meeting_synthesis: synthesis ?? null,
   };
 }
 

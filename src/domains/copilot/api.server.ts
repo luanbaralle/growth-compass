@@ -82,6 +82,15 @@ export const endCopilotSession = createServerFn({ method: "POST" })
     });
   });
 
+export const reprocessCopilotSession = createServerFn({ method: "POST" })
+  .validator(copilotSessionIdSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async (author) => {
+      const service = await import("@/domains/copilot/service.server");
+      return service.reprocessSession(data.sessionId, author);
+    });
+  });
+
 export const overrideCopilotEvidence = createServerFn({ method: "POST" })
   .validator(overrideCopilotEvidenceSchema)
   .handler(async ({ data }) => {

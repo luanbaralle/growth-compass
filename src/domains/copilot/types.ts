@@ -39,10 +39,14 @@ export type EvidenceConfidence = "low" | "medium" | "high";
 
 export type EvidenceSource =
   | "prospect_statement"
+  | "consultant_statement"
+  | "r1_team"
   | "ai_inference"
   | "human_verified";
 
-export type EvidenceKind = "fact" | "inference" | "hypothesis";
+export type EvidenceKind = "fact" | "inference" | "hypothesis" | "opportunity";
+
+export type EvidenceStatus = "confirmed" | "tentative" | "contradicted";
 
 export type CopilotOrbState =
   | "listening"
@@ -93,8 +97,10 @@ export interface Evidence {
   confidence: EvidenceConfidence;
   source: EvidenceSource;
   kind: EvidenceKind;
+  status?: EvidenceStatus;
   quote?: string;
   capturedAt: string;
+  segmentIds?: string[];
 }
 
 export interface ObjectiveRecord {
@@ -190,6 +196,45 @@ export interface BusinessProfile {
   roots: BusinessProfileNode[];
 }
 
+/** Item do evidence graph — descoberta pós-síntese com rastreabilidade. */
+export interface EvidenceGraphItem {
+  id: string;
+  domain: DiagnosticDomain | "risks" | "opportunities";
+  label: string;
+  value: string;
+  kind: EvidenceKind;
+  source: EvidenceSource;
+  status: EvidenceStatus;
+  confidence: EvidenceConfidence;
+  quote?: string;
+  segmentIds: string[];
+  objectiveKey?: string;
+}
+
+export interface MeetingSynthesisDiagnosis {
+  situation: string;
+  mainProblem: string;
+  constraint: string;
+  opportunity: string;
+}
+
+export interface MeetingSynthesis {
+  diagnosis: MeetingSynthesisDiagnosis;
+  whatWeLearned: string[];
+  criticalUnknowns: string[];
+  secondaryUnknowns: string[];
+  synthesizedAt: string;
+  refinedTurnCount?: number;
+  synthesisError?: string;
+  refinedTranscript?: Array<{ speaker: string; text: string }>;
+}
+
+export interface SessionMetrics {
+  diagnosticCoverage: number;
+  knowledgeDepth: number;
+  proposalReadiness: ProposalReadiness["status"];
+}
+
 export interface CopilotNarratorMessage {
   id: string;
   role: "copilot";
@@ -230,6 +275,8 @@ export interface CopilotSessionSnapshot {
   businessProfile: BusinessProfile;
   coverage: DomainCoverage[];
   overallCoverage: number;
+  knowledgeDepth: number;
+  evidenceGraph: EvidenceGraphItem[];
   proposalReadiness: ProposalReadiness;
   currentThread: ConversationThread | null;
   latestInsight: InsightCard | null;

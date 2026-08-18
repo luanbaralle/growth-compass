@@ -210,6 +210,70 @@ const RULES: Array<{
     }),
   },
   {
+    test: (t) =>
+      /\b(corretora|seguros|consórcio|consorcio|plano de saúde|yamaha|rodobens)\b/i.test(t) &&
+      /\b(minha|nossa|a gente|eu|anos|representante)\b/i.test(t),
+    objectiveKey: "business_history",
+    extract: (t) => ({
+      objectiveKey: "business_history",
+      evidence: evidence(t.slice(0, 140), t, "fact", "medium"),
+    }),
+  },
+  {
+    test: (t) => /\b(indicação|indicacao|maioria.*indica)\b/i.test(t),
+    objectiveKey: "referral_dependency",
+    extract: (t) => ({
+      objectiveKey: "referral_dependency",
+      evidence: evidence("Alta dependência de indicação", t, "inference", "high"),
+      inferenceKeys: [
+        {
+          key: "primary_acquisition_channel",
+          evidence: evidence("Indicação", t, "inference", "medium"),
+        },
+      ],
+    }),
+  },
+  {
+    test: (t) => /\b(uns?\s*10|dez)\b.*\b(clientes|possíveis|possiveis|novos)\b/i.test(t),
+    objectiveKey: "lead_volume",
+    extract: (t) => ({
+      objectiveKey: "lead_volume",
+      evidence: evidence({ min: 10, max: 10 }, t, "fact", "medium"),
+    }),
+  },
+  {
+    test: (t) => /\b(google|internet|orgânico|organico)\b/i.test(t) && /\b(pesquis|encontr|ligou|chegam)\b/i.test(t),
+    objectiveKey: "primary_acquisition_channel",
+    extract: (t) => ({
+      objectiveKey: "primary_acquisition_channel",
+      evidence: evidence("Google / busca orgânica", t, "inference", "medium"),
+    }),
+  },
+  {
+    test: (t) => /\b(agenda do google|sem crm|não tem crm|nao tem crm|anotações)\b/i.test(t),
+    objectiveKey: "sales_process_overview",
+    extract: (t) => ({
+      objectiveKey: "sales_process_overview",
+      evidence: evidence("Processo manual — Google Agenda / anotações", t, "fact", "medium"),
+    }),
+  },
+  {
+    test: (t) => /\b(site|instagram|social mídia|social media|marketing)\b/i.test(t) && /\b(tentei|contrat|não deu|nao deu|experiência ruim)\b/i.test(t),
+    objectiveKey: "agency_history",
+    extract: (t) => ({
+      objectiveKey: "agency_history",
+      evidence: evidence(t.slice(0, 120), t, "fact", "medium"),
+    }),
+  },
+  {
+    test: (t) => /\b(capacidade|atender|equipe|boom|volume)\b/i.test(t) && /\b(preocup|limitad|não consigo|nao consigo)\b/i.test(t),
+    objectiveKey: "service_capacity",
+    extract: (t) => ({
+      objectiveKey: "service_capacity",
+      evidence: evidence("Capacidade operacional limitada", t, "inference", "medium"),
+    }),
+  },
+  {
     test: (t) => /sa[uú]de & cia|sa[uú]de e cia|corretora/i.test(t),
     objectiveKey: "business_history",
     extract: (t) => ({

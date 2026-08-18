@@ -91,6 +91,18 @@ export async function upsertArtifact(
       );
       return upsertArtifactRow(artifact, false);
     }
+    if (
+      message.includes("PGRST204") &&
+      (message.includes("what_we_learned") ||
+        message.includes("evidence_graph") ||
+        message.includes("knowledge_depth") ||
+        message.includes("meeting_synthesis"))
+    ) {
+      console.warn(
+        "[copilot] Colunas de síntese ausentes — aplique migration 024. Salvando artifact parcial.",
+      );
+      return upsertArtifactRow(artifact, false, true);
+    }
     throw err;
   }
 }
@@ -98,10 +110,17 @@ export async function upsertArtifact(
 async function upsertArtifactRow(
   artifact: Omit<CopilotMeetingArtifact, "created_at">,
   includeTranscriptSegments: boolean,
+  stripSynthesisColumns = false,
 ): Promise<CopilotMeetingArtifact> {
   const payload: Record<string, unknown> = { ...artifact };
   if (!includeTranscriptSegments) {
     delete payload.transcript_segments;
+  }
+  if (stripSynthesisColumns) {
+    delete payload.what_we_learned;
+    delete payload.evidence_graph;
+    delete payload.knowledge_depth;
+    delete payload.meeting_synthesis;
   }
 
   const existing = await dbSelect<CopilotMeetingArtifact>(
@@ -118,6 +137,10 @@ async function upsertArtifactRow(
     return {
       ...row,
       transcript_segments: row.transcript_segments ?? artifact.transcript_segments ?? [],
+      what_we_learned: row.what_we_learned ?? artifact.what_we_learned ?? [],
+      evidence_graph: row.evidence_graph ?? artifact.evidence_graph ?? [],
+      knowledge_depth: row.knowledge_depth ?? artifact.knowledge_depth ?? 0,
+      meeting_synthesis: row.meeting_synthesis ?? artifact.meeting_synthesis ?? null,
     };
   }
   const [created] = await dbInsert<CopilotMeetingArtifact>("copilot_meeting_artifacts", payload);
@@ -125,6 +148,10 @@ async function upsertArtifactRow(
   return {
     ...created,
     transcript_segments: created.transcript_segments ?? artifact.transcript_segments ?? [],
+    what_we_learned: created.what_we_learned ?? artifact.what_we_learned ?? [],
+    evidence_graph: created.evidence_graph ?? artifact.evidence_graph ?? [],
+    knowledge_depth: created.knowledge_depth ?? artifact.knowledge_depth ?? 0,
+    meeting_synthesis: created.meeting_synthesis ?? artifact.meeting_synthesis ?? null,
   };
 }
 

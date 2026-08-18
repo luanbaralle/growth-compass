@@ -1,7 +1,6 @@
 import { randomUUID } from "node:crypto";
 import * as events from "./copilot-domain-events.server";
 import {
-  generateMeetingSummary,
   generateNarratorTurn,
   generateWelcomeMessage,
 } from "./engine/copilot-narrator";
@@ -91,6 +90,8 @@ export async function startSession(
     meeting_phase: "opening",
     copilot_action: "observe",
     last_intelligence_at: null,
+    knowledge_depth: 0,
+    evidence_graph: [],
     started_at: new Date().toISOString(),
   });
 
@@ -124,6 +125,15 @@ export async function getSession(sessionId: string): Promise<CopilotSessionDetai
     row,
     segments.map(transcriptRowToSegment),
   );
+
+  if (artifact) {
+    if (artifact.evidence_graph?.length) {
+      snapshot.evidenceGraph = artifact.evidence_graph;
+    }
+    if (artifact.knowledge_depth) {
+      snapshot.knowledgeDepth = artifact.knowledge_depth;
+    }
+  }
 
   const { resolveNextBestQuestion } = await import("./engine/next-question");
   const { getActiveDomain } = await import("./engine/diagnostic-engine");
@@ -175,6 +185,10 @@ export async function appendSegment(
     speakerConfidence: input.speakerConfidence,
     source: input.source,
     suggestedQuestion: detail.session.suggestion?.suggestedQuestion,
+    speakerContext: {
+      prospectName: detail.session.meetingObjective.prospectName,
+      companyName: detail.session.meetingObjective.companyName,
+    },
   });
 
   await repo.insertTranscriptSegment({
@@ -297,28 +311,73 @@ export async function endSession(
   sessionId: string,
   actor: TeamMember | null,
 ): Promise<CopilotSessionDetail> {
+  return finalizeSession(sessionId, actor, "end");
+}
+
+export async function reprocessSession(
+  sessionId: string,
+  actor: TeamMember | null,
+): Promise<CopilotSessionDetail> {
+  return finalizeSession(sessionId, actor, "reprocess");
+}
+
+async function finalizeSession(
+  sessionId: string,
+  actor: TeamMember | null,
+  mode: "end" | "reprocess",
+): Promise<CopilotSessionDetail> {
   const detail = await getSession(sessionId);
   if (!detail) throw new Error("Sessão não encontrada.");
+  if (mode === "end" && detail.status !== "live") {
+    throw new Error("Sessão já encerrada.");
+  }
+  if (mode === "reprocess" && detail.status !== "completed") {
+    throw new Error("Só é possível reprocessar sessões encerradas.");
+  }
 
-  const llmSummary = await generateMeetingSummary(detail.session);
-  const artifactData = buildMeetingArtifact(detail.session, llmSummary);
-  const artifact = await repo.upsertArtifact(artifactData);
+  await repo.updateSession(sessionId, { status: "processing" });
+
+  const synthesisResult = await (
+    await import("./engine/meeting-synthesizer")
+  ).synthesizeMeeting({
+    transcript: detail.session.transcript,
+    prospectName: detail.session.meetingObjective.prospectName,
+    companyName: detail.session.meetingObjective.companyName,
+    existingDiagnosticState: detail.session.diagnosticState,
+  });
+
+  const { applySynthesisToSnapshot } = await import("./engine/meeting-synthesizer");
+  const enriched = applySynthesisToSnapshot(detail.session, synthesisResult);
+
+  const artifactData = buildMeetingArtifact(enriched, {
+    llmSummary: synthesisResult.summary,
+    synthesis: synthesisResult.synthesis,
+    evidenceGraph: synthesisResult.graph,
+    knowledgeDepth: synthesisResult.knowledgeDepth,
+  });
+
+  await repo.upsertArtifact(artifactData);
 
   await repo.updateSession(sessionId, {
+    ...snapshotToRowPatch(enriched),
     status: "completed",
-    ended_at: new Date().toISOString(),
+    ...(mode === "end" ? { ended_at: new Date().toISOString() } : {}),
     orb_state: "idle",
     meeting_phase: "closing",
+    knowledge_depth: synthesisResult.knowledgeDepth,
+    evidence_graph: synthesisResult.graph,
   });
 
-  await events.emitCopilotSessionCompleted({
-    sessionId,
-    prospectId: detail.prospectId,
-    companyName: detail.session.meetingObjective.companyName,
-    overallCoverage: detail.session.overallCoverage,
-    proposalStatus: detail.session.proposalReadiness.status,
-    actorId: actor,
-  });
+  if (mode === "end") {
+    await events.emitCopilotSessionCompleted({
+      sessionId,
+      prospectId: detail.prospectId,
+      companyName: detail.session.meetingObjective.companyName,
+      overallCoverage: enriched.overallCoverage,
+      proposalStatus: enriched.proposalReadiness.status,
+      actorId: actor,
+    });
+  }
 
   return (await getSession(sessionId))!;
 }

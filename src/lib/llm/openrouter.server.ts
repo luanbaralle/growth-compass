@@ -70,7 +70,24 @@ export async function chatCompletionJson<T>(options: ChatCompletionOptions): Pro
   try {
     return JSON.parse(content) as T;
   } catch {
-    console.error("[openrouter] invalid JSON response");
+    const extracted = extractJsonObject(content);
+    if (extracted) {
+      try {
+        return JSON.parse(extracted) as T;
+      } catch {
+        // fall through
+      }
+    }
+    console.error("[openrouter] invalid JSON response:", content.slice(0, 200));
     return null;
   }
+}
+
+function extractJsonObject(text: string): string | null {
+  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if (fenced?.[1]) return fenced[1].trim();
+  const start = text.indexOf("{");
+  const end = text.lastIndexOf("}");
+  if (start >= 0 && end > start) return text.slice(start, end + 1);
+  return null;
 }

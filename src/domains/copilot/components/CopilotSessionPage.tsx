@@ -2,6 +2,7 @@ import {
   endCopilotSession,
   getCopilotSession,
   overrideCopilotEvidence,
+  reprocessCopilotSession,
   startCopilotSession,
 } from "@/domains/copilot/api.server";
 import { getLiveStatusLine } from "@/domains/copilot/engine/session-processor";
@@ -62,7 +63,7 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
   const [overrideKey, setOverrideKey] = useState("");
   const [overrideValue, setOverrideValue] = useState("");
   const [skippedSuggestions, setSkippedSuggestions] = useState<string[]>([]);
-  const [manualOpen, setManualOpen] = useState(false);
+  const [reprocessing, setReprocessing] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [lastTranscript, setLastTranscript] = useState("");
   const autoListenStarted = useRef(false);
@@ -192,6 +193,19 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
     lastTranscript,
   });
 
+  const handleReprocess = async () => {
+    setReprocessing(true);
+    try {
+      const data = await reprocessCopilotSession({ data: { sessionId } });
+      setDetail(data);
+      toast.success("Transcript reprocessado — diagnóstico atualizado.");
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Erro ao reprocessar sessão."));
+    } finally {
+      setReprocessing(false);
+    }
+  };
+
   const handleEnd = async () => {
     stopAudioCapture();
     setAnalyzing(true);
@@ -289,6 +303,22 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
       </div>
 
       {detail.artifact && <MeetingArtifactPanel artifact={detail.artifact} />}
+
+      {isCompleted && (
+        <div className="mb-4 flex justify-end">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => void handleReprocess()}
+            disabled={reprocessing || detail.status === "processing"}
+          >
+            {reprocessing ? (
+              <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+            ) : null}
+            Reprocessar transcript
+          </Button>
+        </div>
+      )}
 
       {isCompleted && (
         <MeetingTranscriptPanel
@@ -446,7 +476,12 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
         </div>
 
         <aside className="space-y-6 lg:sticky lg:top-6 lg:self-start">
-          <CoveragePanel coverage={session.coverage} overall={session.overallCoverage} />
+          <CoveragePanel
+            coverage={session.coverage}
+            overall={session.overallCoverage}
+            knowledgeDepth={session.knowledgeDepth}
+            proposalStatus={session.proposalReadiness.status}
+          />
           <BusinessGraphPanel profile={session.businessProfile} />
         </aside>
       </div>

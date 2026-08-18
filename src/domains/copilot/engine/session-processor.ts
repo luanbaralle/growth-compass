@@ -70,6 +70,8 @@ export function createCopilotSession(input: {
     }),
     coverage,
     overallCoverage: computeOverallCoverage(coverage),
+    knowledgeDepth: 0,
+    evidenceGraph: [],
     proposalReadiness: computeProposalReadiness(diagnosticState),
     currentThread: null,
     latestInsight: null,
@@ -94,12 +96,14 @@ export function buildTranscriptSegment(input: {
   speakerConfidence?: number;
   source?: TranscriptSegment["source"];
   suggestedQuestion?: string | null;
+  speakerContext?: { prospectName?: string; companyName?: string };
 }): TranscriptSegment {
   const text = input.text.trim();
   const speaker = resolveSpeakerForTurn(
     input.speaker,
     text,
     input.suggestedQuestion,
+    input.speakerContext,
   );
 
   return {

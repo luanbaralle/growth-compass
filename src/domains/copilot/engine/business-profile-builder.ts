@@ -1,5 +1,12 @@
+import { DIAGNOSTIC_DOMAIN_LABELS } from "../knowledge/domains";
 import { getObjectiveByKey } from "../knowledge";
-import type { BusinessProfile, BusinessProfileNode, DiagnosticState } from "../types";
+import type {
+  BusinessProfile,
+  BusinessProfileNode,
+  DiagnosticState,
+  EvidenceGraphItem,
+} from "../types";
+import { groupEvidenceByDomain } from "./knowledge-depth";
 import { isObjectiveSatisfied } from "./diagnostic-engine";
 
 function formatValue(value: unknown): string {
@@ -118,4 +125,79 @@ export function buildBusinessProfile(
     contactName: context.contactName,
     roots,
   };
+}
+
+const DOMAIN_LABELS: Record<string, string> = {
+  ...DIAGNOSTIC_DOMAIN_LABELS,
+  risks: "Riscos",
+  opportunities: "Oportunidades",
+};
+
+/** Business graph a partir do evidence graph pós-síntese. */
+export function buildBusinessProfileFromGraph(
+  graph: EvidenceGraphItem[],
+  context: { companyName?: string; contactName?: string },
+): BusinessProfile {
+  const grouped = groupEvidenceByDomain(graph);
+  const roots: BusinessProfileNode[] = [];
+
+  if (context.companyName || context.contactName) {
+    roots.push({
+      key: "company",
+      label: "Empresa",
+      value: context.companyName,
+      children: context.contactName
+        ? [{ key: "contact", label: "Contato", value: context.contactName }]
+        : undefined,
+    });
+  }
+
+  for (const [domain, items] of Object.entries(grouped)) {
+    if (!items?.length) continue;
+    const facts = items.filter((i) => i.kind === "fact" || i.kind === "inference");
+    const opps = items.filter((i) => i.kind === "opportunity" || i.kind === "hypothesis");
+    const children: BusinessProfileNode[] = [
+      ...facts.slice(0, 8).map((i) => ({
+        key: i.id,
+        label: i.label,
+        value: i.value,
+      })),
+    ];
+
+    if (opps.length > 0) {
+      children.push({
+        key: `${domain}-opps`,
+        label: "Hipóteses",
+        children: opps.slice(0, 5).map((i) => ({
+          key: i.id,
+          label: i.label,
+          value: i.value,
+        })),
+      });
+    }
+
+    roots.push({
+      key: domain,
+      label: DOMAIN_LABELS[domain] ?? domain,
+      children,
+    });
+  }
+
+  return {
+    companyName: context.companyName,
+    contactName: context.contactName,
+    roots,
+  };
+}
+
+/** Prefer evidence graph quando disponível; senão objectives. */
+export function buildEnrichedBusinessProfile(
+  diagnosticState: DiagnosticState,
+  graph: EvidenceGraphItem[],
+  context: { companyName?: string; contactName?: string },
+): BusinessProfile {
+  if (graph.length >= 5) {
+    return buildBusinessProfileFromGraph(graph, context);
+  }
+  return buildBusinessProfile(diagnosticState, context);
 }

@@ -79,18 +79,35 @@ const CONSULTANT_PITCH_PATTERNS = [
 ];
 
 const PROSPECT_SIGNAL_PATTERNS = [
-  /\b(minha clínica|minha clinica|minha empresa|meu consultório|meu consultorio|minha esposa)\b/i,
-  /\b(a gente|nós temos|nos temos|nosso|nossa clínica|nossa clinica)\b/i,
+  /\b(minha clínica|minha clinica|minha empresa|minha corretora|meu consultório|meu consultorio|minha esposa|minha filha)\b/i,
+  /\b(a gente|nós temos|nos temos|nosso|nossa clínica|nossa clinica|eu abri|eu trabalho)\b/i,
   /\b(não conseguimos|nao conseguimos|não sabemos|nao sabemos|não temos|nao temos)\b/i,
   /\b(primeira vez|primeiro negócio|primeiro negocio|primeira empresa)\b/i,
-  /\b(implante|odonto|dentista|biomédico|biomedico|estética|estetica|botox)\b/i,
-  /\b(agência|agencia).*(contrat|pegamos|trocamos|saiu)\b/i,
+  /\b(implante|odonto|dentista|consórcio|consorcio|seguro|plano de saúde|plano de saude)\b/i,
+  /\b(agência|agencia).*(contrat|pegamos|trocamos|saiu|tentei)\b/i,
+  /\b(representante|itanhaém|itanhaem|yamaha|rodobens)\b/i,
 ];
 
-export function inferSpeakerFromText(text: string): "prospect" | "consultant" | "unknown" {
+export interface SpeakerContext {
+  prospectName?: string;
+  companyName?: string;
+}
+
+export function inferSpeakerFromText(
+  text: string,
+  ctx?: SpeakerContext,
+): "prospect" | "consultant" | "unknown" {
   const trimmed = text.trim();
   if (!trimmed) return "unknown";
   if (isLikelyConsultantQuestion(trimmed)) return "consultant";
+
+  if (ctx?.prospectName) {
+    const first = ctx.prospectName.split(/\s+/)[0] ?? ctx.prospectName;
+    const namePat = new RegExp(`\\b(${first}|${ctx.prospectName})\\b`, "i");
+    if (namePat.test(trimmed) && /\b(deixa eu|me conta|me fala|você tem|hoje você)\b/i.test(trimmed)) {
+      return "consultant";
+    }
+  }
 
   let consultantScore = 0;
   let prospectScore = 0;
@@ -102,8 +119,8 @@ export function inferSpeakerFromText(text: string): "prospect" | "consultant" | 
     if (p.test(trimmed)) prospectScore += 2;
   }
 
-  if (/\b(você|voce|fernando|angélica|angelica)\b/i.test(trimmed) && consultantScore > 0) {
-    consultantScore += 1;
+  if (/\b(raise one|r1|nós trabalhamos|pilares|geração de demanda)\b/i.test(trimmed)) {
+    consultantScore += 3;
   }
 
   if (consultantScore > prospectScore && consultantScore >= 2) return "consultant";
@@ -123,11 +140,12 @@ export function resolveSpeakerForTurn(
   selected: "prospect" | "consultant" | "unknown",
   text: string,
   suggestedQuestion?: string | null,
+  ctx?: SpeakerContext,
 ): "prospect" | "consultant" | "unknown" {
   if (isLikelyConsultantQuestion(text)) return "consultant";
   if (suggestedQuestion && textsSimilar(text, suggestedQuestion)) return "consultant";
   if (selected !== "unknown") return selected;
-  return inferSpeakerFromText(text);
+  return inferSpeakerFromText(text, ctx);
 }
 
 export function classifySegment(text: string): ConversationSegmentKind {
