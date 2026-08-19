@@ -1,8 +1,10 @@
 import type { Proposal, ProposalContent } from "../types";
 import { PROPOSAL_TEMPLATE_LABELS } from "../types";
 import { applyAccelerationEnhancements } from "../pricing/r1-pricing";
+import { sanitizePublicProposalContent } from "../template/sanitize-public-content";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import { ProposalCommercialPipeline } from "./ProposalCommercialPipeline";
+import { ProposalDeliverableGroups } from "./ProposalDeliverableGroups";
 import { ProposalDemandChart } from "./ProposalDemandChart";
 import { ProposalDiagnosisCards } from "./ProposalDiagnosisCards";
 import { ProposalInvestmentLayout } from "./ProposalInvestmentLayout";
@@ -43,7 +45,11 @@ function resolveContent(proposal: Proposal): ProposalContent {
       whatsappMessage: `Olá! Revisei a proposta para ${proposal.company_name} e gostaria de avançar.`,
     },
   };
-  return applyAccelerationEnhancements(normalized, { companyName: proposal.company_name });
+  const enhanced = applyAccelerationEnhancements(normalized, {
+    companyName: proposal.company_name,
+    clientHeroMetrics: normalized.heroMetrics,
+  });
+  return sanitizePublicProposalContent(enhanced);
 }
 
 function sectionNavLabel(title: string | undefined): string {
@@ -111,10 +117,15 @@ export function R1PublicProposalPage({ proposal }: { proposal: Proposal }) {
     }
     if (key === "deliverables" && isAcceleration) {
       return (
-        <ProposalScopeBoundaries
-          exclusions={content.exclusions}
-          expansionOpportunities={content.expansionOpportunities}
-        />
+        <>
+          {content.deliverableGroups && content.deliverableGroups.length > 0 ? (
+            <ProposalDeliverableGroups groups={content.deliverableGroups} />
+          ) : null}
+          <ProposalScopeBoundaries
+            exclusions={content.exclusions}
+            expansionOpportunities={content.expansionOpportunities}
+          />
+        </>
       );
     }
     if (key === "investment" && content.pricing?.length) {
@@ -168,6 +179,10 @@ export function R1PublicProposalPage({ proposal }: { proposal: Proposal }) {
 
         {content.sections.map((section, index) => {
           const extra = renderSectionExtra(section.key);
+          const narrative =
+            section.key === "diagnosis" && content.diagnosisConclusion
+              ? content.diagnosisConclusion
+              : section.narrative;
           const isWide = section.key === "validation" || section.key === "investment";
           const hideBullets =
             section.key === "deliverables" ||
@@ -189,7 +204,7 @@ export function R1PublicProposalPage({ proposal }: { proposal: Proposal }) {
               id={section.key}
               number={section.number}
               title={section.title}
-              narrative={section.narrative}
+              narrative={narrative}
               bullets={hideBullets ? [] : section.bullets}
               wide={isWide}
               tone={tone}
@@ -217,7 +232,7 @@ export function R1PublicProposalPage({ proposal }: { proposal: Proposal }) {
           );
         })}
 
-        {content.gapsForMeeting2 && content.gapsForMeeting2.length > 0 && (
+        {content.gapsForMeeting2 && content.gapsForMeeting2.length > 0 && proposal.template !== "acceleration" && (
           <section className={cn(r1Shell, r1SectionPy, "border-t border-white/[0.06]")}>
             <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-amber-400/80">
               Validar na Reunião 2

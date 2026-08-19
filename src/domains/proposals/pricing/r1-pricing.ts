@@ -85,7 +85,13 @@ export function buildHeroMetrics(input: {
   knowledgeDepth?: number;
   unknownsCount?: number;
   companyName?: string;
+  /** Métricas pré-calculadas para proposta cliente — preferidas sobre métricas internas. */
+  clientMetrics?: ProposalMetric[];
 }): ProposalMetric[] {
+  if (input.clientMetrics?.length) {
+    return input.clientMetrics.slice(0, 3);
+  }
+
   const metrics: ProposalMetric[] = [];
   if (input.knowledgeDepth != null && input.knowledgeDepth > 0) {
     metrics.push({ value: `${input.knowledgeDepth}%`, label: "Profundidade do diagnóstico" });
@@ -138,15 +144,20 @@ export function applyAccelerationEnhancements(
     pricing?: ProposalPricingTier[];
     simulator?: ProposalSimulatorDefaults;
     whatsappPhone?: string;
+    /** Proposta pública — usa métricas de negócio, nunca cobertura interna. */
+    clientHeroMetrics?: ProposalMetric[];
   },
 ): ProposalContent {
   const commercial = input?.commercial ?? DEFAULT_OS_COMMERCIAL;
   const defaultPricing = input?.pricing ?? pricingFromCommercial(commercial);
   const defaultSimulator = input?.simulator ?? simulatorFromCommercial(commercial);
 
+  const heroMetrics =
+    content.heroMetrics ?? input?.clientHeroMetrics ?? buildHeroMetrics(input ?? {});
+
   return {
     ...content,
-    heroMetrics: content.heroMetrics ?? buildHeroMetrics(input ?? {}),
+    heroMetrics,
     funnelSteps: content.funnelSteps ?? R1_DEFAULT_FUNNEL,
     mechanismFlow: content.mechanismFlow ?? R1_MECHANISM_FLOW,
     pricing: content.pricing ?? input?.pricing ?? defaultPricing,

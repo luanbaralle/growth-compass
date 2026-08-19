@@ -236,11 +236,6 @@ export function buildDiagnosisCards(input: {
       description: params.opportunityText,
     });
   }
-  cards.push({
-    label: "Diagnóstico Copilot",
-    value: `${session.overallCoverage}% cobertura`,
-    description: `Profundidade ${session.knowledgeDepth}% — ${artifact.unknowns?.length ?? 0} lacunas mapeadas para Reunião 2.`,
-  });
 
   return cards.slice(0, 5);
 }

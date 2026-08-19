@@ -124,6 +124,22 @@ export interface ProposalContent {
   };
   /** Notas internas — não exibidas na proposta pública ao cliente. */
   internalNotes?: string;
+  /** Golden template — conclusão do diagnóstico (1 parágrafo comercial). */
+  diagnosisConclusion?: string;
+  /** Golden template — entregáveis em 3 blocos (estilo UNIP). */
+  deliverableGroups?: ProposalDeliverableGroup[];
+  /** Golden template — KPIs de validação (sem métricas internas). */
+  validationKpis?: string[];
+  /** Golden template — checklist de próximos passos. */
+  nextSteps?: string[];
+  /** Versão do template de render (ex.: r1-growth-v1). */
+  templateVersion?: string;
+}
+
+export interface ProposalDeliverableGroup {
+  number: string;
+  title: string;
+  items: string[];
 }
 
 export interface Proposal {
