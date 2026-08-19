@@ -11,6 +11,7 @@ import {
   Layers,
   LayoutGrid,
   Megaphone,
+  Play,
   RefreshCw,
   Shield,
   Sparkles,
@@ -387,7 +388,7 @@ export function ProposalExclusionsPanel({
           <div className="flex items-center gap-2">
             <Ban className="h-4 w-4 text-red-400/70" strokeWidth={2} />
             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/40">
-              O que não vamos fazer
+              Escopo e limites
             </p>
           </div>
           <ul className="mt-4 grid gap-2 sm:grid-cols-2">
@@ -470,6 +471,7 @@ const DELIVERABLE_ICONS: Record<string, LucideIcon> = {
   Infraestrutura: BarChart3,
   Aquisição: Megaphone,
   Comercial: Users,
+  Conteúdo: Play,
 };
 
 export function ProposalDeliverableGrid({
@@ -558,6 +560,137 @@ export function ProposalNextStepsList({ steps }: { steps: readonly string[] }) {
         </li>
       ))}
     </ol>
+  );
+}
+
+export function ProposalContentHighlight({
+  title,
+  lead,
+  items,
+  synergy,
+}: {
+  title: string;
+  lead: string;
+  items: readonly string[];
+  synergy: string;
+}) {
+  return (
+    <article className={cn(polishedCard, "mt-6")}>
+      <TopBar gradient="from-violet-500/70 to-violet-500/10" />
+      <div className="p-5 sm:p-6">
+        <div className="flex items-start gap-3">
+          <IconBox icon={Play} glow="bg-violet-500/10" accent="text-violet-400" />
+          <div>
+            <h4 className="text-lg font-semibold text-white">{title}</h4>
+            <p className="mt-2 text-sm leading-relaxed text-white/55">{lead}</p>
+          </div>
+        </div>
+        <ul className="mt-5 grid gap-2 sm:grid-cols-2">
+          {items.map((item) => (
+            <ListChip key={item}>{item}</ListChip>
+          ))}
+        </ul>
+        <p className="mt-5 rounded-lg border border-violet-500/15 bg-violet-500/[0.04] px-4 py-3 text-sm leading-relaxed text-white/60">
+          {synergy}
+        </p>
+      </div>
+    </article>
+  );
+}
+
+export function ProposalIntegrationLayer({
+  title,
+  body,
+  r1,
+  client,
+}: {
+  title: string;
+  body: string;
+  r1: readonly string[];
+  client: readonly string[];
+}) {
+  return (
+    <article className={cn(polishedCard, "mt-6")}>
+      <TopBar gradient="from-emerald-500/50 to-sky-500/20" />
+      <div className="p-5 sm:p-6">
+        <h4 className="text-base font-semibold text-white">{title}</h4>
+        <p className="mt-2 max-w-3xl text-sm leading-relaxed text-white/55">{body}</p>
+        <div className="mt-6 grid gap-4 sm:grid-cols-2">
+          <div className="rounded-xl border border-emerald-500/15 bg-emerald-500/[0.04] p-4">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-400/70">
+              Raise One
+            </p>
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {r1.map((item) => (
+                <span
+                  key={item}
+                  className="rounded-md border border-emerald-500/20 bg-emerald-500/[0.06] px-2 py-1 text-[11px] text-white/70"
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/40">
+              Saúde & Cia
+            </p>
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {client.map((item) => (
+                <span
+                  key={item}
+                  className="rounded-md border border-white/10 bg-white/[0.03] px-2 py-1 text-[11px] text-white/55"
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+export function ProposalExpansionCard({
+  number,
+  title,
+  subtitle,
+  items,
+}: {
+  number: string;
+  title: string;
+  subtitle: string;
+  items: readonly string[];
+}) {
+  return (
+    <article className={cn(polishedCard, "mt-5 border-amber-500/15")}>
+      <TopBar gradient="from-amber-500/50 to-amber-500/10" />
+      <div className="p-5 sm:p-6">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="flex items-start gap-3">
+            <span className="font-mono text-2xl font-bold text-amber-400/80">{number}</span>
+            <div>
+              <h4 className="text-base font-semibold text-white">{title}</h4>
+              <p className="mt-1 text-sm text-white/50">{subtitle}</p>
+            </div>
+          </div>
+          <span className="rounded-full border border-amber-500/25 bg-amber-500/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-amber-300/90">
+            Após validação
+          </span>
+        </div>
+        <ul className="mt-4 flex flex-wrap gap-1.5">
+          {items.map((item) => (
+            <li
+              key={item}
+              className="rounded-md border border-white/[0.08] bg-white/[0.03] px-2.5 py-1 text-[11px] text-white/50"
+            >
+              {item}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </article>
   );
 }
 

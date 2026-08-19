@@ -8,10 +8,27 @@ const TIER_ICONS: Record<string, typeof Wrench> = {
   management: TrendingUp,
 };
 
+const DEFAULT_RECURRING_ORDER = ["media", "management"] as const;
+
+export interface ProposalInvestmentContext {
+  headerTitle?: string;
+  headerDescription?: string;
+  headerSteps?: readonly string[];
+  footerNote?: string;
+  recurringOrder?: readonly ("media" | "management")[];
+  summary?: {
+    title: string;
+    rows: readonly { label: string; value: string }[];
+    totalLabel: string;
+    totalValue: string;
+    totalNote?: string;
+  };
+}
+
 function parsePriceRange(amountLabel: string): { min: string; max: string } | null {
   const match = amountLabel.match(/(.+?)\s+a\s+(.+)/i);
   if (!match) return null;
-  return { min: match[1].trim(), max: match[2].trim() };
+  return { min: match[1].trim(), max: match[2].trim().replace(/\/\s*mês$/i, "") };
 }
 
 function PriceBlock({
@@ -19,11 +36,13 @@ function PriceBlock({
   note,
   featured = false,
   isRange = false,
+  suffix,
 }: {
   amountLabel: string;
   note?: string;
   featured?: boolean;
   isRange?: boolean;
+  suffix?: string;
 }) {
   const range = isRange ? parsePriceRange(amountLabel) : null;
 
@@ -44,7 +63,9 @@ function PriceBlock({
           <span className="text-2xl font-bold tracking-tight text-white md:text-3xl">{range.min}</span>
           <span className="text-sm font-medium text-white/50">a</span>
           <span className="text-2xl font-bold tracking-tight text-white md:text-3xl">{range.max}</span>
-          <span className="text-sm font-semibold text-white/50">/ mês</span>
+          {(suffix ?? /mês/i.test(amountLabel)) && (
+            <span className="text-sm font-semibold text-white/50">/ mês</span>
+          )}
         </p>
       ) : (
         <p className="mt-1 text-3xl font-bold tracking-tight text-white md:text-4xl">{amountLabel}</p>
@@ -54,36 +75,86 @@ function PriceBlock({
   );
 }
 
-export function ProposalInvestmentLayout({ tiers }: { tiers: ProposalPricingTier[] }) {
+function InvestmentSummary({
+  summary,
+}: {
+  summary: NonNullable<ProposalInvestmentContext["summary"]>;
+}) {
+  return (
+    <div className="overflow-hidden rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.04]">
+      <div className="h-1 bg-emerald-500/60" />
+      <div className="p-5 sm:p-6">
+        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-400/70">
+          {summary.title}
+        </p>
+        <dl className="mt-4 space-y-3">
+          {summary.rows.map((row) => (
+            <div key={row.label} className="flex items-baseline justify-between gap-4">
+              <dt className="text-sm text-white/55">{row.label}</dt>
+              <dd className="shrink-0 text-sm font-semibold text-white/85">{row.value}</dd>
+            </div>
+          ))}
+        </dl>
+        <div className="mt-5 border-t border-emerald-500/15 pt-4">
+          <div className="flex flex-wrap items-baseline justify-between gap-3">
+            <p className="text-sm font-medium text-white/70">{summary.totalLabel}</p>
+            <p className="text-xl font-bold tracking-tight text-white sm:text-2xl">{summary.totalValue}</p>
+          </div>
+          {summary.totalNote && (
+            <p className="mt-2 text-xs leading-relaxed text-white/45">{summary.totalNote}</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function ProposalInvestmentLayout({
+  tiers,
+  context,
+}: {
+  tiers: ProposalPricingTier[];
+  context?: ProposalInvestmentContext;
+}) {
   const implementation = tiers.find((t) => t.id === "implementation") ?? tiers[0];
-  const media = tiers.find((t) => t.id === "media") ?? tiers[1];
-  const management = tiers.find((t) => t.id === "management") ?? tiers[2];
-  const recurring = [media, management].filter(Boolean) as ProposalPricingTier[];
+  const media = tiers.find((t) => t.id === "media");
+  const management = tiers.find((t) => t.id === "management");
+  const recurringOrder = context?.recurringOrder ?? DEFAULT_RECURRING_ORDER;
+  const recurring = recurringOrder
+    .map((id) => (id === "media" ? media : management))
+    .filter(Boolean) as ProposalPricingTier[];
 
   if (!implementation) return null;
 
   const ImplIcon = TIER_ICONS.implementation ?? Wrench;
+  const headerTitle = context?.headerTitle ?? "3 camadas de investimento, sem surpresas";
+  const headerDescription =
+    context?.headerDescription ??
+    "Implementação única → mídia no Google → gestão contínua após validação.";
+  const headerSteps = context?.headerSteps ?? ["01 Único", "02–03 Recorrente"];
+  const footerNote =
+    context?.footerNote ??
+    "Mídia paga diretamente ao Google · Gestão mensal iniciada após validação do primeiro ciclo";
 
   return (
-    <div className="mt-8 space-y-6">
+    <div className="space-y-6">
       <div className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4 sm:px-5">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04]">
           <CircleDollarSign className="h-4 w-4 text-emerald-400/80" strokeWidth={2.5} />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-bold text-white">3 camadas de investimento, sem surpresas</p>
-          <p className="mt-0.5 text-xs leading-relaxed text-white/50">
-            Implementação única → mídia no Google → gestão contínua após validação.
-          </p>
+          <p className="text-sm font-bold text-white">{headerTitle}</p>
+          <p className="mt-0.5 text-xs leading-relaxed text-white/50">{headerDescription}</p>
         </div>
         <div className="flex w-full flex-col gap-2 text-xs font-semibold text-white/55 sm:w-auto sm:flex-row sm:items-center">
-          <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-center">
-            01 Único
-          </span>
-          <ArrowRight className="hidden h-3.5 w-3.5 sm:block" aria-hidden />
-          <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-center">
-            02–03 Recorrente
-          </span>
+          {headerSteps.map((step, index) => (
+            <span key={step} className="flex items-center gap-2">
+              {index > 0 && <ArrowRight className="hidden h-3.5 w-3.5 sm:block" aria-hidden />}
+              <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-center">
+                {step}
+              </span>
+            </span>
+          ))}
         </div>
       </div>
 
@@ -132,15 +203,16 @@ export function ProposalInvestmentLayout({ tiers }: { tiers: ProposalPricingTier
 
       {recurring.length > 0 && (
         <div className="grid gap-6 lg:grid-cols-2">
-          {recurring.map((block, index) => {
+          {recurring.map((block) => {
             const Icon = TIER_ICONS[block.id] ?? TrendingUp;
             const isRange = block.frequency === "monthly_google" || / a /i.test(block.amountLabel);
+            const isMedia = block.id === "media";
             return (
               <div
                 key={block.id}
                 className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] transition-colors hover:border-white/15"
               >
-                <div className={cn("h-1", index === 0 ? "bg-sky-500/50" : "bg-amber-500/50")} />
+                <div className={cn("h-1", isMedia ? "bg-sky-500/50" : "bg-amber-500/50")} />
                 <div className="flex h-full flex-col p-6 md:p-7">
                   <div className="flex items-start gap-4">
                     <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
@@ -157,13 +229,16 @@ export function ProposalInvestmentLayout({ tiers }: { tiers: ProposalPricingTier
                     <PriceBlock amountLabel={block.amountLabel} note={block.note} isRange={isRange} />
                   </div>
                   {block.items.length > 0 && (
-                    <ul className="mt-5 flex flex-wrap gap-2">
+                    <ul className="mt-5 space-y-2">
                       {block.items.map((item) => (
                         <li
                           key={item}
-                          className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-white/65"
+                          className="flex items-start gap-2.5 rounded-lg border border-white/[0.06] bg-white/[0.03] px-3 py-2 text-[13px] font-medium leading-snug text-white/70"
                         >
-                          <Check className="h-3 w-3 text-emerald-400/70" strokeWidth={3} />
+                          <Check
+                            className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400/70"
+                            strokeWidth={3}
+                          />
                           {item}
                         </li>
                       ))}
@@ -176,9 +251,9 @@ export function ProposalInvestmentLayout({ tiers }: { tiers: ProposalPricingTier
         </div>
       )}
 
-      <p className="text-center text-xs leading-relaxed text-white/40 md:text-sm">
-        Mídia paga diretamente ao Google · Gestão mensal iniciada após validação do primeiro ciclo
-      </p>
+      {context?.summary && <InvestmentSummary summary={context.summary} />}
+
+      <p className="text-center text-xs leading-relaxed text-white/40 md:text-sm">{footerNote}</p>
     </div>
   );
 }

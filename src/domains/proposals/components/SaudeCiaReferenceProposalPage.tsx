@@ -1,21 +1,22 @@
 import type { Proposal } from "../types";
-import { R1_ACCELERATION_PRICING } from "../pricing/r1-pricing";
+import { SAUDE_CIA_INVESTMENT, SAUDE_CIA_PRICING } from "../reference/saude-cia-content";
 import { ProposalInvestmentLayout } from "../components/ProposalInvestmentLayout";
 import { ProposalMetricsCards } from "../components/ProposalMetricsCards";
 import {
-  CommercialFlowPills,
+  ProposalContentHighlight,
   ProposalDeliverableGrid,
   ProposalDiscoveryGrid,
   ProposalExclusionsPanel,
+  ProposalExpansionCard,
   ProposalFunnelCompare,
   ProposalInsightCallout,
   ProposalInsightGrid,
+  ProposalIntegrationLayer,
   ProposalMovementCards,
   ProposalNextStepsList,
   ProposalRoadmapTimeline,
   ProposalStrengthGrid,
   ProposalVisionFlow,
-  polishedCard,
 } from "../components/ProposalReferenceBlocks";
 import { R1ProposalNav } from "../shell/R1ProposalNav";
 import { R1ScrollProgress } from "../shell/R1ScrollProgress";
@@ -68,7 +69,8 @@ function Section({
 
 export function SaudeCiaReferenceProposalPage({ proposal }: { proposal: Proposal }) {
   const ctaHref = buildWhatsAppUrl(C.cta.message, proposal.content?.cta?.whatsappPhone);
-  const pricing = proposal.content?.pricing ?? R1_ACCELERATION_PRICING;
+  /** Proposta referência ignora pricing legado do DB — usa sempre o golden template. */
+  const pricing = SAUDE_CIA_PRICING;
 
   return (
     <div className="min-h-screen bg-[#090909] text-white antialiased">
@@ -150,34 +152,50 @@ export function SaudeCiaReferenceProposalPage({ proposal }: { proposal: Proposal
             today={C.bottleneck.today}
             target={C.bottleneck.target}
             lacks={C.bottleneck.today.lacks}
-            targetCaption="Sistema Raise One de aquisição com dados."
+            targetCaption="Sistema Raise One: conteúdo, aquisição, conversão e dados."
           />
           <p className="mt-8 max-w-3xl rounded-xl border border-white/[0.06] bg-white/[0.015] px-4 py-3 text-sm leading-relaxed text-white/55">
             {C.productPriority}
           </p>
         </Section>
 
-        <Section id="estrategia" label="04. Estratégia" title="Três movimentos de crescimento" alt>
-          <ProposalMovementCards movements={C.movements} />
+        <Section id="estrategia" label="04. Estratégia" title="Três motores de crescimento" alt>
+          <ProposalMovementCards movements={C.motors} />
 
-          <div className="mt-8 space-y-4">
+          <ProposalContentHighlight
+            title={C.contentPackage.title}
+            lead={C.contentPackage.lead}
+            items={C.contentPackage.items}
+            synergy={C.contentPackage.synergy}
+          />
+
+          <ProposalIntegrationLayer
+            title={C.integrationLayer.title}
+            body={C.integrationLayer.body}
+            r1={C.integrationLayer.r1}
+            client={C.integrationLayer.client}
+          />
+
+          <ProposalExpansionCard
+            number={C.expansion.number}
+            title={C.expansion.title}
+            subtitle={C.expansion.subtitle}
+            items={C.expansion.items}
+          />
+
+          <div className="mt-8">
             <ProposalInsightGrid
               items={[
-                { title: C.lpStrategy.title, body: C.lpStrategy.now, extra: (
-                  <p className="mt-3 text-xs leading-relaxed text-white/45">{C.lpStrategy.later}</p>
-                ) },
                 {
-                  title: C.commercialStructure.title,
-                  body: C.commercialStructure.body,
-                  extra: <CommercialFlowPills steps={C.commercialStructure.flow} />,
+                  title: C.lpStrategy.title,
+                  body: C.lpStrategy.now,
+                  extra: (
+                    <p className="mt-3 text-xs leading-relaxed text-white/45">{C.lpStrategy.later}</p>
+                  ),
                 },
                 { title: C.capacity.title, body: C.capacity.body },
               ]}
             />
-            <div className={cn(polishedCard, "p-5")}>
-              <p className="text-sm font-semibold text-white">{C.authority.title}</p>
-              <p className="mt-2 text-sm leading-relaxed text-white/55">{C.authority.body}</p>
-            </div>
           </div>
         </Section>
 
@@ -185,8 +203,9 @@ export function SaudeCiaReferenceProposalPage({ proposal }: { proposal: Proposal
           <ProposalMetricsCards
             categories={[
               { title: "Aquisição", items: C.metrics.acquisition },
-              { title: "Qualidade", items: C.metrics.quality },
-              { title: "Comercial", items: C.metrics.commercial },
+              { title: "Conteúdo", items: C.metrics.content },
+              { title: "Conversão", items: C.metrics.conversion },
+              { title: "Negócio", items: C.metrics.business },
             ]}
             note={C.metrics.note}
           />
@@ -200,16 +219,25 @@ export function SaudeCiaReferenceProposalPage({ proposal }: { proposal: Proposal
           />
         </Section>
 
-        <Section id="entregaveis" label="07. Entregáveis" title="Quatro blocos do projeto">
+        <Section id="entregaveis" label="07. Entregáveis" title="Estratégia, infraestrutura, aquisição e conteúdo">
           <ProposalDeliverableGrid blocks={C.deliverables} />
         </Section>
 
-        <Section id="investimento" label="08. Investimento" title="Estrutura de investimento" alt>
-          <p className="mb-6 max-w-2xl text-sm text-white/55">
-            Implementação única, gestão mensal e mídia paga diretamente ao Google, sem margem R1 sobre verba
-            de mídia.
+        <Section id="investimento" label="08. Investimento" title={SAUDE_CIA_INVESTMENT.title} alt>
+          <p className="mb-6 max-w-3xl text-sm leading-relaxed text-white/55">
+            {SAUDE_CIA_INVESTMENT.intro}
           </p>
-          <ProposalInvestmentLayout tiers={pricing} />
+          <ProposalInvestmentLayout
+            tiers={pricing}
+            context={{
+              headerTitle: SAUDE_CIA_INVESTMENT.header.title,
+              headerDescription: SAUDE_CIA_INVESTMENT.header.description,
+              headerSteps: SAUDE_CIA_INVESTMENT.header.steps,
+              footerNote: SAUDE_CIA_INVESTMENT.footer,
+              recurringOrder: SAUDE_CIA_INVESTMENT.recurringOrder,
+              summary: SAUDE_CIA_INVESTMENT.summary,
+            }}
+          />
         </Section>
 
         <Section id="visao" label="09. Visão" title={C.vision.title}>

@@ -1,3 +1,83 @@
+import type { ProposalPricingTier } from "../types";
+
+/** Investimento específico Saúde & Cia (setup + operação + mídia). */
+export const SAUDE_CIA_PRICING: ProposalPricingTier[] = [
+  {
+    id: "implementation",
+    name: "Fundação · Mês 01",
+    subtitle: "Pagamento único · setup",
+    amountLabel: "R$ 1.497",
+    frequency: "once",
+    items: [
+      "Diagnóstico estratégico e plano de ação",
+      "Definição de produtos prioritários",
+      "Revisão e otimização da LP em desenvolvimento",
+      "GTM, GA4, conversões e UTMs",
+      "Estrutura inicial de campanhas Google Ads",
+      "Calendário editorial e primeira pauta de conteúdo",
+      "Preparação da primeira captação",
+    ],
+    note: "A LP que a Maíra está desenvolvendo será instrumentada e otimizada para conversão.",
+  },
+  {
+    id: "management",
+    name: "Operação de crescimento",
+    subtitle: "Mensal · a partir do Mês 02",
+    amountLabel: "R$ 1.297/mês",
+    frequency: "monthly",
+    items: [
+      "Gestão e otimização Google Ads",
+      "Pesquisa contínua de termos e produtos",
+      "4 Reels estratégicos por mês",
+      "Calendário editorial, roteiros e captação em Itanhaém",
+      "Edição, legendas e publicação",
+      "Monitoramento de conversões e origem dos leads",
+      "Relatórios, análise e reuniões estratégicas",
+    ],
+    note: "Demanda paga, conteúdo orgânico e mensuração na mesma operação mensal.",
+  },
+  {
+    id: "media",
+    name: "Verba de mídia · Google Ads",
+    subtitle: "Mensal · pago direto ao Google",
+    amountLabel: "R$ 1.000 a R$ 2.000",
+    frequency: "monthly_google",
+    items: [
+      "Investimento pago diretamente ao Google",
+      "Captação de demanda com intenção de busca",
+      "Ajuste de verba conforme performance",
+    ],
+    note: "Começamos conservador para validar produto, mensagem e CPL antes de escalar.",
+  },
+];
+
+export const SAUDE_CIA_INVESTMENT = {
+  title: "Investimento para construir o sistema de crescimento",
+  intro:
+    "Três camadas de investimento: um setup inicial para colocar os três motores no ar, a operação mensal da Raise One e a verba de mídia paga diretamente ao Google. A mídia não passa pela Raise One — vocês pagam ao Google e nós gerenciamos a aplicação.",
+  header: {
+    title: "Setup, operação e mídia",
+    description:
+      "Fundação única no Mês 01. Operação mensal a partir do Mês 02. Mídia ativa desde a fundação, ajustada a cada ciclo com base nos dados.",
+    steps: ["01 Setup único", "02 Operação mensal", "03 Mídia Google"] as const,
+  },
+  summary: {
+    title: "Resumo do investimento",
+    rows: [
+      { label: "Fundação (único)", value: "R$ 1.497" },
+      { label: "Operação Raise One / mês (desde o Mês 02)", value: "R$ 1.297/mês" },
+      { label: "Mídia Google / mês", value: "R$ 1.000 a R$ 2.000" },
+    ],
+    totalLabel: "Total mensal estimado",
+    totalValue: "R$ 2.297 a R$ 3.297",
+    totalNote:
+      "Operação + mídia. O setup (Mês 01) é pago uma única vez; a operação mensal começa no Mês 02.",
+  },
+  footer:
+    "O setup prepara a fundação no Mês 01. A operação mensal começa no Mês 02 e mantém os três motores ativos. A verba de mídia é revisada a cada ciclo com base nos dados e na capacidade da operação.",
+  recurringOrder: ["management", "media"] as const,
+};
+
 /** Conteúdo de referência Saúde & Cia · Golden Proposal Raise One */
 
 export const SAUDE_CIA_REFERENCE = {
@@ -6,9 +86,9 @@ export const SAUDE_CIA_REFERENCE = {
 
   hero: {
     eyebrow: "Proposta estratégica personalizada",
-    headline: "De uma operação movida por indicação para um sistema previsível de aquisição.",
-    lead: "A Saúde & Cia já possui experiência, autoridade local e produtos com forte potencial comercial. O próximo passo é transformar esses ativos em uma estrutura capaz de gerar, medir e converter novas oportunidades de forma previsível.",
-    strategyLine: "Estratégia inicial: estruturar → gerar demanda → medir → otimizar → escalar.",
+    headline: "De uma operação movida por indicação para um sistema de crescimento.",
+    lead: "A Saúde & Cia já possui experiência, autoridade local e produtos com forte potencial comercial. O próximo passo é construir um ecossistema de presença, aquisição e mensuração que gere oportunidades previsíveis.",
+    strategyLine: "Aquisição + Conteúdo + Tecnologia + Dados",
     footnote: "Construída a partir do diagnóstico comercial realizado com a Saúde & Cia.",
   },
 
@@ -26,14 +106,14 @@ export const SAUDE_CIA_REFERENCE = {
       body: "A maior parte dos novos clientes chega por indicação, com volume atual de cerca de 10 potenciais oportunidades por mês.",
     },
     {
-      title: "Infraestrutura comercial informal",
-      body: "O acompanhamento passa principalmente pela Agenda do Google, sem processo estruturado de gestão dos leads.",
+      title: "Presença digital subutilizada",
+      body: "Há autoridade real no mercado, mas falta um sistema que conecte conteúdo, mídia paga e conversão de forma mensurável.",
     },
   ],
 
   diagnosis: {
     headline: "O problema não é falta de produto.",
-    subheadline: "É falta de um sistema de aquisição.",
+    subheadline: "É falta de infraestrutura de crescimento.",
     strengths: [
       { label: "Autoridade", value: "18 anos de mercado" },
       { label: "Oferta", value: "Seguros, saúde e consórcios" },
@@ -54,162 +134,196 @@ export const SAUDE_CIA_REFERENCE = {
         "origem",
         "custo",
         "intenção",
-        "acompanhamento",
-        "conversão",
         "previsibilidade",
+        "presença digital",
+        "dados",
       ],
     },
     target: {
       label: "O que queremos construir",
       steps: [
-        "Demanda",
-        "Aquisição",
-        "Landing Page",
-        "Lead",
-        "Atendimento",
-        "Qualificação",
-        "Proposta",
-        "Venda",
-        "Dados",
-        "Otimização",
+        "Marketing (conteúdo + mídia + presença)",
+        "Aquisição (LP / WhatsApp / formulário)",
+        "Oportunidade (lead gerado)",
+        "Saúde & Cia (atendimento → venda)",
+        "Dados (retorno para a R1)",
+        "Otimização (campanhas + conteúdo + jornada)",
       ],
     },
   },
 
   productPriority:
-    "A primeira etapa priorizará os produtos com maior potencial comercial, definidos a partir da combinação entre demanda, intenção de busca, rentabilidade, diferenciação e capacidade operacional, não com base em suposições.",
+    "A primeira etapa focará nos produtos com maior potencial comercial, cruzando demanda de mercado, intenção de busca, rentabilidade, diferenciação e capacidade operacional da equipe.",
 
-  movements: [
+  motors: [
     {
       number: "01",
-      title: "Estruturar",
-      subtitle: "Antes de comprar tráfego, precisamos preparar o terreno.",
-      objective: "Criar a infraestrutura mínima para que cada oportunidade gerada possa ser rastreada, atendida e analisada.",
+      title: "Motor de demanda",
+      subtitle: "Google Ads · capturar quem já está procurando.",
+      objective:
+        "Aparecer quando alguém busca ativamente o que a Saúde & Cia vende, com intenção explícita e mensuração desde o primeiro clique.",
       items: [
-        "Revisão da nova landing page",
-        "Validação da jornada de conversão",
-        "Configuração de Google Tag Manager e GA4",
-        "Eventos, conversões e UTMs",
-        "Integração dos canais",
-        "Estrutura de origem dos leads",
-        "Organização mínima do processo comercial",
-        "Definição do funil",
-        "Orientação inicial de atendimento",
+        "Pesquisa de demanda e intenção de busca",
+        "Campanhas Search por produto e intenção",
+        "Anúncios, extensões e conversões",
+        "Gestão, otimização e controle de orçamento",
+        "Análise de termos e performance",
       ],
     },
     {
       number: "02",
-      title: "Gerar demanda",
-      subtitle: "Google Search: intenção explícita de quem está procurando.",
+      title: "Motor de autoridade",
+      subtitle: "Conteúdo · transformar experiência em presença local.",
       objective:
-        "O objetivo inicial não é comprar o máximo de tráfego. É descobrir quais intenções de busca conseguem gerar oportunidades comerciais reais.",
+        "Transformar 18 anos de mercado e o conhecimento da Angélica em conteúdo que gera confiança, lembrança e posicionamento orgânico.",
       items: [
-        "Planejamento de campanhas",
-        "Pesquisa de demanda",
-        "Estruturação de campanhas por intenção/produto",
-        "Anúncios e extensões",
-        "Configuração de conversões",
-        "Gestão e otimização",
-        "Análise de termos de pesquisa",
-        "Controle de orçamento",
-        "Acompanhamento de leads",
+        "4 Reels estratégicos por mês",
+        "Calendário editorial e roteiros",
+        "Captação presencial e direção",
+        "Edição, legendas e identidade visual",
+        "Publicação e acompanhamento de performance",
       ],
     },
     {
       number: "03",
-      title: "Aprender e escalar",
-      subtitle: "Expansão orientada por dados, não por achismo.",
+      title: "Motor de conversão",
+      subtitle: "Site + LP + tracking · atenção vira oportunidade mensurável.",
       objective:
-        "Com os primeiros dados, respondemos: qual produto atrai demanda, qual busca gera lead qualificado, qual campanha converte e quanto custa uma oportunidade.",
+        "Instrumentar a jornada digital para que cada visita, clique e contato possa ser rastreado, analisado e otimizado.",
       items: [
-        "Novas landing pages por produto/intenção",
-        "Remarketing e Meta Ads",
-        "Conteúdo e fortalecimento da marca pessoal",
-        "Campanhas específicas (ex.: consórcio náutico)",
-        "Expansão geográfica",
-        "Automações e CRM quando o volume justificar",
-        "Estratégias de cross-sell",
+        "Revisão e otimização da LP existente",
+        "GTM, GA4, eventos e UTMs",
+        "Integração WhatsApp e formulários",
+        "Mensuração de origem dos leads",
+        "Evolução contínua da jornada de conversão",
       ],
-      conditional: true,
     },
   ],
 
-  lpStrategy: {
-    title: "Landing pages: laboratório antes de escala",
-    now: "A LP atual funciona como laboratório de aquisição, instrumentada, medida e otimizada.",
-    later:
-      "Com dados, LPs específicas por produto (Plano de Saúde, Consórcio, Consórcio Náutico, Seguro Auto) deixam de ser suposição e passam a ser decisão baseada em evidência.",
+  contentPackage: {
+    title: "4 Reels estratégicos por mês",
+    lead: "Quatro conteúdos por mês, cada um com tema, roteiro e objetivo definidos a partir dos produtos que a Saúde & Cia quer crescer, das dúvidas que os clientes trazem no dia a dia e das oportunidades que surgem nas campanhas.",
+    items: [
+      "Planejamento editorial mensal",
+      "Definição de temas e roteiros",
+      "Captação presencial em Itanhaém",
+      "Direção durante a gravação",
+      "Edição, legendas e identidade visual",
+      "Publicação e acompanhamento",
+    ],
+    synergy:
+      "Quando uma busca no Google revela interesse em um produto, esse tema vira pauta de conteúdo. O Reel reforça confiança na jornada Google → landing page → Instagram → WhatsApp.",
   },
 
-  commercialStructure: {
-    title: "Estrutura comercial como entregável",
-    body: "Google pode gerar demanda, mas se não soubermos o que acontece depois do clique, não sabemos se o marketing está funcionando.",
-    flow: ["Lead recebido", "Produto", "Origem", "Atendimento", "Qualificação", "Proposta", "Venda"],
+  integrationLayer: {
+    title: "Marketing conectado à operação da Saúde & Cia",
+    body: "A Raise One cuida de conteúdo, mídia, presença digital e mensuração. A Saúde & Cia conduz atendimento, proposta e venda. Estruturamos a conexão entre os dois lados para que cada lead gerado possa ser rastreado e analisado junto aos resultados da operação.",
+    r1: ["Conteúdo", "Google Ads", "Presença digital", "Tracking", "Dados", "Otimização"],
+    client: ["Atendimento", "Proposta", "Venda", "Operação"],
+  },
+
+  expansion: {
+    number: "04",
+    title: "Expansão orientada por dados",
+    subtitle: "Ativada após validação do primeiro ciclo.",
+    items: [
+      "Novas landing pages por produto/intenção",
+      "Remarketing e Meta Ads",
+      "Conteúdo avançado e novas pautas",
+      "Expansão geográfica",
+      "Automações quando o volume justificar",
+    ],
+    conditional: true,
+  },
+
+  lpStrategy: {
+    title: "Landing pages: laboratório antes de escala",
+    now: "A LP em desenvolvimento com a Maíra será instrumentada, medida e otimizada como laboratório de aquisição.",
+    later:
+      "Com histórico de performance, landing pages específicas por produto entram no plano quando os dados confirmarem onde vale concentrar investimento.",
   },
 
   capacity: {
     title: "Crescer sem quebrar a operação",
-    body: "A escala será acompanhada pela capacidade operacional da Saúde & Cia. Não queremos 100 leads e caos. Queremos 10 → 20 → 30 → 40, com visibilidade em cada estágio.",
-  },
-
-  authority: {
-    title: "Autoridade que apoia a aquisição",
-    body: "Quando alguém encontrar a Saúde & Cia pelo Google, deve encontrar experiência, confiança e presença real. A marca pessoal da Angélica vem depois, quando o primeiro canal estiver validado.",
+    body: "A escala de mídia acompanha a capacidade da operação. O objetivo é crescer de forma sustentável: de 10 para 20, 30 e 40 oportunidades por mês, com visibilidade em cada etapa.",
   },
 
   metrics: {
     acquisition: ["Impressões", "Cliques", "CTR", "CPC", "Investimento", "Leads", "CPL"],
-    quality: [
+    content: ["Alcance", "Visualizações", "Retenção", "Interações", "Crescimento orgânico"],
+    conversion: [
+      "Conversões da LP",
+      "Cliques no WhatsApp",
+      "Formulários",
+      "Origem dos leads",
       "Produto procurado",
-      "Origem",
-      "Lead qualificado",
-      "Atendimento realizado",
-      "Tempo de resposta",
     ],
-    commercial: ["Propostas", "Vendas", "Taxa de conversão", "CAC", "Receita gerada"],
-    note: "Algumas métricas financeiras só poderão ser estabelecidas após a coleta dos primeiros dados comerciais, já que ticket/comissão por produto ainda não foi levantado.",
+    business: [
+      "Vendas informadas",
+      "Taxa de conversão",
+      "CAC",
+      "Receita",
+    ],
+    note: "As métricas de negócio dependem do retorno da equipe comercial da Saúde & Cia. Juntos, cruzamos dados de marketing com o que acontece no atendimento e na venda. CAC e receita entram na análise quando houver histórico suficiente.",
   },
 
   exclusions: {
     wont: [
-      "Produzir conteúdo sem objetivo",
-      "Anunciar todos os produtos simultaneamente",
-      "Criar várias landing pages sem evidência",
-      "Aumentar investimento antes de validar o canal",
-      "Medir sucesso apenas por cliques",
-      "Prometer determinado número de vendas",
-      "Escalar demanda sem considerar capacidade operacional",
+      "Atendimento, proposta e fechamento comercial (permanecem com a Saúde & Cia)",
+      "Implantação ou gestão de CRM neste primeiro ciclo",
+      "Anunciar todos os produtos ao mesmo tempo",
+      "Criar várias landing pages antes de validar o canal",
+      "Aumentar investimento em mídia antes de ter dados",
+      "Garantir volume específico de vendas",
+      "Escalar demanda além da capacidade operacional",
     ],
-    will: "Testar → medir → aprender → otimizar → escalar.",
+    will: "Conteúdo constrói autoridade. Mídia captura demanda. Tecnologia transforma atenção em oportunidade. Dados mostram onde crescer.",
   },
 
   roadmap: [
     {
       period: "Mês 01",
-      title: "Estruturar",
-      items: ["Tracking", "LP", "Google Ads", "Funil", "Mensuração"],
+      title: "Fundação",
+      items: [
+        "Tracking e LP",
+        "Google Ads",
+        "Calendário editorial",
+        "Primeira captação",
+        "Primeiros conteúdos",
+        "Mensuração",
+      ],
     },
     {
       period: "Mês 02",
-      title: "Validar",
-      items: ["Dados", "Produtos", "Termos", "Leads", "Atendimento", "Conversão"],
+      title: "Validação",
+      items: [
+        "Campanhas e termos",
+        "Produtos prioritários",
+        "Conteúdos e leads",
+        "Conversões",
+        "Retorno da operação",
+      ],
     },
     {
       period: "Mês 03",
-      title: "Otimizar",
-      items: ["Campanhas", "Oferta", "Landing Page", "Processo comercial"],
+      title: "Otimização",
+      items: [
+        "Campanhas",
+        "LP e mensagens",
+        "Conteúdo",
+        "Públicos",
+        "Remarketing inicial",
+      ],
     },
     {
       period: "Mês 04+",
-      title: "Escalar",
+      title: "Expansão",
       items: [
         "Novas LPs",
-        "Meta",
-        "Remarketing",
-        "Conteúdo",
+        "Meta Ads",
+        "Conteúdo avançado",
         "Novos produtos",
-        "Automação",
-        "Expansão",
+        "Novas regiões",
       ],
     },
   ],
@@ -218,41 +332,37 @@ export const SAUDE_CIA_REFERENCE = {
     {
       title: "Estratégia",
       items: [
-        "Diagnóstico inicial",
-        "Plano de ação",
+        "Diagnóstico e plano de ação",
         "Definição de prioridades",
-        "Planejamento de aquisição",
-        "Acompanhamento estratégico",
+        "Planejamento de aquisição e conteúdo",
+        "Reuniões e acompanhamento estratégico",
       ],
     },
     {
       title: "Infraestrutura",
       items: [
-        "Revisão da LP",
+        "Revisão e otimização da LP",
         "GTM, GA4, conversões e UTMs",
-        "Mensuração",
-        "Estrutura de acompanhamento de leads",
+        "Mensuração de origem",
+        "Monitoramento da jornada digital",
       ],
     },
     {
       title: "Aquisição",
       items: [
-        "Google Ads",
+        "Google Ads Search",
         "Pesquisa de demanda",
-        "Campanhas e anúncios",
-        "Otimização e relatórios",
-        "Análise de performance",
+        "Campanhas e otimizações",
+        "Relatórios e análise de performance",
       ],
     },
     {
-      title: "Comercial",
+      title: "Conteúdo",
       items: [
-        "Funil de leads",
-        "Registro de origem",
-        "Organização do acompanhamento",
-        "Orientação de atendimento",
-        "Análise da qualidade dos leads",
-        "Identificação dos gargalos",
+        "4 Reels estratégicos por mês",
+        "Calendário editorial",
+        "Roteiros e captação presencial",
+        "Edição, publicação e performance",
       ],
     },
   ],
@@ -260,14 +370,14 @@ export const SAUDE_CIA_REFERENCE = {
   vision: {
     title: "O que queremos construir juntos",
     today: "Indicação → Cliente",
-    next: "Demanda → Aquisição → Lead → Atendimento → Venda → Dados → Otimização",
-    future: "Aquisição + Marca + Comercial + Retenção + Expansão",
+    next: "Conteúdo + Mídia → LP → Lead → Saúde & Cia → Dados → Otimização",
+    future: "Demanda + Autoridade + Conversão + Retenção + Expansão",
   },
 
   closing: [
     "A Saúde & Cia já construiu aquilo que nenhuma campanha consegue comprar: experiência, confiança e presença no mercado.",
-    "O papel da Raise One é transformar esses ativos em um sistema de crescimento.",
-    "Começamos pequeno, medimos o que funciona, corrigimos o que não funciona e aumentamos o investimento somente quando houver evidência para isso.",
+    "O próximo passo é construir presença digital que atraia atenção, transformar essa atenção em demanda e criar a infraestrutura para entender o que realmente gera negócio.",
+    "A partir daí, crescimento deixa de depender apenas de indicação e passa a ser uma operação que podemos medir, aprender e evoluir juntos.",
   ],
 
   nextSteps: [
@@ -275,7 +385,7 @@ export const SAUDE_CIA_REFERENCE = {
     "Assinatura do contrato",
     "Reunião de kick-off",
     "Liberação de acessos e materiais",
-    "Início da fase de estruturação",
+    "Início da fase de fundação",
   ],
 
   cta: {
@@ -289,7 +399,7 @@ export const SAUDE_CIA_NAV = [
   { id: "descobertas", label: "Descobertas" },
   { id: "diagnostico", label: "Diagnóstico" },
   { id: "gargalo", label: "Gargalo" },
-  { id: "estrategia", label: "Estratégia" },
+  { id: "estrategia", label: "Solução" },
   { id: "metricas", label: "Métricas" },
   { id: "roadmap", label: "Roadmap" },
   { id: "entregaveis", label: "Entregáveis" },
