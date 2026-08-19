@@ -1,4 +1,4 @@
-/** Conteúdo de referência — Saúde & Cia · Golden Proposal Raise One */
+/** Conteúdo de referência Saúde & Cia · Golden Proposal Raise One */
 
 export const SAUDE_CIA_REFERENCE = {
   company: "Saúde & Cia",
@@ -77,7 +77,7 @@ export const SAUDE_CIA_REFERENCE = {
   },
 
   productPriority:
-    "A primeira etapa priorizará os produtos com maior potencial comercial, definidos a partir da combinação entre demanda, intenção de busca, rentabilidade, diferenciação e capacidade operacional — não com base em suposições.",
+    "A primeira etapa priorizará os produtos com maior potencial comercial, definidos a partir da combinação entre demanda, intenção de busca, rentabilidade, diferenciação e capacidade operacional, não com base em suposições.",
 
   movements: [
     {
@@ -100,7 +100,7 @@ export const SAUDE_CIA_REFERENCE = {
     {
       number: "02",
       title: "Gerar demanda",
-      subtitle: "Google Search — intenção explícita de quem está procurando.",
+      subtitle: "Google Search: intenção explícita de quem está procurando.",
       objective:
         "O objetivo inicial não é comprar o máximo de tráfego. É descobrir quais intenções de busca conseguem gerar oportunidades comerciais reais.",
       items: [
@@ -118,7 +118,7 @@ export const SAUDE_CIA_REFERENCE = {
     {
       number: "03",
       title: "Aprender e escalar",
-      subtitle: "Expansão orientada por dados — não por achismo.",
+      subtitle: "Expansão orientada por dados, não por achismo.",
       objective:
         "Com os primeiros dados, respondemos: qual produto atrai demanda, qual busca gera lead qualificado, qual campanha converte e quanto custa uma oportunidade.",
       items: [
@@ -135,8 +135,8 @@ export const SAUDE_CIA_REFERENCE = {
   ],
 
   lpStrategy: {
-    title: "Landing pages — laboratório antes de escala",
-    now: "A LP atual funciona como laboratório de aquisição — instrumentada, medida e otimizada.",
+    title: "Landing pages: laboratório antes de escala",
+    now: "A LP atual funciona como laboratório de aquisição, instrumentada, medida e otimizada.",
     later:
       "Com dados, LPs específicas por produto (Plano de Saúde, Consórcio, Consórcio Náutico, Seguro Auto) deixam de ser suposição e passam a ser decisão baseada em evidência.",
   },
@@ -149,12 +149,12 @@ export const SAUDE_CIA_REFERENCE = {
 
   capacity: {
     title: "Crescer sem quebrar a operação",
-    body: "A escala será acompanhada pela capacidade operacional da Saúde & Cia. Não queremos 100 leads e caos — queremos 10 → 20 → 30 → 40, com visibilidade em cada estágio.",
+    body: "A escala será acompanhada pela capacidade operacional da Saúde & Cia. Não queremos 100 leads e caos. Queremos 10 → 20 → 30 → 40, com visibilidade em cada estágio.",
   },
 
   authority: {
     title: "Autoridade que apoia a aquisição",
-    body: "Quando alguém encontrar a Saúde & Cia pelo Google, deve encontrar experiência, confiança e presença real. A marca pessoal da Angélica é segunda camada — após validar o primeiro canal.",
+    body: "Quando alguém encontrar a Saúde & Cia pelo Google, deve encontrar experiência, confiança e presença real. A marca pessoal da Angélica vem depois, quando o primeiro canal estiver validado.",
   },
 
   metrics: {
