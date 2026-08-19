@@ -70,6 +70,31 @@ export interface ProposalSimulatorDefaults {
   ltvCents: number;
 }
 
+export type ProposalAssetMode = "existing_lp" | "new_lp" | "no_lp";
+
+export interface ProposalDiagnosisCard {
+  label: string;
+  value: string;
+  description?: string;
+}
+
+export interface ProposalMovement {
+  number: string;
+  title: string;
+  subtitle: string;
+  duration?: string;
+  objective?: string;
+  deliverables: string[];
+  /** Fase condicionada à validação anterior (ex.: Escalar). */
+  conditional?: boolean;
+}
+
+export interface ProposalCommercialPipelineStep {
+  title: string;
+  description: string;
+  metricLabel?: string;
+}
+
 export interface ProposalContent {
   hero: ProposalHero;
   sections: CreativeBriefSection[];
@@ -83,6 +108,22 @@ export interface ProposalContent {
   demandKeywords?: ProposalDemandKeyword[];
   landingMockup?: ProposalLandingMockup;
   presentation?: ProposalPresentation;
+  /** Playbook aceleração — posicionamento comercial. */
+  positioningStatement?: string;
+  phase1Objective?: string;
+  diagnosisCards?: ProposalDiagnosisCard[];
+  movements?: ProposalMovement[];
+  commercialPipeline?: ProposalCommercialPipelineStep[];
+  metricsToTrack?: string[];
+  strategicGuidance?: string[];
+  exclusions?: string[];
+  expansionOpportunities?: string[];
+  playbookParams?: {
+    assetMode: ProposalAssetMode;
+    hasCapacityConstraint: boolean;
+  };
+  /** Notas internas — não exibidas na proposta pública ao cliente. */
+  internalNotes?: string;
 }
 
 export interface Proposal {
@@ -94,6 +135,7 @@ export interface Proposal {
   company_id: string | null;
   prospect_id: string | null;
   copilot_session_id: string | null;
+  commercial_blueprint_id: string | null;
   client_name: string | null;
   company_name: string;
   creative_brief: CreativeBrief | null;
@@ -104,8 +146,8 @@ export interface Proposal {
 }
 
 export const PROPOSAL_TEMPLATE_LABELS: Record<ProposalTemplate, string> = {
-  acceleration: "Aceleração (UNIP)",
-  custom_solution: "Solução sob medida (Nobre)",
+  acceleration: "Aceleração comercial",
+  custom_solution: "Projeto sob medida",
 };
 
 export const PROPOSAL_STATUS_LABELS: Record<ProposalStatus, string> = {

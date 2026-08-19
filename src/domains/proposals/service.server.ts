@@ -3,10 +3,23 @@ import * as copilotRepo from "@/domains/copilot/meeting/repository.server";
 import { rowToSnapshot, transcriptRowToSegment } from "@/domains/copilot/meeting/session-mapper";
 import type { TeamMember } from "@/lib/auth/types";
 import {
+  approveBlueprint as approveBlueprintCore,
+  createBlueprintFromCopilotSession as createBlueprintCore,
+  enrichBlueprintFromCopilot,
+  generateProposalFromBlueprint,
+  getBlueprint,
+  getBlueprintForSession,
+  rebuildBlueprintFromCopilot,
+  updateBlueprint as updateBlueprintCore,
+} from "./blueprint/service.server";
+import type { BlueprintStatus, CommercialBlueprintData } from "./blueprint/types";
+import {
   buildProposalContentFromArtifact,
   buildSuggestedSlug,
 } from "./engine/artifact-to-proposal";
+import { ensureAccelerationPlaybookBackfill } from "./engine/acceleration-playbook";
 import { buildDemandKeywords, buildLandingMockup } from "./engine/proposal-visuals";
+import { mergeProposalContent, isRichProposalSection } from "./engine/merge-proposal-content";
 import { getR1CommercialConfig } from "./pricing/commercial-defaults.server";
 import { applyAccelerationEnhancements } from "./pricing/r1-pricing";
 import * as repo from "./repository.server";
@@ -25,9 +38,17 @@ function injectCommercialIntoContent(
 }
 
 export async function enrichProposalForDisplay(proposal: Proposal): Promise<Proposal> {
-  if (proposal.template !== "acceleration") return proposal;
   const config = await getR1CommercialConfig();
-  const content = injectCommercialIntoContent(proposal.content as ProposalContent, config);
+  const raw = proposal.content as ProposalContent;
+  let content = injectCommercialIntoContent(raw, config);
+  if (!Array.isArray(content.sections)) {
+    content = { ...content, sections: [] };
+  }
+  content = ensureAccelerationPlaybookBackfill({
+    content,
+    companyName: proposal.company_name,
+    template: proposal.template,
+  });
   const opportunitySection = content.sections.find((s) => s.key === "opportunity");
 
   return {
@@ -123,17 +144,30 @@ export async function createDraftFromCopilotSession(
   if (options?.enrichWithLlm && existing) {
     const brief = await generateCreativeBrief({ session, artifact });
     const config = await getR1CommercialConfig();
-    const content = injectCommercialIntoContent(briefToProposalContent(brief), config);
+    const generated = injectCommercialIntoContent(briefToProposalContent(brief), config);
+    const previous = existing.content as ProposalContent;
+    const enrichedSections = generated.sections.filter(isRichProposalSection).length;
+    if (enrichedSections === 0) {
+      throw new Error(
+        "A IA não gerou conteúdo utilizável para a proposta. O rascunho anterior foi preservado.",
+      );
+    }
+    const content = mergeProposalContent(previous, generated);
+    const withPlaybook = ensureAccelerationPlaybookBackfill({
+      content,
+      companyName: brief.companyName,
+      template: brief.templateArchetype,
+    });
     const updated = await repo.patchProposal(existing.id, {
-      title: brief.projectTitle,
+      title: existing.title || brief.projectTitle,
       template: brief.templateArchetype,
       creative_brief: brief,
-      content,
+      content: withPlaybook,
       client_name: brief.clientName,
       company_name: brief.companyName,
       company_id: companyId ?? existing.company_id,
     });
-    return updated!;
+    return enrichProposalForDisplay(updated!);
   }
 
   if (existing) return existing;
@@ -142,6 +176,11 @@ export async function createDraftFromCopilotSession(
     const brief = await generateCreativeBrief({ session, artifact });
     const config = await getR1CommercialConfig();
     const content = injectCommercialIntoContent(briefToProposalContent(brief), config);
+    const withPlaybook = ensureAccelerationPlaybookBackfill({
+      content,
+      companyName: brief.companyName,
+      template: brief.templateArchetype,
+    });
     const slug = options?.slug
       ? normalizeSlug(options.slug)
       : await uniqueSlug(brief.suggestedProjectName);
@@ -156,10 +195,11 @@ export async function createDraftFromCopilotSession(
       company_id: companyId,
       prospect_id: row.prospect_id,
       copilot_session_id: sessionId,
+      commercial_blueprint_id: null,
       client_name: brief.clientName,
       company_name: brief.companyName,
       creative_brief: brief,
-      content,
+      content: withPlaybook,
     });
   }
 
@@ -186,6 +226,7 @@ export async function createDraftFromCopilotSession(
     company_id: companyId,
     prospect_id: row.prospect_id,
     copilot_session_id: sessionId,
+    commercial_blueprint_id: null,
     client_name: session.meetingObjective.prospectName,
     company_name: session.meetingObjective.companyName,
     creative_brief: null,
@@ -198,7 +239,70 @@ export async function enrichProposalFromCopilot(proposalId: string): Promise<Pro
   if (!proposal?.copilot_session_id) {
     throw new Error("Proposta sem sessão Copilot vinculada.");
   }
+
+  if (proposal.commercial_blueprint_id) {
+    await enrichBlueprintFromCopilot(proposal.commercial_blueprint_id);
+    const refreshed = await generateProposalFromBlueprint(proposal.commercial_blueprint_id);
+    return enrichProposalForDisplay(refreshed);
+  }
+
   return createDraftFromCopilotSession(proposal.copilot_session_id, { enrichWithLlm: true });
+}
+
+export async function rebuildProposalFromCopilot(proposalId: string): Promise<Proposal> {
+  const proposal = await repo.findProposalById(proposalId);
+  if (!proposal?.copilot_session_id) {
+    throw new Error("Proposta sem sessão Copilot vinculada.");
+  }
+
+  if (proposal.commercial_blueprint_id) {
+    const blueprint = await rebuildBlueprintFromCopilot(proposal.commercial_blueprint_id);
+    const rendered = await generateProposalFromBlueprint(blueprint.id);
+    return enrichProposalForDisplay(rendered);
+  }
+
+  const { row, session, artifact } = await loadCopilotContext(proposal.copilot_session_id);
+  const config = await getR1CommercialConfig();
+  const built = buildProposalContentFromArtifact({
+    session,
+    artifact,
+    commercial: config.commercial,
+    pricing: config.pricing,
+    simulator: config.simulator,
+    whatsappPhone: config.whatsappPhone || undefined,
+  });
+
+  const previous = proposal.content as ProposalContent;
+  const content: ProposalContent = {
+    ...built.content,
+    pricing: previous.pricing ?? built.content.pricing,
+    simulator: previous.simulator ?? built.content.simulator,
+    cta: {
+      ...built.content.cta,
+      label: previous.cta.label,
+      whatsappMessage: previous.cta.whatsappMessage,
+      whatsappPhone: previous.cta.whatsappPhone ?? built.content.cta.whatsappPhone,
+    },
+    presentation: previous.presentation,
+  };
+
+  let companyId = proposal.company_id;
+  if (!companyId && row.prospect_id) {
+    const prospectRepo = await import("@/domains/prospection/repository.server");
+    const prospect = await prospectRepo.findProspectById(row.prospect_id);
+    companyId = prospect?.company_id ?? null;
+  }
+
+  const updated = await repo.patchProposal(proposalId, {
+    title: built.title,
+    template: built.template,
+    content,
+    client_name: session.meetingObjective.prospectName,
+    company_name: session.meetingObjective.companyName,
+    company_id: companyId,
+  });
+  if (!updated) throw new Error("Falha ao reconstruir proposta.");
+  return enrichProposalForDisplay(updated);
 }
 
 export async function updateProposal(
@@ -315,4 +419,25 @@ export async function publishProposal(id: string): Promise<Proposal | null> {
 
 export async function archiveProposal(id: string): Promise<Proposal | null> {
   return updateProposal(id, { status: "archived" });
+}
+
+export {
+  createBlueprintCore as createBlueprintFromCopilotSession,
+  getBlueprintForSession,
+  getBlueprint,
+  approveBlueprintCore as approveBlueprint,
+  generateProposalFromBlueprint,
+  rebuildBlueprintFromCopilot,
+  enrichBlueprintFromCopilot,
+};
+
+export async function updateBlueprint(
+  id: string,
+  patch: {
+    status?: BlueprintStatus;
+    blueprint?: CommercialBlueprintData;
+    internal_notes?: string | null;
+  },
+) {
+  return updateBlueprintCore(id, patch);
 }

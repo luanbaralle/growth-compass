@@ -2,9 +2,11 @@ import {
   enrichProposalFromCopilot,
   getProposal,
   publishProposal,
+  rebuildProposalFromCopilot,
   updateProposal,
 } from "@/domains/proposals/api.server";
-import { ProposalDraftBanner } from "@/domains/proposals/components/AccelerationProposalPage";
+import { ProposalAuditChecklist } from "@/domains/proposals/components/ProposalAuditChecklist";
+import { ProposalDraftBanner } from "@/domains/proposals/components/R1PublicProposalPage";
 import { ProposalSectionEditor } from "@/domains/proposals/components/ProposalSectionEditor";
 import { PublicProposalPage } from "@/domains/proposals/components/PublicProposalPage";
 import {
@@ -28,13 +30,20 @@ export function ProposalDetailPage({ proposalId }: { proposalId: string }) {
   const [publishing, setPublishing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [enriching, setEnriching] = useState(false);
+  const [rebuilding, setRebuilding] = useState(false);
   const [preview, setPreview] = useState(false);
+  const [blueprintId, setBlueprintId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const row = await getProposal({ data: { id: proposalId } });
       setProposal(row);
+      if (row.commercial_blueprint_id) {
+        setBlueprintId(row.commercial_blueprint_id);
+      } else {
+        setBlueprintId(null);
+      }
     } catch (err) {
       toast.error(getErrorMessage(err, "Erro ao carregar proposta."));
     } finally {
@@ -93,11 +102,24 @@ export function ProposalDetailPage({ proposalId }: { proposalId: string }) {
     try {
       const updated = await enrichProposalFromCopilot({ data: { id: proposalId } });
       setProposal(updated);
-      toast.success("Conteúdo enriquecido com IA — revise antes de publicar.");
+      toast.success("Seções enriquecidas com IA — conteúdo anterior preservado onde a IA não melhorou.");
     } catch (err) {
       toast.error(getErrorMessage(err, "Erro ao enriquecer proposta."));
     } finally {
       setEnriching(false);
+    }
+  };
+
+  const handleRebuild = async () => {
+    setRebuilding(true);
+    try {
+      const updated = await rebuildProposalFromCopilot({ data: { id: proposalId } });
+      setProposal(updated);
+      toast.success("Proposta reconstruída a partir do diagnóstico Copilot.");
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Erro ao reconstruir proposta."));
+    } finally {
+      setRebuilding(false);
     }
   };
 
@@ -140,9 +162,17 @@ export function ProposalDetailPage({ proposalId }: { proposalId: string }) {
           <p className="text-sm text-muted-foreground">
             {proposal.company_name} · {PROPOSAL_TEMPLATE_LABELS[proposal.template]}
             {proposal.copilot_session_id && " · vinculada ao Copilot"}
+            {blueprintId && " · blueprint comercial"}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
+          {blueprintId && (
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/os/propostas/blueprint/$id" params={{ id: blueprintId }}>
+                Blueprint comercial
+              </Link>
+            </Button>
+          )}
           <Badge variant="outline">{PROPOSAL_STATUS_LABELS[proposal.status]}</Badge>
           <Button variant="outline" size="sm" onClick={() => setPreview(true)}>
             Preview
@@ -199,6 +229,8 @@ export function ProposalDetailPage({ proposalId }: { proposalId: string }) {
         </div>
       )}
 
+      <ProposalAuditChecklist proposal={proposal} content={content} />
+
       <ProposalSectionEditor
         content={content}
         title={proposal.title}
@@ -206,8 +238,10 @@ export function ProposalDetailPage({ proposalId }: { proposalId: string }) {
         template={proposal.template}
         onSave={handleSave}
         onEnrich={proposal.copilot_session_id ? handleEnrich : undefined}
+        onRebuild={proposal.copilot_session_id ? handleRebuild : undefined}
         saving={saving}
         enriching={enriching}
+        rebuilding={rebuilding}
       />
     </OSPage>
   );

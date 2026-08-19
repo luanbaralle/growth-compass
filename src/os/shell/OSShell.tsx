@@ -72,6 +72,16 @@ export function OSShell() {
     return <Outlet />;
   }
 
+  const isProposalPresentation = /^\/os\/propostas\/[^/]+\/apresentacao\/?$/.test(location.pathname);
+  if (isProposalPresentation) {
+    return (
+      <>
+        <Outlet />
+        <Toaster richColors position="top-right" />
+      </>
+    );
+  }
+
   return (
     <OSInboxProvider activePerson={activePerson}>
       <OSShellLayout

@@ -2,7 +2,7 @@ import {
   R1_ACCELERATION_PRICING,
   R1_DEFAULT_SIMULATOR,
 } from "../pricing/r1-pricing";
-import type { ProposalContent, ProposalPricingTier, ProposalSimulatorDefaults } from "../types";
+import type { ProposalContent, ProposalMovement, ProposalPricingTier, ProposalSimulatorDefaults } from "../types";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -32,8 +32,107 @@ export function ProposalEnhancementsEditor({
     onChange({ ...content, simulator: { ...simulator, ...patch } });
   };
 
+  const updateLines = (key: "exclusions" | "expansionOpportunities" | "strategicGuidance", value: string) => {
+    onChange({
+      ...content,
+      [key]: value.split("\n").map((l) => l.trim()).filter(Boolean),
+    });
+  };
+
+  const updateMovement = (index: number, patch: Partial<ProposalMovement>) => {
+    const movements = [...(content.movements ?? [])];
+    movements[index] = { ...movements[index], ...patch };
+    onChange({ ...content, movements });
+  };
+
   return (
     <div className="space-y-6">
+      {(content.movements?.length ?? 0) > 0 && (
+        <div className="rounded-xl border border-border/50 bg-card p-5">
+          <h2 className="text-sm font-semibold">Plano — 3 movimentos</h2>
+          <p className="mt-1 text-xs text-muted-foreground">Seção 09 · Estruturar → Validar → Escalar</p>
+          <div className="mt-4 space-y-5">
+            {content.movements!.map((movement, index) => (
+              <div key={movement.number} className="rounded-lg border border-border/40 p-4">
+                <p className="text-xs font-semibold text-muted-foreground">
+                  {movement.number} — {movement.title}
+                </p>
+                <div className="mt-3 space-y-3">
+                  <div className="space-y-2">
+                    <Label>Subtítulo</Label>
+                    <Input
+                      value={movement.subtitle}
+                      onChange={(e) => updateMovement(index, { subtitle: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Objetivo</Label>
+                    <Textarea
+                      value={movement.objective ?? ""}
+                      onChange={(e) => updateMovement(index, { objective: e.target.value })}
+                      rows={2}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Entregáveis (um por linha)</Label>
+                    <Textarea
+                      value={movement.deliverables.join("\n")}
+                      onChange={(e) =>
+                        updateMovement(index, {
+                          deliverables: e.target.value.split("\n").map((l) => l.trim()).filter(Boolean),
+                        })
+                      }
+                      rows={4}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="rounded-xl border border-border/50 bg-card p-5">
+        <h2 className="text-sm font-semibold">Playbook — posicionamento</h2>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Campos da auditoria comercial — editáveis sem perder no enrich se já preenchidos.
+        </p>
+        <div className="mt-4 space-y-4">
+          <div className="space-y-2">
+            <Label>Objetivo da Fase 1</Label>
+            <Textarea
+              value={content.phase1Objective ?? ""}
+              onChange={(e) => onChange({ ...content, phase1Objective: e.target.value })}
+              rows={3}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Posicionamento comercial</Label>
+            <Textarea
+              value={content.positioningStatement ?? ""}
+              onChange={(e) => onChange({ ...content, positioningStatement: e.target.value })}
+              rows={3}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Não incluso nesta fase (um por linha)</Label>
+            <Textarea
+              value={(content.exclusions ?? []).join("\n")}
+              onChange={(e) => updateLines("exclusions", e.target.value)}
+              rows={5}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Próximas oportunidades (um por linha)</Label>
+            <Textarea
+              value={(content.expansionOpportunities ?? []).join("\n")}
+              onChange={(e) => updateLines("expansionOpportunities", e.target.value)}
+              rows={5}
+            />
+          </div>
+        </div>
+      </div>
+
       <div className="rounded-xl border border-border/50 bg-card p-5">
         <h2 className="text-sm font-semibold">Preços R1 (seção 08)</h2>
         <p className="mt-1 text-xs text-muted-foreground">

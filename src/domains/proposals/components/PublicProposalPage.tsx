@@ -1,10 +1,18 @@
 import type { Proposal } from "../types";
-import { AccelerationProposalPage } from "./AccelerationProposalPage";
-import { CustomSolutionProposalPage } from "./CustomSolutionProposalPage";
+import { ProposalDraftBanner, R1PublicProposalPage } from "./R1PublicProposalPage";
+
+export { ProposalDraftBanner } from "./R1PublicProposalPage";
 
 export function PublicProposalPage({ proposal }: { proposal: Proposal }) {
-  if (proposal.template === "custom_solution") {
-    return <CustomSolutionProposalPage proposal={proposal} />;
-  }
-  return <AccelerationProposalPage proposal={proposal} />;
+  return <R1PublicProposalPage proposal={proposal} />;
+}
+
+/** @deprecated Use R1PublicProposalPage — mantido para imports legados */
+export function AccelerationProposalPage({ proposal }: { proposal: Proposal }) {
+  return <R1PublicProposalPage proposal={proposal} />;
+}
+
+/** @deprecated Use R1PublicProposalPage */
+export function CustomSolutionProposalPage({ proposal }: { proposal: Proposal }) {
+  return <R1PublicProposalPage proposal={proposal} />;
 }

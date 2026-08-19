@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Save, Sparkles } from "lucide-react";
+import { Loader2, RefreshCw, Save, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export function ProposalSectionEditor({
@@ -15,8 +15,10 @@ export function ProposalSectionEditor({
   template,
   onSave,
   onEnrich,
+  onRebuild,
   saving,
   enriching,
+  rebuilding,
 }: {
   content: ProposalContent;
   title: string;
@@ -24,8 +26,10 @@ export function ProposalSectionEditor({
   template: ProposalTemplate;
   onSave: (patch: { title?: string; slug?: string; content: ProposalContent }) => Promise<void>;
   onEnrich?: () => Promise<void>;
+  onRebuild?: () => Promise<void>;
   saving?: boolean;
   enriching?: boolean;
+  rebuilding?: boolean;
 }) {
   const [draftTitle, setDraftTitle] = useState(title);
   const [draftSlug, setDraftSlug] = useState(slug);
@@ -172,12 +176,22 @@ export function ProposalSectionEditor({
       />
 
       <div className="flex flex-wrap gap-2">
-        <Button onClick={() => void handleSave()} disabled={saving || enriching}>
+        <Button onClick={() => void handleSave()} disabled={saving || enriching || rebuilding}>
           {saving ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Save className="mr-1.5 h-4 w-4" />}
           Salvar alterações
         </Button>
+        {onRebuild && (
+          <Button variant="outline" onClick={() => void onRebuild()} disabled={saving || enriching || rebuilding}>
+            {rebuilding ? (
+              <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+            ) : (
+              <RefreshCw className="mr-1.5 h-4 w-4" />
+            )}
+            Reconstruir do Copilot
+          </Button>
+        )}
         {onEnrich && (
-          <Button variant="outline" onClick={() => void onEnrich()} disabled={saving || enriching}>
+          <Button variant="outline" onClick={() => void onEnrich()} disabled={saving || enriching || rebuilding}>
             {enriching ? (
               <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
             ) : (

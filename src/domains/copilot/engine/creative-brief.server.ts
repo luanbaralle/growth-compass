@@ -34,31 +34,6 @@ interface CreativeBriefLlmResponse {
   gapsForMeeting2?: string[];
 }
 
-function fallbackBrief(
-  session: CopilotSessionSnapshot,
-  reason: string,
-): CreativeBrief {
-  const diagnosis = reason;
-  return {
-    clientName: session.meetingObjective.prospectName,
-    companyName: session.meetingObjective.companyName,
-    projectTitle: `Projeto de Aceleração — ${session.meetingObjective.companyName}`,
-    templateArchetype: "acceleration",
-    suggestedProjectName: session.meetingObjective.companyName.toLowerCase().replace(/\s+/g, "-"),
-    sections: UNIP_SECTION_KEYS.map((s) => ({
-      key: s.key,
-      number: s.number,
-      title: s.title,
-      narrative: s.key === "diagnosis" ? diagnosis : "Preencher manualmente com base no briefing.",
-      bullets: [],
-      editorNotes: "Gerado parcialmente — revise antes da Reunião 2.",
-    })),
-    gapsForMeeting2: [],
-    generatedAt: new Date().toISOString(),
-    generationError: reason,
-  };
-}
-
 function mergeSections(llmSections: CreativeBriefLlmSection[]): CreativeBriefSection[] {
   const byKey = new Map(llmSections.filter((s) => s.key).map((s) => [s.key!, s]));
 
@@ -80,16 +55,17 @@ export async function generateCreativeBrief(input: {
   artifact: CopilotMeetingArtifact;
 }): Promise<CreativeBrief> {
   if (!isLlmConfigured()) {
-    return fallbackBrief(input.session, "OPENROUTER_API_KEY não configurada.");
+    throw new Error("OPENROUTER_API_KEY não configurada no servidor.");
   }
 
   const context = buildBriefingQaContext(input);
 
-  const parsed = await chatCompletionJson<CreativeBriefLlmResponse>({
-    messages: [
-      {
-        role: "system",
-        content: `Você gera um BRIEF CRIATIVO para a equipe Raise One montar uma proposta comercial (Reunião 2).
+  async function requestBrief(): Promise<CreativeBriefLlmResponse | null> {
+    return chatCompletionJson<CreativeBriefLlmResponse>({
+      messages: [
+        {
+          role: "system",
+          content: `Você gera um BRIEF CRIATIVO para a equipe Raise One montar uma proposta comercial (Reunião 2).
 
 O brief alimenta uma página estilo UNIP (diagnóstico → oportunidade → mecanismo → entregáveis → investimento).
 Use templateArchetype "acceleration" para clientes que precisam ser educados sobre marketing/aquisição (ex.: clínicas, imobiliárias genéricas).
@@ -97,12 +73,24 @@ Use "custom_solution" apenas se a reunião foi sobre produto/software sob medida
 
 REGRAS:
 1. Baseie-se SOMENTE no contexto — não invente números, preços ou métricas de mercado.
-2. Seção 08 (investment): NÃO invente valores R$ — use editorNotes pedindo preenchimento manual e bullets com estrutura (implementação, mídia, gestão).
-3. Seção 07 (validation): foque no que validar nos primeiros 30 dias com base no que foi dito.
-4. narrative: 2-4 frases por seção, tom consultivo em PT-BR.
-5. bullets: 3-6 itens concretos quando aplicável.
-6. gapsForMeeting2: lacunas críticas para validar antes de apresentar proposta.
-7. suggestedProjectName: slug curto para URL (ex.: saude-cia, unip-caraguatatuba).
+2. templateArchetype "acceleration" para corretoras, clínicas, educação, serviços locais — clientes que precisam de aquisição mensurável (Google + LP + funil comercial).
+3. templateArchetype "custom_solution" APENAS para desenvolvimento de software/sistema sob medida.
+4. PLAYBOOK ACELERAÇÃO — quando acceleration:
+   - Fase 1 = "Estruturação e Validação de Demanda" (NÃO vender desenvolvimento de LP se a reunião mencionar LP existente/pronta).
+   - 3 movimentos: Estruturar → Validar → Escalar (escala condicional, após dados).
+   - Google Search focado — produtos prioritários do diagnóstico, não todos simultaneamente.
+   - Incluir restrição de capacidade comercial se mencionada.
+   - CRM robusto e Meta Ads = etapa posterior, não prometer na Fase 1.
+   - Consultoria/acompanhamento estratégico é diferencial — incluir explicitamente.
+   - Tom: maturidade — construir infraestrutura e provar canal, não prometer volume sem dados.
+5. Seção 08 (investment): NÃO invente valores R$ — use editorNotes pedindo preenchimento manual.
+6. Seção 06 (deliverables): dividir em Estrutura, Aquisição, Comercial, Estratégia.
+7. Seção 07 (validation): métricas do funil (CPL, qualificados, vendas) — primeiro ciclo cria base de ROI.
+8. narrative: 2-4 frases por seção, tom consultivo em PT-BR.
+9. bullets: 3-6 itens concretos quando aplicável.
+10. gapsForMeeting2: lacunas críticas para validar antes de apresentar proposta.
+11. suggestedProjectName: slug curto para URL (ex.: saude-cia, unip-caraguatatuba).
+12. Responda APENAS com JSON válido, sem markdown.
 
 Seções obrigatórias (keys): ${UNIP_SECTION_KEYS.map((s) => s.key).join(", ")}
 
@@ -114,18 +102,26 @@ JSON:
   "sections": [{ "key": "diagnosis", "narrative": "", "bullets": ["..."], "editorNotes": "opcional" }],
   "gapsForMeeting2": ["..."]
 }`,
-      },
-      {
-        role: "user",
-        content: `CONTEXTO DA REUNIÃO DE BRIEFING:\n${context}`,
-      },
-    ],
-    temperature: 0.35,
-    maxTokens: 8192,
-  });
+        },
+        {
+          role: "user",
+          content: `CONTEXTO DA REUNIÃO DE BRIEFING:\n${context}`,
+        },
+      ],
+      temperature: 0.35,
+      maxTokens: 8192,
+    });
+  }
+
+  let parsed = await requestBrief();
+  if (!parsed?.sections?.length) {
+    parsed = await requestBrief();
+  }
 
   if (!parsed?.sections?.length) {
-    return fallbackBrief(input.session, "Resposta LLM vazia ou JSON inválido.");
+    throw new Error(
+      "A IA não retornou um brief válido. Verifique OPENROUTER_API_KEY, o modelo (OPENROUTER_MODEL) e tente novamente.",
+    );
   }
 
   return {

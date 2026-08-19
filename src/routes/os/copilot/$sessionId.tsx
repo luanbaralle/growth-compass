@@ -1,11 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { CopilotSessionPage } from "@/domains/copilot/components/CopilotSessionPage";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/os/copilot/$sessionId")({
-  component: CopilotSessionRoute,
+  component: () => <Outlet />,
 });
-
-function CopilotSessionRoute() {
-  const { sessionId } = Route.useParams();
-  return <CopilotSessionPage sessionId={sessionId} />;
-}

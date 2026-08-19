@@ -7,14 +7,14 @@ export function ProposalFunnelJourney({ steps }: { steps: ProposalFunnelStep[] }
         {steps.map((step, index) => (
           <div key={step.title} className="relative flex-1">
             <div className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-4">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-amber-500/70">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-white/45">
                 {index === 0 ? "Início" : `Passo ${index}`}
               </p>
-              <p className="mt-2 text-sm font-semibold leading-snug">{step.title}</p>
+              <p className="mt-2 text-sm font-semibold leading-snug text-white">{step.title}</p>
               <p className="mt-1.5 text-xs leading-relaxed text-white/50">{step.description}</p>
             </div>
             {index < steps.length - 1 && (
-              <div className="absolute -right-1 top-1/2 z-10 hidden h-0.5 w-2 bg-amber-500/40 sm:block" />
+              <div className="absolute -right-1 top-1/2 z-10 hidden h-0.5 w-2 bg-white/20 sm:block" />
             )}
           </div>
         ))}
@@ -28,7 +28,7 @@ export function ProposalMechanismFlow({ steps }: { steps: string[] }) {
     <div className="mt-6 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
       {steps.map((step, index) => (
         <div key={step} className="flex items-center gap-2 sm:gap-3">
-          <div className="rounded-full border border-amber-500/25 bg-amber-500/10 px-4 py-2 text-sm font-medium text-amber-100/90">
+          <div className="rounded-full border border-white/20 bg-white/[0.06] px-4 py-2 text-sm font-medium text-white/90">
             {step}
           </div>
           {index < steps.length - 1 && (
@@ -51,7 +51,7 @@ export function ProposalHeroMetrics({ metrics }: { metrics: Array<{ value: strin
           key={m.label}
           className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-4 text-center"
         >
-          <p className="text-2xl font-semibold tabular-nums text-amber-300">{m.value}</p>
+          <p className="text-2xl font-semibold tabular-nums text-white">{m.value}</p>
           <p className="mt-1 text-[11px] uppercase tracking-wide text-white/45">{m.label}</p>
         </div>
       ))}

@@ -21,7 +21,7 @@ export function ProposalLandingMockup({
       </div>
 
       <div className="px-6 py-10 sm:px-10 sm:py-12">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-amber-500/80">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/45">
           {companyName}
         </p>
         <h3 className="mt-3 max-w-lg text-2xl font-semibold leading-tight text-white sm:text-3xl">
@@ -30,7 +30,7 @@ export function ProposalLandingMockup({
         <p className="mt-4 max-w-md text-sm leading-relaxed text-white/55">{mockup.subheadline}</p>
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <div className="rounded-full bg-amber-500 px-5 py-2.5 text-sm font-semibold text-black">
+          <div className="rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-black">
             {mockup.ctaLabel}
           </div>
           <div className="rounded-full border border-white/15 px-5 py-2.5 text-sm text-white/60">

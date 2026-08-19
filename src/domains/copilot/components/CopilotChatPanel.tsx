@@ -1,8 +1,8 @@
 import type { CopilotNarratorMessage } from "../types";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { usePanelScrollToEnd } from "@/domains/copilot/hooks/use-panel-scroll";
 import { Bot, SkipForward } from "lucide-react";
-import { useEffect, useRef } from "react";
 
 const TONE_STYLES: Record<CopilotNarratorMessage["tone"], string> = {
   welcome: "border-violet-500/25 bg-violet-500/5",
@@ -26,11 +26,7 @@ export function CopilotChatPanel({
   onAskSuggestion?: (question: string) => void;
   onSkipSuggestion?: () => void;
 }) {
-  const endRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages.length, processing]);
+  const { containerRef, endRef } = usePanelScrollToEnd(messages.length, Boolean(processing));
 
   const lastSuggestion = [...messages].reverse().find((m) => m.tone === "suggestion");
 
@@ -45,7 +41,10 @@ export function CopilotChatPanel({
         </p>
       </div>
 
-      <div className="max-h-[420px] min-h-[280px] space-y-3 overflow-y-auto p-4">
+      <div
+        ref={containerRef}
+        className="max-h-[420px] min-h-[280px] space-y-3 overflow-y-auto p-4"
+      >
         {messages.length === 0 ? (
           <p className="text-sm text-muted-foreground/60">
             {isLive ? "Iniciando copilot…" : "Sem mensagens."}

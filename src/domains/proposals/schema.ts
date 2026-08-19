@@ -31,6 +31,15 @@ export const copilotSessionIdParamSchema = z.object({
   sessionId: z.string().uuid(),
 });
 
+export const blueprintIdSchema = z.object({ id: z.string().uuid() });
+
+export const updateBlueprintSchema = z.object({
+  id: z.string().uuid(),
+  status: z.enum(["draft", "in_review", "approved"]).optional(),
+  blueprint: z.record(z.unknown()).optional(),
+  internal_notes: z.string().max(10000).nullable().optional(),
+});
+
 export const listProposalsSchema = z
   .object({
     status: z.union([proposalStatusSchema, z.literal("all")]).optional(),

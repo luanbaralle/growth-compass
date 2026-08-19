@@ -4,8 +4,9 @@ import { getErrorMessage } from "@/lib/api/client-errors";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { usePanelScrollToEnd } from "@/domains/copilot/hooks/use-panel-scroll";
 import { Bot, Brain, Loader2, Send, User } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 const STARTER_QUESTIONS = [
@@ -26,11 +27,7 @@ export function BriefingQaPanel({
 }) {
   const [question, setQuestion] = useState("");
   const [asking, setAsking] = useState(false);
-  const endRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages.length, asking]);
+  const { containerRef, endRef } = usePanelScrollToEnd(messages.length, asking);
 
   const submit = async (text: string) => {
     const trimmed = text.trim();
@@ -65,7 +62,10 @@ export function BriefingQaPanel({
         </p>
       </div>
 
-      <div className="max-h-[360px] min-h-[200px] space-y-3 overflow-y-auto px-5 py-4">
+      <div
+        ref={containerRef}
+        className="max-h-[360px] min-h-[200px] space-y-3 overflow-y-auto px-5 py-4"
+      >
         {messages.length === 0 ? (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground/70">

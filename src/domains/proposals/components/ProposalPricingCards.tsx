@@ -8,20 +8,20 @@ export function ProposalPricingCards({ tiers }: { tiers: ProposalPricingTier[] }
           key={tier.id}
           className={
             index === 0
-              ? "rounded-2xl border border-amber-500/30 bg-gradient-to-b from-amber-500/10 to-transparent p-5"
-              : "rounded-2xl border border-white/10 bg-white/[0.03] p-5"
+              ? "rounded-2xl border border-white/[0.18] bg-white/[0.06] p-5 sm:p-6"
+              : "rounded-2xl border border-white/10 bg-white/[0.03] p-5 sm:p-6"
           }
         >
           {tier.subtitle && (
-            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-amber-500/80">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40">
               {tier.subtitle}
             </p>
           )}
-          <h3 className="mt-2 text-lg font-semibold">{tier.name}</h3>
-          <p className="mt-3 text-2xl font-semibold tracking-tight text-amber-300">{tier.amountLabel}</p>
+          <h3 className="mt-2 text-lg font-semibold text-white">{tier.name}</h3>
+          <p className="mt-3 text-2xl font-semibold tracking-tight text-white">{tier.amountLabel}</p>
           <ul className="mt-4 space-y-2">
             {tier.items.map((item) => (
-              <li key={item} className="text-sm text-white/65 before:mr-2 before:text-amber-500/70 before:content-['✓']">
+              <li key={item} className="text-sm text-white/65 before:mr-2 before:text-emerald-400/70 before:content-['✓']">
                 {item}
               </li>
             ))}

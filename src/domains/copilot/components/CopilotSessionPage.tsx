@@ -9,7 +9,13 @@ import {
   reprocessCopilotSession,
   startCopilotSession,
 } from "@/domains/copilot/api.server";
-import { createProposalFromCopilot, getProposalForCopilotSession, publishProposal } from "@/domains/proposals/api.server";
+import {
+  createBlueprintFromCopilot,
+  createProposalFromCopilot,
+  getBlueprintForCopilotSession,
+  getProposalForCopilotSession,
+  publishProposal,
+} from "@/domains/proposals/api.server";
 import { getLiveStatusLine } from "@/domains/copilot/engine/session-processor";
 import type { CopilotSessionDetail } from "@/domains/copilot/meeting/types";
 import type { CopilotSessionSnapshot, SuggestionCard, TranscriptSegment } from "@/domains/copilot/types";
@@ -32,6 +38,7 @@ import { MeetingPhaseBadge } from "./TranscriptTimeline";
 import { useMeetingAudioCapture } from "@/domains/copilot/stt/use-meeting-audio-capture";
 import { useMeetingRecorder } from "@/domains/copilot/stt/use-meeting-recorder";
 import { getErrorMessage } from "@/lib/api/client-errors";
+import { scrollOsShellToTop } from "@/os/scroll-os-shell";
 import { OSPage, PageHeader, PageSkeleton } from "@/os/ui";
 import {
   DropdownMenu,
@@ -107,7 +114,10 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
   const [exportingPdf, setExportingPdf] = useState(false);
   const [exportingBrief, setExportingBrief] = useState(false);
   const [creatingProposal, setCreatingProposal] = useState(false);
+  const [creatingBlueprint, setCreatingBlueprint] = useState(false);
   const [linkedProposalId, setLinkedProposalId] = useState<string | null>(null);
+  const [linkedBlueprintId, setLinkedBlueprintId] = useState<string | null>(null);
+  const [linkedBlueprintStatus, setLinkedBlueprintStatus] = useState<"draft" | "in_review" | "approved" | null>(null);
   const [linkedProposalStatus, setLinkedProposalStatus] = useState<"draft" | "published" | "archived" | null>(null);
   const [publishingProposal, setPublishingProposal] = useState(false);
   const [pushingToCompany, setPushingToCompany] = useState(false);
@@ -131,14 +141,21 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
       setDetail(data);
       if (data.status === "completed") {
         try {
-          const proposal = await getProposalForCopilotSession({ data: { sessionId } });
+          const [proposal, blueprint] = await Promise.all([
+            getProposalForCopilotSession({ data: { sessionId } }),
+            getBlueprintForCopilotSession({ data: { sessionId } }),
+          ]);
           setLinkedProposalId(proposal?.id ?? null);
           setLinkedProposalStatus(proposal?.status ?? null);
+          setLinkedBlueprintId(blueprint?.id ?? null);
+          setLinkedBlueprintStatus(blueprint?.status ?? null);
         } catch {
           setLinkedProposalId(null);
+          setLinkedBlueprintId(null);
         }
       } else {
         setLinkedProposalId(null);
+        setLinkedBlueprintId(null);
       }
     } catch (err) {
       toast.error(getErrorMessage(err, "Erro ao carregar sessão."));
@@ -148,8 +165,9 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
   }, [sessionId]);
 
   useEffect(() => {
+    scrollOsShellToTop();
     void load();
-  }, [load]);
+  }, [load, sessionId]);
 
   useEffect(() => {
     if (detail?.status !== "processing") return;
@@ -340,6 +358,21 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
     }
   };
 
+  const handleCreateBlueprint = async () => {
+    setCreatingBlueprint(true);
+    try {
+      const blueprint = await createBlueprintFromCopilot({ data: { sessionId } });
+      setLinkedBlueprintId(blueprint.id);
+      setLinkedBlueprintStatus(blueprint.status);
+      toast.success("Blueprint comercial criado.");
+      await navigate({ to: "/os/propostas/blueprint/$id", params: { id: blueprint.id } });
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Erro ao criar blueprint."));
+    } finally {
+      setCreatingBlueprint(false);
+    }
+  };
+
   const handleCreateProposal = async () => {
     setCreatingProposal(true);
     try {
@@ -525,6 +558,29 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
           </div>
           {isCompleted && detail.artifact && (
             <>
+              {linkedBlueprintId ? (
+                <Button variant="default" size="sm" asChild>
+                  <Link to="/os/propostas/blueprint/$id" params={{ id: linkedBlueprintId }}>
+                    <FileText className="mr-1.5 h-3.5 w-3.5" />
+                    {linkedBlueprintStatus === "approved" ? "Blueprint aprovado" : "Blueprint comercial"}
+                  </Link>
+                </Button>
+              ) : (
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => void handleCreateBlueprint()}
+                  disabled={creatingBlueprint || detail.status === "processing"}
+                >
+                  {creatingBlueprint ? (
+                    <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <FileText className="mr-1.5 h-3.5 w-3.5" />
+                  )}
+                  Gerar blueprint
+                </Button>
+              )}
+
               {linkedProposalId ? (
                 <>
                   <Button variant="default" size="sm" onClick={() => void handleStartPresentation()}>
@@ -551,9 +607,9 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
                     </Button>
                   )}
                 </>
-              ) : (
+              ) : linkedBlueprintStatus === "approved" ? (
                 <Button
-                  variant="default"
+                  variant="outline"
                   size="sm"
                   onClick={() => void handleCreateProposal()}
                   disabled={creatingProposal || detail.status === "processing"}
@@ -565,7 +621,7 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
                   )}
                   Gerar proposta
                 </Button>
-              )}
+              ) : null}
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

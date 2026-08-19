@@ -8,6 +8,8 @@ import {
   proposalSlugSchema,
   updateProposalSchema,
   saveProposalPresentationSchema,
+  blueprintIdSchema,
+  updateBlueprintSchema,
 } from "./schema";
 
 export const listProposals = createServerFn({ method: "GET" })
@@ -67,6 +69,74 @@ export const enrichProposalFromCopilot = createServerFn({ method: "POST" })
     return withAuth(async () => {
       const service = await import("@/domains/proposals/service.server");
       return service.enrichProposalFromCopilot(data.id);
+    });
+  });
+
+export const rebuildProposalFromCopilot = createServerFn({ method: "POST" })
+  .validator(proposalIdSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const service = await import("@/domains/proposals/service.server");
+      return service.rebuildProposalFromCopilot(data.id);
+    });
+  });
+
+export const getBlueprintForCopilotSession = createServerFn({ method: "GET" })
+  .validator(copilotSessionIdParamSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const service = await import("@/domains/proposals/service.server");
+      return service.getBlueprintForSession(data.sessionId);
+    });
+  });
+
+export const getBlueprintById = createServerFn({ method: "GET" })
+  .validator(blueprintIdSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const service = await import("@/domains/proposals/service.server");
+      const blueprint = await service.getBlueprint(data.id);
+      if (!blueprint) throw new Error("Blueprint não encontrado.");
+      return blueprint;
+    });
+  });
+
+export const createBlueprintFromCopilot = createServerFn({ method: "POST" })
+  .validator(copilotSessionIdParamSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const service = await import("@/domains/proposals/service.server");
+      return service.createBlueprintFromCopilotSession(data.sessionId);
+    });
+  });
+
+export const updateBlueprint = createServerFn({ method: "POST" })
+  .validator(updateBlueprintSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const service = await import("@/domains/proposals/service.server");
+      const { id, ...patch } = data;
+      const updated = await service.updateBlueprint(id, patch as Parameters<typeof service.updateBlueprint>[1]);
+      if (!updated) throw new Error("Blueprint não encontrado.");
+      return updated;
+    });
+  });
+
+export const approveBlueprint = createServerFn({ method: "POST" })
+  .validator(blueprintIdSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const service = await import("@/domains/proposals/service.server");
+      return service.approveBlueprint(data.id);
+    });
+  });
+
+export const generateProposalFromBlueprint = createServerFn({ method: "POST" })
+  .validator(blueprintIdSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const service = await import("@/domains/proposals/service.server");
+      return service.generateProposalFromBlueprint(data.id);
     });
   });
 

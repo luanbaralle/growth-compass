@@ -3,7 +3,7 @@ import {
   publishProposal,
   saveProposalPresentation,
 } from "@/domains/proposals/api.server";
-import { ProposalDraftBanner } from "@/domains/proposals/components/AccelerationProposalPage";
+import { ProposalDraftBanner } from "@/domains/proposals/components/R1PublicProposalPage";
 import { PublicProposalPage } from "@/domains/proposals/components/PublicProposalPage";
 import {
   PROPOSAL_PRESENTATION_OUTCOME_LABELS,
@@ -98,8 +98,8 @@ export function ProposalPresentationPage({ proposalId }: { proposalId: string })
   const publicUrl = `/propostas/${proposal.slug}`;
 
   return (
-    <div className="fixed inset-0 z-[100] flex min-h-0 flex-col bg-[#070708] lg:flex-row">
-      <div className="relative min-h-0 flex-1 overflow-y-auto">
+    <div className="flex min-h-screen w-full flex-col bg-[#070708] lg:h-screen lg:min-h-0 lg:flex-row lg:overflow-hidden">
+      <div className="relative min-h-0 flex-1 overflow-y-auto lg:h-full">
         {proposal.status === "draft" && <ProposalDraftBanner />}
         <div className="sticky top-0 z-50 flex items-center gap-2 border-b border-white/10 bg-[#070708]/90 px-4 py-2 backdrop-blur-md lg:hidden">
           <Button variant="ghost" size="sm" asChild className="text-white/70">
@@ -113,7 +113,7 @@ export function ProposalPresentationPage({ proposalId }: { proposalId: string })
         <PublicProposalPage proposal={proposal} />
       </div>
 
-      <aside className="flex w-full shrink-0 flex-col border-t border-white/10 bg-[#0c0c0d] lg:w-[340px] lg:border-l lg:border-t-0">
+      <aside className="flex max-h-[45vh] w-full shrink-0 flex-col border-t border-white/10 bg-[#0c0c0d] lg:max-h-none lg:h-full lg:w-[340px] lg:border-l lg:border-t-0">
         <div className="border-b border-white/10 px-5 py-4">
           <div className="flex items-center gap-2 text-amber-400">
             <Presentation className="h-4 w-4" />
