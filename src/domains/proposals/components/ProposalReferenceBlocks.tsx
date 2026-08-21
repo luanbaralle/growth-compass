@@ -292,10 +292,12 @@ export function ProposalMovementCards({
 }: {
   movements: readonly {
     number: string;
+    badge?: string;
     title: string;
     subtitle: string;
     objective: string;
     items: readonly string[];
+    note?: string;
     conditional?: boolean;
   }[];
 }) {
@@ -324,6 +326,11 @@ export function ProposalMovementCards({
                 </span>
                 <div>
                   <h3 className="text-lg font-semibold text-white sm:text-xl">{mov.title}</h3>
+                  {mov.badge && (
+                    <span className="mt-2 inline-flex rounded-md border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-400/90">
+                      {mov.badge}
+                    </span>
+                  )}
                   <p className="mt-1 text-sm text-white/50">{mov.subtitle}</p>
                 </div>
               </div>
@@ -339,6 +346,11 @@ export function ProposalMovementCards({
                 <ListChip key={item}>{item}</ListChip>
               ))}
             </ul>
+            {mov.note && (
+              <p className="mt-5 rounded-lg border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm leading-relaxed text-white/55">
+                {mov.note}
+              </p>
+            )}
           </div>
         </article>
       ))}

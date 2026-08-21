@@ -31,6 +31,13 @@ function parsePriceRange(amountLabel: string): { min: string; max: string } | nu
   return { min: match[1].trim(), max: match[2].trim().replace(/\/\s*mês$/i, "") };
 }
 
+function parseInstallments(note?: string): { times: string; amount: string } | null {
+  if (!note) return null;
+  const match = note.match(/em até\s+(\d+)x\s+de\s+(R\$\s*[\d.,]+)/i);
+  if (!match) return null;
+  return { times: match[1], amount: match[2].replace(/\s+/g, " ").trim() };
+}
+
 function PriceBlock({
   amountLabel,
   note,
@@ -45,32 +52,51 @@ function PriceBlock({
   suffix?: string;
 }) {
   const range = isRange ? parsePriceRange(amountLabel) : null;
+  const installments = parseInstallments(note);
 
   return (
     <div
       className={cn(
-        "rounded-2xl border px-5 py-4 md:px-6 md:py-5",
+        "overflow-hidden rounded-2xl border",
         featured
-          ? "border-white/20 bg-white/[0.08] shadow-lg shadow-black/20"
+          ? "border-emerald-500/25 bg-gradient-to-br from-emerald-500/[0.12] via-white/[0.05] to-transparent shadow-lg shadow-black/25"
           : "border-white/10 bg-white/[0.03]",
       )}
     >
-      <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-white/40">
-        {range ? "Investimento sugerido" : "Valor"}
-      </p>
-      {range ? (
-        <p className="mt-2 flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
-          <span className="text-2xl font-bold tracking-tight text-white md:text-3xl">{range.min}</span>
-          <span className="text-sm font-medium text-white/50">a</span>
-          <span className="text-2xl font-bold tracking-tight text-white md:text-3xl">{range.max}</span>
-          {(suffix ?? /mês/i.test(amountLabel)) && (
-            <span className="text-sm font-semibold text-white/50">/ mês</span>
-          )}
+      {featured && <div className="h-1 bg-gradient-to-r from-emerald-500/80 to-emerald-500/20" />}
+      <div className="px-5 py-4 md:px-6 md:py-5">
+        <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-white/40">
+          {range ? "Investimento sugerido" : installments ? "Investimento único" : "Valor"}
         </p>
-      ) : (
-        <p className="mt-1 text-3xl font-bold tracking-tight text-white md:text-4xl">{amountLabel}</p>
-      )}
-      {note && <p className="mt-2 text-xs leading-relaxed text-white/45">{note}</p>}
+        {range ? (
+          <p className="mt-2 flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
+            <span className="text-2xl font-bold tracking-tight text-white md:text-3xl">{range.min}</span>
+            <span className="text-sm font-medium text-white/50">a</span>
+            <span className="text-2xl font-bold tracking-tight text-white md:text-3xl">{range.max}</span>
+            {(suffix ?? /mês/i.test(amountLabel)) && (
+              <span className="text-sm font-semibold text-white/50">/ mês</span>
+            )}
+          </p>
+        ) : (
+          <p className="mt-1 text-3xl font-bold tracking-tight text-white md:text-4xl">{amountLabel}</p>
+        )}
+
+        {installments ? (
+          <div className="mt-4 rounded-xl border border-white/10 bg-black/25 px-3.5 py-3">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-400/70">
+              Parcelamento
+            </p>
+            <p className="mt-1.5 whitespace-nowrap text-[13px] leading-none sm:text-sm">
+              <span className="text-white/55">Em até </span>
+              <span className="font-bold text-white">{installments.times}x</span>
+              <span className="text-white/55"> de </span>
+              <span className="font-bold text-emerald-400">{installments.amount.replace(/\.$/, "")}</span>
+            </p>
+          </div>
+        ) : (
+          note && <p className="mt-2 text-xs leading-relaxed text-white/45">{note}</p>
+        )}
+      </div>
     </div>
   );
 }

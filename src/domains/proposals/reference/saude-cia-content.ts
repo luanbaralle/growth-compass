@@ -6,48 +6,48 @@ export const SAUDE_CIA_PRICING: ProposalPricingTier[] = [
     id: "implementation",
     name: "Fundação · Mês 01",
     subtitle: "Pagamento único · setup",
-    amountLabel: "R$ 1.497",
+    amountLabel: "R$ 1.997",
     frequency: "once",
     items: [
       "Diagnóstico estratégico e plano de ação",
       "Definição de produtos prioritários",
-      "Revisão e otimização da LP em desenvolvimento",
+      "Revisão e otimização da jornada de conversão da LP",
       "GTM, GA4, conversões e UTMs",
       "Estrutura inicial de campanhas Google Ads",
       "Calendário editorial e primeira pauta de conteúdo",
       "Preparação da primeira captação",
     ],
-    note: "A LP que a Maíra está desenvolvendo será instrumentada e otimizada para conversão.",
+    note: "Em até 12x de R$ 199,68",
   },
   {
     id: "management",
     name: "Operação de crescimento",
     subtitle: "Mensal · a partir do Mês 02",
-    amountLabel: "R$ 1.297/mês",
+    amountLabel: "R$ 1.800/mês",
     frequency: "monthly",
     items: [
       "Gestão e otimização Google Ads",
       "Pesquisa contínua de termos e produtos",
       "4 Reels estratégicos por mês",
-      "Calendário editorial, roteiros e captação em Itanhaém",
+      "Calendário editorial, roteiros e 1 sessão de captação em Itanhaém",
       "Edição, legendas e publicação",
       "Monitoramento de conversões e origem dos leads",
       "Relatórios, análise e reuniões estratégicas",
     ],
-    note: "Demanda paga, conteúdo orgânico e mensuração na mesma operação mensal.",
+    note: "Google Ads, produção de conteúdo e mensuração na mesma operação mensal.",
   },
   {
     id: "media",
     name: "Verba de mídia · Google Ads",
     subtitle: "Mensal · pago direto ao Google",
-    amountLabel: "R$ 1.000 a R$ 2.000",
+    amountLabel: "R$ 1.000",
     frequency: "monthly_google",
     items: [
-      "Investimento pago diretamente ao Google",
-      "Captação de demanda com intenção de busca",
-      "Ajuste de verba conforme performance",
+      "Investimento inicial recomendado no primeiro mês",
+      "Pago diretamente ao Google",
+      "Validação de demanda, produtos, mensagens e custo por oportunidade",
     ],
-    note: "Começamos conservador para validar produto, mensagem e CPL antes de escalar.",
+    note: "A verba poderá ser ampliada conforme os dados justificarem. Faixa de referência após validação: R$ 1.000 a R$ 2.000/mês.",
   },
 ];
 
@@ -58,23 +58,23 @@ export const SAUDE_CIA_INVESTMENT = {
   header: {
     title: "Setup, operação e mídia",
     description:
-      "Fundação única no Mês 01. Operação mensal a partir do Mês 02. Mídia ativa desde a fundação, ajustada a cada ciclo com base nos dados.",
+      "Fundação única no Mês 01. Operação mensal a partir do Mês 02. Mídia com investimento inicial de R$ 1.000 no primeiro mês.",
     steps: ["01 Setup único", "02 Operação mensal", "03 Mídia Google"] as const,
   },
   summary: {
     title: "Resumo do investimento",
     rows: [
-      { label: "Fundação (único)", value: "R$ 1.497" },
-      { label: "Operação Raise One / mês (desde o Mês 02)", value: "R$ 1.297/mês" },
-      { label: "Mídia Google / mês", value: "R$ 1.000 a R$ 2.000" },
+      { label: "Fundação (único)", value: "R$ 1.997" },
+      { label: "Operação Raise One / mês (desde o Mês 02)", value: "R$ 1.800/mês" },
+      { label: "Mídia Google · 1º mês (recomendado)", value: "R$ 1.000" },
     ],
-    totalLabel: "Total mensal estimado",
-    totalValue: "R$ 2.297 a R$ 3.297",
+    totalLabel: "Total mensal estimado (após setup)",
+    totalValue: "R$ 2.800",
     totalNote:
-      "Operação + mídia. O setup (Mês 01) é pago uma única vez; a operação mensal começa no Mês 02.",
+      "Operação + mídia inicial. O setup (Mês 01) é pago uma única vez; a operação mensal começa no Mês 02. A verba de mídia pode ser ajustada com base nos dados.",
   },
   footer:
-    "O setup prepara a fundação no Mês 01. A operação mensal começa no Mês 02 e mantém os três motores ativos. A verba de mídia é revisada a cada ciclo com base nos dados e na capacidade da operação.",
+    "O setup prepara a fundação no Mês 01. A operação mensal começa no Mês 02. Custos extraordinários de produção, deslocamentos fora da região acordada, contratação de modelos, locações, equipamentos ou fornecedores terceiros, quando necessários, serão previamente aprovados e orçados à parte.",
   recurringOrder: ["management", "media"] as const,
 };
 
@@ -86,10 +86,11 @@ export const SAUDE_CIA_REFERENCE = {
 
   hero: {
     eyebrow: "Proposta estratégica personalizada",
-    headline: "De uma operação movida por indicação para um sistema de crescimento.",
-    lead: "A Saúde & Cia já possui experiência, autoridade local e produtos com forte potencial comercial. O próximo passo é construir um ecossistema de presença, aquisição e mensuração que gere oportunidades previsíveis.",
+    headline: "Projeto de Crescimento Digital para a Saúde & Cia",
+    lead: "Estratégia, aquisição, conteúdo e mensuração para transformar presença digital em novas oportunidades comerciais.",
     strategyLine: "Aquisição + Conteúdo + Tecnologia + Dados",
-    footnote: "Construída a partir do diagnóstico comercial realizado com a Saúde & Cia.",
+    footnote:
+      "Um ecossistema de presença, aquisição e mensuração capaz de gerar oportunidades de forma mais previsível e mensurável. Construído a partir do diagnóstico comercial realizado com a Saúde & Cia.",
   },
 
   discoveries: [
@@ -102,8 +103,8 @@ export const SAUDE_CIA_REFERENCE = {
       body: "Consórcios e planos de saúde aparecem como produtos relevantes; consórcio náutico surge como oportunidade ainda pouco explorada.",
     },
     {
-      title: "Aquisição pouco previsível",
-      body: "A maior parte dos novos clientes chega por indicação, com volume atual de cerca de 10 potenciais oportunidades por mês.",
+      title: "Aquisição pouco estruturada",
+      body: "A maior parte dos novos clientes chega por indicação, com relato atual de cerca de 10 potenciais oportunidades por mês.",
     },
     {
       title: "Presença digital subutilizada",
@@ -112,8 +113,9 @@ export const SAUDE_CIA_REFERENCE = {
   ],
 
   diagnosis: {
-    headline: "O problema não é falta de produto.",
-    subheadline: "É falta de infraestrutura de crescimento.",
+    headline: "O ponto de partida",
+    subheadline:
+      "Uma empresa consolidada, com autoridade local e potencial comercial, mas com aquisição digital ainda pouco estruturada.",
     strengths: [
       { label: "Autoridade", value: "18 anos de mercado" },
       { label: "Oferta", value: "Seguros, saúde e consórcios" },
@@ -140,14 +142,14 @@ export const SAUDE_CIA_REFERENCE = {
       ],
     },
     target: {
-      label: "O que queremos construir",
+      label: "O que vamos construir",
       steps: [
-        "Marketing (conteúdo + mídia + presença)",
+        "Demanda (conteúdo + mídia)",
         "Aquisição (LP / WhatsApp / formulário)",
-        "Oportunidade (lead gerado)",
+        "Conversão digital",
+        "Lead",
         "Saúde & Cia (atendimento → venda)",
-        "Dados (retorno para a R1)",
-        "Otimização (campanhas + conteúdo + jornada)",
+        "Dados → otimização",
       ],
     },
   },
@@ -155,11 +157,18 @@ export const SAUDE_CIA_REFERENCE = {
   productPriority:
     "A primeira etapa focará nos produtos com maior potencial comercial, cruzando demanda de mercado, intenção de busca, rentabilidade, diferenciação e capacidade operacional da equipe.",
 
+  leadDefinition: {
+    title: "O que consideramos um lead",
+    body: "Lead: contato identificado que demonstrou intenção comercial por formulário, WhatsApp ou outro canal definido no tracking.",
+    flow: "Conversão digital → Lead → Oportunidade → Venda",
+  },
+
   motors: [
     {
       number: "01",
+      badge: "Google Ads",
       title: "Motor de demanda",
-      subtitle: "Google Ads · capturar quem já está procurando.",
+      subtitle: "Capturar quem já está procurando.",
       objective:
         "Aparecer quando alguém busca ativamente o que a Saúde & Cia vende, com intenção explícita e mensuração desde o primeiro clique.",
       items: [
@@ -172,22 +181,28 @@ export const SAUDE_CIA_REFERENCE = {
     },
     {
       number: "02",
+      badge: "Conteúdo",
       title: "Motor de autoridade",
-      subtitle: "Conteúdo · transformar experiência em presença local.",
+      subtitle: "Transformar experiência em presença digital.",
       objective:
-        "Transformar 18 anos de mercado e o conhecimento da Angélica em conteúdo que gera confiança, lembrança e posicionamento orgânico.",
+        "Transformar os 18 anos de experiência da Saúde & Cia e o conhecimento da Angélica em conteúdo que gere confiança, presença e lembrança.",
       items: [
         "4 Reels estratégicos por mês",
-        "Calendário editorial e roteiros",
-        "Captação presencial e direção",
+        "Planejamento editorial mensal",
+        "Definição de temas e roteiros",
+        "1 sessão mensal de captação presencial em Itanhaém",
+        "Direção durante a gravação",
         "Edição, legendas e identidade visual",
-        "Publicação e acompanhamento de performance",
+        "Publicação dos conteúdos",
+        "Acompanhamento de performance",
       ],
+      note: "A produção de conteúdo é realizada pela Raise One. A gestão da comunidade, incluindo respostas a comentários, mensagens, inbox e relacionamento diário com seguidores, permanece sob responsabilidade da Saúde & Cia.",
     },
     {
       number: "03",
+      badge: "Conversão",
       title: "Motor de conversão",
-      subtitle: "Site + LP + tracking · atenção vira oportunidade mensurável.",
+      subtitle: "Transformar atenção em oportunidade mensurável.",
       objective:
         "Instrumentar a jornada digital para que cada visita, clique e contato possa ser rastreado, analisado e otimizado.",
       items: [
@@ -200,26 +215,11 @@ export const SAUDE_CIA_REFERENCE = {
     },
   ],
 
-  contentPackage: {
-    title: "4 Reels estratégicos por mês",
-    lead: "Quatro conteúdos por mês, cada um com tema, roteiro e objetivo definidos a partir dos produtos que a Saúde & Cia quer crescer, das dúvidas que os clientes trazem no dia a dia e das oportunidades que surgem nas campanhas.",
-    items: [
-      "Planejamento editorial mensal",
-      "Definição de temas e roteiros",
-      "Captação presencial em Itanhaém",
-      "Direção durante a gravação",
-      "Edição, legendas e identidade visual",
-      "Publicação e acompanhamento",
-    ],
-    synergy:
-      "Quando uma busca no Google revela interesse em um produto, esse tema vira pauta de conteúdo. O Reel reforça confiança na jornada Google → landing page → Instagram → WhatsApp.",
-  },
-
   integrationLayer: {
     title: "Marketing conectado à operação da Saúde & Cia",
-    body: "A Raise One cuida de conteúdo, mídia, presença digital e mensuração. A Saúde & Cia conduz atendimento, proposta e venda. Estruturamos a conexão entre os dois lados para que cada lead gerado possa ser rastreado e analisado junto aos resultados da operação.",
-    r1: ["Conteúdo", "Google Ads", "Presença digital", "Tracking", "Dados", "Otimização"],
-    client: ["Atendimento", "Proposta", "Venda", "Operação"],
+    body: "A Raise One é responsável pela estratégia, produção de conteúdo, gestão de mídia paga, infraestrutura de conversão e mensuração. A Saúde & Cia permanece responsável pelo atendimento aos clientes, relacionamento nas redes sociais, propostas e fechamento comercial. Estruturamos a conexão entre os dois lados para que cada lead gerado possa ser rastreado e analisado junto aos resultados da operação.",
+    r1: ["Estratégia", "Produção de conteúdo", "Google Ads", "Conversão", "Dados", "Otimização"],
+    client: ["Atendimento", "Relacionamento nas redes", "Proposta", "Venda"],
   },
 
   expansion: {
@@ -230,15 +230,15 @@ export const SAUDE_CIA_REFERENCE = {
       "Novas landing pages por produto/intenção",
       "Remarketing e Meta Ads",
       "Conteúdo avançado e novas pautas",
-      "Expansão geográfica",
+      "Expansão geográfica, quando houver evidência de demanda e capacidade operacional",
       "Automações quando o volume justificar",
     ],
     conditional: true,
   },
 
   lpStrategy: {
-    title: "Landing pages: laboratório antes de escala",
-    now: "A LP em desenvolvimento com a Maíra será instrumentada, medida e otimizada como laboratório de aquisição.",
+    title: "Landing page: laboratório de conversão",
+    now: "Aproveitamos a landing page já em desenvolvimento pela Maíra. Nosso papel é instrumentar tracking, medir conversões e otimizar a jornada para transformar visitas em oportunidades.",
     later:
       "Com histórico de performance, landing pages específicas por produto entram no plano quando os dados confirmarem onde vale concentrar investimento.",
   },
@@ -261,15 +261,16 @@ export const SAUDE_CIA_REFERENCE = {
     business: [
       "Vendas informadas",
       "Taxa de conversão",
-      "CAC",
+      "CAC estimado",
       "Receita",
     ],
-    note: "As métricas de negócio dependem do retorno da equipe comercial da Saúde & Cia. Juntos, cruzamos dados de marketing com o que acontece no atendimento e na venda. CAC e receita entram na análise quando houver histórico suficiente.",
+    note: "As métricas de negócio dependem do retorno da equipe comercial da Saúde & Cia. Juntos, cruzamos dados de marketing com o que acontece no atendimento e na venda. CAC estimado e receita entram na análise quando houver histórico suficiente.",
   },
 
   exclusions: {
     wont: [
       "Atendimento, proposta e fechamento comercial (permanecem com a Saúde & Cia)",
+      "Gestão de comunidade: comentários, inbox e relacionamento diário nas redes",
       "Implantação ou gestão de CRM neste primeiro ciclo",
       "Anunciar todos os produtos ao mesmo tempo",
       "Criar várias landing pages antes de validar o canal",
@@ -323,7 +324,7 @@ export const SAUDE_CIA_REFERENCE = {
         "Meta Ads",
         "Conteúdo avançado",
         "Novos produtos",
-        "Novas regiões",
+        "Novas regiões (com evidência e capacidade)",
       ],
     },
   ],
@@ -361,14 +362,14 @@ export const SAUDE_CIA_REFERENCE = {
       items: [
         "4 Reels estratégicos por mês",
         "Calendário editorial",
-        "Roteiros e captação presencial",
+        "Roteiros e 1 sessão de captação mensal",
         "Edição, publicação e performance",
       ],
     },
   ],
 
   vision: {
-    title: "O que queremos construir juntos",
+    title: "O que vamos construir",
     today: "Indicação → Cliente",
     next: "Conteúdo + Mídia → LP → Lead → Saúde & Cia → Dados → Otimização",
     future: "Demanda + Autoridade + Conversão + Retenção + Expansão",
@@ -397,8 +398,8 @@ export const SAUDE_CIA_REFERENCE = {
 
 export const SAUDE_CIA_NAV = [
   { id: "descobertas", label: "Descobertas" },
-  { id: "diagnostico", label: "Diagnóstico" },
-  { id: "gargalo", label: "Gargalo" },
+  { id: "diagnostico", label: "Ponto de partida" },
+  { id: "gargalo", label: "Desafio" },
   { id: "estrategia", label: "Solução" },
   { id: "metricas", label: "Métricas" },
   { id: "roadmap", label: "Roadmap" },

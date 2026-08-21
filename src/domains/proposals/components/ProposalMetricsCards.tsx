@@ -88,6 +88,7 @@ const METRIC_ICONS: Record<string, LucideIcon> = {
   "Tempo de resposta": Clock,
   "Taxa de conversão": Percent,
   CAC: LineChart,
+  "CAC estimado": LineChart,
   Receita: DollarSign,
   Alcance: Share2,
   Visualizações: Eye,

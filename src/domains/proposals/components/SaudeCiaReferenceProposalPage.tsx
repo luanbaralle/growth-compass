@@ -3,7 +3,6 @@ import { SAUDE_CIA_INVESTMENT, SAUDE_CIA_PRICING } from "../reference/saude-cia-
 import { ProposalInvestmentLayout } from "../components/ProposalInvestmentLayout";
 import { ProposalMetricsCards } from "../components/ProposalMetricsCards";
 import {
-  ProposalContentHighlight,
   ProposalDeliverableGrid,
   ProposalDiscoveryGrid,
   ProposalExclusionsPanel,
@@ -137,8 +136,10 @@ export function SaudeCiaReferenceProposalPage({ proposal }: { proposal: Proposal
           <ProposalDiscoveryGrid items={C.discoveries} />
         </Section>
 
-        <Section id="diagnostico" label="02. Diagnóstico" title={C.diagnosis.headline} alt>
-          <p className="mb-8 text-xl font-semibold text-white/90">{C.diagnosis.subheadline}</p>
+        <Section id="diagnostico" label="02. O ponto de partida" title={C.diagnosis.headline} alt>
+          <p className="mb-8 max-w-3xl text-lg leading-relaxed text-white/80 sm:text-xl">
+            {C.diagnosis.subheadline}
+          </p>
           <ProposalStrengthGrid items={C.diagnosis.strengths} />
           <ProposalInsightCallout
             eyebrow="Aquisição ainda depende de"
@@ -147,12 +148,16 @@ export function SaudeCiaReferenceProposalPage({ proposal }: { proposal: Proposal
           />
         </Section>
 
-        <Section id="gargalo" label="03. O gargalo" title="De indicação a sistema mensurável">
+        <Section
+          id="gargalo"
+          label="03. O desafio de crescimento"
+          title="Transformar demanda potencial em oportunidades mensuráveis"
+        >
           <ProposalFunnelCompare
             today={C.bottleneck.today}
             target={C.bottleneck.target}
             lacks={C.bottleneck.today.lacks}
-            targetCaption="Sistema Raise One: conteúdo, aquisição, conversão e dados."
+            targetCaption="Conversão digital → Lead → Oportunidade → Venda, com dados para otimizar."
           />
           <p className="mt-8 max-w-3xl rounded-xl border border-white/[0.06] bg-white/[0.015] px-4 py-3 text-sm leading-relaxed text-white/55">
             {C.productPriority}
@@ -161,13 +166,6 @@ export function SaudeCiaReferenceProposalPage({ proposal }: { proposal: Proposal
 
         <Section id="estrategia" label="04. Estratégia" title="Três motores de crescimento" alt>
           <ProposalMovementCards movements={C.motors} />
-
-          <ProposalContentHighlight
-            title={C.contentPackage.title}
-            lead={C.contentPackage.lead}
-            items={C.contentPackage.items}
-            synergy={C.contentPackage.synergy}
-          />
 
           <ProposalIntegrationLayer
             title={C.integrationLayer.title}
@@ -200,6 +198,13 @@ export function SaudeCiaReferenceProposalPage({ proposal }: { proposal: Proposal
         </Section>
 
         <Section id="metricas" label="05. Mensuração" title="O que vamos medir">
+          <div className="mb-8 rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 sm:p-6">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-400/70">
+              {C.leadDefinition.title}
+            </p>
+            <p className="mt-2 text-sm leading-relaxed text-white/70">{C.leadDefinition.body}</p>
+            <p className="mt-3 font-mono text-xs text-white/45 sm:text-sm">{C.leadDefinition.flow}</p>
+          </div>
           <ProposalMetricsCards
             categories={[
               { title: "Aquisição", items: C.metrics.acquisition },
