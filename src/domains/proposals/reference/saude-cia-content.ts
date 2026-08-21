@@ -54,7 +54,7 @@ export const SAUDE_CIA_PRICING: ProposalPricingTier[] = [
 export const SAUDE_CIA_INVESTMENT = {
   title: "Investimento para construir o sistema de crescimento",
   intro:
-    "Três camadas de investimento: um setup inicial para colocar os três motores no ar, a operação mensal da Raise One e a verba de mídia paga diretamente ao Google. A mídia não passa pela Raise One — vocês pagam ao Google e nós gerenciamos a aplicação.",
+    "Três camadas de investimento: um setup inicial para colocar os três motores no ar, a operação mensal da Raise One e a verba de mídia paga diretamente ao Google. A mídia não passa pela Raise One: vocês pagam ao Google e nós gerenciamos a aplicação.",
   header: {
     title: "Setup, operação e mídia",
     description:

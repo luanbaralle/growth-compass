@@ -5,6 +5,7 @@ import {
   createProposalFromCopilotSchema,
   listProposalsSchema,
   proposalIdSchema,
+  proposalIdOrSlugSchema,
   proposalSlugSchema,
   updateProposalSchema,
   saveProposalPresentationSchema,
@@ -22,11 +23,11 @@ export const listProposals = createServerFn({ method: "GET" })
   });
 
 export const getProposal = createServerFn({ method: "GET" })
-  .validator(proposalIdSchema)
+  .validator(proposalIdOrSlugSchema)
   .handler(async ({ data }) => {
     return withAuth(async () => {
       const service = await import("@/domains/proposals/service.server");
-      const proposal = await service.getProposal(data.id);
+      const proposal = await service.getProposalByIdOrSlug(data.id);
       if (!proposal) throw new Error("Proposta não encontrada.");
       return proposal;
     });

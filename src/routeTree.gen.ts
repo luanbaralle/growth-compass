@@ -38,6 +38,7 @@ import { Route as CasesSlugRouteImport } from './routes/cases/$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminLeadsRouteImport } from './routes/admin/leads'
+import { Route as PropostasSlugIndexRouteImport } from './routes/propostas/$slug/index'
 import { Route as OsProspeccaoIndexRouteImport } from './routes/os/prospeccao/index'
 import { Route as OsPropostasIndexRouteImport } from './routes/os/propostas/index'
 import { Route as OsProjetosIndexRouteImport } from './routes/os/projetos/index'
@@ -53,6 +54,8 @@ import { Route as ClientResultadosIndexRouteImport } from './routes/client/resul
 import { Route as ClientProjetosIndexRouteImport } from './routes/client/projetos/index'
 import { Route as ClientFinanceiroIndexRouteImport } from './routes/client/financeiro/index'
 import { Route as ClientConteudoIndexRouteImport } from './routes/client/conteudo/index'
+import { Route as PropostasSlugConteudoRouteImport } from './routes/propostas/$slug/conteudo'
+import { Route as PropostasSlugAquisicaoRouteImport } from './routes/propostas/$slug/aquisicao'
 import { Route as PlaygroundCasesDecisionLanguageRouteImport } from './routes/playground/cases/decision-language'
 import { Route as OsProspeccaoIdRouteImport } from './routes/os/prospeccao/$id'
 import { Route as OsPropostasIdRouteImport } from './routes/os/propostas/$id'
@@ -227,6 +230,11 @@ const AdminLeadsRoute = AdminLeadsRouteImport.update({
   path: '/leads',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const PropostasSlugIndexRoute = PropostasSlugIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PropostasSlugRoute,
+} as any)
 const OsProspeccaoIndexRoute = OsProspeccaoIndexRouteImport.update({
   id: '/prospeccao/',
   path: '/prospeccao/',
@@ -301,6 +309,16 @@ const ClientConteudoIndexRoute = ClientConteudoIndexRouteImport.update({
   id: '/conteudo/',
   path: '/conteudo/',
   getParentRoute: () => ClientRouteRoute,
+} as any)
+const PropostasSlugConteudoRoute = PropostasSlugConteudoRouteImport.update({
+  id: '/conteudo',
+  path: '/conteudo',
+  getParentRoute: () => PropostasSlugRoute,
+} as any)
+const PropostasSlugAquisicaoRoute = PropostasSlugAquisicaoRouteImport.update({
+  id: '/aquisicao',
+  path: '/aquisicao',
+  getParentRoute: () => PropostasSlugRoute,
 } as any)
 const PlaygroundCasesDecisionLanguageRoute =
   PlaygroundCasesDecisionLanguageRouteImport.update({
@@ -467,7 +485,7 @@ export interface FileRoutesByFullPath {
   '/os/login': typeof OsLoginRoute
   '/projetos/nobre': typeof ProjetosNobreRoute
   '/projetos/pousada': typeof ProjetosPousadaRoute
-  '/propostas/$slug': typeof PropostasSlugRoute
+  '/propostas/$slug': typeof PropostasSlugRouteWithChildren
   '/solucoes/google-ads': typeof SolucoesGoogleAdsRoute
   '/solucoes/landing-pages': typeof SolucoesLandingPagesRoute
   '/solucoes/meta-ads': typeof SolucoesMetaAdsRoute
@@ -495,6 +513,8 @@ export interface FileRoutesByFullPath {
   '/os/propostas/$id': typeof OsPropostasIdRouteWithChildren
   '/os/prospeccao/$id': typeof OsProspeccaoIdRoute
   '/playground/cases/decision-language': typeof PlaygroundCasesDecisionLanguageRoute
+  '/propostas/$slug/aquisicao': typeof PropostasSlugAquisicaoRoute
+  '/propostas/$slug/conteudo': typeof PropostasSlugConteudoRoute
   '/client/conteudo/': typeof ClientConteudoIndexRoute
   '/client/financeiro/': typeof ClientFinanceiroIndexRoute
   '/client/projetos/': typeof ClientProjetosIndexRoute
@@ -510,6 +530,7 @@ export interface FileRoutesByFullPath {
   '/os/projetos/': typeof OsProjetosIndexRoute
   '/os/propostas/': typeof OsPropostasIndexRoute
   '/os/prospeccao/': typeof OsProspeccaoIndexRoute
+  '/propostas/$slug/': typeof PropostasSlugIndexRoute
   '/admin/execucao/rituais/checkin': typeof AdminExecucaoRituaisCheckinRoute
   '/admin/execucao/rituais/planning': typeof AdminExecucaoRituaisPlanningRoute
   '/admin/execucao/rituais/review': typeof AdminExecucaoRituaisReviewRoute
@@ -537,7 +558,6 @@ export interface FileRoutesByTo {
   '/os/login': typeof OsLoginRoute
   '/projetos/nobre': typeof ProjetosNobreRoute
   '/projetos/pousada': typeof ProjetosPousadaRoute
-  '/propostas/$slug': typeof PropostasSlugRoute
   '/solucoes/google-ads': typeof SolucoesGoogleAdsRoute
   '/solucoes/landing-pages': typeof SolucoesLandingPagesRoute
   '/solucoes/meta-ads': typeof SolucoesMetaAdsRoute
@@ -563,6 +583,8 @@ export interface FileRoutesByTo {
   '/os/projetos/$id': typeof OsProjetosIdRoute
   '/os/prospeccao/$id': typeof OsProspeccaoIdRoute
   '/playground/cases/decision-language': typeof PlaygroundCasesDecisionLanguageRoute
+  '/propostas/$slug/aquisicao': typeof PropostasSlugAquisicaoRoute
+  '/propostas/$slug/conteudo': typeof PropostasSlugConteudoRoute
   '/client/conteudo': typeof ClientConteudoIndexRoute
   '/client/financeiro': typeof ClientFinanceiroIndexRoute
   '/client/projetos': typeof ClientProjetosIndexRoute
@@ -578,6 +600,7 @@ export interface FileRoutesByTo {
   '/os/projetos': typeof OsProjetosIndexRoute
   '/os/propostas': typeof OsPropostasIndexRoute
   '/os/prospeccao': typeof OsProspeccaoIndexRoute
+  '/propostas/$slug': typeof PropostasSlugIndexRoute
   '/admin/execucao/rituais/checkin': typeof AdminExecucaoRituaisCheckinRoute
   '/admin/execucao/rituais/planning': typeof AdminExecucaoRituaisPlanningRoute
   '/admin/execucao/rituais/review': typeof AdminExecucaoRituaisReviewRoute
@@ -609,7 +632,7 @@ export interface FileRoutesById {
   '/os/login': typeof OsLoginRoute
   '/projetos/nobre': typeof ProjetosNobreRoute
   '/projetos/pousada': typeof ProjetosPousadaRoute
-  '/propostas/$slug': typeof PropostasSlugRoute
+  '/propostas/$slug': typeof PropostasSlugRouteWithChildren
   '/solucoes/google-ads': typeof SolucoesGoogleAdsRoute
   '/solucoes/landing-pages': typeof SolucoesLandingPagesRoute
   '/solucoes/meta-ads': typeof SolucoesMetaAdsRoute
@@ -637,6 +660,8 @@ export interface FileRoutesById {
   '/os/propostas/$id': typeof OsPropostasIdRouteWithChildren
   '/os/prospeccao/$id': typeof OsProspeccaoIdRoute
   '/playground/cases/decision-language': typeof PlaygroundCasesDecisionLanguageRoute
+  '/propostas/$slug/aquisicao': typeof PropostasSlugAquisicaoRoute
+  '/propostas/$slug/conteudo': typeof PropostasSlugConteudoRoute
   '/client/conteudo/': typeof ClientConteudoIndexRoute
   '/client/financeiro/': typeof ClientFinanceiroIndexRoute
   '/client/projetos/': typeof ClientProjetosIndexRoute
@@ -652,6 +677,7 @@ export interface FileRoutesById {
   '/os/projetos/': typeof OsProjetosIndexRoute
   '/os/propostas/': typeof OsPropostasIndexRoute
   '/os/prospeccao/': typeof OsProspeccaoIndexRoute
+  '/propostas/$slug/': typeof PropostasSlugIndexRoute
   '/admin/execucao/rituais/checkin': typeof AdminExecucaoRituaisCheckinRoute
   '/admin/execucao/rituais/planning': typeof AdminExecucaoRituaisPlanningRoute
   '/admin/execucao/rituais/review': typeof AdminExecucaoRituaisReviewRoute
@@ -712,6 +738,8 @@ export interface FileRouteTypes {
     | '/os/propostas/$id'
     | '/os/prospeccao/$id'
     | '/playground/cases/decision-language'
+    | '/propostas/$slug/aquisicao'
+    | '/propostas/$slug/conteudo'
     | '/client/conteudo/'
     | '/client/financeiro/'
     | '/client/projetos/'
@@ -727,6 +755,7 @@ export interface FileRouteTypes {
     | '/os/projetos/'
     | '/os/propostas/'
     | '/os/prospeccao/'
+    | '/propostas/$slug/'
     | '/admin/execucao/rituais/checkin'
     | '/admin/execucao/rituais/planning'
     | '/admin/execucao/rituais/review'
@@ -754,7 +783,6 @@ export interface FileRouteTypes {
     | '/os/login'
     | '/projetos/nobre'
     | '/projetos/pousada'
-    | '/propostas/$slug'
     | '/solucoes/google-ads'
     | '/solucoes/landing-pages'
     | '/solucoes/meta-ads'
@@ -780,6 +808,8 @@ export interface FileRouteTypes {
     | '/os/projetos/$id'
     | '/os/prospeccao/$id'
     | '/playground/cases/decision-language'
+    | '/propostas/$slug/aquisicao'
+    | '/propostas/$slug/conteudo'
     | '/client/conteudo'
     | '/client/financeiro'
     | '/client/projetos'
@@ -795,6 +825,7 @@ export interface FileRouteTypes {
     | '/os/projetos'
     | '/os/propostas'
     | '/os/prospeccao'
+    | '/propostas/$slug'
     | '/admin/execucao/rituais/checkin'
     | '/admin/execucao/rituais/planning'
     | '/admin/execucao/rituais/review'
@@ -853,6 +884,8 @@ export interface FileRouteTypes {
     | '/os/propostas/$id'
     | '/os/prospeccao/$id'
     | '/playground/cases/decision-language'
+    | '/propostas/$slug/aquisicao'
+    | '/propostas/$slug/conteudo'
     | '/client/conteudo/'
     | '/client/financeiro/'
     | '/client/projetos/'
@@ -868,6 +901,7 @@ export interface FileRouteTypes {
     | '/os/projetos/'
     | '/os/propostas/'
     | '/os/prospeccao/'
+    | '/propostas/$slug/'
     | '/admin/execucao/rituais/checkin'
     | '/admin/execucao/rituais/planning'
     | '/admin/execucao/rituais/review'
@@ -895,7 +929,7 @@ export interface RootRouteChildren {
   CasesSlugRoute: typeof CasesSlugRoute
   ProjetosNobreRoute: typeof ProjetosNobreRoute
   ProjetosPousadaRoute: typeof ProjetosPousadaRoute
-  PropostasSlugRoute: typeof PropostasSlugRoute
+  PropostasSlugRoute: typeof PropostasSlugRouteWithChildren
   SolucoesGoogleAdsRoute: typeof SolucoesGoogleAdsRoute
   SolucoesLandingPagesRoute: typeof SolucoesLandingPagesRoute
   SolucoesMetaAdsRoute: typeof SolucoesMetaAdsRoute
@@ -1113,6 +1147,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLeadsRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/propostas/$slug/': {
+      id: '/propostas/$slug/'
+      path: '/'
+      fullPath: '/propostas/$slug/'
+      preLoaderRoute: typeof PropostasSlugIndexRouteImport
+      parentRoute: typeof PropostasSlugRoute
+    }
     '/os/prospeccao/': {
       id: '/os/prospeccao/'
       path: '/prospeccao'
@@ -1217,6 +1258,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/client/conteudo/'
       preLoaderRoute: typeof ClientConteudoIndexRouteImport
       parentRoute: typeof ClientRouteRoute
+    }
+    '/propostas/$slug/conteudo': {
+      id: '/propostas/$slug/conteudo'
+      path: '/conteudo'
+      fullPath: '/propostas/$slug/conteudo'
+      preLoaderRoute: typeof PropostasSlugConteudoRouteImport
+      parentRoute: typeof PropostasSlugRoute
+    }
+    '/propostas/$slug/aquisicao': {
+      id: '/propostas/$slug/aquisicao'
+      path: '/aquisicao'
+      fullPath: '/propostas/$slug/aquisicao'
+      preLoaderRoute: typeof PropostasSlugAquisicaoRouteImport
+      parentRoute: typeof PropostasSlugRoute
     }
     '/playground/cases/decision-language': {
       id: '/playground/cases/decision-language'
@@ -1550,6 +1605,22 @@ const OsRouteRouteChildren: OsRouteRouteChildren = {
 const OsRouteRouteWithChildren =
   OsRouteRoute._addFileChildren(OsRouteRouteChildren)
 
+interface PropostasSlugRouteChildren {
+  PropostasSlugAquisicaoRoute: typeof PropostasSlugAquisicaoRoute
+  PropostasSlugConteudoRoute: typeof PropostasSlugConteudoRoute
+  PropostasSlugIndexRoute: typeof PropostasSlugIndexRoute
+}
+
+const PropostasSlugRouteChildren: PropostasSlugRouteChildren = {
+  PropostasSlugAquisicaoRoute: PropostasSlugAquisicaoRoute,
+  PropostasSlugConteudoRoute: PropostasSlugConteudoRoute,
+  PropostasSlugIndexRoute: PropostasSlugIndexRoute,
+}
+
+const PropostasSlugRouteWithChildren = PropostasSlugRoute._addFileChildren(
+  PropostasSlugRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRouteRoute: AdminRouteRouteWithChildren,
@@ -1565,7 +1636,7 @@ const rootRouteChildren: RootRouteChildren = {
   CasesSlugRoute: CasesSlugRoute,
   ProjetosNobreRoute: ProjetosNobreRoute,
   ProjetosPousadaRoute: ProjetosPousadaRoute,
-  PropostasSlugRoute: PropostasSlugRoute,
+  PropostasSlugRoute: PropostasSlugRouteWithChildren,
   SolucoesGoogleAdsRoute: SolucoesGoogleAdsRoute,
   SolucoesLandingPagesRoute: SolucoesLandingPagesRoute,
   SolucoesMetaAdsRoute: SolucoesMetaAdsRoute,

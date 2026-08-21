@@ -97,6 +97,18 @@ export async function getProposal(id: string): Promise<Proposal | null> {
   return enrichProposalForDisplay(proposal);
 }
 
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+export async function getProposalByIdOrSlug(idOrSlug: string): Promise<Proposal | null> {
+  if (UUID_RE.test(idOrSlug)) {
+    return getProposal(idOrSlug);
+  }
+  const bySlug = await repo.findProposalBySlug(idOrSlug);
+  if (!bySlug) return null;
+  return enrichProposalForDisplay(bySlug);
+}
+
 export async function getPublishedProposalBySlug(slug: string): Promise<Proposal | null> {
   const proposal = await repo.findProposalBySlug(slug);
   if (!proposal || proposal.status !== "published") return null;

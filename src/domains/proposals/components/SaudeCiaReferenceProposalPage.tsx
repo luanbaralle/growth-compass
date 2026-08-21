@@ -68,7 +68,7 @@ function Section({
 
 export function SaudeCiaReferenceProposalPage({ proposal }: { proposal: Proposal }) {
   const ctaHref = buildWhatsAppUrl(C.cta.message, proposal.content?.cta?.whatsappPhone);
-  /** Proposta referência ignora pricing legado do DB — usa sempre o golden template. */
+  /** Proposta referência ignora pricing legado do DB; usa sempre o golden template. */
   const pricing = SAUDE_CIA_PRICING;
 
   return (
@@ -285,9 +285,9 @@ export function SaudeCiaReferenceProposalPage({ proposal }: { proposal: Proposal
 export function isSaudeCiaReferenceProposal(proposal: Proposal): boolean {
   const slug = proposal.slug.toLowerCase();
   const company = proposal.company_name.toLowerCase();
+
   return (
     slug === "saude-cia" ||
-    slug.includes("saude-cia") ||
     company.includes("saúde & cia") ||
     company.includes("saude & cia") ||
     company.includes("saúde e cia")

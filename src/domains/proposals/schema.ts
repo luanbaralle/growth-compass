@@ -4,6 +4,10 @@ export const proposalTemplateSchema = z.enum(["acceleration", "custom_solution"]
 export const proposalStatusSchema = z.enum(["draft", "published", "archived"]);
 
 export const proposalIdSchema = z.object({ id: z.string().uuid() });
+/** Aceita UUID ou slug (ex.: saude-cia-conteudo na rota /os/propostas/$id). */
+export const proposalIdOrSlugSchema = z.object({
+  id: z.string().min(1).max(80),
+});
 export const proposalSlugSchema = z.object({ slug: z.string().min(1).max(80) });
 
 export const createProposalFromCopilotSchema = z.object({
