@@ -38,6 +38,7 @@ import { Route as CasesSlugRouteImport } from './routes/cases/$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminLeadsRouteImport } from './routes/admin/leads'
+import { Route as RelatoriosEmpresaIndexRouteImport } from './routes/relatorios/$empresa/index'
 import { Route as PropostasSlugIndexRouteImport } from './routes/propostas/$slug/index'
 import { Route as OsProspeccaoIndexRouteImport } from './routes/os/prospeccao/index'
 import { Route as OsPropostasIndexRouteImport } from './routes/os/propostas/index'
@@ -54,6 +55,7 @@ import { Route as ClientResultadosIndexRouteImport } from './routes/client/resul
 import { Route as ClientProjetosIndexRouteImport } from './routes/client/projetos/index'
 import { Route as ClientFinanceiroIndexRouteImport } from './routes/client/financeiro/index'
 import { Route as ClientConteudoIndexRouteImport } from './routes/client/conteudo/index'
+import { Route as RelatoriosEmpresaMesRouteImport } from './routes/relatorios/$empresa/$mes'
 import { Route as PropostasSlugConteudoRouteImport } from './routes/propostas/$slug/conteudo'
 import { Route as PropostasSlugAquisicaoRouteImport } from './routes/propostas/$slug/aquisicao'
 import { Route as PlaygroundCasesDecisionLanguageRouteImport } from './routes/playground/cases/decision-language'
@@ -230,6 +232,11 @@ const AdminLeadsRoute = AdminLeadsRouteImport.update({
   path: '/leads',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const RelatoriosEmpresaIndexRoute = RelatoriosEmpresaIndexRouteImport.update({
+  id: '/relatorios/$empresa/',
+  path: '/relatorios/$empresa/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PropostasSlugIndexRoute = PropostasSlugIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -309,6 +316,11 @@ const ClientConteudoIndexRoute = ClientConteudoIndexRouteImport.update({
   id: '/conteudo/',
   path: '/conteudo/',
   getParentRoute: () => ClientRouteRoute,
+} as any)
+const RelatoriosEmpresaMesRoute = RelatoriosEmpresaMesRouteImport.update({
+  id: '/relatorios/$empresa/$mes',
+  path: '/relatorios/$empresa/$mes',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const PropostasSlugConteudoRoute = PropostasSlugConteudoRouteImport.update({
   id: '/conteudo',
@@ -515,6 +527,7 @@ export interface FileRoutesByFullPath {
   '/playground/cases/decision-language': typeof PlaygroundCasesDecisionLanguageRoute
   '/propostas/$slug/aquisicao': typeof PropostasSlugAquisicaoRoute
   '/propostas/$slug/conteudo': typeof PropostasSlugConteudoRoute
+  '/relatorios/$empresa/$mes': typeof RelatoriosEmpresaMesRoute
   '/client/conteudo/': typeof ClientConteudoIndexRoute
   '/client/financeiro/': typeof ClientFinanceiroIndexRoute
   '/client/projetos/': typeof ClientProjetosIndexRoute
@@ -531,6 +544,7 @@ export interface FileRoutesByFullPath {
   '/os/propostas/': typeof OsPropostasIndexRoute
   '/os/prospeccao/': typeof OsProspeccaoIndexRoute
   '/propostas/$slug/': typeof PropostasSlugIndexRoute
+  '/relatorios/$empresa/': typeof RelatoriosEmpresaIndexRoute
   '/admin/execucao/rituais/checkin': typeof AdminExecucaoRituaisCheckinRoute
   '/admin/execucao/rituais/planning': typeof AdminExecucaoRituaisPlanningRoute
   '/admin/execucao/rituais/review': typeof AdminExecucaoRituaisReviewRoute
@@ -585,6 +599,7 @@ export interface FileRoutesByTo {
   '/playground/cases/decision-language': typeof PlaygroundCasesDecisionLanguageRoute
   '/propostas/$slug/aquisicao': typeof PropostasSlugAquisicaoRoute
   '/propostas/$slug/conteudo': typeof PropostasSlugConteudoRoute
+  '/relatorios/$empresa/$mes': typeof RelatoriosEmpresaMesRoute
   '/client/conteudo': typeof ClientConteudoIndexRoute
   '/client/financeiro': typeof ClientFinanceiroIndexRoute
   '/client/projetos': typeof ClientProjetosIndexRoute
@@ -601,6 +616,7 @@ export interface FileRoutesByTo {
   '/os/propostas': typeof OsPropostasIndexRoute
   '/os/prospeccao': typeof OsProspeccaoIndexRoute
   '/propostas/$slug': typeof PropostasSlugIndexRoute
+  '/relatorios/$empresa': typeof RelatoriosEmpresaIndexRoute
   '/admin/execucao/rituais/checkin': typeof AdminExecucaoRituaisCheckinRoute
   '/admin/execucao/rituais/planning': typeof AdminExecucaoRituaisPlanningRoute
   '/admin/execucao/rituais/review': typeof AdminExecucaoRituaisReviewRoute
@@ -662,6 +678,7 @@ export interface FileRoutesById {
   '/playground/cases/decision-language': typeof PlaygroundCasesDecisionLanguageRoute
   '/propostas/$slug/aquisicao': typeof PropostasSlugAquisicaoRoute
   '/propostas/$slug/conteudo': typeof PropostasSlugConteudoRoute
+  '/relatorios/$empresa/$mes': typeof RelatoriosEmpresaMesRoute
   '/client/conteudo/': typeof ClientConteudoIndexRoute
   '/client/financeiro/': typeof ClientFinanceiroIndexRoute
   '/client/projetos/': typeof ClientProjetosIndexRoute
@@ -678,6 +695,7 @@ export interface FileRoutesById {
   '/os/propostas/': typeof OsPropostasIndexRoute
   '/os/prospeccao/': typeof OsProspeccaoIndexRoute
   '/propostas/$slug/': typeof PropostasSlugIndexRoute
+  '/relatorios/$empresa/': typeof RelatoriosEmpresaIndexRoute
   '/admin/execucao/rituais/checkin': typeof AdminExecucaoRituaisCheckinRoute
   '/admin/execucao/rituais/planning': typeof AdminExecucaoRituaisPlanningRoute
   '/admin/execucao/rituais/review': typeof AdminExecucaoRituaisReviewRoute
@@ -740,6 +758,7 @@ export interface FileRouteTypes {
     | '/playground/cases/decision-language'
     | '/propostas/$slug/aquisicao'
     | '/propostas/$slug/conteudo'
+    | '/relatorios/$empresa/$mes'
     | '/client/conteudo/'
     | '/client/financeiro/'
     | '/client/projetos/'
@@ -756,6 +775,7 @@ export interface FileRouteTypes {
     | '/os/propostas/'
     | '/os/prospeccao/'
     | '/propostas/$slug/'
+    | '/relatorios/$empresa/'
     | '/admin/execucao/rituais/checkin'
     | '/admin/execucao/rituais/planning'
     | '/admin/execucao/rituais/review'
@@ -810,6 +830,7 @@ export interface FileRouteTypes {
     | '/playground/cases/decision-language'
     | '/propostas/$slug/aquisicao'
     | '/propostas/$slug/conteudo'
+    | '/relatorios/$empresa/$mes'
     | '/client/conteudo'
     | '/client/financeiro'
     | '/client/projetos'
@@ -826,6 +847,7 @@ export interface FileRouteTypes {
     | '/os/propostas'
     | '/os/prospeccao'
     | '/propostas/$slug'
+    | '/relatorios/$empresa'
     | '/admin/execucao/rituais/checkin'
     | '/admin/execucao/rituais/planning'
     | '/admin/execucao/rituais/review'
@@ -886,6 +908,7 @@ export interface FileRouteTypes {
     | '/playground/cases/decision-language'
     | '/propostas/$slug/aquisicao'
     | '/propostas/$slug/conteudo'
+    | '/relatorios/$empresa/$mes'
     | '/client/conteudo/'
     | '/client/financeiro/'
     | '/client/projetos/'
@@ -902,6 +925,7 @@ export interface FileRouteTypes {
     | '/os/propostas/'
     | '/os/prospeccao/'
     | '/propostas/$slug/'
+    | '/relatorios/$empresa/'
     | '/admin/execucao/rituais/checkin'
     | '/admin/execucao/rituais/planning'
     | '/admin/execucao/rituais/review'
@@ -940,6 +964,8 @@ export interface RootRouteChildren {
   ApiCronPublishScheduledContentRoute: typeof ApiCronPublishScheduledContentRoute
   BlogCategoriaCategoryRoute: typeof BlogCategoriaCategoryRoute
   PlaygroundCasesDecisionLanguageRoute: typeof PlaygroundCasesDecisionLanguageRoute
+  RelatoriosEmpresaMesRoute: typeof RelatoriosEmpresaMesRoute
+  RelatoriosEmpresaIndexRoute: typeof RelatoriosEmpresaIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1147,6 +1173,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLeadsRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/relatorios/$empresa/': {
+      id: '/relatorios/$empresa/'
+      path: '/relatorios/$empresa'
+      fullPath: '/relatorios/$empresa/'
+      preLoaderRoute: typeof RelatoriosEmpresaIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/propostas/$slug/': {
       id: '/propostas/$slug/'
       path: '/'
@@ -1258,6 +1291,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/client/conteudo/'
       preLoaderRoute: typeof ClientConteudoIndexRouteImport
       parentRoute: typeof ClientRouteRoute
+    }
+    '/relatorios/$empresa/$mes': {
+      id: '/relatorios/$empresa/$mes'
+      path: '/relatorios/$empresa/$mes'
+      fullPath: '/relatorios/$empresa/$mes'
+      preLoaderRoute: typeof RelatoriosEmpresaMesRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/propostas/$slug/conteudo': {
       id: '/propostas/$slug/conteudo'
@@ -1647,6 +1687,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiCronPublishScheduledContentRoute: ApiCronPublishScheduledContentRoute,
   BlogCategoriaCategoryRoute: BlogCategoriaCategoryRoute,
   PlaygroundCasesDecisionLanguageRoute: PlaygroundCasesDecisionLanguageRoute,
+  RelatoriosEmpresaMesRoute: RelatoriosEmpresaMesRoute,
+  RelatoriosEmpresaIndexRoute: RelatoriosEmpresaIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
