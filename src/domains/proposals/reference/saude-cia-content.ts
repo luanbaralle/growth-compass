@@ -1,80 +1,78 @@
 import type { ProposalPricingTier } from "../types";
 
-/** Investimento específico Saúde & Cia (setup + operação + mídia). */
+/** Investimento específico Saúde & Cia (fundação + sistema + mídia). */
 export const SAUDE_CIA_PRICING: ProposalPricingTier[] = [
   {
     id: "implementation",
-    name: "Fundação · Mês 01",
-    subtitle: "Pagamento único · setup",
-    amountLabel: "R$ 1.997",
+    name: "Fundação",
+    subtitle: "Pagamento único, Mês 01",
+    amountLabel: "R$ 997",
     frequency: "once",
     items: [
       "Diagnóstico estratégico e plano de ação",
-      "Definição de produtos prioritários",
-      "Revisão e otimização da jornada de conversão da LP",
-      "GTM, GA4, conversões e UTMs",
-      "Estrutura inicial de campanhas Google Ads",
-      "Calendário editorial e primeira pauta de conteúdo",
+      "Definição dos produtos prioritários",
+      "Estrutura inicial Google Ads",
+      "Configuração de tracking e conversões",
+      "Calendário editorial",
+      "Primeira pauta de conteúdo",
       "Preparação da primeira captação",
     ],
-    note: "Em até 12x de R$ 199,68",
+    note: "Em até 12x de R$ 83,08",
   },
   {
     id: "management",
-    name: "Operação de crescimento",
-    subtitle: "Mensal · a partir do Mês 02",
+    name: "Sistema de Crescimento",
+    subtitle: "Mensal, a partir do Mês 02",
     amountLabel: "R$ 1.800/mês",
     frequency: "monthly",
     items: [
-      "Gestão e otimização Google Ads",
-      "Pesquisa contínua de termos e produtos",
-      "4 Reels estratégicos por mês",
-      "Calendário editorial, roteiros e 1 sessão de captação em Itanhaém",
-      "Edição, legendas e publicação",
-      "Monitoramento de conversões e origem dos leads",
-      "Relatórios, análise e reuniões estratégicas",
+      "Aquisição: Google Ads e geração de demanda",
+      "Conteúdo: 4 Reels/mês, captação, edição e publicação",
+      "Estratégia: planejamento, acompanhamento e otimização",
+      "Dados: tracking, conversões e análise",
     ],
-    note: "Google Ads, produção de conteúdo e mensuração na mesma operação mensal.",
+    note: "Investimento em mídia não incluso. A verba é paga diretamente ao Google.",
   },
   {
     id: "media",
-    name: "Verba de mídia · Google Ads",
-    subtitle: "Mensal · pago direto ao Google",
-    amountLabel: "R$ 1.000",
+    name: "Verba de mídia no Google Ads",
+    subtitle: "Mensal, pago direto ao Google",
+    amountLabel: "R$ 1.200/mês",
     frequency: "monthly_google",
     items: [
-      "Investimento inicial recomendado no primeiro mês",
+      "Capital para aquisição de demanda",
       "Pago diretamente ao Google",
-      "Validação de demanda, produtos, mensagens e custo por oportunidade",
+      "Verba ajustável conforme performance e capacidade operacional",
     ],
-    note: "A verba poderá ser ampliada conforme os dados justificarem. Faixa de referência após validação: R$ 1.000 a R$ 2.000/mês.",
+    note: "Começamos com verba controlada e expandimos quando os dados justificarem.",
   },
 ];
 
 export const SAUDE_CIA_INVESTMENT = {
-  title: "Investimento para construir o sistema de crescimento",
+  title: "Investimento para colocar o sistema em funcionamento",
   intro:
-    "Três camadas de investimento: um setup inicial para colocar os três motores no ar, a operação mensal da Raise One e a verba de mídia paga diretamente ao Google. A mídia não passa pela Raise One: vocês pagam ao Google e nós gerenciamos a aplicação.",
+    "No primeiro mês, estruturamos a operação. A partir do segundo, o Sistema de Crescimento concentra aquisição, conteúdo, estratégia e dados em uma única mensalidade. A mídia é paga diretamente ao Google.",
   header: {
-    title: "Setup, operação e mídia",
+    title: "Fundação fácil. Operação contínua.",
     description:
-      "Fundação única no Mês 01. Operação mensal a partir do Mês 02. Mídia com investimento inicial de R$ 1.000 no primeiro mês.",
-    steps: ["01 Setup único", "02 Operação mensal", "03 Mídia Google"] as const,
+      "R$ 997 para preparar e ativar. A partir do Mês 02, R$ 1.800/mês pelo sistema completo. Mídia à parte, no Google.",
+    steps: ["01 Fundação R$ 997", "02 Sistema R$ 1.800/mês", "03 Mídia Google"] as const,
   },
+  implementationLead: "Para colocar o sistema em funcionamento.",
   summary: {
     title: "Resumo do investimento",
     rows: [
-      { label: "Fundação (único)", value: "R$ 1.997" },
-      { label: "Operação Raise One / mês (desde o Mês 02)", value: "R$ 1.800/mês" },
-      { label: "Mídia Google · 1º mês (recomendado)", value: "R$ 1.000" },
+      { label: "Fundação (único, Mês 01)", value: "R$ 997" },
+      { label: "Sistema de Crescimento / mês (desde o Mês 02)", value: "R$ 1.800/mês" },
+      { label: "Mídia Google (pago ao Google)", value: "R$ 1.200/mês" },
     ],
     totalLabel: "Total mensal estimado (após setup)",
-    totalValue: "R$ 2.800",
+    totalValue: "R$ 3.000",
     totalNote:
-      "Operação + mídia inicial. O setup (Mês 01) é pago uma única vez; a operação mensal começa no Mês 02. A verba de mídia pode ser ajustada com base nos dados.",
+      "Fundação no primeiro mês; a partir do segundo, operação mensal da Raise One mais a verba de mídia paga diretamente ao Google.",
   },
   footer:
-    "O setup prepara a fundação no Mês 01. A operação mensal começa no Mês 02. Custos extraordinários de produção, deslocamentos fora da região acordada, contratação de modelos, locações, equipamentos ou fornecedores terceiros, quando necessários, serão previamente aprovados e orçados à parte.",
+    "Fundação no Mês 01: preparar, estruturar e ativar. Operação contínua a partir do Mês 02: gerar, aprender e otimizar. Custos extraordinários de produção, deslocamentos fora da região acordada, contratação de modelos, locações, equipamentos ou fornecedores terceiros, quando necessários, serão previamente aprovados e orçados à parte.",
   recurringOrder: ["management", "media"] as const,
 };
 
@@ -225,7 +223,7 @@ export const SAUDE_CIA_REFERENCE = {
   expansion: {
     number: "04",
     title: "Expansão orientada por dados",
-    subtitle: "Ativada após validação do primeiro ciclo.",
+    subtitle: "Ativada quando houver evidência de resultado e capacidade operacional.",
     items: [
       "Novas landing pages por produto/intenção",
       "Remarketing e Meta Ads",
@@ -286,23 +284,23 @@ export const SAUDE_CIA_REFERENCE = {
       period: "Mês 01",
       title: "Fundação",
       items: [
-        "Tracking e LP",
-        "Google Ads",
+        "Preparar, estruturar e ativar",
+        "Tracking e conversões",
+        "Google Ads inicial",
         "Calendário editorial",
-        "Primeira captação",
-        "Primeiros conteúdos",
-        "Mensuração",
+        "Primeira pauta",
+        "Preparar captação",
       ],
     },
     {
       period: "Mês 02",
-      title: "Validação",
+      title: "Operação contínua",
       items: [
         "Campanhas e termos",
-        "Produtos prioritários",
-        "Conteúdos e leads",
-        "Conversões",
-        "Retorno da operação",
+        "4 Reels / mês",
+        "Captação e publicação",
+        "Conversões e dados",
+        "Otimização contínua",
       ],
     },
     {

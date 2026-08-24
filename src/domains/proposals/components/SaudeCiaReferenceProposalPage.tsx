@@ -27,6 +27,7 @@ import {
   r1SectionPy,
 } from "../shell/r1-tokens";
 import { SAUDE_CIA_NAV, SAUDE_CIA_REFERENCE as C } from "../reference/saude-cia-content";
+import heroVisual from "@/assets/proposals/saude-cia/hero-visual.png";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import { cn } from "@/lib/utils";
 import { ArrowDown, ArrowRight } from "lucide-react";
@@ -89,27 +90,44 @@ export function SaudeCiaReferenceProposalPage({ proposal }: { proposal: Proposal
           <div className="absolute inset-x-0 top-0 h-0.5 bg-emerald-500/60" />
         </div>
 
-        <div className={cn(r1ShellWide, "relative z-10 py-16 sm:py-24")}>
-          <p className="text-sm font-medium text-emerald-400/90">{C.company}</p>
-          <p className="mt-1 text-xs text-white/40">{C.client}</p>
+        <div className={cn(r1ShellWide, "relative z-10 w-full py-14 sm:py-20 lg:max-w-7xl lg:py-16")}>
+          <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-6 xl:gap-8">
+            <div className="relative z-10 max-w-xl lg:max-w-none">
+              <p className="text-sm font-medium text-emerald-400/90">{C.company}</p>
+              <p className="mt-1 text-xs text-white/40">{C.client}</p>
 
-          <span className="mt-6 inline-flex rounded-full border border-white/12 bg-white/[0.04] px-3 py-1 text-[10px] font-medium uppercase tracking-[0.16em] text-white/50">
-            {C.hero.eyebrow}
-          </span>
+              <span className="mt-6 inline-flex rounded-full border border-white/12 bg-white/[0.04] px-3 py-1 text-[10px] font-medium uppercase tracking-[0.16em] text-white/50">
+                {C.hero.eyebrow}
+              </span>
 
-          <h1 className="mt-8 max-w-4xl text-balance text-3xl font-bold leading-[1.1] tracking-tight text-white sm:text-4xl lg:text-5xl">
-            {C.hero.headline}
-          </h1>
+              <h1 className="mt-7 max-w-xl text-balance text-3xl font-bold leading-[1.1] tracking-tight text-white sm:mt-8 sm:text-4xl lg:text-[2.6rem] xl:text-[2.85rem]">
+                {C.hero.headline}
+              </h1>
 
-          <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/65 sm:text-lg">
-            {C.hero.lead}
-          </p>
+              <p className="mt-5 max-w-md text-base leading-relaxed text-white/65 sm:mt-6 sm:text-lg">
+                {C.hero.lead}
+              </p>
 
-          <p className="mt-6 max-w-xl border-l-2 border-emerald-500/60 pl-4 text-sm font-medium text-white/70 sm:pl-5 sm:text-base">
-            {C.hero.strategyLine}
-          </p>
+              <p className="mt-5 max-w-md border-l-2 border-emerald-500/60 pl-4 text-sm font-medium text-white/70 sm:mt-6 sm:pl-5 sm:text-base">
+                {C.hero.strategyLine}
+              </p>
 
-          <p className="mt-8 text-xs text-white/35">{C.hero.footnote}</p>
+              <p className="mt-7 text-xs text-white/35 sm:mt-8">{C.hero.footnote}</p>
+            </div>
+
+            <div className="relative mx-auto w-full max-w-lg sm:max-w-xl lg:-mr-2 lg:ml-auto lg:max-w-none lg:translate-x-1 xl:-mr-4 xl:translate-x-2">
+              <img
+                src={heroVisual}
+                alt="Projeto de crescimento digital Raise One em parceria com Saúde & Cia"
+                width={1536}
+                height={1024}
+                decoding="async"
+                fetchPriority="high"
+                draggable={false}
+                className="relative z-10 w-full max-w-none select-none lg:scale-[1.06] lg:origin-[60%_50%] xl:scale-[1.1]"
+              />
+            </div>
+          </div>
         </div>
 
         <div className="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 text-white/30">
@@ -118,16 +136,18 @@ export function SaudeCiaReferenceProposalPage({ proposal }: { proposal: Proposal
       </header>
 
       <nav className="sticky top-16 z-40 border-b border-white/[0.06] bg-[#090909]/95 backdrop-blur-xl">
-        <div className={cn(r1ShellWide, "flex gap-1 overflow-x-auto py-2")}>
-          {SAUDE_CIA_NAV.map((item) => (
-            <a
-              key={item.id}
-              href={`#${item.id}`}
-              className="shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium text-white/45 transition-colors hover:bg-white/[0.04] hover:text-white/80"
-            >
-              {item.label}
-            </a>
-          ))}
+        <div className="overflow-x-auto">
+          <div className="mx-auto flex w-max gap-1 px-4 py-2 sm:px-6">
+            {SAUDE_CIA_NAV.map((item) => (
+              <a
+                key={item.id}
+                href={`#${item.id}`}
+                className="shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium text-white/45 transition-colors hover:bg-white/[0.04] hover:text-white/80"
+              >
+                {item.label}
+              </a>
+            ))}
+          </div>
         </div>
       </nav>
 
@@ -238,6 +258,7 @@ export function SaudeCiaReferenceProposalPage({ proposal }: { proposal: Proposal
               headerTitle: SAUDE_CIA_INVESTMENT.header.title,
               headerDescription: SAUDE_CIA_INVESTMENT.header.description,
               headerSteps: SAUDE_CIA_INVESTMENT.header.steps,
+              implementationLead: SAUDE_CIA_INVESTMENT.implementationLead,
               footerNote: SAUDE_CIA_INVESTMENT.footer,
               recurringOrder: SAUDE_CIA_INVESTMENT.recurringOrder,
               summary: SAUDE_CIA_INVESTMENT.summary,
@@ -274,7 +295,7 @@ export function SaudeCiaReferenceProposalPage({ proposal }: { proposal: Proposal
             </a>
           )}
           <p className="mt-8 text-[11px] text-white/30">
-            {C.company} × Raise One Soluções
+            {C.company} e Raise One Soluções
           </p>
         </div>
       </footer>

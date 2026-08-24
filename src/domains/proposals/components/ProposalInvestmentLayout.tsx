@@ -15,6 +15,7 @@ export interface ProposalInvestmentContext {
   headerDescription?: string;
   headerSteps?: readonly string[];
   footerNote?: string;
+  implementationLead?: string;
   recurringOrder?: readonly ("media" | "management")[];
   summary?: {
     title: string;
@@ -200,6 +201,11 @@ export function ProposalInvestmentLayout({
                   <h3 className="mt-1 text-xl font-bold text-white sm:text-2xl md:text-3xl">
                     {implementation.name}
                   </h3>
+                  {context?.implementationLead && (
+                    <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/55 sm:text-base">
+                      {context.implementationLead}
+                    </p>
+                  )}
                 </div>
               </div>
               <ul className="mt-8 grid gap-2 sm:grid-cols-2">
