@@ -366,7 +366,14 @@ export function ProposalInsightGrid({
   items: readonly { title: string; body: string; extra?: ReactNode }[];
 }) {
   return (
-    <div className="grid gap-4 lg:grid-cols-3">
+    <div
+      className={cn(
+        "grid gap-4",
+        items.length <= 1 && "grid-cols-1",
+        items.length === 2 && "md:grid-cols-2",
+        items.length >= 3 && "md:grid-cols-2 lg:grid-cols-3",
+      )}
+    >
       {items.map((item, i) => {
         const Icon = INSIGHT_ICONS[i] ?? Sparkles;
         return (
