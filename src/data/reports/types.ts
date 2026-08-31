@@ -163,6 +163,8 @@ export type ReportCompany = {
   logo: string;
   /** Prints do criativo / LP exibidos no carrossel do hero. */
   carouselImages?: string[];
+  /** `phone` = mockup de celular (padrão). `card` = imagem com borda arredondada. */
+  carouselStyle?: "phone" | "card";
   /** Rótulo da métrica de conversão nos cards de campanha (ex.: WhatsApp, Conversões). */
   conversionLabel?: string;
   months: ReportMonth[];

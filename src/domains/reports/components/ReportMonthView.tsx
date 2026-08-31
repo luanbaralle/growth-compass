@@ -313,22 +313,41 @@ export function ReportMonthView({
               transition={{ ...fadeUp.transition, delay: 0.3 }}
               className="flex w-full items-center justify-center md:col-span-5"
             >
-              <div className="relative w-full max-w-[280px] overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.04] p-2.5 shadow-2xl shadow-black/40 backdrop-blur-sm">
-                <div className="relative flex min-h-[540px] w-full items-center justify-center md:min-h-[580px]">
-                  <AnimatePresence mode="wait">
-                    <motion.img
-                      key={slide}
-                      src={carouselImages[slide]}
-                      alt={`Anúncio ${company.name}`}
-                      initial={{ opacity: 0, scale: 0.96, y: 10 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 1.02, y: -10 }}
-                      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                      className="absolute inset-0 h-full w-full rounded-[22px] object-cover"
-                    />
-                  </AnimatePresence>
+              {company.carouselStyle === "card" ? (
+                <div className="relative w-full max-w-[320px] overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.03] shadow-2xl shadow-black/40">
+                  <div className="relative aspect-[9/19] w-full">
+                    <AnimatePresence mode="wait">
+                      <motion.img
+                        key={slide}
+                        src={carouselImages[slide]}
+                        alt={`Anúncio ${company.name}`}
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 1.02 }}
+                        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                        className="absolute inset-0 h-full w-full object-cover object-top"
+                      />
+                    </AnimatePresence>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="relative w-full max-w-[280px] overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.04] p-2.5 shadow-2xl shadow-black/40 backdrop-blur-sm">
+                  <div className="relative flex min-h-[540px] w-full items-center justify-center md:min-h-[580px]">
+                    <AnimatePresence mode="wait">
+                      <motion.img
+                        key={slide}
+                        src={carouselImages[slide]}
+                        alt={`Anúncio ${company.name}`}
+                        initial={{ opacity: 0, scale: 0.96, y: 10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 1.02, y: -10 }}
+                        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                        className="absolute inset-0 h-full w-full rounded-[22px] object-cover"
+                      />
+                    </AnimatePresence>
+                  </div>
+                </div>
+              )}
             </motion.div>
           ) : null}
         </div>

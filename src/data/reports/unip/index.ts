@@ -1,6 +1,6 @@
 import unipLogo from "@/assets/reports/unip/unip-logo.jpg";
 import printAdsSerp from "@/assets/reports/unip/print-ads-serp.png";
-import printDesktop from "@/assets/reports/unip/print-desktop.png";
+import printMobile from "@/assets/reports/unip/print-mobile.png";
 import { unipJulho } from "./julho";
 import { unipAgosto } from "./agosto";
 import type { ReportCompany, ReportMonth } from "../types";
@@ -12,7 +12,8 @@ export const unipReports: ReportCompany = {
   region: "Caraguatatuba · São Sebastião · Ilhabela",
   platform: "Google Ads",
   logo: unipLogo,
-  carouselImages: [printAdsSerp, printDesktop],
+  carouselImages: [printAdsSerp, printMobile],
+  carouselStyle: "card",
   conversionLabel: "Conversões",
   months: [unipJulho, unipAgosto],
 };
