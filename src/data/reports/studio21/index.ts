@@ -1,4 +1,7 @@
 import studio21Logo from "@/assets/reports/studio21/studio21-logo.png";
+import print1 from "@/assets/reports/studio21/print1.png";
+import print2 from "@/assets/reports/studio21/print2.png";
+import print3 from "@/assets/reports/studio21/print3.jpeg";
 import { studio21Maio } from "./maio";
 import { studio21Junho } from "./junho";
 import { studio21Julho } from "./julho";
@@ -12,6 +15,8 @@ export const studio21Reports: ReportCompany = {
   region: "Itanhaém · Mongaguá · Peruíbe",
   platform: "Google Ads",
   logo: studio21Logo,
+  carouselImages: [print1, print2, print3],
+  conversionLabel: "WhatsApp",
   months: [studio21Maio, studio21Junho, studio21Julho, studio21Agosto],
 };
 

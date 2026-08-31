@@ -24,9 +24,6 @@ import dashMaio from "@/assets/reports/studio21/google-ads-dashboard.png";
 import dashJunho from "@/assets/reports/studio21/Google-Ads-Junho.png";
 import dashJulho from "@/assets/reports/studio21/Google-Ads-Julho.png";
 import dashAgosto from "@/assets/reports/studio21/Google-Ads-Agosto.png";
-import print1 from "@/assets/reports/studio21/print1.png";
-import print2 from "@/assets/reports/studio21/print2.png";
-import print3 from "@/assets/reports/studio21/print3.jpeg";
 import type { ReportCompany, ReportMonth } from "@/data/reports/types";
 import { formatBRL, formatInt, formatPct, pctChange } from "../format";
 import { accentClass, fadeUp, reportIconMap } from "../report-ui";
@@ -34,9 +31,7 @@ import { ReportMetricCard } from "./ReportMetricCard";
 import { ReportSection } from "./ReportSection";
 import { cn } from "@/lib/utils";
 
-const carouselImages = [print1, print2, print3];
-
-const dashboards = {
+const legacyDashboards = {
   maio: dashMaio,
   junho: dashJunho,
   julho: dashJulho,
@@ -47,6 +42,7 @@ const kpiIcons = {
   Impressões: Eye,
   Cliques: MousePointerClick,
   Mensagens: MessageCircle,
+  Conversões: MessageCircle,
   Investimento: Wallet,
 } as const;
 
@@ -106,15 +102,21 @@ function CampaignCard({
   campaign,
   totalCost,
   index,
+  conversionLabel = "WhatsApp",
 }: {
   campaign: NonNullable<ReportMonth["campaigns"]>[number];
   totalCost: number;
   index: number;
+  conversionLabel?: string;
 }) {
   const a = accentClass[campaign.accent];
   const Icon = reportIconMap[campaign.iconKey];
   const m = campaign.metrics;
   const share = Math.round((m.cost / totalCost) * 100);
+  const costPerLabel =
+    conversionLabel.toLowerCase().includes("whats") || conversionLabel.toLowerCase().includes("msg")
+      ? "Custo / msg"
+      : "Custo / conv";
 
   return (
     <motion.div
@@ -141,10 +143,10 @@ function CampaignCard({
         {[
           { l: "Impressões", v: formatInt(m.impressions) },
           { l: "Cliques", v: formatInt(m.clicks) },
-          { l: "WhatsApp", v: String(m.conversions) },
+          { l: conversionLabel, v: String(m.conversions) },
           { l: "Investimento", v: formatBRL(m.cost) },
           { l: "CPC médio", v: formatBRL(m.cpc) },
-          { l: "Custo / msg", v: formatBRL(m.costPerConv ?? 0) },
+          { l: costPerLabel, v: formatBRL(m.costPerConv ?? 0) },
         ].map((item) => (
           <div key={item.l} className="rounded-xl border border-white/[0.06] bg-black/20 p-4">
             <div className="text-[10px] uppercase tracking-[0.14em] text-white/35">{item.l}</div>
@@ -189,11 +191,17 @@ export function ReportMonthView({
 }) {
   const [slide, setSlide] = useState(0);
   const totalCost = month.comparison?.current.cost ?? month.campaigns?.[0]?.metrics.cost ?? 1;
+  const carouselImages = company.carouselImages ?? [];
+  const conversionLabel = company.conversionLabel ?? "WhatsApp";
+  const dashboardSrc =
+    month.dashboardSrc ??
+    (month.dashboardImage ? legacyDashboards[month.dashboardImage] : undefined);
 
   useEffect(() => {
+    if (carouselImages.length <= 1) return;
     const id = setInterval(() => setSlide((s) => (s + 1) % carouselImages.length), 8000);
     return () => clearInterval(id);
-  }, []);
+  }, [carouselImages.length]);
 
   let section = 1;
   const next = () => String(section++).padStart(2, "0");
@@ -299,28 +307,30 @@ export function ReportMonthView({
             </motion.div>
           </div>
 
-          <motion.div
-            {...fadeUp}
-            transition={{ ...fadeUp.transition, delay: 0.3 }}
-            className="flex w-full items-center justify-center md:col-span-5"
-          >
-            <div className="relative w-full max-w-[280px] overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.04] p-2.5 shadow-2xl shadow-black/40 backdrop-blur-sm">
-              <div className="relative flex min-h-[540px] w-full items-center justify-center md:min-h-[580px]">
-                <AnimatePresence mode="wait">
-                  <motion.img
-                    key={slide}
-                    src={carouselImages[slide]}
-                    alt={`Anúncio ${company.name}`}
-                    initial={{ opacity: 0, scale: 0.96, y: 10 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 1.02, y: -10 }}
-                    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                    className="absolute inset-0 h-full w-full rounded-[22px] object-cover"
-                  />
-                </AnimatePresence>
+          {carouselImages.length > 0 ? (
+            <motion.div
+              {...fadeUp}
+              transition={{ ...fadeUp.transition, delay: 0.3 }}
+              className="flex w-full items-center justify-center md:col-span-5"
+            >
+              <div className="relative w-full max-w-[280px] overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.04] p-2.5 shadow-2xl shadow-black/40 backdrop-blur-sm">
+                <div className="relative flex min-h-[540px] w-full items-center justify-center md:min-h-[580px]">
+                  <AnimatePresence mode="wait">
+                    <motion.img
+                      key={slide}
+                      src={carouselImages[slide]}
+                      alt={`Anúncio ${company.name}`}
+                      initial={{ opacity: 0, scale: 0.96, y: 10 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 1.02, y: -10 }}
+                      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                      className="absolute inset-0 h-full w-full rounded-[22px] object-cover"
+                    />
+                  </AnimatePresence>
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          ) : null}
         </div>
       </section>
 
@@ -373,26 +383,28 @@ export function ReportMonthView({
           </motion.div>
         ) : null}
 
-        <motion.div
-          {...fadeUp}
-          transition={{ ...fadeUp.transition, delay: 0.1 }}
-          className="mt-6 overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.03]"
-        >
-          <div className="flex items-center justify-between border-b border-white/[0.06] px-5 py-3">
-            <div className="flex items-center gap-2 text-xs text-white/45">
-              <img src={googleAdsLogo} alt="" className="h-4 w-auto" />
-              <span>Painel oficial · Google Ads</span>
+        {dashboardSrc ? (
+          <motion.div
+            {...fadeUp}
+            transition={{ ...fadeUp.transition, delay: 0.1 }}
+            className="mt-6 overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.03]"
+          >
+            <div className="flex items-center justify-between border-b border-white/[0.06] px-5 py-3">
+              <div className="flex items-center gap-2 text-xs text-white/45">
+                <img src={googleAdsLogo} alt="" className="h-4 w-auto" />
+                <span>Painel oficial · Google Ads</span>
+              </div>
+              <span className="text-[10px] uppercase tracking-[0.18em] text-white/35">
+                {month.dashboardPeriodLabel}
+              </span>
             </div>
-            <span className="text-[10px] uppercase tracking-[0.18em] text-white/35">
-              {month.dashboardPeriodLabel}
-            </span>
-          </div>
-          <img
-            src={dashboards[month.dashboardImage]}
-            alt={`Painel Google Ads — ${month.monthLabel}`}
-            className="w-full"
-          />
-        </motion.div>
+            <img
+              src={dashboardSrc}
+              alt={`Painel Google Ads — ${month.monthLabel}`}
+              className="w-full"
+            />
+          </motion.div>
+        ) : null}
       </ReportSection>
 
       {/* Trabalho da agência */}
@@ -444,6 +456,7 @@ export function ReportMonthView({
                 campaign={c}
                 totalCost={month.comparison?.current.cost ?? totalCost}
                 index={i}
+                conversionLabel={conversionLabel}
               />
             ))}
           </div>
@@ -508,7 +521,7 @@ export function ReportMonthView({
               format={formatInt}
             />
             <ComparisonRow
-              label="Mensagens WhatsApp"
+              label={conversionLabel}
               prev={month.comparison.prev.conversions}
               curr={month.comparison.current.conversions}
               leftLabel={month.comparison.leftLabel}
@@ -535,7 +548,12 @@ export function ReportMonthView({
             {month.comparison.prev.costPerConv != null &&
               month.comparison.current.costPerConv != null && (
                 <ComparisonRow
-                  label="Custo por mensagem"
+                  label={
+                    conversionLabel.toLowerCase().includes("whats") ||
+                    conversionLabel.toLowerCase().includes("msg")
+                      ? "Custo por mensagem"
+                      : "Custo por conversão"
+                  }
                   prev={month.comparison.prev.costPerConv}
                   curr={month.comparison.current.costPerConv}
                   leftLabel={month.comparison.leftLabel}

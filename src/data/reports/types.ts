@@ -26,8 +26,8 @@ export type ReportCampaign = {
   id: string;
   name: string;
   subtitle: string;
-  accent: "blue" | "yellow";
-  iconKey: "scissors" | "sparkles";
+  accent: ReportAccent;
+  iconKey: ReportIconKey;
   metrics: ReportMetricTotals;
 };
 
@@ -53,7 +53,10 @@ export type ReportMonth = {
   overviewIntro: string;
   overviewHighlight?: string;
   kpis: ReportKpi[];
-  dashboardImage: "maio" | "junho" | "julho" | "agosto";
+  /** Chave do dashboard Studio 21 (legado). Preferir `dashboardSrc`. */
+  dashboardImage?: "maio" | "junho" | "julho" | "agosto";
+  /** Screenshot do painel Google Ads (URL importada). */
+  dashboardSrc?: string;
   /** O que a agência executou no ciclo (a partir de agosto). */
   agencyWork?: {
     intro: string;
@@ -158,5 +161,9 @@ export type ReportCompany = {
   region: string;
   platform: string;
   logo: string;
+  /** Prints do criativo / LP exibidos no carrossel do hero. */
+  carouselImages?: string[];
+  /** Rótulo da métrica de conversão nos cards de campanha (ex.: WhatsApp, Conversões). */
+  conversionLabel?: string;
   months: ReportMonth[];
 };
