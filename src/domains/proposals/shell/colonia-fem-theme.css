@@ -1,0 +1,182 @@
+/* Optional light theme for Colônia FEM proposal (dark remains default). */
+
+.colonia-fem-root[data-colonia-theme="light"] {
+  color-scheme: light;
+  background-color: #f6f4f1 !important;
+  color: #18181b !important;
+}
+
+.colonia-fem-root[data-colonia-theme="light"] .colonia-fem-logo .brand-logo-image {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* Surfaces */
+.colonia-fem-root[data-colonia-theme="light"] .bg-\[\#090909\],
+.colonia-fem-root[data-colonia-theme="light"] .bg-\[\#090909\]\/95 {
+  background-color: #f6f4f1 !important;
+}
+
+.colonia-fem-root[data-colonia-theme="light"] .bg-\[\#0c0c0c\] {
+  background-color: #ffffff !important;
+}
+
+.colonia-fem-root[data-colonia-theme="light"] .bg-black\/20,
+.colonia-fem-root[data-colonia-theme="light"] .bg-black\/25,
+.colonia-fem-root[data-colonia-theme="light"] .bg-black\/40 {
+  background-color: rgb(24 24 27 / 0.04) !important;
+}
+
+.colonia-fem-root[data-colonia-theme="light"] .bg-white\/\[0\.012\],
+.colonia-fem-root[data-colonia-theme="light"] .bg-white\/\[0\.015\],
+.colonia-fem-root[data-colonia-theme="light"] .bg-white\/\[0\.02\],
+.colonia-fem-root[data-colonia-theme="light"] .bg-white\/\[0\.03\],
+.colonia-fem-root[data-colonia-theme="light"] .bg-white\/\[0\.04\],
+.colonia-fem-root[data-colonia-theme="light"] .bg-white\/\[0\.05\],
+.colonia-fem-root[data-colonia-theme="light"] .bg-white\/\[0\.06\] {
+  background-color: #ffffff !important;
+}
+
+.colonia-fem-root[data-colonia-theme="light"] .hover\:bg-white\/\[0\.03\]:hover,
+.colonia-fem-root[data-colonia-theme="light"] .hover\:bg-white\/\[0\.04\]:hover,
+.colonia-fem-root[data-colonia-theme="light"] .hover\:bg-white\/\[0\.05\]:hover,
+.colonia-fem-root[data-colonia-theme="light"] .hover\:bg-white\/\[0\.08\]:hover {
+  background-color: #f3f1ed !important;
+}
+
+/* Borders */
+.colonia-fem-root[data-colonia-theme="light"] .border-white\/\[0\.06\],
+.colonia-fem-root[data-colonia-theme="light"] .border-white\/\[0\.08\],
+.colonia-fem-root[data-colonia-theme="light"] .border-white\/10,
+.colonia-fem-root[data-colonia-theme="light"] .border-white\/12,
+.colonia-fem-root[data-colonia-theme="light"] .border-white\/15 {
+  border-color: rgb(24 24 27 / 0.1) !important;
+}
+
+.colonia-fem-root[data-colonia-theme="light"] .hover\:border-white\/12:hover,
+.colonia-fem-root[data-colonia-theme="light"] .hover\:border-white\/15:hover,
+.colonia-fem-root[data-colonia-theme="light"] .hover\:border-white\/25:hover {
+  border-color: rgb(24 24 27 / 0.16) !important;
+}
+
+.colonia-fem-root[data-colonia-theme="light"] .ring-white\/10,
+.colonia-fem-root[data-colonia-theme="light"] .ring-white\/12 {
+  --tw-ring-color: rgb(24 24 27 / 0.1) !important;
+}
+
+/* Text hierarchy */
+.colonia-fem-root[data-colonia-theme="light"] .text-white {
+  color: #18181b !important;
+}
+
+.colonia-fem-root[data-colonia-theme="light"] .text-white\/90,
+.colonia-fem-root[data-colonia-theme="light"] .text-white\/85,
+.colonia-fem-root[data-colonia-theme="light"] .text-white\/80 {
+  color: #27272a !important;
+}
+
+.colonia-fem-root[data-colonia-theme="light"] .text-white\/75,
+.colonia-fem-root[data-colonia-theme="light"] .text-white\/70,
+.colonia-fem-root[data-colonia-theme="light"] .text-white\/68,
+.colonia-fem-root[data-colonia-theme="light"] .text-white\/65,
+.colonia-fem-root[data-colonia-theme="light"] .text-white\/60 {
+  color: #3f3f46 !important;
+}
+
+.colonia-fem-root[data-colonia-theme="light"] .text-white\/55,
+.colonia-fem-root[data-colonia-theme="light"] .text-white\/50,
+.colonia-fem-root[data-colonia-theme="light"] .text-white\/48,
+.colonia-fem-root[data-colonia-theme="light"] .text-white\/45 {
+  color: #52525b !important;
+}
+
+.colonia-fem-root[data-colonia-theme="light"] .text-white\/40,
+.colonia-fem-root[data-colonia-theme="light"] .text-white\/38,
+.colonia-fem-root[data-colonia-theme="light"] .text-white\/35,
+.colonia-fem-root[data-colonia-theme="light"] .text-white\/30,
+.colonia-fem-root[data-colonia-theme="light"] .text-white\/25 {
+  color: #71717a !important;
+}
+
+.colonia-fem-root[data-colonia-theme="light"] .decoration-white\/30 {
+  text-decoration-color: rgb(24 24 27 / 0.35) !important;
+}
+
+.colonia-fem-root[data-colonia-theme="light"] .bg-white\/25 {
+  background-color: rgb(24 24 27 / 0.2) !important;
+}
+
+/* Cards / elevation */
+.colonia-fem-root[data-colonia-theme="light"] .shadow-\[0_8px_32px_rgba\(0\,0\,0\,0\.35\)\],
+.colonia-fem-root[data-colonia-theme="light"] .shadow-\[0_24px_80px_rgba\(0\,0\,0\,0\.55\)\],
+.colonia-fem-root[data-colonia-theme="light"] .shadow-\[0_28px_60px_rgba\(0\,0\,0\,0\.45\)\] {
+  box-shadow: 0 10px 30px rgb(24 24 27 / 0.08) !important;
+}
+
+.colonia-fem-root[data-colonia-theme="light"] .shadow-\[0_0_0_4px_\#0c0c0c\] {
+  box-shadow: 0 0 0 4px #f6f4f1 !important;
+}
+
+.colonia-fem-root[data-colonia-theme="light"] .drop-shadow-\[0_28px_60px_rgba\(0\,0\,0\,0\.45\)\] {
+  filter: drop-shadow(0 18px 28px rgb(24 24 27 / 0.12));
+}
+
+/* Emerald accents: slightly stronger fills on light */
+.colonia-fem-root[data-colonia-theme="light"] .text-emerald-400,
+.colonia-fem-root[data-colonia-theme="light"] .text-emerald-400\/90,
+.colonia-fem-root[data-colonia-theme="light"] .text-emerald-400\/85,
+.colonia-fem-root[data-colonia-theme="light"] .text-emerald-400\/80,
+.colonia-fem-root[data-colonia-theme="light"] .text-emerald-400\/70 {
+  color: #059669 !important;
+}
+
+.colonia-fem-root[data-colonia-theme="light"] .text-emerald-300,
+.colonia-fem-root[data-colonia-theme="light"] .text-emerald-300\/90,
+.colonia-fem-root[data-colonia-theme="light"] .text-emerald-200\/90,
+.colonia-fem-root[data-colonia-theme="light"] .text-emerald-100\/85 {
+  color: #047857 !important;
+}
+
+.colonia-fem-root[data-colonia-theme="light"] .bg-emerald-500\/\[0\.04\],
+.colonia-fem-root[data-colonia-theme="light"] .bg-emerald-500\/\[0\.05\],
+.colonia-fem-root[data-colonia-theme="light"] .bg-emerald-500\/\[0\.06\],
+.colonia-fem-root[data-colonia-theme="light"] .bg-emerald-500\/\[0\.07\],
+.colonia-fem-root[data-colonia-theme="light"] .bg-emerald-500\/\[0\.08\],
+.colonia-fem-root[data-colonia-theme="light"] .bg-emerald-500\/\[0\.1\],
+.colonia-fem-root[data-colonia-theme="light"] .bg-emerald-500\/\[0\.12\],
+.colonia-fem-root[data-colonia-theme="light"] .bg-emerald-500\/10,
+.colonia-fem-root[data-colonia-theme="light"] .bg-emerald-500\/15 {
+  background-color: rgb(16 185 129 / 0.12) !important;
+}
+
+.colonia-fem-root[data-colonia-theme="light"] .border-emerald-500\/15,
+.colonia-fem-root[data-colonia-theme="light"] .border-emerald-500\/20,
+.colonia-fem-root[data-colonia-theme="light"] .border-emerald-500\/25,
+.colonia-fem-root[data-colonia-theme="light"] .border-emerald-500\/30 {
+  border-color: rgb(5 150 105 / 0.28) !important;
+}
+
+/* Footer CTA: invert on light */
+.colonia-fem-root[data-colonia-theme="light"] footer a.bg-white {
+  background-color: #18181b !important;
+  color: #ffffff !important;
+}
+
+.colonia-fem-root[data-colonia-theme="light"] footer .text-black {
+  color: #ffffff !important;
+}
+
+/* Scroll progress track */
+.colonia-fem-root[data-colonia-theme="light"] .bg-white\/\[0\.06\] {
+  background-color: rgb(24 24 27 / 0.08) !important;
+}
+
+/* Amber / sky readable on light */
+.colonia-fem-root[data-colonia-theme="light"] .text-amber-100\/90,
+.colonia-fem-root[data-colonia-theme="light"] .text-amber-300\/90 {
+  color: #b45309 !important;
+}
+
+.colonia-fem-root[data-colonia-theme="light"] .text-sky-300\/90,
+.colonia-fem-root[data-colonia-theme="light"] .text-sky-400\/70 {
+  color: #0284c7 !important;
+}

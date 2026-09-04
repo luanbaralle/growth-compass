@@ -1,3 +1,5 @@
+"use client";
+
 import type { Proposal } from "../types";
 import {
   COLONIA_FEM_INVESTMENT,
@@ -24,6 +26,7 @@ import {
   r1ShellWide,
   r1SectionPy,
 } from "../shell/r1-tokens";
+import "../shell/colonia-fem-theme.css";
 import heroVisual from "@/assets/proposals/colonia-fem/hero-visual.png";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import { cn } from "@/lib/utils";
@@ -50,17 +53,43 @@ import {
   MapPin,
   Megaphone,
   MessageCircle,
+  Moon,
   MousePointerClick,
   Radio,
   Search,
   Sparkles,
+  Sun,
   Target,
   Users,
   UtensilsCrossed,
   Waves,
   Clapperboard,
 } from "lucide-react";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+
+const THEME_STORAGE_KEY = "colonia-fem-proposal-theme";
+type ColoniaTheme = "dark" | "light";
+
+function ColoniaThemeToggle({
+  theme,
+  onToggle,
+}: {
+  theme: ColoniaTheme;
+  onToggle: () => void;
+}) {
+  const isLight = theme === "light";
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-label={isLight ? "Ativar modo escuro" : "Ativar modo claro"}
+      title={isLight ? "Modo escuro" : "Modo claro"}
+      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/[0.04] text-white/80 transition-colors hover:border-white/25 hover:bg-white/[0.08] hover:text-white"
+    >
+      {isLight ? <Moon className="h-4 w-4" strokeWidth={2} /> : <Sun className="h-4 w-4" strokeWidth={2} />}
+    </button>
+  );
+}
 
 const CLOSING_FLOW_ICONS = [Search, Megaphone, LayoutTemplate, MessageCircle, CalendarCheck] as const;
 
@@ -304,11 +333,41 @@ export function ColoniaFemReferenceProposalPage({ proposal }: { proposal: Propos
   const implTier = COLONIA_FEM_PRICING.find((t) => t.id === "implementation")!;
   const mgmtTier = COLONIA_FEM_PRICING.find((t) => t.id === "management")!;
   const mediaTier = COLONIA_FEM_PRICING.find((t) => t.id === "media")!;
+  const [theme, setTheme] = useState<ColoniaTheme>("dark");
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(THEME_STORAGE_KEY);
+      if (stored === "light" || stored === "dark") setTheme(stored);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    setTheme((current) => {
+      const next: ColoniaTheme = current === "dark" ? "light" : "dark";
+      try {
+        localStorage.setItem(THEME_STORAGE_KEY, next);
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  };
 
   return (
-    <div className="min-h-screen bg-[#090909] text-white antialiased">
+    <div
+      className="colonia-fem-root min-h-screen bg-[#090909] text-white antialiased"
+      data-colonia-theme={theme}
+    >
       <R1ScrollProgress />
-      <R1ProposalNav ctaHref={ctaHref} ctaLabel={C.cta.label} />
+      <R1ProposalNav
+        ctaHref={ctaHref}
+        ctaLabel={C.cta.label}
+        logoClassName="colonia-fem-logo"
+        endSlot={<ColoniaThemeToggle theme={theme} onToggle={toggleTheme} />}
+      />
 
       <header
         id="top"
