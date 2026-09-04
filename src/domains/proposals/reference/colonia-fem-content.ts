@@ -56,9 +56,9 @@ export const COLONIA_FEM_PRICING: ProposalPricingTier[] = [
 ];
 
 export const COLONIA_FEM_INVESTMENT = {
-  title: "Começar pelo essencial. Gestão recorrente. Escala conforme os resultados.",
+  title: "Investimento estruturado para colocar a captação em funcionamento.",
   intro:
-    "A estrutura inicial concentra o investimento no que é necessário para colocar a operação em funcionamento. A gestão entra no modelo recorrente da Raise One, enquanto a verba de mídia permanece separada e pode acompanhar a realidade da operação.",
+    "A estrutura inicial concentra o investimento no que é necessário para iniciar a operação. A gestão entra no modelo recorrente da Raise One, e a verba de mídia permanece separada para acompanhar a realidade da Colônia.",
   specialCondition: {
     eyebrow: "Condição especial para a Colônia FEM",
     body: "Como a Colônia FEM já faz parte da relação comercial da Raise One através do projeto UNIP, estamos aplicando uma condição especial de implantação para este segundo projeto.",
