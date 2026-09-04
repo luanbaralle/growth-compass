@@ -56,7 +56,7 @@ export const COLONIA_FEM_PRICING: ProposalPricingTier[] = [
 ];
 
 export const COLONIA_FEM_INVESTMENT = {
-  title: "Entrada enxuta. Gestão recorrente. Escala conforme os resultados.",
+  title: "Começar pelo essencial. Gestão recorrente. Escala conforme os resultados.",
   intro:
     "A estrutura inicial concentra o investimento no que é necessário para colocar a operação em funcionamento. A gestão entra no modelo recorrente da Raise One, enquanto a verba de mídia permanece separada e pode acompanhar a realidade da operação.",
   specialCondition: {
@@ -100,9 +100,9 @@ export const COLONIA_FEM_INVESTMENT = {
       { label: "Mídia Google (recomendação inicial)", value: "≈ R$ 1.500/mês" },
     ],
   },
-  leanTitle: "Uma estrutura enxuta para começar",
+  leanTitle: "Uma estrutura sob medida para começar",
   leanBody:
-    "A Colônia FEM não precisa assumir uma operação maior antes de validar o canal.",
+    "A estrutura não precisa crescer antes da hora. Primeiro validamos o canal; depois ampliamos o investimento conforme as oportunidades identificadas.",
   footer:
     "Produções adicionais, novas campanhas, campanhas sazonais, remarketing ou novos materiais comerciais poderão ser contratados sob demanda, sempre mediante aprovação e orçamento prévio.",
 };
@@ -119,7 +119,7 @@ export const COLONIA_FEM_REFERENCE = {
     strategyLine: "Marketing + Tecnologia + IA",
     pillars: ["Landing Page", "Google Ads", "Conversão"],
     footnote:
-      "Uma estrutura enxuta para aumentar a visibilidade da Colônia e criar um caminho mais eficiente até as reservas.",
+      "Uma estrutura focada em aumentar a visibilidade da Colônia e criar um caminho mais eficiente até as reservas.",
   },
 
   diagnosis: {

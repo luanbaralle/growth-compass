@@ -532,7 +532,7 @@ export function ColoniaFemReferenceProposalPage({ proposal }: { proposal: Propos
         <Section
           id="solucao"
           label="04. O que vamos construir"
-          title="Uma estrutura digital enxuta, pensada para gerar reservas."
+          title="Uma estrutura digital pensada para gerar reservas."
           alt
           icon={Sparkles}
         >
@@ -845,7 +845,7 @@ export function ColoniaFemReferenceProposalPage({ proposal }: { proposal: Propos
               <div>
                 <p className={r1LabelClass}>Modelo de trabalho</p>
                 <h3 className="mt-2 text-xl font-bold tracking-tight text-white sm:text-2xl">
-                  Começamos enxutos. Evoluímos conforme os resultados.
+                  Começamos pelo essencial. Evoluímos conforme os resultados.
                 </h3>
               </div>
             </div>
