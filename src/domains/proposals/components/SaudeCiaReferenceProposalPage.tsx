@@ -192,6 +192,7 @@ export function SaudeCiaReferenceProposalPage({ proposal }: { proposal: Proposal
             body={C.integrationLayer.body}
             r1={C.integrationLayer.r1}
             client={C.integrationLayer.client}
+            clientLabel="Saúde & Cia"
           />
 
           <ProposalExpansionCard

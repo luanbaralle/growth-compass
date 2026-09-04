@@ -1,5 +1,9 @@
 import type { Proposal } from "../types";
 import {
+  ColoniaFemReferenceProposalPage,
+  isColoniaFemReferenceProposal,
+} from "./ColoniaFemReferenceProposalPage";
+import {
   isSaudeCiaReferenceProposal,
   SaudeCiaReferenceProposalPage,
 } from "./SaudeCiaReferenceProposalPage";
@@ -10,6 +14,9 @@ export { ProposalDraftBanner } from "./R1PublicProposalPage";
 export function PublicProposalPage({ proposal }: { proposal: Proposal }) {
   if (isSaudeCiaReferenceProposal(proposal)) {
     return <SaudeCiaReferenceProposalPage proposal={proposal} />;
+  }
+  if (isColoniaFemReferenceProposal(proposal)) {
+    return <ColoniaFemReferenceProposalPage proposal={proposal} />;
   }
   return <R1PublicProposalPage proposal={proposal} />;
 }

@@ -131,6 +131,10 @@ const STRENGTH_ICONS: Record<string, LucideIcon> = {
   Oferta: Layers,
   Diferenciais: Shield,
   "Presença local": Building2,
+  Localização: Building2,
+  Estrutura: Layers,
+  Canal: Users,
+  Público: Users,
 };
 
 export function ProposalStrengthGrid({
@@ -452,7 +456,12 @@ export function ProposalRoadmapTimeline({
   return (
     <div>
       {caption && <p className="mb-6 text-sm text-white/50">{caption}</p>}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div
+        className={cn(
+          "grid gap-4 sm:grid-cols-2",
+          phases.length <= 3 ? "lg:grid-cols-3" : "lg:grid-cols-4",
+        )}
+      >
         {phases.map((phase, i) => (
           <article key={phase.period} className={cn(polishedCard, "relative h-full")}>
             <TopBar gradient={ROADMAP_GRADIENTS[i] ?? ROADMAP_GRADIENTS[0]} />
@@ -491,6 +500,10 @@ const DELIVERABLE_ICONS: Record<string, LucideIcon> = {
   Aquisição: Megaphone,
   Comercial: Users,
   Conteúdo: Play,
+  "Landing Page": LayoutGrid,
+  "Presença digital": Building2,
+  "Mídia Kit": Play,
+  "Google Ads": Megaphone,
 };
 
 export function ProposalDeliverableGrid({
@@ -499,7 +512,13 @@ export function ProposalDeliverableGrid({
   blocks: readonly { title: string; items: readonly string[] }[];
 }) {
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
+    <div
+      className={cn(
+        "grid gap-4 sm:grid-cols-2",
+        blocks.length >= 5 && "lg:grid-cols-3",
+        blocks.length === 4 && "lg:grid-cols-2",
+      )}
+    >
       {blocks.map((block) => {
         const Icon = DELIVERABLE_ICONS[block.title] ?? Zap;
         return (
@@ -622,11 +641,13 @@ export function ProposalIntegrationLayer({
   body,
   r1,
   client,
+  clientLabel = "Cliente",
 }: {
   title: string;
   body: string;
   r1: readonly string[];
   client: readonly string[];
+  clientLabel?: string;
 }) {
   return (
     <article className={cn(polishedCard, "mt-6")}>
@@ -652,7 +673,7 @@ export function ProposalIntegrationLayer({
           </div>
           <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/40">
-              Saúde & Cia
+              {clientLabel}
             </p>
             <div className="mt-3 flex flex-wrap gap-1.5">
               {client.map((item) => (

@@ -64,6 +64,13 @@ const CATEGORY_META: Record<
     glow: "bg-sky-500/10",
     description: "Jornada digital e origem dos leads",
   },
+  Interesse: {
+    icon: Handshake,
+    accent: "text-sky-400",
+    bar: "from-sky-500/70 to-sky-500/15",
+    glow: "bg-sky-500/10",
+    description: "Consultas e intenção comercial",
+  },
   Negócio: {
     icon: LineChart,
     accent: "text-amber-400/90",
@@ -100,6 +107,20 @@ const METRIC_ICONS: Record<string, LucideIcon> = {
   Formulários: Filter,
   "Origem dos leads": Megaphone,
   "Vendas informadas": Handshake,
+  "Visitas na LP": Eye,
+  "Pedidos de reserva": Handshake,
+  "Origem do contato": Megaphone,
+  "Custo por lead": DollarSign,
+  "Custo por pedido de reserva": DollarSign,
+  "Reservas confirmadas": Handshake,
+  "Custo por reserva": DollarSign,
+  "Receita gerada": DollarSign,
+  ROAS: TrendingUp,
+  "Visitas à página": Eye,
+  "Contatos / consultas de disponibilidade": Handshake,
+  Oportunidades: Target,
+  "Oportunidades comerciais": Target,
+  Reservas: Handshake,
 };
 
 function MetricTag({ label }: { label: string }) {
