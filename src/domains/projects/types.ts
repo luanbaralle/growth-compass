@@ -48,6 +48,7 @@ export interface Project {
   media_budget_notes: string | null;
   strategy_notes: string | null;
   context_json: Record<string, string | number | boolean | null | string[]>;
+  proposal_id: string | null;
   created_at: string;
   updated_at: string;
 }

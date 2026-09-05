@@ -1,4 +1,5 @@
 import type { TeamMember } from "@/lib/auth/types";
+import { dbCount } from "@/lib/supabase/server";
 import * as repo from "./repository.server";
 import type {
   Company,
@@ -7,6 +8,83 @@ import type {
   CompanyWithLogo,
 } from "./types";
 import { STAGE_LABELS } from "./types";
+
+export interface CompanyDeletionBlocker {
+  count: number;
+  label: string;
+}
+
+/** Contagens que impedem hard delete. `company_activities` não bloqueia. */
+export async function getCompanyDeletionBlockers(
+  id: string,
+): Promise<CompanyDeletionBlocker[]> {
+  const [
+    projects,
+    contentTasks,
+    financeEntries,
+    companyFiles,
+    companyUsers,
+    marketingSnapshots,
+    companyServices,
+    prospects,
+  ] = await Promise.all([
+    dbCount("projects", `select=id&company_id=eq.${id}`),
+    dbCount("content_tasks", `select=id&company_id=eq.${id}`),
+    dbCount("finance_entries", `select=id&company_id=eq.${id}`),
+    dbCount("company_files", `select=id&company_id=eq.${id}`),
+    dbCount("company_users", `select=id&company_id=eq.${id}`),
+    dbCount("marketing_snapshots", `select=id&company_id=eq.${id}`),
+    dbCount("company_services", `select=id&company_id=eq.${id}`),
+    dbCount("prospects", `select=id&company_id=eq.${id}`),
+  ]);
+
+  const checks: Array<{ count: number; singular: string; plural: string }> = [
+    { count: projects, singular: "projeto", plural: "projetos" },
+    { count: contentTasks, singular: "conteúdo", plural: "conteúdos" },
+    {
+      count: financeEntries,
+      singular: "lançamento financeiro",
+      plural: "lançamentos financeiros",
+    },
+    { count: companyFiles, singular: "arquivo", plural: "arquivos" },
+    {
+      count: companyUsers,
+      singular: "usuário do portal",
+      plural: "usuários do portal",
+    },
+    {
+      count: marketingSnapshots,
+      singular: "snapshot de marketing",
+      plural: "snapshots de marketing",
+    },
+    { count: companyServices, singular: "serviço", plural: "serviços" },
+    {
+      count: prospects,
+      singular: "prospect vinculado",
+      plural: "prospects vinculados",
+    },
+  ];
+
+  return checks
+    .filter((item) => item.count > 0)
+    .map((item) => ({
+      count: item.count,
+      label: item.count === 1 ? item.singular : item.plural,
+    }));
+}
+
+function formatCompanyDeletionBlockedMessage(blockers: CompanyDeletionBlocker[]): string {
+  const parts = blockers.map((b) => `${b.count} ${b.label}`);
+  let list: string;
+  if (parts.length === 1) {
+    list = parts[0];
+  } else if (parts.length === 2) {
+    list = `${parts[0]} e ${parts[1]}`;
+  } else {
+    list = `${parts.slice(0, -1).join(", ")} e ${parts[parts.length - 1]}`;
+  }
+  return `Não é possível excluir esta empresa porque ela possui: ${list}.`;
+}
 
 export async function listCompanies(filters: Parameters<typeof repo.findCompanies>[0]) {
   const [companies, counts] = await Promise.all([
@@ -210,6 +288,10 @@ export async function addNote(
 }
 
 export async function deleteCompany(id: string) {
+  const blockers = await getCompanyDeletionBlockers(id);
+  if (blockers.length > 0) {
+    throw new Error(formatCompanyDeletionBlockedMessage(blockers));
+  }
   return repo.removeCompany(id);
 }
 

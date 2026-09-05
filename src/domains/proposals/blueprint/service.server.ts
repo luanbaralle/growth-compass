@@ -14,6 +14,7 @@ import type {
 } from "./types";
 import { rowToBlueprint } from "./types";
 import * as proposalRepo from "../repository.server";
+import { requireProposalCompanyFromSession } from "../require-session-company.server";
 import { buildSuggestedSlug } from "../engine/artifact-to-proposal";
 import { getR1CommercialConfig } from "../pricing/commercial-defaults.server";
 import type { Proposal } from "../types";
@@ -154,25 +155,25 @@ export async function generateProposalFromBlueprint(blueprintId: string): Promis
     artifact,
   });
 
-  let companyId: string | null = null;
-  if (row.prospect_id) {
-    const prospectRepo = await import("@/domains/prospection/repository.server");
-    const prospect = await prospectRepo.findProspectById(row.prospect_id);
-    companyId = prospect?.company_id ?? null;
-  }
-
   const existingProposal = blueprint.proposal_id
     ? await proposalRepo.findProposalById(blueprint.proposal_id)
     : await proposalRepo.findProposalByCopilotSession(blueprint.copilot_session_id);
 
   if (existingProposal) {
+    let companyId: string | null = existingProposal.company_id;
+    try {
+      const link = await requireProposalCompanyFromSession(row.prospect_id);
+      companyId = link.companyId;
+    } catch {
+      // Atualização de proposta já existente: preserva company_id anterior se o vínculo falhar.
+    }
     const updated = await proposalRepo.patchProposal(existingProposal.id, {
       title: rendered.title,
       template: rendered.template,
       content: rendered.content,
       client_name: blueprint.client_name,
       company_name: blueprint.company_name,
-      company_id: companyId ?? existingProposal.company_id,
+      company_id: companyId,
       commercial_blueprint_id: blueprint.id,
     });
     if (!updated) throw new Error("Falha ao atualizar proposta.");
@@ -182,14 +183,16 @@ export async function generateProposalFromBlueprint(blueprintId: string): Promis
     return updated;
   }
 
+  const link = await requireProposalCompanyFromSession(row.prospect_id);
+
   const slug = await uniqueSlug(rendered.slugBase);
   const proposal = await proposalRepo.insertProposal({
     slug,
     title: rendered.title,
     template: rendered.template,
     status: "draft",
-    company_id: companyId,
-    prospect_id: row.prospect_id,
+    company_id: link.companyId,
+    prospect_id: link.prospectId,
     copilot_session_id: blueprint.copilot_session_id,
     commercial_blueprint_id: blueprint.id,
     client_name: blueprint.client_name,

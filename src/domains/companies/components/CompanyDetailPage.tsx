@@ -22,6 +22,7 @@ import { CompanyLinks } from "@/domains/companies/components/CompanyLinks";
 import { CompanyContentProduction } from "@/domains/companies/components/CompanyContentProduction";
 import { CompanyOverview } from "@/domains/companies/components/CompanyOverview";
 import { CompanyProfileHeader } from "@/domains/companies/components/CompanyProfileHeader";
+import { CompanyProposals } from "@/domains/companies/components/CompanyProposals";
 import { CompanyServices } from "@/domains/companies/components/CompanyServices";
 import { CompanyTimeline } from "@/domains/companies/components/CompanyTimeline";
 import { createProject } from "@/domains/projects/api.server";
@@ -83,6 +84,7 @@ interface CompanyDetailData {
 
 type CompanyTab =
   | "panel"
+  | "proposals"
   | "projects"
   | "producao"
   | "finance"
@@ -92,6 +94,7 @@ type CompanyTab =
 
 const TABS: { id: CompanyTab; label: string }[] = [
   { id: "panel", label: "Painel" },
+  { id: "proposals", label: "Propostas" },
   { id: "projects", label: "Projetos" },
   { id: "producao", label: "Produção" },
   { id: "finance", label: "Financeiro" },
@@ -298,6 +301,16 @@ export function CompanyDetailPage({ companyId }: { companyId: string }) {
           onCreateMarketing={() => setMarketingOpen(true)}
           onAddNote={handleAddNote}
         />
+      )}
+
+      {activeTab === "proposals" && (
+        <Section title="Propostas" description="Propostas comerciais vinculadas a esta empresa">
+          <CompanyProposals
+            companyId={companyId}
+            companyName={company.name}
+            refreshKey={overviewRefresh}
+          />
+        </Section>
       )}
 
       {activeTab === "projects" && (

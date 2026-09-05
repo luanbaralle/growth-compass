@@ -3,10 +3,12 @@ import { withAuth } from "@/lib/api/auth.server";
 import {
   createChecklistItemSchema,
   createCommentSchema,
+  createProjectFromProposalSchema,
   createProjectSchema,
   deleteChecklistItemSchema,
   deleteCommentSchema,
   listProjectsSchema,
+  projectByProposalIdSchema,
   projectCompanyIdSchema,
   projectIdSchema,
   updateChecklistItemSchema,
@@ -55,6 +57,32 @@ export const createProject = createServerFn({ method: "POST" })
           blockedByDetail: data.blockedByDetail ?? undefined,
           nextAction: data.nextAction,
           nextActionDue: data.nextActionDue || undefined,
+          workflowTemplateSlug: data.workflowTemplateSlug || undefined,
+        },
+        author,
+      );
+    });
+  });
+
+export const getProjectByProposalId = createServerFn({ method: "GET" })
+  .validator(projectByProposalIdSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const projectService = await import("@/domains/projects/repository.server");
+      return projectService.findProjectByProposalId(data.proposalId);
+    });
+  });
+
+export const createProjectFromProposal = createServerFn({ method: "POST" })
+  .validator(createProjectFromProposalSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async (author) => {
+      const projectService = await import("@/domains/projects/service.server");
+      return projectService.createProjectFromProposal(
+        data.proposalId,
+        {
+          title: data.title,
+          type: data.type as import("./types").ProjectType | undefined,
           workflowTemplateSlug: data.workflowTemplateSlug || undefined,
         },
         author,

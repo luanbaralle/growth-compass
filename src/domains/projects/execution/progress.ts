@@ -195,17 +195,12 @@ export function bucketPhaseTasks(
 
 export function pickPendencies(tasks: WorkflowTaskView[]): WorkflowTaskView[] {
   return tasks.filter(
-    (t) =>
-      t.status === "waiting_client" ||
-      t.status === "blocked" ||
-      t.isBlockedByDependencies,
+    (t) => t.status === "waiting_client" || t.status === "blocked" || t.isBlockedByDependencies,
   );
 }
 
 export function waitingClientDays(tasks: ProjectWorkflowTask[]): number | null {
-  const waiting = tasks.filter(
-    (t) => t.status === "waiting_client" && t.waiting_client_since,
-  );
+  const waiting = tasks.filter((t) => t.status === "waiting_client" && t.waiting_client_since);
   if (waiting.length === 0) return null;
   const today = new Date().toISOString().slice(0, 10);
   let maxDays = 0;

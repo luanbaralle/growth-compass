@@ -79,6 +79,7 @@ export async function createProject(
     strategyNotes?: string | null;
     contextJson?: Record<string, unknown>;
     workflowTemplateSlug?: string | null;
+    proposalId?: string | null;
   },
   authorId: TeamMember | null,
 ) {
@@ -108,6 +109,7 @@ export async function createProject(
     media_budget_notes: input.mediaBudgetNotes ?? null,
     strategy_notes: input.strategyNotes ?? null,
     context_json: (input.contextJson ?? {}) as Project["context_json"],
+    proposal_id: input.proposalId ?? null,
   });
 
   await emitProjectCreated(project, { type: input.type }, authorId);
@@ -136,6 +138,88 @@ export async function createProject(
   }
 
   return project;
+}
+
+export type CreateProjectFromProposalOptions = {
+  title?: string;
+  type?: ProjectType;
+  status?: ProjectStatus;
+  ownerId?: TeamMember;
+  priority?: ProjectPriority;
+  description?: string;
+  workflowTemplateSlug?: string | null;
+};
+
+export type CreateProjectFromProposalResult = {
+  project: Project;
+  created: boolean;
+};
+
+function isProposalIdUniqueViolation(err: unknown): boolean {
+  const msg = err instanceof Error ? err.message : String(err);
+  return (
+    msg.includes("23505") ||
+    msg.includes("projects_proposal_id_uidx") ||
+    /duplicate key value.*proposal_id/i.test(msg)
+  );
+}
+
+/**
+ * Ação explícita e idempotente: Proposal → Project.
+ * Não é chamada por publish/outcome; a UI decide quando invocar.
+ */
+export async function createProjectFromProposal(
+  proposalId: string,
+  options: CreateProjectFromProposalOptions = {},
+  authorId: TeamMember | null = null,
+): Promise<CreateProjectFromProposalResult> {
+  const proposalRepo = await import("@/domains/proposals/repository.server");
+  const proposal = await proposalRepo.findProposalById(proposalId);
+  if (!proposal) {
+    throw new Error("Proposta não encontrada.");
+  }
+
+  if (!proposal.company_id) {
+    throw new Error(
+      "A proposta precisa estar vinculada a uma empresa antes de criar o projeto.",
+    );
+  }
+
+  const company = await companyRepo.findCompanyById(proposal.company_id);
+  if (!company) {
+    throw new Error("Empresa vinculada à proposta não encontrada.");
+  }
+
+  const existing = await repo.findProjectByProposalId(proposalId);
+  if (existing) {
+    return { project: existing, created: false };
+  }
+
+  const title = options.title?.trim() || proposal.title;
+  const type = options.type ?? "outro";
+
+  try {
+    const project = await createProject(
+      {
+        companyId: proposal.company_id,
+        title,
+        type,
+        status: options.status,
+        ownerId: options.ownerId,
+        priority: options.priority,
+        description: options.description,
+        workflowTemplateSlug: options.workflowTemplateSlug || undefined,
+        proposalId: proposal.id,
+      },
+      authorId,
+    );
+    return { project, created: true };
+  } catch (err) {
+    if (!isProposalIdUniqueViolation(err)) throw err;
+    const raced = await repo.findProjectByProposalId(proposalId);
+    if (raced) return { project: raced, created: false };
+    throw err;
+  }
 }
 
 export async function updateProject(

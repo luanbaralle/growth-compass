@@ -38,6 +38,7 @@ export const createFinanceEntry = createServerFn({ method: "POST" })
           paymentMethod: data.paymentMethod,
           recurring: data.recurring,
           recurringMonths: data.recurringMonths,
+          projectId: data.projectId ?? null,
         },
         author,
       );
@@ -49,7 +50,8 @@ export const updateFinanceEntry = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     return withAuth(async (author) => {
       const financeService = await import("@/domains/finance/service.server");
-      const { id, companyId, amountCents, dueDate, paidAt, paymentMethod, ...rest } = data;
+      const { id, companyId, amountCents, dueDate, paidAt, paymentMethod, projectId, ...rest } =
+        data;
       const entry = await financeService.updateFinanceEntry(
         id,
         companyId,
@@ -59,6 +61,7 @@ export const updateFinanceEntry = createServerFn({ method: "POST" })
           dueDate,
           paidAt: paidAt || undefined,
           paymentMethod,
+          ...(projectId !== undefined ? { projectId } : {}),
         },
         author,
       );

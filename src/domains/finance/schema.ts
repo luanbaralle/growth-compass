@@ -15,6 +15,7 @@ const financeEntryBaseSchema = z.object({
   paymentMethod: z.string().max(50).optional(),
   recurring: z.boolean().optional(),
   recurringMonths: z.number().int().min(2).max(36).optional(),
+  projectId: z.string().uuid().nullable().optional(),
 });
 
 export const createFinanceEntrySchema = financeEntryBaseSchema.superRefine((data, ctx) => {
@@ -33,6 +34,7 @@ export const updateFinanceEntrySchema = financeEntryBaseSchema
   .extend({
     id: z.string().uuid(),
     companyId: z.string().uuid(),
+    projectId: z.string().uuid().nullable().optional(),
   });
 
 export const listFinanceEntriesSchema = z.object({

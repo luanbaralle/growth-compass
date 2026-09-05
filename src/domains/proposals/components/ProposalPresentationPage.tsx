@@ -10,13 +10,35 @@ import {
   type ProposalContent,
   type ProposalPresentationOutcome,
 } from "@/domains/proposals/types";
+import {
+  createProjectFromProposal,
+  getProjectByProposalId,
+} from "@/domains/projects/api.server";
+import { listWorkflowTemplates } from "@/domains/projects/execution/api.server";
+import type { WorkflowTemplate } from "@/domains/projects/execution/types";
+import { STATUS_LABELS, type Project } from "@/domains/projects/types";
 import { getErrorMessage } from "@/lib/api/client-errors";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, ExternalLink, Loader2, Presentation } from "lucide-react";
+import { ArrowLeft, ExternalLink, FolderKanban, Loader2, Presentation } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -24,11 +46,32 @@ const OUTCOMES: ProposalPresentationOutcome[] = ["approved", "adjustments", "pos
 
 export function ProposalPresentationPage({ proposalId }: { proposalId: string }) {
   const [proposal, setProposal] = useState<Awaited<ReturnType<typeof getProposal>> | null>(null);
+  const [linkedProject, setLinkedProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadingProject, setLoadingProject] = useState(false);
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [notes, setNotes] = useState("");
   const [outcome, setOutcome] = useState<ProposalPresentationOutcome | undefined>();
+
+  const [createOpen, setCreateOpen] = useState(false);
+  const [projectTitle, setProjectTitle] = useState("");
+  const [workflowSlug, setWorkflowSlug] = useState("");
+  const [templates, setTemplates] = useState<WorkflowTemplate[]>([]);
+  const [creating, setCreating] = useState(false);
+
+  const loadLinkedProject = useCallback(async (id: string) => {
+    setLoadingProject(true);
+    try {
+      const project = await getProjectByProposalId({ data: { proposalId: id } });
+      setLinkedProject(project);
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Erro ao verificar projeto vinculado."));
+      setLinkedProject(null);
+    } finally {
+      setLoadingProject(false);
+    }
+  }, []);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -38,16 +81,28 @@ export function ProposalPresentationPage({ proposalId }: { proposalId: string })
       const content = row.content as ProposalContent;
       setNotes(content.presentation?.notes ?? "");
       setOutcome(content.presentation?.outcome);
+      if (row.company_id) {
+        await loadLinkedProject(row.id);
+      } else {
+        setLinkedProject(null);
+      }
     } catch (err) {
       toast.error(getErrorMessage(err, "Erro ao carregar proposta."));
     } finally {
       setLoading(false);
     }
-  }, [proposalId]);
+  }, [proposalId, loadLinkedProject]);
 
   useEffect(() => {
     void load();
   }, [load]);
+
+  useEffect(() => {
+    if (!createOpen) return;
+    listWorkflowTemplates()
+      .then(setTemplates)
+      .catch(() => setTemplates([]));
+  }, [createOpen]);
 
   const handlePublish = async () => {
     setPublishing(true);
@@ -86,6 +141,44 @@ export function ProposalPresentationPage({ proposalId }: { proposalId: string })
     }
   };
 
+  const openCreateDialog = () => {
+    if (!proposal?.company_id) return;
+    setProjectTitle(proposal.title);
+    setWorkflowSlug("");
+    setCreateOpen(true);
+  };
+
+  const handleCreateProject = async () => {
+    if (!proposal?.company_id || creating) return;
+    const title = projectTitle.trim();
+    if (title.length < 2) {
+      toast.error("Informe um título com pelo menos 2 caracteres.");
+      return;
+    }
+
+    setCreating(true);
+    try {
+      const result = await createProjectFromProposal({
+        data: {
+          proposalId: proposal.id,
+          title,
+          workflowTemplateSlug: workflowSlug || undefined,
+        },
+      });
+      setLinkedProject(result.project);
+      setCreateOpen(false);
+      if (result.created) {
+        toast.success("Projeto criado com sucesso.");
+      } else {
+        toast.message("Esta proposta já possuía um projeto. Abrindo projeto existente.");
+      }
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Erro ao criar projeto."));
+    } finally {
+      setCreating(false);
+    }
+  };
+
   if (loading || !proposal) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#070708] text-white/60">
@@ -96,6 +189,7 @@ export function ProposalPresentationPage({ proposalId }: { proposalId: string })
 
   const content = proposal.content as ProposalContent;
   const publicUrl = `/propostas/${proposal.slug}`;
+  const createPrimary = outcome === "approved";
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-[#070708] lg:h-screen lg:min-h-0 lg:flex-row lg:overflow-hidden">
@@ -103,7 +197,7 @@ export function ProposalPresentationPage({ proposalId }: { proposalId: string })
         {proposal.status === "draft" && <ProposalDraftBanner />}
         <div className="sticky top-0 z-50 flex items-center gap-2 border-b border-white/10 bg-[#070708]/90 px-4 py-2 backdrop-blur-md lg:hidden">
           <Button variant="ghost" size="sm" asChild className="text-white/70">
-            <Link to="/os/propostas/$id/" params={{ id: proposalId }}>
+            <Link to="/os/propostas/$id" params={{ id: proposalId }}>
               <ArrowLeft className="mr-1.5 h-4 w-4" />
               Voltar
             </Link>
@@ -216,17 +310,142 @@ export function ProposalPresentationPage({ proposalId }: { proposalId: string })
               ))}
             </div>
           </div>
+
+          <div className="space-y-3 border-t border-white/10 pt-5">
+            <p className="text-xs font-semibold uppercase tracking-wide text-white/45">
+              Projeto operacional
+            </p>
+
+            {!proposal.company_id ? (
+              <div className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
+                <p className="text-sm font-medium text-white/85">
+                  Esta proposta não está vinculada a uma empresa.
+                </p>
+                <p className="mt-1 text-xs text-white/45">
+                  Vincule a proposta a uma Company antes de criar o projeto.
+                </p>
+              </div>
+            ) : loadingProject ? (
+              <div className="flex items-center gap-2 text-xs text-white/45">
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                Verificando projeto vinculado…
+              </div>
+            ) : linkedProject ? (
+              <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-emerald-200/80">
+                  Projeto já criado
+                </p>
+                <p className="mt-2 text-sm font-medium text-white">{linkedProject.title}</p>
+                <p className="mt-1 text-xs text-white/55">
+                  {STATUS_LABELS[linkedProject.status] ?? linkedProject.status}
+                </p>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="mt-3 w-full border-emerald-500/30 text-emerald-100 hover:bg-emerald-500/10"
+                  asChild
+                >
+                  <Link to="/os/projetos/$id" params={{ id: linkedProject.id }}>
+                    <FolderKanban className="mr-1.5 h-3.5 w-3.5" />
+                    Abrir projeto
+                  </Link>
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {!createPrimary && (
+                  <p className="text-xs text-white/40">
+                    Disponível a qualquer momento. Após “Aprovou”, a ação fica em destaque.
+                  </p>
+                )}
+                <Button
+                  size="sm"
+                  className={cn(
+                    "w-full",
+                    createPrimary
+                      ? "bg-amber-500 text-black hover:bg-amber-400"
+                      : "border border-white/15 bg-transparent text-white/80 hover:bg-white/5",
+                  )}
+                  variant={createPrimary ? "default" : "outline"}
+                  onClick={openCreateDialog}
+                >
+                  <FolderKanban className="mr-1.5 h-3.5 w-3.5" />
+                  Criar projeto
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="hidden border-t border-white/10 px-5 py-4 lg:block">
           <Button variant="ghost" size="sm" asChild className="text-white/60">
-            <Link to="/os/propostas/$id/" params={{ id: proposalId }}>
+            <Link to="/os/propostas/$id" params={{ id: proposalId }}>
               <ArrowLeft className="mr-1.5 h-4 w-4" />
               Voltar ao editor
             </Link>
           </Button>
         </div>
       </aside>
+
+      <Dialog open={createOpen} onOpenChange={(open) => !creating && setCreateOpen(open)}>
+        <DialogContent className="border-border/60 bg-background sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Criar projeto a partir da proposta</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <p className="text-sm text-muted-foreground">
+              Isso criará um novo projeto vinculado a esta proposta e à empresa{" "}
+              <span className="font-medium text-foreground">{proposal.company_name}</span>.
+            </p>
+            <div className="space-y-1.5">
+              <Label htmlFor="project-from-proposal-title">Título do projeto</Label>
+              <Input
+                id="project-from-proposal-title"
+                value={projectTitle}
+                onChange={(e) => setProjectTitle(e.target.value)}
+                disabled={creating}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Workflow operacional</Label>
+              <Select
+                value={workflowSlug || "none"}
+                onValueChange={(v) => setWorkflowSlug(v === "none" ? "" : v)}
+                disabled={creating}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Sem workflow" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Sem workflow</SelectItem>
+                  {templates.map((t) => (
+                    <SelectItem key={t.id} value={t.slug}>
+                      {t.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                Padrão: sem workflow. Você pode aplicar um template depois.
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setCreateOpen(false)}
+              disabled={creating}
+            >
+              Cancelar
+            </Button>
+            <Button type="button" onClick={() => void handleCreateProject()} disabled={creating}>
+              {creating ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : null}
+              Confirmar criação
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

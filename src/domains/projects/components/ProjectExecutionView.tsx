@@ -7,10 +7,7 @@ import {
   updateWorkflowTask,
   upsertProjectBriefing,
 } from "@/domains/projects/execution/api.server";
-import {
-  bucketPhaseTasks,
-  pickPhasePrimaryAction,
-} from "@/domains/projects/execution/progress";
+import { bucketPhaseTasks, pickPhasePrimaryAction } from "@/domains/projects/execution/progress";
 import type {
   ChecklistItemDef,
   ProjectBriefing,
@@ -127,8 +124,7 @@ function ExecutionCockpit({
     [execution.tasks, selectedPhase?.id],
   );
   const primary = useMemo(
-    () =>
-      isActivePhase ? pickPhasePrimaryAction(execution.tasks, selectedPhase?.id) : null,
+    () => (isActivePhase ? pickPhasePrimaryAction(execution.tasks, selectedPhase?.id) : null),
     [execution.tasks, selectedPhase?.id, isActivePhase],
   );
   const phaseProgress = progress.phases.find((p) => p.phaseKey === selectedPhase?.key);
@@ -141,11 +137,7 @@ function ExecutionCockpit({
   const visibleWaiting =
     filter === "now"
       ? []
-      : filterTasks(
-          buckets.waitingClient,
-          filter === "mine" ? "mine" : "all",
-          currentMemberId,
-        );
+      : filterTasks(buckets.waitingClient, filter === "mine" ? "mine" : "all", currentMemberId);
   const visibleBlocked =
     filter === "waiting" || filter === "now"
       ? []
@@ -160,9 +152,7 @@ function ExecutionCockpit({
     <div className="space-y-4">
       <CommandHero
         phaseName={currentPhase?.name ?? "—"}
-        phasePercent={
-          progress.phases.find((p) => p.phaseKey === currentPhase?.key)?.percent ?? 0
-        }
+        phasePercent={progress.phases.find((p) => p.phaseKey === currentPhase?.key)?.percent ?? 0}
         overallPercent={progress.overallPercent}
         statusLabel={STATUS_LABELS[project.status]}
         ownerLabel={
@@ -190,9 +180,7 @@ function ExecutionCockpit({
           <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
             <div>
               <div className="flex flex-wrap items-center gap-2">
-                <h3 className="text-base font-semibold text-foreground">
-                  {selectedPhase.name}
-                </h3>
+                <h3 className="text-base font-semibold text-foreground">{selectedPhase.name}</h3>
                 {isActivePhase ? (
                   <span className="rounded-full border border-blue-400/30 bg-blue-400/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-blue-200">
                     Fase atual
@@ -460,7 +448,11 @@ function CommandHero({
             )}
             <div className="mt-3 flex flex-wrap gap-2">
               <Button onClick={completePrimary} disabled={busy}>
-                {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                {busy ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Check className="h-4 w-4" />
+                )}
                 Concluir
               </Button>
               {primary.status === "todo" && (
@@ -980,9 +972,7 @@ export function ProjectBriefingPanel({
     >
       {briefing ? (
         <div className="space-y-2 text-sm">
-          <p className="text-muted-foreground">
-            Status: {BRIEFING_STATUS_LABELS[briefing.status]}
-          </p>
+          <p className="text-muted-foreground">Status: {BRIEFING_STATUS_LABELS[briefing.status]}</p>
           {briefing.objective && <p>{briefing.objective}</p>}
           {briefing.offer && <p className="text-muted-foreground">Oferta: {briefing.offer}</p>}
         </div>
@@ -1144,10 +1134,7 @@ function filterTasks(
   return tasks;
 }
 
-function phaseNameByKey(
-  key: string,
-  phases: ProjectExecutionView["progress"]["phases"],
-): string {
+function phaseNameByKey(key: string, phases: ProjectExecutionView["progress"]["phases"]): string {
   return phases.find((p) => p.phaseKey === key)?.phaseName ?? key;
 }
 

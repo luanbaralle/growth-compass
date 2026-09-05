@@ -22,6 +22,17 @@ export async function findProposals(filters?: {
   return dbSelect<Proposal>("proposals", encodeQuery(params));
 }
 
+export async function findProposalsByCompanyId(companyId: string): Promise<Proposal[]> {
+  return dbSelect<Proposal>(
+    "proposals",
+    encodeQuery({
+      select: "*",
+      company_id: `eq.${companyId}`,
+      order: "updated_at.desc",
+    }),
+  );
+}
+
 export async function findProposalById(id: string): Promise<Proposal | null> {
   const rows = await dbSelect<Proposal>("proposals", encodeQuery({ select: "*", id: `eq.${id}` }));
   return rows[0] ?? null;

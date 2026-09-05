@@ -22,6 +22,7 @@ import { buildDemandKeywords, buildLandingMockup } from "./engine/proposal-visua
 import { mergeProposalContent, isRichProposalSection } from "./engine/merge-proposal-content";
 import { getR1CommercialConfig } from "./pricing/commercial-defaults.server";
 import { applyAccelerationEnhancements } from "./pricing/r1-pricing";
+import { requireProposalCompanyFromSession } from "./require-session-company.server";
 import * as repo from "./repository.server";
 import { briefToProposalContent, type Proposal, type ProposalContent, type ProposalPresentationOutcome } from "./types";
 
@@ -91,6 +92,33 @@ export async function listProposals(filters?: { status?: Proposal["status"] | "a
   return repo.findProposals(filters);
 }
 
+/**
+ * Propostas da empresa + projeto vinculado exclusivamente via projects.proposal_id.
+ * Somente leitura — não cria Proposal nem Project.
+ */
+export async function listProposalsForCompany(companyId: string): Promise<
+  Array<{
+    proposal: Proposal;
+    project: import("@/domains/projects/types").Project | null;
+  }>
+> {
+  const proposals = await repo.findProposalsByCompanyId(companyId);
+  if (proposals.length === 0) return [];
+
+  const projectRepo = await import("@/domains/projects/repository.server");
+  const projects = await projectRepo.findProjectsByProposalIds(proposals.map((p) => p.id));
+  const byProposalId = new Map(
+    projects
+      .filter((p) => p.proposal_id)
+      .map((p) => [p.proposal_id as string, p]),
+  );
+
+  return proposals.map((proposal) => ({
+    proposal,
+    project: byProposalId.get(proposal.id) ?? null,
+  }));
+}
+
 export async function getProposal(id: string): Promise<Proposal | null> {
   const proposal = await repo.findProposalById(id);
   if (!proposal) return null;
@@ -146,14 +174,14 @@ export async function createDraftFromCopilotSession(
 
   const { row, session, artifact } = await loadCopilotContext(sessionId);
 
-  let companyId: string | null = null;
-  if (row.prospect_id) {
-    const prospectRepo = await import("@/domains/prospection/repository.server");
-    const prospect = await prospectRepo.findProspectById(row.prospect_id);
-    companyId = prospect?.company_id ?? null;
-  }
-
   if (options?.enrichWithLlm && existing) {
+    let companyId: string | null = existing.company_id;
+    try {
+      const link = await requireProposalCompanyFromSession(row.prospect_id);
+      companyId = link.companyId;
+    } catch {
+      // Enrich de proposta já existente: não bloqueia se o vínculo ainda estiver incompleto.
+    }
     const brief = await generateCreativeBrief({ session, artifact });
     const config = await getR1CommercialConfig();
     const generated = injectCommercialIntoContent(briefToProposalContent(brief), config);
@@ -177,12 +205,14 @@ export async function createDraftFromCopilotSession(
       content: withPlaybook,
       client_name: brief.clientName,
       company_name: brief.companyName,
-      company_id: companyId ?? existing.company_id,
+      company_id: companyId,
     });
     return enrichProposalForDisplay(updated!);
   }
 
   if (existing) return existing;
+
+  const { companyId, prospectId } = await requireProposalCompanyFromSession(row.prospect_id);
 
   if (options?.enrichWithLlm) {
     const brief = await generateCreativeBrief({ session, artifact });
@@ -205,7 +235,7 @@ export async function createDraftFromCopilotSession(
       template: brief.templateArchetype,
       status: "draft",
       company_id: companyId,
-      prospect_id: row.prospect_id,
+      prospect_id: prospectId,
       copilot_session_id: sessionId,
       commercial_blueprint_id: null,
       client_name: brief.clientName,
@@ -236,7 +266,7 @@ export async function createDraftFromCopilotSession(
     template: built.template,
     status: "draft",
     company_id: companyId,
-    prospect_id: row.prospect_id,
+    prospect_id: prospectId,
     copilot_session_id: sessionId,
     commercial_blueprint_id: null,
     client_name: session.meetingObjective.prospectName,

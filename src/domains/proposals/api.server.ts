@@ -3,6 +3,7 @@ import { withAuth } from "@/lib/api/auth.server";
 import {
   copilotSessionIdParamSchema,
   createProposalFromCopilotSchema,
+  listProposalsForCompanySchema,
   listProposalsSchema,
   proposalIdSchema,
   proposalIdOrSlugSchema,
@@ -19,6 +20,15 @@ export const listProposals = createServerFn({ method: "GET" })
     return withAuth(async () => {
       const service = await import("@/domains/proposals/service.server");
       return service.listProposals(data ?? undefined);
+    });
+  });
+
+export const listProposalsForCompany = createServerFn({ method: "GET" })
+  .validator(listProposalsForCompanySchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const service = await import("@/domains/proposals/service.server");
+      return service.listProposalsForCompany(data.companyId);
     });
   });
 

@@ -88,6 +88,17 @@ export const listProjectsSchema = z.object({
 
 export const projectIdSchema = z.object({ id: z.string().uuid() });
 
+export const projectByProposalIdSchema = z.object({
+  proposalId: z.string().uuid(),
+});
+
+export const createProjectFromProposalSchema = z.object({
+  proposalId: z.string().uuid(),
+  title: z.string().min(2).max(200).optional(),
+  workflowTemplateSlug: z.string().max(100).optional().or(z.literal("")),
+  type: projectTypeSchema.optional(),
+});
+
 export const projectCompanyIdSchema = z.object({
   id: z.string().uuid(),
   companyId: z.string().uuid(),

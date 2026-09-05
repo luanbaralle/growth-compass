@@ -21,13 +21,24 @@ import {
   MarketingChannelBadge,
 } from "@/domains/marketing/components/MarketingBadges";
 import { formatPeriod } from "@/domains/marketing/types";
+import type { MarketingSnapshotWithCompany } from "@/domains/marketing/types";
+import { listProposalsForCompany } from "@/domains/proposals/api.server";
+import {
+  PROPOSAL_PRESENTATION_OUTCOME_LABELS,
+  PROPOSAL_STATUS_LABELS,
+  type ProposalContent,
+} from "@/domains/proposals/types";
 import { listProjects } from "@/domains/projects/api.server";
 import {
   formatDueDate as formatProjectDueDate,
   isDueOverdue,
   ProjectStatusBadge,
 } from "@/domains/projects/components/ProjectBadges";
-import { ACTIVE_STATUSES, TYPE_LABELS } from "@/domains/projects/types";
+import {
+  ACTIVE_STATUSES,
+  STATUS_LABELS as PROJECT_STATUS_LABELS,
+  TYPE_LABELS,
+} from "@/domains/projects/types";
 import type { Company, CompanyActivity, CompanyLink } from "@/domains/companies/types";
 import { LINK_TYPE_LABELS } from "@/domains/companies/types";
 import { TEAM_LABELS } from "@/lib/auth/types";
@@ -41,6 +52,7 @@ import {
   Check,
   Clapperboard,
   ExternalLink,
+  FileText,
   FolderKanban,
   Megaphone,
   MessageSquarePlus,
@@ -50,6 +62,12 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+function proposalSortKey(proposal: {
+  published_at: string | null;
+  updated_at: string;
+}): string {
+  return proposal.published_at || proposal.updated_at;
+}
 function formatActivityTime(iso: string): string {
   return new Intl.DateTimeFormat("pt-BR", {
     dateStyle: "short",
@@ -114,44 +132,60 @@ export function CompanyOverview({
   const [contentTasks, setContentTasks] = useState<
     Awaited<ReturnType<typeof listContentTasks>>["tasks"]
   >([]);
-  const [snapshots, setSnapshots] = useState<
-    Awaited<ReturnType<typeof listMarketingSnapshots>>["snapshots"]
-  >([]);
+  const [snapshots, setSnapshots] = useState<MarketingSnapshotWithCompany[]>([]);
   const [marketingSummary, setMarketingSummary] = useState({
     investmentCents: 0,
     leads: 0,
     conversions: 0,
   });
+  const [proposalRows, setProposalRows] = useState<
+    Awaited<ReturnType<typeof listProposalsForCompany>>
+  >([]);
   const [note, setNote] = useState("");
   const [noteLoading, setNoteLoading] = useState(false);
 
   useEffect(() => {
     setLoading(true);
     setError("");
-    Promise.all([
-      listProjects({ data: { companyId: company.id, sort: "due_date", order: "asc" } }),
-      listFinanceEntries({ data: { companyId: company.id, sort: "due_date", order: "asc" } }),
-      listContentTasks({ data: { companyId: company.id } }),
-      listMarketingSnapshots({
-        data: { companyId: company.id, sort: "period_start", order: "desc" },
-      }),
-    ])
-      .then(([projectsResult, financeResult, contentResult, marketingResult]) => {
+    void (async () => {
+      try {
+        const [projectsResult, financeResult, contentResult, marketingResult, proposalsResult] =
+          await Promise.all([
+            listProjects({ data: { companyId: company.id, sort: "due_date", order: "asc" } }),
+            listFinanceEntries({ data: { companyId: company.id, sort: "due_date", order: "asc" } }),
+            listContentTasks({ data: { companyId: company.id } }),
+            listMarketingSnapshots({
+              data: { companyId: company.id, sort: "period_start", order: "desc" },
+            }),
+            listProposalsForCompany({ data: { companyId: company.id } }),
+          ]);
         setProjects(projectsResult.projects);
         setFinanceEntries(financeResult.entries);
         setFinanceSummary(financeResult.summary);
         setContentTasks(contentResult.tasks);
-        setSnapshots(marketingResult.snapshots);
-        setMarketingSummary(marketingResult.summary);
-      })
-      .catch((err) => {
+        const marketing = marketingResult as {
+          snapshots: MarketingSnapshotWithCompany[];
+          summary: typeof marketingSummary;
+        };
+        setSnapshots(marketing.snapshots);
+        setMarketingSummary(marketing.summary);
+        setProposalRows(proposalsResult);
+      } catch (err) {
         if (!isUnauthorizedError(err)) {
           setError(getErrorMessage(err, "Erro ao carregar painel."));
         }
-      })
-      .finally(() => setLoading(false));
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, [company.id, refreshKey]);
 
+  const latestCommercial = useMemo(() => {
+    if (proposalRows.length === 0) return null;
+    return [...proposalRows].sort((a, b) =>
+      proposalSortKey(b.proposal).localeCompare(proposalSortKey(a.proposal)),
+    )[0];
+  }, [proposalRows]);
   const activeProjects = useMemo(
     () => projects.filter((p) => ACTIVE_STATUSES.includes(p.status)),
     [projects],
@@ -293,6 +327,84 @@ export function CompanyOverview({
           accent={pipelineContent.length > 0 ? "brand" : "neutral"}
         />
       </section>
+
+      <Section
+        title="Comercial"
+        description="Síntese da proposta mais recente"
+        action={
+          <button type="button" onClick={() => onGoToTab("proposals")} className="dashboard-link">
+            {proposalRows.length > 1 ? "Ver todas as propostas" : "Ver propostas"}
+            <ArrowRight className="h-3 w-3" />
+          </button>
+        }
+      >
+        {!latestCommercial ? (
+          <div className="flex flex-col items-start gap-2 py-2 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm text-muted-foreground">Nenhuma proposta registrada.</p>
+            <button
+              type="button"
+              onClick={() => onGoToTab("proposals")}
+              className="dashboard-btn-ghost h-8 px-3 text-xs"
+            >
+              Ver propostas
+            </button>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0 space-y-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <FileText className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                <p className="truncate text-sm font-medium">{latestCommercial.proposal.title}</p>
+                <span className="rounded-md border border-border/50 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                  {PROPOSAL_STATUS_LABELS[latestCommercial.proposal.status]}
+                </span>
+                {(latestCommercial.proposal.content as ProposalContent).presentation?.outcome && (
+                  <span className="rounded-md border border-border/50 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+                    {
+                      PROPOSAL_PRESENTATION_OUTCOME_LABELS[
+                        (latestCommercial.proposal.content as ProposalContent).presentation!
+                          .outcome!
+                      ]
+                    }
+                  </span>
+                )}
+              </div>
+              {latestCommercial.project ? (
+                <p className="text-xs text-emerald-300/90">
+                  Projeto vinculado ·{" "}
+                  {PROJECT_STATUS_LABELS[latestCommercial.project.status] ??
+                    latestCommercial.project.status}
+                </p>
+              ) : (
+                <p className="text-xs text-muted-foreground">Sem projeto vinculado</p>
+              )}
+              {proposalRows.length > 1 && (
+                <p className="text-[11px] text-muted-foreground">
+                  +{proposalRows.length - 1} outra(s) proposta(s)
+                </p>
+              )}
+            </div>
+            <div className="flex shrink-0 flex-wrap gap-2">
+              <Link
+                to="/os/propostas/$id"
+                params={{ id: latestCommercial.proposal.id }}
+                className="dashboard-btn-ghost h-8 px-3 text-xs"
+              >
+                Abrir proposta
+              </Link>
+              {latestCommercial.project && (
+                <Link
+                  to="/os/projetos/$id"
+                  params={{ id: latestCommercial.project.id }}
+                  className="dashboard-btn-ghost h-8 px-3 text-xs"
+                >
+                  Abrir projeto
+                </Link>
+              )}
+            </div>
+          </div>
+        )}
+      </Section>
 
       <div className="grid gap-5 lg:grid-cols-3">
         <div className="space-y-5 lg:col-span-2">

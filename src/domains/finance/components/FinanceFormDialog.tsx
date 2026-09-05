@@ -14,6 +14,8 @@ import {
 } from "@/domains/finance/types";
 import { FinanceReceiptsField } from "@/domains/finance/components/FinanceReceiptsField";
 import { formatCompetenciaRange } from "@/domains/finance/recurrence-utils";
+import { listProjects } from "@/domains/projects/api.server";
+import type { Project } from "@/domains/projects/types";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -35,8 +37,11 @@ import { Switch } from "@/components/ui/switch";
 import { Loader2, Repeat } from "lucide-react";
 import { useEffect, useState } from "react";
 
+const NO_PROJECT = "__none__";
+
 export interface FinanceFormValues {
   companyId: string;
+  projectId: string;
   type: FinanceEntryType;
   description: string;
   amount: string;
@@ -50,6 +55,7 @@ export interface FinanceFormValues {
 
 const emptyForm: FinanceFormValues = {
   companyId: "",
+  projectId: "",
   type: "monthly",
   description: "",
   amount: "",
@@ -82,8 +88,10 @@ export function FinanceFormDialog({
     ...emptyForm,
     ...initial,
     companyId: initial?.companyId ?? defaultCompanyId ?? "",
+    projectId: initial?.projectId ?? "",
   });
   const [companies, setCompanies] = useState<Company[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [pendingReceipts, setPendingReceipts] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -94,6 +102,7 @@ export function FinanceFormDialog({
       ...emptyForm,
       ...initial,
       companyId: initial?.companyId ?? defaultCompanyId ?? "",
+      projectId: initial?.projectId ?? "",
     });
     setPendingReceipts([]);
     setError("");
@@ -101,6 +110,26 @@ export function FinanceFormDialog({
       .then((result) => setCompanies(result.companies))
       .catch(() => setCompanies([]));
   }, [open, initial, defaultCompanyId]);
+
+  useEffect(() => {
+    if (!open || !form.companyId) {
+      setProjects([]);
+      return;
+    }
+    let cancelled = false;
+    listProjects({
+      data: { companyId: form.companyId, sort: "title", order: "asc" },
+    })
+      .then((result) => {
+        if (!cancelled) setProjects(result.projects);
+      })
+      .catch(() => {
+        if (!cancelled) setProjects([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [open, form.companyId]);
 
   const handleSubmit = async () => {
     if (!form.companyId) {
@@ -165,7 +194,9 @@ export function FinanceFormDialog({
               <Label>Empresa</Label>
               <Select
                 value={form.companyId}
-                onValueChange={(value) => setForm((f) => ({ ...f, companyId: value }))}
+                onValueChange={(value) =>
+                  setForm((f) => ({ ...f, companyId: value, projectId: "" }))
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione..." />
@@ -180,6 +211,32 @@ export function FinanceFormDialog({
               </Select>
             </div>
           )}
+
+          <div className="space-y-1.5">
+            <Label>Projeto</Label>
+            <Select
+              value={form.projectId || NO_PROJECT}
+              onValueChange={(value) =>
+                setForm((f) => ({
+                  ...f,
+                  projectId: value === NO_PROJECT ? "" : value,
+                }))
+              }
+              disabled={!form.companyId}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Sem projeto" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={NO_PROJECT}>Sem projeto</SelectItem>
+                {projects.map((project) => (
+                  <SelectItem key={project.id} value={project.id}>
+                    {project.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
@@ -391,6 +448,7 @@ export function FinanceFormDialog({
 export function financeEntryToFormValues(entry: FinanceEntry): FinanceFormValues {
   return {
     companyId: entry.company_id,
+    projectId: entry.project_id ?? "",
     type: entry.type,
     description: entry.description,
     amount: centsToFormAmount(entry.amount_cents),
@@ -407,6 +465,7 @@ export function formToPayload(form: FinanceFormValues) {
   const recurringMonths = Number.parseInt(form.recurringMonths, 10);
   return {
     companyId: form.companyId,
+    projectId: form.projectId ? form.projectId : null,
     type: form.type,
     description: form.description.trim(),
     amountCents: parseMoneyToCents(form.amount),

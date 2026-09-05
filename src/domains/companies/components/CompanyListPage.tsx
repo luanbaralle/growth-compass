@@ -45,6 +45,7 @@ import {
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Building2, MessageCircle, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 function formatDate(iso: string): string {
   return new Intl.DateTimeFormat("pt-BR", {
@@ -101,8 +102,13 @@ export function CompanyListPage() {
   };
 
   const handleDelete = async (id: string) => {
-    await deleteCompany({ data: { id } });
-    await load();
+    try {
+      await deleteCompany({ data: { id } });
+      toast.success("Empresa excluída");
+      await load();
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Erro ao excluir empresa."));
+    }
   };
 
   return (

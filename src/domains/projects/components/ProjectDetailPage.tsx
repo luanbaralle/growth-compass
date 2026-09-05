@@ -190,9 +190,7 @@ export function ProjectDetailPage({ projectId }: { projectId: string }) {
       <PageHeader
         title={project.title}
         description={
-          company
-            ? `${company.name} · ${TYPE_LABELS[project.type]}`
-            : TYPE_LABELS[project.type]
+          company ? `${company.name} · ${TYPE_LABELS[project.type]}` : TYPE_LABELS[project.type]
         }
         icon={FolderKanban}
         actions={
@@ -243,7 +241,9 @@ export function ProjectDetailPage({ projectId }: { projectId: string }) {
       <div className="flex flex-wrap items-center gap-3">
         <ProjectStatusBadge status={project.status} />
         <ProjectPriorityLabel priority={project.priority} />
-        <span className={`text-sm ${overdue ? "font-medium text-red-400" : "text-muted-foreground"}`}>
+        <span
+          className={`text-sm ${overdue ? "font-medium text-red-400" : "text-muted-foreground"}`}
+        >
           Prazo: {formatDueDate(project.due_date)}
           {overdue && " · Atrasado"}
         </span>
@@ -257,7 +257,10 @@ export function ProjectDetailPage({ projectId }: { projectId: string }) {
 
       <ProjectOperationalAlert project={project} />
 
-      <nav className="flex flex-wrap gap-1 border-b border-border/25 pb-px" aria-label="Seções do projeto">
+      <nav
+        className="flex flex-wrap gap-1 border-b border-border/25 pb-px"
+        aria-label="Seções do projeto"
+      >
         {TABS.map((item) => (
           <button
             key={item.id}
@@ -442,13 +445,7 @@ export function ProjectDetailPage({ projectId }: { projectId: string }) {
   );
 }
 
-function CommentItem({
-  comment,
-  onDelete,
-}: {
-  comment: ProjectComment;
-  onDelete: () => void;
-}) {
+function CommentItem({ comment, onDelete }: { comment: ProjectComment; onDelete: () => void }) {
   const date = new Intl.DateTimeFormat("pt-BR", {
     dateStyle: "short",
     timeStyle: "short",
@@ -465,9 +462,7 @@ function CommentItem({
         </Button>
       </div>
       <p className="mt-1.5 text-xs text-muted-foreground">
-        {comment.author_id
-          ? TEAM_LABELS[comment.author_id as keyof typeof TEAM_LABELS]
-          : "Sistema"}{" "}
+        {comment.author_id ? TEAM_LABELS[comment.author_id as keyof typeof TEAM_LABELS] : "Sistema"}{" "}
         · {date}
       </p>
     </li>

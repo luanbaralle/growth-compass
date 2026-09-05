@@ -1,4 +1,5 @@
 import * as companyRepo from "@/domains/companies/repository.server";
+import * as projectRepo from "@/domains/projects/repository.server";
 import { getOSPreferences } from "@/domains/settings/repository.server";
 import type { TeamMember } from "@/lib/auth/types";
 import { buildReceiptFileName, buildReceiptNumber, deriveCompanyCode } from "./receipt-utils";
@@ -13,6 +14,22 @@ import { effectiveFinanceStatus, formatMoney } from "./types";
 export interface CreateFinanceEntryResult {
   entry: FinanceEntry;
   createdCount: number;
+}
+
+async function assertProjectBelongsToCompany(
+  projectId: string | null | undefined,
+  companyId: string,
+): Promise<string | null> {
+  if (projectId == null || projectId === "") return null;
+
+  const project = await projectRepo.findProjectById(projectId);
+  if (!project) {
+    throw new Error("Projeto não encontrado.");
+  }
+  if (project.company_id !== companyId) {
+    throw new Error("O projeto selecionado não pertence a esta empresa.");
+  }
+  return project.id;
 }
 
 export async function listFinanceEntries(filters: Parameters<typeof repo.findFinanceEntries>[0]) {
@@ -43,6 +60,7 @@ export async function createFinanceEntry(
   const company = await companyRepo.findCompanyById(input.companyId);
   if (!company) throw new Error("Empresa não encontrada.");
 
+  const projectId = await assertProjectBelongsToCompany(input.projectId, input.companyId);
   const status = input.status ?? "pending";
   const recurringMonths =
     input.recurring && input.recurringMonths && input.recurringMonths >= 2
@@ -50,7 +68,11 @@ export async function createFinanceEntry(
       : 1;
 
   if (recurringMonths === 1) {
-    const entry = await insertSingleFinanceEntry(input, status, authorId);
+    const entry = await insertSingleFinanceEntry(
+      { ...input, projectId },
+      status,
+      authorId,
+    );
     return { entry, createdCount: 1 };
   }
 
@@ -65,7 +87,7 @@ export async function createFinanceEntry(
 
     const entry = await repo.insertFinanceEntry({
       company_id: input.companyId,
-      project_id: input.projectId ?? null,
+      project_id: projectId,
       type: input.type,
       description,
       amount_cents: input.amountCents,
@@ -162,6 +184,7 @@ export async function updateFinanceEntry(
     status: FinanceEntryStatus;
     paidAt: string;
     paymentMethod: string;
+    projectId: string | null;
   }>,
   authorId: TeamMember | null,
 ) {
@@ -176,6 +199,9 @@ export async function updateFinanceEntry(
   if (patch.amountCents !== undefined) data.amount_cents = patch.amountCents;
   if (patch.dueDate !== undefined) data.due_date = patch.dueDate;
   if (patch.paymentMethod !== undefined) data.payment_method = patch.paymentMethod || null;
+  if (patch.projectId !== undefined) {
+    data.project_id = await assertProjectBelongsToCompany(patch.projectId, companyId);
+  }
 
   if (patch.status !== undefined) {
     data.status = patch.status;

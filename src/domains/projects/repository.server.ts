@@ -114,6 +114,26 @@ export async function findProjectById(id: string): Promise<Project | null> {
   return rows[0] ? normalizeProject(rows[0]) : null;
 }
 
+export async function findProjectByProposalId(proposalId: string): Promise<Project | null> {
+  const rows = await dbSelect<Project>(
+    "projects",
+    encodeQuery({ select: "*", proposal_id: `eq.${proposalId}`, limit: "1" }),
+  );
+  return rows[0] ? normalizeProject(rows[0]) : null;
+}
+
+export async function findProjectsByProposalIds(proposalIds: string[]): Promise<Project[]> {
+  if (proposalIds.length === 0) return [];
+  const rows = await dbSelect<Project>(
+    "projects",
+    encodeQuery({
+      select: "*",
+      proposal_id: `in.(${proposalIds.join(",")})`,
+    }),
+  );
+  return rows.map(normalizeProject);
+}
+
 function normalizeProject(row: Project): Project {
   return {
     ...row,
@@ -123,6 +143,7 @@ function normalizeProject(row: Project): Project {
     media_budget_notes: row.media_budget_notes ?? null,
     strategy_notes: row.strategy_notes ?? null,
     context_json: row.context_json ?? {},
+    proposal_id: row.proposal_id ?? null,
   };
 }
 

@@ -49,3 +49,7 @@ export const listProposalsSchema = z
     status: z.union([proposalStatusSchema, z.literal("all")]).optional(),
   })
   .optional();
+
+export const listProposalsForCompanySchema = z.object({
+  companyId: z.string().uuid(),
+});
