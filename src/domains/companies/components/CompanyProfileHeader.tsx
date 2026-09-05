@@ -12,6 +12,7 @@ import {
   MapPin,
   MessageCircle,
   Pencil,
+  Trash2,
 } from "lucide-react";
 import {
   Select,
@@ -20,10 +21,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 
 export function CompanyProfileHeader({
   company,
   onEdit,
+  onDelete,
   onStageChange,
   onLogoUpload,
   onLogoRemove,
@@ -31,6 +45,7 @@ export function CompanyProfileHeader({
 }: {
   company: CompanyWithLogo;
   onEdit: () => void;
+  onDelete?: () => void | Promise<void>;
   onStageChange: (stage: CompanyStage) => void;
   onLogoUpload?: (file: File) => Promise<void>;
   onLogoRemove?: () => Promise<void>;
@@ -121,10 +136,40 @@ export function CompanyProfileHeader({
           </div>
 
           <div className="flex shrink-0 flex-col gap-3 sm:items-end">
-            <button type="button" onClick={onEdit} className="dashboard-btn-ghost">
-              <Pencil className="h-4 w-4" />
-              Editar cadastro
-            </button>
+            <div className="flex flex-wrap gap-2 sm:justify-end">
+              <button type="button" onClick={onEdit} className="dashboard-btn-ghost">
+                <Pencil className="h-4 w-4" />
+                Editar cadastro
+              </button>
+              {onDelete && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="sm" className="text-destructive">
+                      <Trash2 className="h-4 w-4" />
+                      Excluir
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Excluir empresa?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        <strong>{company.name}</strong> e todo o histórico (projetos, financeiro,
+                        arquivos) serão removidos permanentemente.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                      <AlertDialogAction
+                        className="bg-destructive text-destructive-foreground"
+                        onClick={() => void onDelete()}
+                      >
+                        Excluir
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
+            </div>
 
             <div className="flex flex-col gap-2 sm:items-end">
               <div className="flex items-center gap-2">

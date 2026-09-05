@@ -3,11 +3,14 @@ import {
   deleteProject,
   listProjects,
 } from "@/domains/projects/api.server";
+import { getExecutionDashboard } from "@/domains/projects/execution/api.server";
+import type { ExecutionDashboardStats } from "@/domains/projects/execution/types";
 import {
   formToPayload,
   ProjectFormDialog,
   type ProjectFormValues,
 } from "@/domains/projects/components/ProjectFormDialog";
+import { ExecutionDashboardCards } from "@/domains/projects/components/ProjectExecutionView";
 import {
   formatDueDate,
   formatNextActionDue,
@@ -20,7 +23,21 @@ import type { ProjectStatus, ProjectWithCompany } from "@/domains/projects/types
 import { PROJECT_STATUSES, STATUS_LABELS } from "@/domains/projects/types";
 import { TEAM_LABELS, type TeamMember } from "@/lib/auth/types";
 import { getErrorMessage, isUnauthorizedError } from "@/lib/api/client-errors";
-import { EmptyState, PageHeader, PageSkeleton, OSPage, OSRefreshButton, OSPrimaryButton, FilterToolbar, FilterRow, FilterSearch, FilterPillsRow, FilterPill, DataTable } from "@/os/ui";
+import {
+  EmptyState,
+  PageHeader,
+  PageSkeleton,
+  OSPage,
+  OSRefreshButton,
+  OSPrimaryButton,
+  FilterToolbar,
+  FilterRow,
+  FilterSearch,
+  FilterPillsRow,
+  FilterPill,
+  DataTable,
+  Section,
+} from "@/os/ui";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -56,6 +73,7 @@ export function ProjectListPage() {
   const navigate = useNavigate();
   const [projects, setProjects] = useState<ProjectWithCompany[]>([]);
   const [counts, setCounts] = useState<Record<string, number>>({ all: 0, overdue: 0 });
+  const [executionStats, setExecutionStats] = useState<ExecutionDashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<ProjectStatus | "all">("all");
@@ -67,17 +85,21 @@ export function ProjectListPage() {
     setLoading(true);
     setError("");
     try {
-      const result = await listProjects({
-        data: {
-          search: search || undefined,
-          ...(status !== "all" ? { status } : {}),
-          ...(ownerId !== "all" ? { ownerId } : {}),
-          sort: "due_date",
-          order: "asc",
-        },
-      });
+      const [result, dash] = await Promise.all([
+        listProjects({
+          data: {
+            search: search || undefined,
+            ...(status !== "all" ? { status } : {}),
+            ...(ownerId !== "all" ? { ownerId } : {}),
+            sort: "due_date",
+            order: "asc",
+          },
+        }),
+        getExecutionDashboard().catch(() => null),
+      ]);
       setProjects(result.projects);
-      setCounts(result.counts as Record<string, number>);
+      setCounts(result.counts as unknown as Record<string, number>);
+      setExecutionStats(dash);
     } catch (err) {
       if (isUnauthorizedError(err)) {
         navigate({ to: "/os/login" });
@@ -108,7 +130,7 @@ export function ProjectListPage() {
     <OSPage>
       <PageHeader
         title="Projetos"
-        description="Execução por empresa — checklist, prazos e comentários"
+        description="Execução operacional — workflow, fases, prazos e próxima ação"
         icon={FolderKanban}
         actions={
           <>
@@ -119,10 +141,75 @@ export function ProjectListPage() {
       />
 
       {error && (
-        <EmptyState
-          title="Não foi possível carregar os projetos"
-          description={error}
-        />
+        <EmptyState title="Não foi possível carregar os projetos" description={error} />
+      )}
+
+      {executionStats && (
+        <Section title="Projetos em execução">
+          <ExecutionDashboardCards stats={executionStats} />
+          {executionStats.rows.length > 0 && (
+            <div className="mt-4 overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Projeto</TableHead>
+                    <TableHead>Cliente</TableHead>
+                    <TableHead>Fase atual</TableHead>
+                    <TableHead>Responsável</TableHead>
+                    <TableHead>Progresso</TableHead>
+                    <TableHead>Próxima tarefa</TableHead>
+                    <TableHead>Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {executionStats.rows.map((row) => (
+                    <TableRow key={row.projectId}>
+                      <TableCell>
+                        <Link
+                          to="/os/projetos/$id"
+                          params={{ id: row.projectId }}
+                          className="font-medium hover:text-brand"
+                        >
+                          {row.title}
+                        </Link>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {row.companyName ?? "—"}
+                      </TableCell>
+                      <TableCell className="text-sm">{row.currentPhaseName ?? "—"}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {row.ownerId
+                          ? (TEAM_LABELS[row.ownerId as TeamMember] ?? row.ownerId)
+                          : "—"}
+                      </TableCell>
+                      <TableCell className="tabular-nums text-sm">{row.progressPercent}%</TableCell>
+                      <TableCell className="max-w-[200px] truncate text-sm">
+                        {row.nextTaskTitle ?? "—"}
+                      </TableCell>
+                      <TableCell>
+                        <span
+                          className={
+                            row.waitingClient
+                              ? "text-xs text-amber-300"
+                              : row.overdue
+                                ? "text-xs text-red-300"
+                                : "text-xs text-muted-foreground"
+                          }
+                        >
+                          {row.waitingClient
+                            ? "Aguardando cliente"
+                            : row.overdue
+                              ? "Atrasado"
+                              : (STATUS_LABELS[row.status as ProjectStatus] ?? row.status)}
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </Section>
       )}
 
       <FilterToolbar>
@@ -251,9 +338,7 @@ export function ProjectListPage() {
                     </div>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
-                    {project.owner_id
-                      ? TEAM_LABELS[project.owner_id as TeamMember]
-                      : "—"}
+                    {project.owner_id ? TEAM_LABELS[project.owner_id as TeamMember] : "—"}
                   </TableCell>
                   <TableCell>
                     <AlertDialog>

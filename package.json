@@ -15,6 +15,7 @@
     "publish:scheduled-content": "npx tsx scripts/publish-scheduled-content.ts",
     "seed:commercial-library": "npx tsx scripts/seed-commercial-library.ts",
     "seed:client-user": "npx tsx scripts/seed-client-user.ts",
+    "seed:project-execution": "npx tsx scripts/seed-project-execution.ts",
     "prebuild": "npm run generate:seo",
     "build": "vite build",
     "build:dev": "vite build --mode development",

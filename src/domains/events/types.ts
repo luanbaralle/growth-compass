@@ -42,6 +42,12 @@ export type DomainEventKey =
   | "project.unblocked"
   | "project.overdue"
   | "project.next_action_set"
+  | "project.workflow_started"
+  | "project.phase_activated"
+  | "project.phase_completed"
+  | "project.workflow_task_status_changed"
+  | "project.workflow_task_completed"
+  | "project.waiting_client"
   // Content
   | "content.created"
   | "content.status_changed"

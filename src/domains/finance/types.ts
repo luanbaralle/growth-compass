@@ -5,6 +5,7 @@ export type FinanceEntryStatus = "paid" | "pending" | "overdue" | "cancelled";
 export interface FinanceEntry {
   id: string;
   company_id: string;
+  project_id: string | null;
   type: FinanceEntryType;
   description: string;
   amount_cents: number;

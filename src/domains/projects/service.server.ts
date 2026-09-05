@@ -38,13 +38,24 @@ export async function getProject(id: string) {
   const project = await repo.findProjectById(id);
   if (!project) return null;
 
-  const [company, checklist, comments] = await Promise.all([
+  const [company, checklist, comments, execution, events] = await Promise.all([
     companyRepo.findCompanyById(project.company_id),
     repo.findChecklistItems(id),
     repo.findComments(id),
+    import("./execution/service.server").then((m) => m.getProjectExecution(id)),
+    import("@/domains/events/repository.server").then((m) =>
+      m.findDomainEventsByEntity("project", id, 40),
+    ),
   ]);
 
-  return { project, company, checklist, comments };
+  const timeline = events.map((e) => ({
+    id: e.id,
+    title: e.activity_title,
+    body: e.activity_body,
+    occurredAt: e.occurred_at,
+  }));
+
+  return { project, company, checklist, comments, execution, timeline };
 }
 
 export async function createProject(
@@ -61,6 +72,13 @@ export async function createProject(
     blockedByDetail?: string | null;
     nextAction?: string;
     nextActionDue?: string;
+    startDate?: string;
+    setupAmountCents?: number | null;
+    recurringAmountCents?: number | null;
+    mediaBudgetNotes?: string | null;
+    strategyNotes?: string | null;
+    contextJson?: Record<string, unknown>;
+    workflowTemplateSlug?: string | null;
   },
   authorId: TeamMember | null,
 ) {
@@ -84,6 +102,12 @@ export async function createProject(
       status === "blocked" ? input.blockedByDetail?.trim() || null : null,
     next_action: input.nextAction?.trim() || null,
     next_action_due: input.nextActionDue || null,
+    start_date: input.startDate || null,
+    setup_amount_cents: input.setupAmountCents ?? null,
+    recurring_amount_cents: input.recurringAmountCents ?? null,
+    media_budget_notes: input.mediaBudgetNotes ?? null,
+    strategy_notes: input.strategyNotes ?? null,
+    context_json: (input.contextJson ?? {}) as Project["context_json"],
   });
 
   await emitProjectCreated(project, { type: input.type }, authorId);
@@ -104,6 +128,11 @@ export async function createProject(
       input.nextActionDue || null,
       authorId,
     );
+  }
+
+  if (input.workflowTemplateSlug) {
+    const execution = await import("./execution/service.server");
+    await execution.applyWorkflowTemplate(project.id, input.workflowTemplateSlug, authorId);
   }
 
   return project;

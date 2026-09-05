@@ -35,8 +35,13 @@ export function translateProjectBlocked(type: ProjectBlockedByType | null): stri
 export function translateProjectStatus(status: ProjectStatus): string {
   const map: Record<ProjectStatus, string> = {
     pending: "Preparando início",
+    approved: "Aprovado",
+    formalization: "Em formalização",
+    onboarding: "Em onboarding",
     in_progress: "Em andamento",
+    waiting_client: "Aguardando você",
     review: "Aguardando sua revisão",
+    paused: "Pausado",
     done: "Concluído",
     blocked: "Precisamos de você",
     cancelled: "Encerrado",

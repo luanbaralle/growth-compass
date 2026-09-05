@@ -18,7 +18,7 @@ export const listProjects = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     return withAuth(async () => {
       const projectService = await import("@/domains/projects/service.server");
-      return projectService.listProjects(data ?? {});
+      return projectService.listProjects((data ?? {}) as import("./types").ProjectListFilters);
     });
   });
 
@@ -42,16 +42,20 @@ export const createProject = createServerFn({ method: "POST" })
         {
           companyId: data.companyId,
           title: data.title,
-          type: data.type,
-          status: data.status,
+          type: data.type as import("./types").ProjectType,
+          status: data.status as import("./types").ProjectStatus | undefined,
           ownerId: data.ownerId,
-          priority: data.priority,
+          priority: data.priority as import("./types").ProjectPriority | undefined,
           dueDate: data.dueDate || undefined,
           description: data.description,
-          blockedByType: data.blockedByType ?? undefined,
+          blockedByType: data.blockedByType as
+            | import("./types").ProjectBlockedByType
+            | null
+            | undefined,
           blockedByDetail: data.blockedByDetail ?? undefined,
           nextAction: data.nextAction,
           nextActionDue: data.nextActionDue || undefined,
+          workflowTemplateSlug: data.workflowTemplateSlug || undefined,
         },
         author,
       );
@@ -69,13 +73,16 @@ export const updateProject = createServerFn({ method: "POST" })
         companyId,
         {
           title: patch.title,
-          type: patch.type,
-          status: patch.status,
+          type: patch.type as import("./types").ProjectType | undefined,
+          status: patch.status as import("./types").ProjectStatus | undefined,
           ownerId: patch.ownerId,
-          priority: patch.priority,
+          priority: patch.priority as import("./types").ProjectPriority | undefined,
           dueDate: patch.dueDate,
           description: patch.description,
-          blockedByType: patch.blockedByType ?? undefined,
+          blockedByType: patch.blockedByType as
+            | import("./types").ProjectBlockedByType
+            | null
+            | undefined,
           blockedByDetail: patch.blockedByDetail ?? undefined,
           nextAction: patch.nextAction,
           nextActionDue: patch.nextActionDue,

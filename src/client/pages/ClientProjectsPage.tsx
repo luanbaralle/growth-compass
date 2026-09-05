@@ -26,7 +26,16 @@ function matchesFilter(
   if (filter === "all") return true;
   if (filter === "needs_you") return item.needsClient;
   if (filter === "done") return item.status === "done";
-  return ["pending", "in_progress", "review", "blocked"].includes(item.status);
+  return [
+    "pending",
+    "approved",
+    "formalization",
+    "onboarding",
+    "in_progress",
+    "waiting_client",
+    "review",
+    "blocked",
+  ].includes(item.status);
 }
 
 function formatRelativeDate(iso: string): string {

@@ -58,7 +58,7 @@ export async function findProjects(filters: ProjectListFilters = {}): Promise<Pr
   }
 
   let result: ProjectWithCompany[] = projects.map((project) => ({
-    ...project,
+    ...normalizeProject(project),
     companies: companyMap.has(project.company_id)
       ? { name: companyMap.get(project.company_id)! }
       : null,
@@ -83,8 +83,13 @@ export async function countProjectsByStatus(): Promise<ProjectStatusCounts> {
   const counts: ProjectStatusCounts = {
     all: 0,
     pending: 0,
+    approved: 0,
+    formalization: 0,
+    onboarding: 0,
     in_progress: 0,
+    waiting_client: 0,
     review: 0,
+    paused: 0,
     done: 0,
     blocked: 0,
     cancelled: 0,
@@ -106,14 +111,29 @@ export async function countProjectsByStatus(): Promise<ProjectStatusCounts> {
 
 export async function findProjectById(id: string): Promise<Project | null> {
   const rows = await dbSelect<Project>("projects", encodeQuery({ select: "*", id: `eq.${id}` }));
-  return rows[0] ?? null;
+  return rows[0] ? normalizeProject(rows[0]) : null;
+}
+
+function normalizeProject(row: Project): Project {
+  return {
+    ...row,
+    start_date: row.start_date ?? null,
+    setup_amount_cents: row.setup_amount_cents ?? null,
+    recurring_amount_cents: row.recurring_amount_cents ?? null,
+    media_budget_notes: row.media_budget_notes ?? null,
+    strategy_notes: row.strategy_notes ?? null,
+    context_json: row.context_json ?? {},
+  };
 }
 
 export async function insertProject(
   data: Omit<Project, "id" | "created_at" | "updated_at">,
 ): Promise<Project> {
-  const [row] = await dbInsert<Project>("projects", data);
-  return row;
+  const [row] = await dbInsert<Project>("projects", {
+    ...data,
+    context_json: data.context_json ?? {},
+  });
+  return normalizeProject(row);
 }
 
 export async function patchProject(
@@ -121,7 +141,7 @@ export async function patchProject(
   data: Partial<Omit<Project, "id" | "company_id" | "created_at" | "updated_at">>,
 ): Promise<Project | null> {
   const rows = await dbUpdate<Project>("projects", `id=eq.${id}`, data);
-  return rows[0] ?? null;
+  return rows[0] ? normalizeProject(rows[0]) : null;
 }
 
 export async function removeProject(id: string): Promise<boolean> {

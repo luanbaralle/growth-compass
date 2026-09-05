@@ -15,8 +15,13 @@ export { formatNextActionDue, isDueOverdue };
 
 const statusStyles: Record<ProjectStatus, string> = {
   pending: "border-zinc-400/40 text-zinc-300 bg-zinc-400/10",
+  approved: "border-sky-400/40 text-sky-300 bg-sky-400/10",
+  formalization: "border-cyan-400/40 text-cyan-300 bg-cyan-400/10",
+  onboarding: "border-teal-400/40 text-teal-300 bg-teal-400/10",
   in_progress: "border-blue-400/40 text-blue-300 bg-blue-400/10",
+  waiting_client: "border-amber-400/40 text-amber-300 bg-amber-400/10",
   review: "border-violet-400/40 text-violet-300 bg-violet-400/10",
+  paused: "border-orange-400/40 text-orange-300 bg-orange-400/10",
   done: "border-emerald-400/40 text-emerald-300 bg-emerald-400/10",
   blocked: "border-red-400/40 text-red-300 bg-red-400/10",
   cancelled: "border-zinc-500/40 text-zinc-500 bg-zinc-500/10",

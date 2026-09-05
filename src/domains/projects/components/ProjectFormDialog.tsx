@@ -1,5 +1,7 @@
 import { listCompanies } from "@/domains/companies/api.server";
 import type { Company } from "@/domains/companies/types";
+import { listWorkflowTemplates } from "@/domains/projects/execution/api.server";
+import type { WorkflowTemplate } from "@/domains/projects/execution/types";
 import type { ProjectBlockedByType, ProjectPriority, ProjectStatus, ProjectType } from "@/domains/projects/types";
 import {
   BLOCKED_BY_LABELS,
@@ -46,6 +48,7 @@ export interface ProjectFormValues {
   blockedByDetail: string;
   nextAction: string;
   nextActionDue: string;
+  workflowTemplateSlug: string;
 }
 
 const emptyForm: ProjectFormValues = {
@@ -61,6 +64,7 @@ const emptyForm: ProjectFormValues = {
   blockedByDetail: "",
   nextAction: "",
   nextActionDue: "",
+  workflowTemplateSlug: "",
 };
 
 export function ProjectFormDialog({
@@ -84,6 +88,7 @@ export function ProjectFormDialog({
     companyId: initial?.companyId ?? defaultCompanyId ?? "",
   });
   const [companies, setCompanies] = useState<Company[]>([]);
+  const [templates, setTemplates] = useState<WorkflowTemplate[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -94,6 +99,11 @@ export function ProjectFormDialog({
       listCompanies({ data: { sort: "name", order: "asc" } })
         .then((r) => setCompanies(r.companies))
         .catch(() => setCompanies([]));
+      if (!initial) {
+        listWorkflowTemplates()
+          .then(setTemplates)
+          .catch(() => setTemplates([]));
+      }
     }
   }, [open, initial, defaultCompanyId]);
 
@@ -238,6 +248,31 @@ export function ProjectFormDialog({
             />
           </div>
 
+          {!initial && (
+            <div className="space-y-1.5">
+              <Label>Workflow operacional</Label>
+              <Select
+                value={form.workflowTemplateSlug || "none"}
+                onValueChange={(v) => set("workflowTemplateSlug", v === "none" ? "" : v)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Sem workflow" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Sem workflow</SelectItem>
+                  {templates.map((t) => (
+                    <SelectItem key={t.id} value={t.slug}>
+                      {t.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                Ao selecionar um template, fases e tarefas são criadas automaticamente.
+              </p>
+            </div>
+          )}
+
           <div className="space-y-3 rounded-lg border border-border/40 bg-surface/20 p-4">
             <div>
               <p className="text-sm font-medium">Operação</p>
@@ -338,6 +373,7 @@ export function projectToFormValues(project: {
     blockedByDetail: project.blocked_by_detail ?? "",
     nextAction: project.next_action ?? "",
     nextActionDue: project.next_action_due ?? "",
+    workflowTemplateSlug: "",
   };
 }
 
@@ -356,5 +392,6 @@ export function formToPayload(form: ProjectFormValues) {
       form.status === "blocked" ? form.blockedByDetail.trim() || null : null,
     nextAction: form.nextAction.trim() || undefined,
     nextActionDue: form.nextActionDue || undefined,
+    workflowTemplateSlug: form.workflowTemplateSlug || undefined,
   };
 }

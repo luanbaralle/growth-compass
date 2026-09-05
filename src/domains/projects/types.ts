@@ -2,8 +2,13 @@ import type { TeamMember } from "@/lib/auth/types";
 
 export type ProjectStatus =
   | "pending"
+  | "approved"
+  | "formalization"
+  | "onboarding"
   | "in_progress"
+  | "waiting_client"
   | "review"
+  | "paused"
   | "done"
   | "blocked"
   | "cancelled";
@@ -37,6 +42,12 @@ export interface Project {
   blocked_by_detail: string | null;
   next_action: string | null;
   next_action_due: string | null;
+  start_date: string | null;
+  setup_amount_cents: number | null;
+  recurring_amount_cents: number | null;
+  media_budget_notes: string | null;
+  strategy_notes: string | null;
+  context_json: Record<string, string | number | boolean | null | string[]>;
   created_at: string;
   updated_at: string;
 }
@@ -74,8 +85,13 @@ export interface ProjectListFilters {
 export interface ProjectStatusCounts {
   all: number;
   pending: number;
+  approved: number;
+  formalization: number;
+  onboarding: number;
   in_progress: number;
+  waiting_client: number;
   review: number;
+  paused: number;
   done: number;
   blocked: number;
   cancelled: number;
@@ -85,8 +101,13 @@ export interface ProjectStatusCounts {
 
 export const PROJECT_STATUSES: ProjectStatus[] = [
   "pending",
+  "approved",
+  "formalization",
+  "onboarding",
   "in_progress",
+  "waiting_client",
   "review",
+  "paused",
   "done",
   "blocked",
   "cancelled",
@@ -108,8 +129,13 @@ export const PROJECT_TYPES: ProjectType[] = [
 
 export const STATUS_LABELS: Record<ProjectStatus, string> = {
   pending: "Pendente",
-  in_progress: "Em andamento",
+  approved: "Aprovado",
+  formalization: "Formalização",
+  onboarding: "Onboarding",
+  in_progress: "Em execução",
+  waiting_client: "Aguardando cliente",
   review: "Revisão",
+  paused: "Pausado",
   done: "Concluído",
   blocked: "Bloqueado",
   cancelled: "Cancelado",
@@ -152,7 +178,7 @@ export const BLOCKED_BY_LABELS: Record<ProjectBlockedByType, string> = {
 
 export function isDueOverdue(dueDate: string | null, status: ProjectStatus): boolean {
   if (!dueDate) return false;
-  if (status === "done" || status === "cancelled") return false;
+  if (status === "done" || status === "cancelled" || status === "paused") return false;
   return dueDate < new Date().toISOString().slice(0, 10);
 }
 
@@ -177,4 +203,23 @@ export function formatNextActionDue(iso: string | null): string {
   return `${d}/${m}/${y}`;
 }
 
-export const ACTIVE_STATUSES: ProjectStatus[] = ["pending", "in_progress", "review", "blocked"];
+export const ACTIVE_STATUSES: ProjectStatus[] = [
+  "pending",
+  "approved",
+  "formalization",
+  "onboarding",
+  "in_progress",
+  "waiting_client",
+  "review",
+  "blocked",
+];
+
+export const EXECUTION_STATUSES: ProjectStatus[] = [
+  "approved",
+  "formalization",
+  "onboarding",
+  "in_progress",
+  "waiting_client",
+  "review",
+  "blocked",
+];

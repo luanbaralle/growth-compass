@@ -1,6 +1,7 @@
 import {
   addCompanyNote,
   changeCompanyStage,
+  deleteCompany,
   getCompany,
   removeCompanyLogo,
   updateCompany,
@@ -190,6 +191,16 @@ export function CompanyDetailPage({ companyId }: { companyId: string }) {
     await load();
   };
 
+  const handleDelete = async () => {
+    try {
+      await deleteCompany({ data: { id: companyId } });
+      toast.success("Empresa excluída");
+      navigate({ to: "/os/empresas" });
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Erro ao excluir empresa."));
+    }
+  };
+
   const handleAddNote = async (body: string) => {
     await addCompanyNote({ data: { companyId, body } });
     toast.success("Nota adicionada");
@@ -254,6 +265,7 @@ export function CompanyDetailPage({ companyId }: { companyId: string }) {
       <CompanyProfileHeader
         company={company}
         onEdit={() => setEditOpen(true)}
+        onDelete={handleDelete}
         onStageChange={handleStageChange}
         onLogoUpload={handleLogoUpload}
         onLogoRemove={company.logo_url ? handleLogoRemove : undefined}

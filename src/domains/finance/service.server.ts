@@ -36,6 +36,7 @@ export async function createFinanceEntry(
     paymentMethod?: string;
     recurring?: boolean;
     recurringMonths?: number;
+    projectId?: string | null;
   },
   authorId: TeamMember | null,
 ): Promise<CreateFinanceEntryResult> {
@@ -64,6 +65,7 @@ export async function createFinanceEntry(
 
     const entry = await repo.insertFinanceEntry({
       company_id: input.companyId,
+      project_id: input.projectId ?? null,
       type: input.type,
       description,
       amount_cents: input.amountCents,
@@ -116,6 +118,7 @@ async function insertSingleFinanceEntry(
     status?: FinanceEntryStatus;
     paidAt?: string;
     paymentMethod?: string;
+    projectId?: string | null;
   },
   status: FinanceEntryStatus,
   authorId: TeamMember | null,
@@ -124,6 +127,7 @@ async function insertSingleFinanceEntry(
 
   const entry = await repo.insertFinanceEntry({
     company_id: input.companyId,
+    project_id: input.projectId ?? null,
     type: input.type,
     description: input.description,
     amount_cents: input.amountCents,

@@ -70,13 +70,13 @@ export async function findFinanceEntries(
     params.company_id = `eq.${filters.companyId}`;
   }
 
-  let entries = await dbSelect<FinanceEntry>("finance_entries", encodeQuery(params));
+  let rows = await dbSelect<FinanceEntry>("finance_entries", encodeQuery(params));
 
   if (filters.status && filters.status !== "all") {
-    entries = entries.filter((entry) => effectiveFinanceStatus(entry) === filters.status);
+    rows = rows.filter((entry) => effectiveFinanceStatus(entry) === filters.status);
   }
 
-  entries = await attachCompanyNames(entries);
+  let entries = await attachCompanyNames(rows);
 
   if (filters.search?.trim()) {
     const q = filters.search.trim().toLowerCase();
@@ -150,8 +150,11 @@ export async function findFinanceEntryById(id: string): Promise<FinanceEntry | n
 export async function insertFinanceEntry(
   data: Omit<FinanceEntry, "id" | "created_at" | "updated_at">,
 ): Promise<FinanceEntry> {
-  const [row] = await dbInsert<FinanceEntry>("finance_entries", data);
-  return row;
+  const [row] = await dbInsert<FinanceEntry>("finance_entries", {
+    ...data,
+    project_id: data.project_id ?? null,
+  });
+  return { ...row, project_id: row.project_id ?? null };
 }
 
 export async function patchFinanceEntry(

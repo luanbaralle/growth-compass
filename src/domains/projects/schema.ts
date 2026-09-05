@@ -62,6 +62,7 @@ const projectFieldsSchema = z.object({
   priority: projectPrioritySchema.optional(),
   dueDate: optionalDateSchema,
   description: z.string().max(5000).optional(),
+  workflowTemplateSlug: z.string().max(100).optional().or(z.literal("")),
   ...projectOperationalFields,
 });
 

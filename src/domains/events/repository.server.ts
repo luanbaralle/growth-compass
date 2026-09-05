@@ -161,6 +161,23 @@ export async function findRecentDomainEvents(
   );
 }
 
+export async function findDomainEventsByEntity(
+  entityType: DomainEntityType,
+  entityId: string,
+  limit = 40,
+): Promise<DomainEvent[]> {
+  return dbSelect<DomainEvent>(
+    "domain_events",
+    encodeQuery({
+      select: "*",
+      entity_type: `eq.${entityType}`,
+      entity_id: `eq.${entityId}`,
+      order: "occurred_at.desc",
+      limit: String(limit),
+    }),
+  );
+}
+
 export async function findUnreadNotificationsForAssignee(
   assigneeId: TeamMember,
   limit = 20,
