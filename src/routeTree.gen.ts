@@ -77,10 +77,12 @@ import { Route as AdminExecucaoClientesRouteImport } from './routes/admin/execuc
 import { Route as AdminExecucaoCapacidadeRouteImport } from './routes/admin/execucao/capacidade'
 import { Route as OsProspeccaoBibliotecaIndexRouteImport } from './routes/os/prospeccao/biblioteca/index'
 import { Route as OsPropostasIdIndexRouteImport } from './routes/os/propostas/$id/index'
+import { Route as OsProjetosTemplatesIndexRouteImport } from './routes/os/projetos/templates/index'
 import { Route as OsCopilotSessionIdIndexRouteImport } from './routes/os/copilot/$sessionId/index'
 import { Route as AdminExecucaoRituaisIndexRouteImport } from './routes/admin/execucao/rituais/index'
 import { Route as OsPropostasBlueprintIdRouteImport } from './routes/os/propostas/blueprint/$id'
 import { Route as OsPropostasIdApresentacaoRouteImport } from './routes/os/propostas/$id/apresentacao'
+import { Route as OsProjetosTemplatesIdRouteImport } from './routes/os/projetos/templates/$id'
 import { Route as OsCopilotSessionIdBlueprintRouteImport } from './routes/os/copilot/$sessionId/blueprint'
 import { Route as AdminExecucaoRituaisReviewRouteImport } from './routes/admin/execucao/rituais/review'
 import { Route as AdminExecucaoRituaisPlanningRouteImport } from './routes/admin/execucao/rituais/planning'
@@ -431,6 +433,12 @@ const OsPropostasIdIndexRoute = OsPropostasIdIndexRouteImport.update({
   path: '/',
   getParentRoute: () => OsPropostasIdRoute,
 } as any)
+const OsProjetosTemplatesIndexRoute =
+  OsProjetosTemplatesIndexRouteImport.update({
+    id: '/projetos/templates/',
+    path: '/projetos/templates/',
+    getParentRoute: () => OsRouteRoute,
+  } as any)
 const OsCopilotSessionIdIndexRoute = OsCopilotSessionIdIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -453,6 +461,11 @@ const OsPropostasIdApresentacaoRoute =
     path: '/apresentacao',
     getParentRoute: () => OsPropostasIdRoute,
   } as any)
+const OsProjetosTemplatesIdRoute = OsProjetosTemplatesIdRouteImport.update({
+  id: '/projetos/templates/$id',
+  path: '/projetos/templates/$id',
+  getParentRoute: () => OsRouteRoute,
+} as any)
 const OsCopilotSessionIdBlueprintRoute =
   OsCopilotSessionIdBlueprintRouteImport.update({
     id: '/blueprint',
@@ -549,10 +562,12 @@ export interface FileRoutesByFullPath {
   '/admin/execucao/rituais/planning': typeof AdminExecucaoRituaisPlanningRoute
   '/admin/execucao/rituais/review': typeof AdminExecucaoRituaisReviewRoute
   '/os/copilot/$sessionId/blueprint': typeof OsCopilotSessionIdBlueprintRoute
+  '/os/projetos/templates/$id': typeof OsProjetosTemplatesIdRoute
   '/os/propostas/$id/apresentacao': typeof OsPropostasIdApresentacaoRoute
   '/os/propostas/blueprint/$id': typeof OsPropostasBlueprintIdRoute
   '/admin/execucao/rituais/': typeof AdminExecucaoRituaisIndexRoute
   '/os/copilot/$sessionId/': typeof OsCopilotSessionIdIndexRoute
+  '/os/projetos/templates/': typeof OsProjetosTemplatesIndexRoute
   '/os/propostas/$id/': typeof OsPropostasIdIndexRoute
   '/os/prospeccao/biblioteca/': typeof OsProspeccaoBibliotecaIndexRoute
 }
@@ -621,10 +636,12 @@ export interface FileRoutesByTo {
   '/admin/execucao/rituais/planning': typeof AdminExecucaoRituaisPlanningRoute
   '/admin/execucao/rituais/review': typeof AdminExecucaoRituaisReviewRoute
   '/os/copilot/$sessionId/blueprint': typeof OsCopilotSessionIdBlueprintRoute
+  '/os/projetos/templates/$id': typeof OsProjetosTemplatesIdRoute
   '/os/propostas/$id/apresentacao': typeof OsPropostasIdApresentacaoRoute
   '/os/propostas/blueprint/$id': typeof OsPropostasBlueprintIdRoute
   '/admin/execucao/rituais': typeof AdminExecucaoRituaisIndexRoute
   '/os/copilot/$sessionId': typeof OsCopilotSessionIdIndexRoute
+  '/os/projetos/templates': typeof OsProjetosTemplatesIndexRoute
   '/os/propostas/$id': typeof OsPropostasIdIndexRoute
   '/os/prospeccao/biblioteca': typeof OsProspeccaoBibliotecaIndexRoute
 }
@@ -700,10 +717,12 @@ export interface FileRoutesById {
   '/admin/execucao/rituais/planning': typeof AdminExecucaoRituaisPlanningRoute
   '/admin/execucao/rituais/review': typeof AdminExecucaoRituaisReviewRoute
   '/os/copilot/$sessionId/blueprint': typeof OsCopilotSessionIdBlueprintRoute
+  '/os/projetos/templates/$id': typeof OsProjetosTemplatesIdRoute
   '/os/propostas/$id/apresentacao': typeof OsPropostasIdApresentacaoRoute
   '/os/propostas/blueprint/$id': typeof OsPropostasBlueprintIdRoute
   '/admin/execucao/rituais/': typeof AdminExecucaoRituaisIndexRoute
   '/os/copilot/$sessionId/': typeof OsCopilotSessionIdIndexRoute
+  '/os/projetos/templates/': typeof OsProjetosTemplatesIndexRoute
   '/os/propostas/$id/': typeof OsPropostasIdIndexRoute
   '/os/prospeccao/biblioteca/': typeof OsProspeccaoBibliotecaIndexRoute
 }
@@ -780,10 +799,12 @@ export interface FileRouteTypes {
     | '/admin/execucao/rituais/planning'
     | '/admin/execucao/rituais/review'
     | '/os/copilot/$sessionId/blueprint'
+    | '/os/projetos/templates/$id'
     | '/os/propostas/$id/apresentacao'
     | '/os/propostas/blueprint/$id'
     | '/admin/execucao/rituais/'
     | '/os/copilot/$sessionId/'
+    | '/os/projetos/templates/'
     | '/os/propostas/$id/'
     | '/os/prospeccao/biblioteca/'
   fileRoutesByTo: FileRoutesByTo
@@ -852,10 +873,12 @@ export interface FileRouteTypes {
     | '/admin/execucao/rituais/planning'
     | '/admin/execucao/rituais/review'
     | '/os/copilot/$sessionId/blueprint'
+    | '/os/projetos/templates/$id'
     | '/os/propostas/$id/apresentacao'
     | '/os/propostas/blueprint/$id'
     | '/admin/execucao/rituais'
     | '/os/copilot/$sessionId'
+    | '/os/projetos/templates'
     | '/os/propostas/$id'
     | '/os/prospeccao/biblioteca'
   id:
@@ -930,10 +953,12 @@ export interface FileRouteTypes {
     | '/admin/execucao/rituais/planning'
     | '/admin/execucao/rituais/review'
     | '/os/copilot/$sessionId/blueprint'
+    | '/os/projetos/templates/$id'
     | '/os/propostas/$id/apresentacao'
     | '/os/propostas/blueprint/$id'
     | '/admin/execucao/rituais/'
     | '/os/copilot/$sessionId/'
+    | '/os/projetos/templates/'
     | '/os/propostas/$id/'
     | '/os/prospeccao/biblioteca/'
   fileRoutesById: FileRoutesById
@@ -1446,6 +1471,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OsPropostasIdIndexRouteImport
       parentRoute: typeof OsPropostasIdRoute
     }
+    '/os/projetos/templates/': {
+      id: '/os/projetos/templates/'
+      path: '/projetos/templates'
+      fullPath: '/os/projetos/templates/'
+      preLoaderRoute: typeof OsProjetosTemplatesIndexRouteImport
+      parentRoute: typeof OsRouteRoute
+    }
     '/os/copilot/$sessionId/': {
       id: '/os/copilot/$sessionId/'
       path: '/'
@@ -1473,6 +1505,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/os/propostas/$id/apresentacao'
       preLoaderRoute: typeof OsPropostasIdApresentacaoRouteImport
       parentRoute: typeof OsPropostasIdRoute
+    }
+    '/os/projetos/templates/$id': {
+      id: '/os/projetos/templates/$id'
+      path: '/projetos/templates/$id'
+      fullPath: '/os/projetos/templates/$id'
+      preLoaderRoute: typeof OsProjetosTemplatesIdRouteImport
+      parentRoute: typeof OsRouteRoute
     }
     '/os/copilot/$sessionId/blueprint': {
       id: '/os/copilot/$sessionId/blueprint'
@@ -1615,7 +1654,9 @@ interface OsRouteRouteChildren {
   OsProjetosIndexRoute: typeof OsProjetosIndexRoute
   OsPropostasIndexRoute: typeof OsPropostasIndexRoute
   OsProspeccaoIndexRoute: typeof OsProspeccaoIndexRoute
+  OsProjetosTemplatesIdRoute: typeof OsProjetosTemplatesIdRoute
   OsPropostasBlueprintIdRoute: typeof OsPropostasBlueprintIdRoute
+  OsProjetosTemplatesIndexRoute: typeof OsProjetosTemplatesIndexRoute
   OsProspeccaoBibliotecaIndexRoute: typeof OsProspeccaoBibliotecaIndexRoute
 }
 
@@ -1638,7 +1679,9 @@ const OsRouteRouteChildren: OsRouteRouteChildren = {
   OsProjetosIndexRoute: OsProjetosIndexRoute,
   OsPropostasIndexRoute: OsPropostasIndexRoute,
   OsProspeccaoIndexRoute: OsProspeccaoIndexRoute,
+  OsProjetosTemplatesIdRoute: OsProjetosTemplatesIdRoute,
   OsPropostasBlueprintIdRoute: OsPropostasBlueprintIdRoute,
+  OsProjetosTemplatesIndexRoute: OsProjetosTemplatesIndexRoute,
   OsProspeccaoBibliotecaIndexRoute: OsProspeccaoBibliotecaIndexRoute,
 }
 

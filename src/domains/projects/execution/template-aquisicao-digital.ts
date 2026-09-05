@@ -1,8 +1,5 @@
 import type { ProjectPriority } from "../types";
-import type {
-  ChecklistItemDef,
-  WorkflowTemplateDefinition,
-} from "./types";
+import type { ChecklistItemDef, WorkflowTemplateDefinition } from "./types";
 
 const onboardingInfoChecklist: ChecklistItemDef[] = [
   { id: "info_operacao", label: "Dados da operação", done: false, group: "INFORMAÇÕES" },

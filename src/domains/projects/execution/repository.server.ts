@@ -35,9 +35,7 @@ function normalizeTemplateTask(row: WorkflowTemplateTask): WorkflowTemplateTask 
   return {
     ...row,
     checklist_json: parseChecklist(row.checklist_json),
-    depends_on_task_keys: Array.isArray(row.depends_on_task_keys)
-      ? row.depends_on_task_keys
-      : [],
+    depends_on_task_keys: Array.isArray(row.depends_on_task_keys) ? row.depends_on_task_keys : [],
   };
 }
 
@@ -45,6 +43,14 @@ export async function findTemplateBySlug(slug: string): Promise<WorkflowTemplate
   const rows = await dbSelect<WorkflowTemplate>(
     "workflow_templates",
     encodeQuery({ select: "*", slug: `eq.${slug}`, limit: "1" }),
+  );
+  return rows[0] ?? null;
+}
+
+export async function findTemplateById(id: string): Promise<WorkflowTemplate | null> {
+  const rows = await dbSelect<WorkflowTemplate>(
+    "workflow_templates",
+    encodeQuery({ select: "*", id: `eq.${id}`, limit: "1" }),
   );
   return rows[0] ?? null;
 }
@@ -60,11 +66,51 @@ export async function listActiveTemplates(): Promise<WorkflowTemplate[]> {
   );
 }
 
+export async function listAllTemplates(): Promise<WorkflowTemplate[]> {
+  return dbSelect<WorkflowTemplate>(
+    "workflow_templates",
+    encodeQuery({
+      select: "*",
+      order: "name.asc",
+    }),
+  );
+}
+
 export async function insertTemplate(
   data: Omit<WorkflowTemplate, "id" | "created_at" | "updated_at">,
 ): Promise<WorkflowTemplate> {
   const [row] = await dbInsert<WorkflowTemplate>("workflow_templates", data);
   return row;
+}
+
+export async function patchTemplate(
+  id: string,
+  data: Partial<Pick<WorkflowTemplate, "name" | "description" | "is_active" | "slug">>,
+): Promise<WorkflowTemplate | null> {
+  const rows = await dbUpdate<WorkflowTemplate>("workflow_templates", `id=eq.${id}`, {
+    ...data,
+    updated_at: new Date().toISOString(),
+  });
+  return rows[0] ?? null;
+}
+
+export async function deleteTemplate(id: string): Promise<void> {
+  await dbDelete("workflow_templates", `id=eq.${id}`);
+}
+
+export async function deleteTemplatePhasesByTemplateId(templateId: string): Promise<void> {
+  await dbDelete("workflow_template_phases", `template_id=eq.${templateId}`);
+}
+
+export async function countWorkflowsByTemplateId(templateId: string): Promise<number> {
+  const rows = await dbSelect<{ id: string }>(
+    "project_workflows",
+    encodeQuery({
+      select: "id",
+      template_id: `eq.${templateId}`,
+    }),
+  );
+  return rows.length;
 }
 
 export async function insertTemplatePhase(
@@ -88,16 +134,11 @@ export async function insertTemplateTask(
 export async function insertTemplateDeliverable(
   data: Omit<WorkflowTemplateDeliverable, "id">,
 ): Promise<WorkflowTemplateDeliverable> {
-  const [row] = await dbInsert<WorkflowTemplateDeliverable>(
-    "workflow_template_deliverables",
-    data,
-  );
+  const [row] = await dbInsert<WorkflowTemplateDeliverable>("workflow_template_deliverables", data);
   return row;
 }
 
-export async function findTemplatePhases(
-  templateId: string,
-): Promise<WorkflowTemplatePhase[]> {
+export async function findTemplatePhases(templateId: string): Promise<WorkflowTemplatePhase[]> {
   return dbSelect<WorkflowTemplatePhase>(
     "workflow_template_phases",
     encodeQuery({
@@ -108,9 +149,7 @@ export async function findTemplatePhases(
   );
 }
 
-export async function findTemplateTasks(
-  phaseIds: string[],
-): Promise<WorkflowTemplateTask[]> {
+export async function findTemplateTasks(phaseIds: string[]): Promise<WorkflowTemplateTask[]> {
   if (phaseIds.length === 0) return [];
   const rows = await dbSelect<WorkflowTemplateTask>(
     "workflow_template_tasks",
@@ -137,9 +176,7 @@ export async function findTemplateDeliverables(
   );
 }
 
-export async function findWorkflowByProjectId(
-  projectId: string,
-): Promise<ProjectWorkflow | null> {
+export async function findWorkflowByProjectId(projectId: string): Promise<ProjectWorkflow | null> {
   const rows = await dbSelect<ProjectWorkflow>(
     "project_workflows",
     encodeQuery({ select: "*", project_id: `eq.${projectId}`, limit: "1" }),
@@ -184,17 +221,11 @@ export async function patchWorkflowPhase(
   id: string,
   data: Partial<Omit<ProjectWorkflowPhase, "id" | "workflow_id">>,
 ): Promise<ProjectWorkflowPhase | null> {
-  const rows = await dbUpdate<ProjectWorkflowPhase>(
-    "project_workflow_phases",
-    `id=eq.${id}`,
-    data,
-  );
+  const rows = await dbUpdate<ProjectWorkflowPhase>("project_workflow_phases", `id=eq.${id}`, data);
   return rows[0] ?? null;
 }
 
-export async function findWorkflowPhases(
-  workflowId: string,
-): Promise<ProjectWorkflowPhase[]> {
+export async function findWorkflowPhases(workflowId: string): Promise<ProjectWorkflowPhase[]> {
   return dbSelect<ProjectWorkflowPhase>(
     "project_workflow_phases",
     encodeQuery({
@@ -238,9 +269,7 @@ export async function findWorkflowTasks(workflowId: string): Promise<ProjectWork
   return rows.map(normalizeTask);
 }
 
-export async function findWorkflowTaskById(
-  id: string,
-): Promise<ProjectWorkflowTask | null> {
+export async function findWorkflowTaskById(id: string): Promise<ProjectWorkflowTask | null> {
   const rows = await dbSelect<ProjectWorkflowTask>(
     "project_workflow_tasks",
     encodeQuery({ select: "*", id: `eq.${id}`, limit: "1" }),
@@ -286,9 +315,7 @@ export async function patchDeliverable(
   return rows[0] ?? null;
 }
 
-export async function findDeliverablesByProject(
-  projectId: string,
-): Promise<ProjectDeliverable[]> {
+export async function findDeliverablesByProject(projectId: string): Promise<ProjectDeliverable[]> {
   return dbSelect<ProjectDeliverable>(
     "project_deliverables",
     encodeQuery({
@@ -299,9 +326,7 @@ export async function findDeliverablesByProject(
   );
 }
 
-export async function findBriefingByProject(
-  projectId: string,
-): Promise<ProjectBriefing | null> {
+export async function findBriefingByProject(projectId: string): Promise<ProjectBriefing | null> {
   const rows = await dbSelect<ProjectBriefing>(
     "project_briefings",
     encodeQuery({ select: "*", project_id: `eq.${projectId}`, limit: "1" }),

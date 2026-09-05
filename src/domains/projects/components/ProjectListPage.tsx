@@ -1,8 +1,4 @@
-import {
-  createProject,
-  deleteProject,
-  listProjects,
-} from "@/domains/projects/api.server";
+import { createProject, deleteProject, listProjects } from "@/domains/projects/api.server";
 import { getExecutionDashboard } from "@/domains/projects/execution/api.server";
 import type { ExecutionDashboardStats } from "@/domains/projects/execution/types";
 import {
@@ -66,7 +62,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { FolderKanban, Trash2 } from "lucide-react";
+import { FolderKanban, GitBranch, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 export function ProjectListPage() {
@@ -134,15 +130,19 @@ export function ProjectListPage() {
         icon={FolderKanban}
         actions={
           <>
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/os/projetos/templates">
+                <GitBranch className="mr-1.5 size-4" />
+                Templates
+              </Link>
+            </Button>
             <OSRefreshButton loading={loading} onClick={load} />
             <OSPrimaryButton label="Novo projeto" onClick={() => setCreateOpen(true)} />
           </>
         }
       />
 
-      {error && (
-        <EmptyState title="Não foi possível carregar os projetos" description={error} />
-      )}
+      {error && <EmptyState title="Não foi possível carregar os projetos" description={error} />}
 
       {executionStats && (
         <Section title="Projetos em execução">
@@ -325,9 +325,7 @@ export function ProjectListPage() {
                   <TableCell>
                     <div className="max-w-[220px] space-y-1">
                       <p className="truncate text-sm">
-                        {project.next_action || (
-                          <span className="text-muted-foreground">—</span>
-                        )}
+                        {project.next_action || <span className="text-muted-foreground">—</span>}
                       </p>
                       {project.next_action_due && (
                         <p className="text-xs text-muted-foreground">

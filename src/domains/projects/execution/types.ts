@@ -3,12 +3,7 @@ import type { ProjectPriority, ProjectStatus } from "../types";
 
 export type WorkflowPhaseStatus = "pending" | "active" | "done" | "skipped";
 
-export type WorkflowTaskStatus =
-  | "todo"
-  | "in_progress"
-  | "blocked"
-  | "waiting_client"
-  | "done";
+export type WorkflowTaskStatus = "todo" | "in_progress" | "blocked" | "waiting_client" | "done";
 
 export type WorkflowInstanceStatus = "active" | "paused" | "completed" | "cancelled";
 
@@ -99,6 +94,24 @@ export interface WorkflowTemplateDeliverable {
   phase_id: string;
   title: string;
   sort_order: number;
+}
+
+/** Template com fases/tarefas/entregáveis — usado no Studio. */
+export interface WorkflowTemplateDetail {
+  template: WorkflowTemplate;
+  phases: Array<
+    WorkflowTemplatePhase & {
+      tasks: WorkflowTemplateTask[];
+      deliverables: WorkflowTemplateDeliverable[];
+    }
+  >;
+  usageCount: number;
+}
+
+export interface TemplateStudioListItem extends WorkflowTemplate {
+  phaseCount: number;
+  taskCount: number;
+  usageCount: number;
 }
 
 export interface ProjectWorkflow {

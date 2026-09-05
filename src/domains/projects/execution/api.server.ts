@@ -4,10 +4,15 @@ import {
   applyWorkflowTemplateSchema,
   completeDeliverableSchema,
   completeWorkflowTaskSchema,
+  createWorkflowTemplateSchema,
+  duplicateWorkflowTemplateSchema,
   projectWorkflowIdSchema,
   resumeWorkflowTaskSchema,
+  saveWorkflowTemplateStructureSchema,
   setWaitingClientSchema,
+  templateIdSchema,
   updateWorkflowTaskSchema,
+  updateWorkflowTemplateMetaSchema,
   upsertBriefingSchema,
 } from "./schema";
 
@@ -17,6 +22,76 @@ export const listWorkflowTemplates = createServerFn({ method: "GET" }).handler(a
     return execution.listWorkflowTemplates();
   });
 });
+
+export const listTemplatesForStudio = createServerFn({ method: "GET" }).handler(async () => {
+  return withAuth(async () => {
+    const execution = await import("./service.server");
+    return execution.listTemplatesForStudio();
+  });
+});
+
+export const getWorkflowTemplateDetail = createServerFn({ method: "GET" })
+  .validator(templateIdSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const execution = await import("./service.server");
+      return execution.getWorkflowTemplateDetail(data.templateId);
+    });
+  });
+
+export const createWorkflowTemplate = createServerFn({ method: "POST" })
+  .validator(createWorkflowTemplateSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const execution = await import("./service.server");
+      return execution.createWorkflowTemplate(data);
+    });
+  });
+
+export const updateWorkflowTemplateMeta = createServerFn({ method: "POST" })
+  .validator(updateWorkflowTemplateMetaSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const execution = await import("./service.server");
+      return execution.updateWorkflowTemplateMeta(data);
+    });
+  });
+
+export const saveWorkflowTemplateStructure = createServerFn({ method: "POST" })
+  .validator(saveWorkflowTemplateStructureSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const execution = await import("./service.server");
+      return execution.saveWorkflowTemplateStructure(data);
+    });
+  });
+
+export const duplicateWorkflowTemplate = createServerFn({ method: "POST" })
+  .validator(duplicateWorkflowTemplateSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const execution = await import("./service.server");
+      return execution.duplicateWorkflowTemplate(data);
+    });
+  });
+
+export const deactivateWorkflowTemplate = createServerFn({ method: "POST" })
+  .validator(templateIdSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const execution = await import("./service.server");
+      return execution.deactivateWorkflowTemplate(data.templateId);
+    });
+  });
+
+export const deleteWorkflowTemplate = createServerFn({ method: "POST" })
+  .validator(templateIdSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const execution = await import("./service.server");
+      return execution.deleteWorkflowTemplate(data.templateId);
+    });
+  });
 
 export const getProjectExecution = createServerFn({ method: "GET" })
   .validator(projectWorkflowIdSchema)

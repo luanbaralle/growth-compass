@@ -28,41 +28,79 @@ import type {
   ProjectBriefing,
   ProjectExecutionView,
   ProjectWorkflowTask,
+  TemplatePhaseDef,
+  TemplateStudioListItem,
   WorkflowTaskStatus,
   WorkflowTemplate,
   WorkflowTemplateDefinition,
+  WorkflowTemplateDetail,
 } from "./types";
+import type { ProjectPriority, ProjectStatus } from "../types";
 
 const BUILTIN_TEMPLATES: WorkflowTemplateDefinition[] = [AQUISICAO_DIGITAL_TEMPLATE];
 
-export async function ensureBuiltinTemplates(): Promise<void> {
-  for (const def of BUILTIN_TEMPLATES) {
-    await ensureTemplate(def);
+function slugifyTemplateName(name: string): string {
+  const base = name
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+  return base || "template";
+}
+
+async function ensureUniqueSlug(base: string): Promise<string> {
+  let candidate = base;
+  let n = 2;
+  while (await repo.findTemplateBySlug(candidate)) {
+    candidate = `${base.slice(0, 70)}-${n}`;
+    n += 1;
+  }
+  return candidate;
+}
+
+function assertUniqueStructureKeys(phases: TemplatePhaseDef[]): void {
+  const phaseKeys = new Set<string>();
+  const taskKeys = new Set<string>();
+  for (const phase of phases) {
+    if (phaseKeys.has(phase.key)) {
+      throw new Error(`Fase duplicada: "${phase.key}". Keys de fase devem ser únicas.`);
+    }
+    phaseKeys.add(phase.key);
+    for (const task of phase.tasks) {
+      if (taskKeys.has(task.key)) {
+        throw new Error(
+          `Tarefa duplicada: "${task.key}". Keys de tarefa devem ser únicas no template todo.`,
+        );
+      }
+      taskKeys.add(task.key);
+    }
+  }
+  for (const phase of phases) {
+    for (const task of phase.tasks) {
+      for (const dep of task.dependsOnTaskKeys) {
+        if (!taskKeys.has(dep)) {
+          throw new Error(
+            `Dependência inválida em "${task.key}": tarefa "${dep}" não existe no template.`,
+          );
+        }
+        if (dep === task.key) {
+          throw new Error(`Tarefa "${task.key}" não pode depender de si mesma.`);
+        }
+      }
+    }
   }
 }
 
-export async function ensureTemplate(
-  def: WorkflowTemplateDefinition,
-): Promise<WorkflowTemplate> {
-  const existing = await repo.findTemplateBySlug(def.slug);
-  if (existing) {
-    const phases = await repo.findTemplatePhases(existing.id);
-    if (phases.length > 0) return existing;
-  }
+async function writeTemplatePhases(templateId: string, phases: TemplatePhaseDef[]): Promise<void> {
+  assertUniqueStructureKeys(phases);
+  await repo.deleteTemplatePhasesByTemplateId(templateId);
 
-  const template =
-    existing ??
-    (await repo.insertTemplate({
-      slug: def.slug,
-      name: def.name,
-      description: def.description,
-      is_active: true,
-    }));
-
-  for (let i = 0; i < def.phases.length; i++) {
-    const phaseDef = def.phases[i]!;
+  for (let i = 0; i < phases.length; i++) {
+    const phaseDef = phases[i]!;
     const phase = await repo.insertTemplatePhase({
-      template_id: template.id,
+      template_id: templateId,
       key: phaseDef.key,
       name: phaseDef.name,
       objective: phaseDef.objective,
@@ -98,7 +136,54 @@ export async function ensureTemplate(
       });
     }
   }
+}
 
+async function loadTemplateDetail(templateId: string): Promise<WorkflowTemplateDetail | null> {
+  const template = await repo.findTemplateById(templateId);
+  if (!template) return null;
+
+  const phases = await repo.findTemplatePhases(template.id);
+  const phaseIds = phases.map((p) => p.id);
+  const [tasks, deliverables, usageCount] = await Promise.all([
+    repo.findTemplateTasks(phaseIds),
+    repo.findTemplateDeliverables(phaseIds),
+    repo.countWorkflowsByTemplateId(template.id),
+  ]);
+
+  return {
+    template,
+    usageCount,
+    phases: phases.map((phase) => ({
+      ...phase,
+      tasks: tasks.filter((t) => t.phase_id === phase.id),
+      deliverables: deliverables.filter((d) => d.phase_id === phase.id),
+    })),
+  };
+}
+
+export async function ensureBuiltinTemplates(): Promise<void> {
+  for (const def of BUILTIN_TEMPLATES) {
+    await ensureTemplate(def);
+  }
+}
+
+export async function ensureTemplate(def: WorkflowTemplateDefinition): Promise<WorkflowTemplate> {
+  const existing = await repo.findTemplateBySlug(def.slug);
+  if (existing) {
+    const phases = await repo.findTemplatePhases(existing.id);
+    if (phases.length > 0) return existing;
+  }
+
+  const template =
+    existing ??
+    (await repo.insertTemplate({
+      slug: def.slug,
+      name: def.name,
+      description: def.description,
+      is_active: true,
+    }));
+
+  await writeTemplatePhases(template.id, def.phases);
   return template;
 }
 
@@ -107,23 +192,233 @@ export async function listWorkflowTemplates(): Promise<WorkflowTemplate[]> {
   return repo.listActiveTemplates();
 }
 
-export async function getProjectExecution(
-  projectId: string,
-): Promise<ProjectExecutionView | null> {
+export async function listTemplatesForStudio(): Promise<TemplateStudioListItem[]> {
+  await ensureBuiltinTemplates();
+  const templates = await repo.listAllTemplates();
+  const items: TemplateStudioListItem[] = [];
+
+  for (const template of templates) {
+    const phases = await repo.findTemplatePhases(template.id);
+    const tasks = await repo.findTemplateTasks(phases.map((p) => p.id));
+    const usageCount = await repo.countWorkflowsByTemplateId(template.id);
+    items.push({
+      ...template,
+      phaseCount: phases.length,
+      taskCount: tasks.length,
+      usageCount,
+    });
+  }
+
+  return items;
+}
+
+export async function getWorkflowTemplateDetail(
+  templateId: string,
+): Promise<WorkflowTemplateDetail | null> {
+  await ensureBuiltinTemplates();
+  return loadTemplateDetail(templateId);
+}
+
+export async function createWorkflowTemplate(input: {
+  name: string;
+  description?: string | null;
+  slug?: string;
+}): Promise<WorkflowTemplateDetail> {
+  await ensureBuiltinTemplates();
+  const slug = await ensureUniqueSlug(input.slug ?? slugifyTemplateName(input.name));
+  const template = await repo.insertTemplate({
+    slug,
+    name: input.name.trim(),
+    description: input.description?.trim() || null,
+    is_active: true,
+  });
+
+  await writeTemplatePhases(template.id, [
+    {
+      key: "fase_1",
+      name: "Fase 1",
+      objective: "Descreva o objetivo desta fase.",
+      isRecurring: false,
+      completionCriteria: null,
+      projectStatusOnEnter: "in_progress",
+      deliverables: [],
+      tasks: [
+        {
+          key: "primeira_tarefa",
+          title: "Primeira tarefa",
+          description: null,
+          defaultPriority: "medium",
+          defaultAssigneeId: null,
+          isRecurring: false,
+          blocksPhaseCompletion: true,
+          waitingClientDefault: false,
+          checklist: [],
+          dependsOnTaskKeys: [],
+        },
+      ],
+    },
+  ]);
+
+  const detail = await loadTemplateDetail(template.id);
+  if (!detail) throw new Error("Falha ao criar template.");
+  return detail;
+}
+
+export async function updateWorkflowTemplateMeta(input: {
+  templateId: string;
+  name?: string;
+  description?: string | null;
+  isActive?: boolean;
+}): Promise<WorkflowTemplateDetail> {
+  const existing = await repo.findTemplateById(input.templateId);
+  if (!existing) throw new Error("Template não encontrado.");
+
+  const patched = await repo.patchTemplate(input.templateId, {
+    ...(input.name !== undefined ? { name: input.name.trim() } : {}),
+    ...(input.description !== undefined ? { description: input.description?.trim() || null } : {}),
+    ...(input.isActive !== undefined ? { is_active: input.isActive } : {}),
+  });
+  if (!patched) throw new Error("Falha ao atualizar template.");
+
+  const detail = await loadTemplateDetail(input.templateId);
+  if (!detail) throw new Error("Template não encontrado.");
+  return detail;
+}
+
+export async function saveWorkflowTemplateStructure(input: {
+  templateId: string;
+  phases: Array<{
+    key: string;
+    name: string;
+    objective?: string | null;
+    isRecurring?: boolean;
+    completionCriteria?: string | null;
+    projectStatusOnEnter?: ProjectStatus | null;
+    deliverables?: string[];
+    tasks: Array<{
+      key: string;
+      title: string;
+      description?: string | null;
+      defaultPriority?: ProjectPriority;
+      defaultAssigneeId?: import("@/lib/auth/types").TeamMember | null;
+      isRecurring?: boolean;
+      blocksPhaseCompletion?: boolean;
+      waitingClientDefault?: boolean;
+      checklist?: ChecklistItemDef[];
+      dependsOnTaskKeys?: string[];
+    }>;
+  }>;
+}): Promise<WorkflowTemplateDetail> {
+  const existing = await repo.findTemplateById(input.templateId);
+  if (!existing) throw new Error("Template não encontrado.");
+
+  const phases: TemplatePhaseDef[] = input.phases.map((phase) => ({
+    key: phase.key,
+    name: phase.name.trim(),
+    objective: phase.objective?.trim() || "",
+    isRecurring: phase.isRecurring ?? false,
+    completionCriteria: phase.completionCriteria?.trim() || null,
+    projectStatusOnEnter: phase.projectStatusOnEnter ?? null,
+    deliverables: (phase.deliverables ?? []).map((d) => d.trim()).filter(Boolean),
+    tasks: phase.tasks.map((task) => ({
+      key: task.key,
+      title: task.title.trim(),
+      description: task.description?.trim() || null,
+      defaultPriority: task.defaultPriority ?? "medium",
+      defaultAssigneeId: task.defaultAssigneeId ?? null,
+      isRecurring: task.isRecurring ?? false,
+      blocksPhaseCompletion: task.blocksPhaseCompletion ?? true,
+      waitingClientDefault: task.waitingClientDefault ?? false,
+      checklist: task.checklist ?? [],
+      dependsOnTaskKeys: task.dependsOnTaskKeys ?? [],
+    })),
+  }));
+
+  await writeTemplatePhases(input.templateId, phases);
+  await repo.patchTemplate(input.templateId, {});
+
+  const detail = await loadTemplateDetail(input.templateId);
+  if (!detail) throw new Error("Falha ao salvar estrutura do template.");
+  return detail;
+}
+
+export async function duplicateWorkflowTemplate(input: {
+  templateId: string;
+  name?: string;
+}): Promise<WorkflowTemplateDetail> {
+  const source = await loadTemplateDetail(input.templateId);
+  if (!source) throw new Error("Template não encontrado.");
+
+  const name = (input.name?.trim() || `${source.template.name} (cópia)`).slice(0, 160);
+  const slug = await ensureUniqueSlug(slugifyTemplateName(name));
+  const template = await repo.insertTemplate({
+    slug,
+    name,
+    description: source.template.description,
+    is_active: true,
+  });
+
+  await writeTemplatePhases(
+    template.id,
+    source.phases.map((phase) => ({
+      key: phase.key,
+      name: phase.name,
+      objective: phase.objective ?? "",
+      isRecurring: phase.is_recurring,
+      completionCriteria: phase.completion_criteria,
+      projectStatusOnEnter: phase.project_status_on_enter as ProjectStatus | null,
+      deliverables: phase.deliverables.map((d) => d.title),
+      tasks: phase.tasks.map((task) => ({
+        key: task.key,
+        title: task.title,
+        description: task.description,
+        defaultPriority: task.default_priority,
+        defaultAssigneeId: task.default_assignee_id as import("@/lib/auth/types").TeamMember | null,
+        isRecurring: task.is_recurring,
+        blocksPhaseCompletion: task.blocks_phase_completion,
+        waitingClientDefault: task.waiting_client_default,
+        checklist: task.checklist_json,
+        dependsOnTaskKeys: task.depends_on_task_keys,
+      })),
+    })),
+  );
+
+  const detail = await loadTemplateDetail(template.id);
+  if (!detail) throw new Error("Falha ao duplicar template.");
+  return detail;
+}
+
+export async function deactivateWorkflowTemplate(
+  templateId: string,
+): Promise<WorkflowTemplateDetail> {
+  return updateWorkflowTemplateMeta({ templateId, isActive: false });
+}
+
+export async function deleteWorkflowTemplate(templateId: string): Promise<void> {
+  const existing = await repo.findTemplateById(templateId);
+  if (!existing) throw new Error("Template não encontrado.");
+
+  const usageCount = await repo.countWorkflowsByTemplateId(templateId);
+  if (usageCount > 0) {
+    throw new Error(
+      `Não é possível apagar: ${usageCount} projeto(s) ainda usam este template. Desative-o em vez disso.`,
+    );
+  }
+
+  await repo.deleteTemplate(templateId);
+}
+
+export async function getProjectExecution(projectId: string): Promise<ProjectExecutionView | null> {
   const workflow = await repo.findWorkflowByProjectId(projectId);
   if (!workflow) return null;
 
-  const [phases, tasks, deliverables, briefing, templates] = await Promise.all([
+  const [phases, tasks, deliverables, briefing, template] = await Promise.all([
     repo.findWorkflowPhases(workflow.id),
     repo.findWorkflowTasks(workflow.id),
     repo.findDeliverablesByProject(projectId),
     repo.findBriefingByProject(projectId),
-    repo.listActiveTemplates(),
+    repo.findTemplateById(workflow.template_id),
   ]);
-
-  const template =
-    templates.find((t) => t.id === workflow.template_id) ??
-    (await repo.findTemplateBySlug(AQUISICAO_DIGITAL_TEMPLATE.slug));
 
   if (!template) return null;
 
@@ -137,15 +432,18 @@ export async function getProjectExecution(
 
   const phasePrimary = pickPhasePrimaryAction(enriched, currentPhase?.id);
   const phaseScopedNext = phasePrimary
-    ? [phasePrimary, ...pickNextActions(
-        enriched.filter(
-          (t) =>
-            t.phase_id === currentPhase?.id &&
-            t.id !== phasePrimary.id &&
-            t.status !== "waiting_client",
+    ? [
+        phasePrimary,
+        ...pickNextActions(
+          enriched.filter(
+            (t) =>
+              t.phase_id === currentPhase?.id &&
+              t.id !== phasePrimary.id &&
+              t.status !== "waiting_client",
+          ),
+          4,
         ),
-        4,
-      )]
+      ]
     : pickNextActions(
         enriched.filter((t) => t.phase_id === currentPhase?.id),
         5,
@@ -186,9 +484,7 @@ export async function applyWorkflowTemplate(
 
   const templatePhases = await repo.findTemplatePhases(template.id);
   const templateTasks = await repo.findTemplateTasks(templatePhases.map((p) => p.id));
-  const templateDeliverables = await repo.findTemplateDeliverables(
-    templatePhases.map((p) => p.id),
-  );
+  const templateDeliverables = await repo.findTemplateDeliverables(templatePhases.map((p) => p.id));
 
   const firstPhase = templatePhases[0];
   const workflow = await repo.insertWorkflow({
@@ -285,8 +581,7 @@ export async function applyWorkflowTemplate(
     }
   }
 
-  const enterStatus = (firstPhase?.project_status_on_enter ??
-    "formalization") as ProjectStatus;
+  const enterStatus = (firstPhase?.project_status_on_enter ?? "formalization") as ProjectStatus;
   let updatedProject = project;
   if (project.status !== enterStatus) {
     updatedProject =
@@ -718,9 +1013,7 @@ export async function getExecutionDashboard(): Promise<ExecutionDashboardStats> 
         project.status !== "cancelled") ||
       enriched.some(
         (t) =>
-          t.status !== "done" &&
-          !!t.due_date &&
-          t.due_date < new Date().toISOString().slice(0, 10),
+          t.status !== "done" && !!t.due_date && t.due_date < new Date().toISOString().slice(0, 10),
       );
 
     if (isWaiting) waitingClient++;

@@ -2,7 +2,12 @@ import { listCompanies } from "@/domains/companies/api.server";
 import type { Company } from "@/domains/companies/types";
 import { listWorkflowTemplates } from "@/domains/projects/execution/api.server";
 import type { WorkflowTemplate } from "@/domains/projects/execution/types";
-import type { ProjectBlockedByType, ProjectPriority, ProjectStatus, ProjectType } from "@/domains/projects/types";
+import type {
+  ProjectBlockedByType,
+  ProjectPriority,
+  ProjectStatus,
+  ProjectType,
+} from "@/domains/projects/types";
 import {
   BLOCKED_BY_LABELS,
   PROJECT_BLOCKED_BY_TYPES,
@@ -34,6 +39,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 
 export interface ProjectFormValues {
   companyId: string;
@@ -94,7 +100,11 @@ export function ProjectFormDialog({
 
   useEffect(() => {
     if (open) {
-      setForm({ ...emptyForm, ...initial, companyId: initial?.companyId ?? defaultCompanyId ?? "" });
+      setForm({
+        ...emptyForm,
+        ...initial,
+        companyId: initial?.companyId ?? defaultCompanyId ?? "",
+      });
       setError("");
       listCompanies({ data: { sort: "name", order: "asc" } })
         .then((r) => setCompanies(r.companies))
@@ -268,7 +278,10 @@ export function ProjectFormDialog({
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground">
-                Ao selecionar um template, fases e tarefas são criadas automaticamente.
+                Ao selecionar um template, fases e tarefas são criadas automaticamente.{" "}
+                <Link to="/os/projetos/templates" className="text-brand hover:underline">
+                  Gerenciar templates
+                </Link>
               </p>
             </div>
           )}
@@ -388,8 +401,7 @@ export function formToPayload(form: ProjectFormValues) {
     dueDate: form.dueDate || undefined,
     description: form.description.trim() || undefined,
     blockedByType: form.status === "blocked" ? form.blockedByType || null : null,
-    blockedByDetail:
-      form.status === "blocked" ? form.blockedByDetail.trim() || null : null,
+    blockedByDetail: form.status === "blocked" ? form.blockedByDetail.trim() || null : null,
     nextAction: form.nextAction.trim() || undefined,
     nextActionDue: form.nextActionDue || undefined,
     workflowTemplateSlug: form.workflowTemplateSlug || undefined,
