@@ -31,6 +31,9 @@ export interface ProspectFormValues {
   phone: string;
   whatsapp: string;
   instagram: string;
+  facebook: string;
+  tiktok: string;
+  youtube: string;
   website: string;
   googleMapsUrl: string;
   ownerId: TeamMember | "";
@@ -47,6 +50,9 @@ const emptyForm: ProspectFormValues = {
   phone: "",
   whatsapp: "",
   instagram: "",
+  facebook: "",
+  tiktok: "",
+  youtube: "",
   website: "",
   googleMapsUrl: "",
   ownerId: "",
@@ -95,6 +101,9 @@ export function ProspectFormSheet({
           phone: form.phone || undefined,
           whatsapp: form.whatsapp || undefined,
           instagram: form.instagram || undefined,
+          facebook: form.facebook || undefined,
+          tiktok: form.tiktok || undefined,
+          youtube: form.youtube || undefined,
           website: form.website || undefined,
           googleMapsUrl: form.googleMapsUrl || undefined,
           ownerId: form.ownerId || undefined,
@@ -200,6 +209,35 @@ export function ProspectFormSheet({
               value={form.instagram}
               onChange={(e) => set("instagram", e.target.value)}
               placeholder="@empresa"
+            />
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="prospect-facebook">Facebook</Label>
+              <Input
+                id="prospect-facebook"
+                value={form.facebook}
+                onChange={(e) => set("facebook", e.target.value)}
+                placeholder="URL ou página"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="prospect-tiktok">TikTok</Label>
+              <Input
+                id="prospect-tiktok"
+                value={form.tiktok}
+                onChange={(e) => set("tiktok", e.target.value)}
+                placeholder="@empresa"
+              />
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="prospect-youtube">YouTube</Label>
+            <Input
+              id="prospect-youtube"
+              value={form.youtube}
+              onChange={(e) => set("youtube", e.target.value)}
+              placeholder="@canal ou URL"
             />
           </div>
           <div className="space-y-1.5">

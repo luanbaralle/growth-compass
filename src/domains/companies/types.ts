@@ -16,7 +16,14 @@ export type ActivityType =
   | "meeting"
   | "system";
 
-export type FileCategory = "contract" | "receipt" | "invoice" | "other";
+export type FileCategory =
+  | "contract"
+  | "receipt"
+  | "invoice"
+  | "proposal_doc"
+  | "analysis"
+  | "document"
+  | "other";
 
 export type LinkType =
   | "google_ads"
@@ -25,6 +32,34 @@ export type LinkType =
   | "analytics"
   | "search_console"
   | "google_business"
+  | "website"
+  | "instagram"
+  | "facebook"
+  | "tiktok"
+  | "youtube"
+  | "proposal"
+  | "contract"
+  | "drive"
+  | "other";
+
+export type CredentialPlatform =
+  | "google"
+  | "instagram"
+  | "facebook"
+  | "tiktok"
+  | "youtube"
+  | "crm"
+  | "ads"
+  | "hosting"
+  | "other";
+
+export type OperationItemType =
+  | "roadmap_note"
+  | "report"
+  | "analysis"
+  | "audit"
+  | "alignment_meeting"
+  | "scope_change"
   | "other";
 
 export type ServiceStatus = "active" | "paused" | "completed";
@@ -99,6 +134,34 @@ export interface CompanyService {
   created_at: string;
 }
 
+/** Resposta da API — nunca inclui secret_encrypted em listagens. */
+export interface CompanyCredential {
+  id: string;
+  company_id: string;
+  platform: CredentialPlatform;
+  label: string;
+  username: string | null;
+  has_secret: boolean;
+  url: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CompanyOperationItem {
+  id: string;
+  company_id: string;
+  project_id: string | null;
+  item_type: OperationItemType;
+  title: string;
+  body: string | null;
+  url: string | null;
+  occurred_at: string | null;
+  author_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface CompanyListFilters {
   search?: string;
   stage?: CompanyStage | "all";
@@ -147,6 +210,14 @@ export const LINK_TYPE_LABELS: Record<LinkType, string> = {
   analytics: "Analytics",
   search_console: "Search Console",
   google_business: "Google Meu Negócio",
+  website: "Site",
+  instagram: "Instagram",
+  facebook: "Facebook",
+  tiktok: "TikTok",
+  youtube: "YouTube",
+  proposal: "Proposta",
+  contract: "Contrato",
+  drive: "Drive",
   other: "Outro",
 };
 
@@ -154,8 +225,55 @@ export const FILE_CATEGORY_LABELS: Record<FileCategory, string> = {
   contract: "Contrato",
   receipt: "Recibo",
   invoice: "Nota fiscal",
+  proposal_doc: "Proposta",
+  analysis: "Análise",
+  document: "Documento",
   other: "Outro",
 };
+
+export const CREDENTIAL_PLATFORM_LABELS: Record<CredentialPlatform, string> = {
+  google: "Google",
+  instagram: "Instagram",
+  facebook: "Facebook",
+  tiktok: "TikTok",
+  youtube: "YouTube",
+  crm: "CRM",
+  ads: "Ads",
+  hosting: "Hospedagem",
+  other: "Outro",
+};
+
+export const OPERATION_ITEM_TYPE_LABELS: Record<OperationItemType, string> = {
+  roadmap_note: "Nota de roadmap",
+  report: "Relatório",
+  analysis: "Análise",
+  audit: "Auditoria",
+  alignment_meeting: "Reunião de alinhamento",
+  scope_change: "Mudança de escopo",
+  other: "Outro",
+};
+
+export const CREDENTIAL_PLATFORMS: CredentialPlatform[] = [
+  "google",
+  "instagram",
+  "facebook",
+  "tiktok",
+  "youtube",
+  "crm",
+  "ads",
+  "hosting",
+  "other",
+];
+
+export const OPERATION_ITEM_TYPES: OperationItemType[] = [
+  "roadmap_note",
+  "report",
+  "analysis",
+  "audit",
+  "alignment_meeting",
+  "scope_change",
+  "other",
+];
 
 export interface SubmitCompanyFormInput {
   name: string;

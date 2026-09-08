@@ -10,6 +10,7 @@ import {
   contentTaskIdSchema,
   updateContentTaskSchema,
   uploadContentTaskFileSchema,
+  addContentTaskDriveLinkSchema,
 } from "@/domains/content-production/schema";
 
 export const listContentTasks = createServerFn({ method: "GET" })
@@ -53,6 +54,7 @@ export const createContentTask = createServerFn({ method: "POST" })
           briefingCta: data.briefingCta,
           briefingReferences: data.briefingReferences,
           briefingCaption: data.briefingCaption,
+          briefingRawMaterialUrl: data.briefingRawMaterialUrl,
         },
         author,
       );
@@ -147,6 +149,21 @@ export const uploadContentTaskFile = createServerFn({ method: "POST" })
         data.fileType,
         data.mimeType,
         data.base64,
+        author,
+      );
+    });
+  });
+
+export const addContentTaskDriveLink = createServerFn({ method: "POST" })
+  .validator(addContentTaskDriveLinkSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async (author) => {
+      const service = await import("@/domains/content-production/service.server");
+      return service.addContentTaskDriveLink(
+        data.taskId,
+        data.name,
+        data.fileType,
+        data.url,
         author,
       );
     });

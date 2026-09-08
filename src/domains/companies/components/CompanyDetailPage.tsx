@@ -17,9 +17,10 @@ import {
   formToPayload as companyFormToPayload,
   type CompanyFormValues,
 } from "@/domains/companies/components/CompanyFormDialog";
-import { CompanyFiles } from "@/domains/companies/components/CompanyFiles";
-import { CompanyLinks } from "@/domains/companies/components/CompanyLinks";
 import { CompanyContentProduction } from "@/domains/companies/components/CompanyContentProduction";
+import { CompanyCredentials } from "@/domains/companies/components/CompanyCredentials";
+import { CompanyDocuments } from "@/domains/companies/components/CompanyDocuments";
+import { CompanyOperations } from "@/domains/companies/components/CompanyOperations";
 import { CompanyOverview } from "@/domains/companies/components/CompanyOverview";
 import { CompanyProfileHeader } from "@/domains/companies/components/CompanyProfileHeader";
 import { CompanyProposals } from "@/domains/companies/components/CompanyProposals";
@@ -49,8 +50,10 @@ import {
 } from "@/domains/marketing/components/MarketingFormDialog";
 import type {
   CompanyActivity,
+  CompanyCredential,
   CompanyFile,
   CompanyLink,
+  CompanyOperationItem,
   CompanyService,
   CompanyStage,
   CompanyWithLogo,
@@ -80,11 +83,16 @@ interface CompanyDetailData {
   files: CompanyFile[];
   links: CompanyLink[];
   services: CompanyService[];
+  credentials: CompanyCredential[];
+  operationItems: CompanyOperationItem[];
 }
 
 type CompanyTab =
   | "panel"
   | "proposals"
+  | "documentos"
+  | "acessos"
+  | "operacao"
   | "projects"
   | "producao"
   | "finance"
@@ -95,6 +103,9 @@ type CompanyTab =
 const TABS: { id: CompanyTab; label: string }[] = [
   { id: "panel", label: "Painel" },
   { id: "proposals", label: "Propostas" },
+  { id: "documentos", label: "Documentos" },
+  { id: "acessos", label: "Acessos" },
+  { id: "operacao", label: "Operação" },
   { id: "projects", label: "Projetos" },
   { id: "producao", label: "Produção" },
   { id: "finance", label: "Financeiro" },
@@ -124,7 +135,7 @@ export function CompanyDetailPage({ companyId }: { companyId: string }) {
     setError("");
     try {
       const result = await getCompany({ data: { id: companyId } });
-      setData(result);
+      setData(result as CompanyDetailData);
     } catch (err) {
       if (isUnauthorizedError(err)) {
         navigate({ to: "/os/login" });
@@ -261,7 +272,7 @@ export function CompanyDetailPage({ companyId }: { companyId: string }) {
     );
   }
 
-  const { company, activities, files, links, services } = data;
+  const { company, activities, files, links, services, credentials, operationItems } = data;
 
   return (
     <OSPage className="company-detail-page space-y-6">
@@ -309,6 +320,40 @@ export function CompanyDetailPage({ companyId }: { companyId: string }) {
             companyId={companyId}
             companyName={company.name}
             refreshKey={overviewRefresh}
+          />
+        </Section>
+      )}
+
+      {activeTab === "documentos" && (
+        <CompanyDocuments
+          companyId={companyId}
+          companyName={company.name}
+          links={links}
+          files={files}
+          onRefresh={load}
+          refreshKey={overviewRefresh}
+        />
+      )}
+
+      {activeTab === "acessos" && (
+        <Section title="Acessos" description="Credenciais e logins do cliente (senha criptografada)">
+          <CompanyCredentials
+            companyId={companyId}
+            credentials={credentials}
+            onRefresh={load}
+          />
+        </Section>
+      )}
+
+      {activeTab === "operacao" && (
+        <Section
+          title="Operação"
+          description="Relatórios, auditorias, reuniões e mudanças de escopo"
+        >
+          <CompanyOperations
+            companyId={companyId}
+            items={operationItems}
+            onRefresh={load}
           />
         </Section>
       )}
@@ -390,17 +435,6 @@ export function CompanyDetailPage({ companyId }: { companyId: string }) {
             description="Escopo comercial e status de cada entrega"
           >
             <CompanyServices companyId={companyId} services={services} onRefresh={load} />
-          </Section>
-
-          <Section
-            title="Links operacionais"
-            description="Google Ads, LP, Analytics e outros acessos"
-          >
-            <CompanyLinks companyId={companyId} links={links} onRefresh={load} />
-          </Section>
-
-          <Section title="Arquivos" description="Contratos, recibos e notas fiscais">
-            <CompanyFiles companyId={companyId} files={files} onRefresh={load} />
           </Section>
         </div>
       )}

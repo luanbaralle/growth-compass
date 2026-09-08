@@ -28,6 +28,7 @@ function mapTaskRow(task: ContentTask & { channel?: string }): ContentTask {
     ...rest,
     channels: normalizeChannels(task.channels ?? task.channel),
     publication: normalizePublication(task.publication),
+    briefing_raw_material_url: task.briefing_raw_material_url ?? null,
   };
 }
 
@@ -144,6 +145,7 @@ export async function patchContentTask(
 export async function removeContentTaskStorage(taskId: string): Promise<void> {
   const files = await findContentTaskFiles(taskId);
   for (const file of files) {
+    if (!file.storage_path) continue;
     try {
       await storageDelete(file.storage_path);
     } catch {
@@ -220,11 +222,15 @@ export async function insertContentTaskFile(input: {
   file_type: ContentTaskFileType;
   name: string;
   storage_path: string;
-  mime_type: string;
-  size_bytes: number;
+  external_url?: string | null;
+  mime_type: string | null;
+  size_bytes: number | null;
   uploaded_by: string | null;
 }): Promise<ContentTaskFile> {
-  const [row] = await dbInsert<ContentTaskFile>("content_task_files", input);
+  const [row] = await dbInsert<ContentTaskFile>("content_task_files", {
+    ...input,
+    external_url: input.external_url ?? null,
+  });
   return row;
 }
 
@@ -246,6 +252,7 @@ export async function uploadContentTaskFile(
     file_type: fileType,
     name,
     storage_path: storagePath,
+    external_url: null,
     mime_type: mimeType,
     size_bytes: buffer.length,
     uploaded_by: uploadedBy,
@@ -255,10 +262,12 @@ export async function uploadContentTaskFile(
 export async function removeContentTaskFile(fileId: string, taskId: string): Promise<boolean> {
   const file = await findContentTaskFile(fileId, taskId);
   if (!file) return false;
-  try {
-    await storageDelete(file.storage_path);
-  } catch {
-    // storage may already be gone
+  if (file.storage_path) {
+    try {
+      await storageDelete(file.storage_path);
+    } catch {
+      // storage may already be gone
+    }
   }
   await dbDelete("content_task_files", `id=eq.${fileId}`);
   return true;

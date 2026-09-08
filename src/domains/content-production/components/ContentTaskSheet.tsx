@@ -121,6 +121,7 @@ export interface ContentTaskFormValues {
   briefingCta: string;
   briefingReferences: string;
   briefingCaption: string;
+  briefingRawMaterialUrl: string;
   clientApprovedAt: string;
   clientApprovedBy: string;
   publication: ContentPublication;
@@ -151,6 +152,7 @@ const emptyForm = (defaults?: Partial<ContentTaskFormValues>): ContentTaskFormVa
   briefingCta: "",
   briefingReferences: "",
   briefingCaption: "",
+  briefingRawMaterialUrl: "",
   clientApprovedAt: "",
   clientApprovedBy: "",
   publication: emptyPublication(),
@@ -178,6 +180,7 @@ function taskToForm(task: ContentTaskWithCompany): ContentTaskFormValues {
     briefingCta: task.briefing_cta ?? "",
     briefingReferences: task.briefing_references ?? "",
     briefingCaption: task.briefing_caption ?? "",
+    briefingRawMaterialUrl: task.briefing_raw_material_url ?? "",
     clientApprovedAt: toApprovalDateInput(task.client_approved_at),
     clientApprovedBy: task.client_approved_by ?? "",
     publication: normalizePublication(task.publication),
@@ -254,6 +257,7 @@ export function ContentTaskSheet({
   const [previewMedia, setPreviewMedia] = useState<{
     url: string;
     mimeType: string | null;
+    embed?: boolean;
   } | null>(null);
 
   const formRef = useRef<HTMLFormElement>(null);
@@ -314,23 +318,41 @@ export function ContentTaskSheet({
         const previewFile =
           files.find((f) => f.file_type === "thumbnail") ??
           files.find((f) => f.file_type === "edit") ??
+          files.find((f) => f.external_url) ??
           files.find(
             (f) =>
               f.mime_type?.startsWith("image/") || f.mime_type?.startsWith("video/"),
           );
 
-        if (!previewFile) {
-          if (!cancelled) setPreviewMedia(null);
+        if (previewFile) {
+          const result = await getContentTaskFileUrl({
+            data: { taskId: task!.id, fileId: previewFile.id },
+          });
+          if (!cancelled) {
+            setPreviewMedia({
+              url: result.url,
+              mimeType: previewFile.mime_type,
+              embed: !!result.external,
+            });
+          }
           return;
         }
 
-        const { url } = await getContentTaskFileUrl({
-          data: { taskId: task!.id, fileId: previewFile.id },
-        });
-
-        if (!cancelled) {
-          setPreviewMedia({ url, mimeType: previewFile.mime_type });
+        const rawUrl = task!.briefing_raw_material_url?.trim();
+        if (rawUrl) {
+          const { toDrivePreviewUrl, isGoogleDriveUrl } = await import("@/lib/drive-url");
+          const preview = toDrivePreviewUrl(rawUrl);
+          if (!cancelled) {
+            setPreviewMedia({
+              url: preview ?? rawUrl,
+              mimeType: "video/mp4",
+              embed: isGoogleDriveUrl(rawUrl) || !!preview,
+            });
+          }
+          return;
         }
+
+        if (!cancelled) setPreviewMedia(null);
       } catch {
         if (!cancelled) setPreviewMedia(null);
       }
@@ -340,7 +362,7 @@ export function ContentTaskSheet({
     return () => {
       cancelled = true;
     };
-  }, [open, sheetTab, task?.id, timelineKey]);
+  }, [open, sheetTab, task, timelineKey]);
 
   const set = <K extends keyof ContentTaskFormValues>(key: K, value: ContentTaskFormValues[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -412,6 +434,7 @@ export function ContentTaskSheet({
       briefingCta: form.briefingCta,
       briefingReferences: form.briefingReferences,
       briefingCaption: form.briefingCaption,
+      briefingRawMaterialUrl: form.briefingRawMaterialUrl,
       clientApprovedAt,
       clientApprovedBy: form.clientApprovedBy,
       publication: normalizePublication(form.publication),
@@ -777,6 +800,23 @@ export function ContentTaskSheet({
                         />
                       </div>
                       <div className="space-y-2">
+                        <Label htmlFor="ct-raw-material" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                          Material bruto (Drive)
+                        </Label>
+                        <Input
+                          id="ct-raw-material"
+                          type="url"
+                          value={form.briefingRawMaterialUrl}
+                          onChange={(e) => set("briefingRawMaterialUrl", e.target.value)}
+                          placeholder="https://drive.google.com/file/d/..."
+                          className="border-border/40 bg-surface/20"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          Cole o link do arquivo no Drive (compartilhado com “qualquer pessoa com o link”).
+                          A prévia de aprovação usa esse link quando não houver upload local.
+                        </p>
+                      </div>
+                      <div className="space-y-2">
                         <Label htmlFor="ct-references" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                           Referências
                         </Label>
@@ -879,6 +919,7 @@ export function ContentTaskSheet({
                             briefingCaption: form.briefingCaption,
                             mediaUrl: previewMedia?.url,
                             mediaMimeType: previewMedia?.mimeType,
+                            mediaEmbed: previewMedia?.embed,
                           };
 
                           return (

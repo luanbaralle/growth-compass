@@ -146,6 +146,7 @@ export interface ClientContentDetail extends ClientContentListItem {
   previewChannel: import("@/domains/content-production/types").ContentChannel;
   previewMediaUrl: string | null;
   previewMimeType: string | null;
+  previewEmbed?: boolean;
   clientApprovedAt: string | null;
   clientApprovedBy: string | null;
 }

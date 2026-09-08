@@ -54,6 +54,7 @@ export const createContentTaskSchema = z.object({
   briefingCta: z.string().max(500).optional().or(z.literal("")),
   briefingReferences: optionalTextSchema,
   briefingCaption: optionalTextSchema,
+  briefingRawMaterialUrl: z.string().max(2000).optional().or(z.literal("")),
   clientApprovedAt: z.string().max(40).optional().or(z.literal("")).nullable(),
   clientApprovedBy: z.string().max(200).optional().or(z.literal("")),
   publication: contentPublicationSchema,
@@ -101,4 +102,11 @@ export const uploadContentTaskFileSchema = z.object({
   fileType: contentTaskFileTypeSchema,
   mimeType: z.string().max(100),
   base64: z.string().min(1),
+});
+
+export const addContentTaskDriveLinkSchema = z.object({
+  taskId: z.string().uuid(),
+  name: z.string().min(1).max(255),
+  fileType: contentTaskFileTypeSchema,
+  url: z.string().url().max(2000),
 });

@@ -197,6 +197,7 @@ export function ClientContentDetailPage({ taskId }: { taskId: string }) {
           briefingCaption={data.briefingCaption}
           mediaUrl={data.previewMediaUrl}
           mediaMimeType={data.previewMimeType}
+          mediaEmbed={data.previewEmbed}
         />
       </ClientSection>
 

@@ -84,9 +84,20 @@ export async function getClientContentDetail(
   let previewMediaUrl: string | null = null;
   let previewMimeType: string | null = null;
 
-  if (previewFile) {
+  if (previewFile?.external_url) {
+    const { toDrivePreviewUrl, toDriveOpenUrl } = await import("@/lib/drive-url");
+    previewMediaUrl =
+      toDrivePreviewUrl(previewFile.external_url) ?? toDriveOpenUrl(previewFile.external_url);
+    previewMimeType = previewFile.mime_type ?? "video/mp4";
+  } else if (previewFile?.storage_path) {
     previewMediaUrl = await contentRepo.getContentTaskFileSignedUrl(previewFile.storage_path);
     previewMimeType = previewFile.mime_type;
+  } else if (task.briefing_raw_material_url) {
+    const { toDrivePreviewUrl, toDriveOpenUrl } = await import("@/lib/drive-url");
+    previewMediaUrl =
+      toDrivePreviewUrl(task.briefing_raw_material_url) ??
+      toDriveOpenUrl(task.briefing_raw_material_url);
+    previewMimeType = "video/mp4";
   }
 
   return {
@@ -100,6 +111,7 @@ export async function getClientContentDetail(
     previewChannel: task.channels[0] ?? "instagram",
     previewMediaUrl,
     previewMimeType,
+    previewEmbed: !!(previewFile?.external_url || task.briefing_raw_material_url),
     clientApprovedAt: task.client_approved_at,
     clientApprovedBy: task.client_approved_by,
   };

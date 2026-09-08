@@ -1,4 +1,5 @@
 import {
+  addContentTaskDriveLink,
   deleteContentTaskFile,
   getContentTaskFileUrl,
   listContentTaskFiles,
@@ -18,6 +19,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -26,7 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Download, Loader2, Trash2, Upload } from "lucide-react";
+import { Download, ExternalLink, Loader2, Link2, Trash2, Upload } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -62,6 +64,9 @@ export function ContentTaskFilesPanel({
   const [loading, setLoading] = useState(true);
   const [fileType, setFileType] = useState<ContentTaskFileType>("raw_video");
   const [uploading, setUploading] = useState(false);
+  const [driveUrl, setDriveUrl] = useState("");
+  const [driveName, setDriveName] = useState("");
+  const [addingDrive, setAddingDrive] = useState(false);
 
   const refresh = useCallback(async () => {
     setLoading(true);
@@ -83,7 +88,7 @@ export function ContentTaskFilesPanel({
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 50 * 1024 * 1024) {
-      toast.error("Arquivo máximo: 50 MB");
+      toast.error("Arquivo máximo: 50 MB. Para vídeos maiores, use o link do Drive.");
       return;
     }
 
@@ -107,6 +112,31 @@ export function ContentTaskFilesPanel({
     } finally {
       setUploading(false);
       if (inputRef.current) inputRef.current.value = "";
+    }
+  };
+
+  const handleAddDrive = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!driveUrl.trim()) return;
+    setAddingDrive(true);
+    try {
+      await addContentTaskDriveLink({
+        data: {
+          taskId,
+          name: driveName.trim() || "Material no Drive",
+          fileType,
+          url: driveUrl.trim(),
+        },
+      });
+      setDriveUrl("");
+      setDriveName("");
+      toast.success("Link do Drive adicionado");
+      await refresh();
+      onChanged?.();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao adicionar link");
+    } finally {
+      setAddingDrive(false);
     }
   };
 
@@ -162,9 +192,48 @@ export function ContentTaskFilesPanel({
           ) : (
             <Upload className="h-4 w-4" />
           )}
-          Enviar arquivo
+          Enviar arquivo (máx. 50 MB)
         </Button>
       </div>
+
+      <form
+        onSubmit={handleAddDrive}
+        className="space-y-3 rounded-lg border border-border/40 bg-surface/20 p-4"
+      >
+        <div className="flex items-center gap-2 text-sm font-medium">
+          <Link2 className="h-4 w-4 text-muted-foreground" />
+          Link do Drive (vídeos 100MB+)
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Compartilhe o arquivo no Drive com “qualquer pessoa com o link” para a prévia carregar.
+        </p>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label>Nome</Label>
+            <Input
+              value={driveName}
+              onChange={(e) => setDriveName(e.target.value)}
+              placeholder="Ex: Bruto reel 12/03"
+              className="bg-surface/40"
+            />
+          </div>
+          <div className="space-y-1.5 sm:col-span-2">
+            <Label>URL do Drive</Label>
+            <Input
+              type="url"
+              value={driveUrl}
+              onChange={(e) => setDriveUrl(e.target.value)}
+              placeholder="https://drive.google.com/file/d/..."
+              className="bg-surface/40"
+              required
+            />
+          </div>
+        </div>
+        <Button type="submit" size="sm" disabled={addingDrive || !driveUrl.trim()}>
+          {addingDrive ? <Loader2 className="h-4 w-4 animate-spin" /> : <Link2 className="h-4 w-4" />}
+          Adicionar link
+        </Button>
+      </form>
 
       {loading ? (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -173,7 +242,7 @@ export function ContentTaskFilesPanel({
         </div>
       ) : files.length === 0 ? (
         <p className="text-sm text-muted-foreground">
-          Nenhum arquivo anexado. Envie bruto, edição, thumbnail ou roteiro.
+          Nenhum arquivo anexado. Envie até 50 MB ou cole o link do Drive para vídeos maiores.
         </p>
       ) : (
         <ul className="divide-y divide-border/40 rounded-lg border border-border/40">
@@ -182,7 +251,8 @@ export function ContentTaskFilesPanel({
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium">{file.name}</p>
                 <p className="text-xs text-muted-foreground">
-                  {CONTENT_TASK_FILE_TYPE_LABELS[file.file_type]} · {formatBytes(file.size_bytes)}
+                  {CONTENT_TASK_FILE_TYPE_LABELS[file.file_type]}
+                  {file.external_url ? " · Drive" : ` · ${formatBytes(file.size_bytes)}`}
                 </p>
               </div>
               <div className="flex shrink-0 gap-1">
@@ -192,7 +262,11 @@ export function ContentTaskFilesPanel({
                   variant="ghost"
                   onClick={() => void handleDownload(file)}
                 >
-                  <Download className="h-3.5 w-3.5" />
+                  {file.external_url ? (
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  ) : (
+                    <Download className="h-3.5 w-3.5" />
+                  )}
                 </Button>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>

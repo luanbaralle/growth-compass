@@ -47,6 +47,9 @@ export interface Prospect {
   phone: string | null;
   whatsapp: string | null;
   instagram: string | null;
+  facebook: string | null;
+  tiktok: string | null;
+  youtube: string | null;
   website: string | null;
   google_maps_url: string | null;
   owner_id: string | null;

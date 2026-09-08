@@ -1,9 +1,14 @@
 import type { TeamMember } from "@/lib/auth/types";
+import { encryptSecret, decryptSecret } from "@/lib/secret-crypto.server";
 import { dbCount } from "@/lib/supabase/server";
 import * as repo from "./repository.server";
 import type {
   Company,
+  CompanyCredential,
+  CompanyOperationItem,
   CompanyStage,
+  CredentialPlatform,
+  OperationItemType,
   SubmitCompanyFormInput,
   CompanyWithLogo,
 } from "./types";
@@ -116,15 +121,18 @@ export async function getCompany(id: string) {
   const company = await repo.findCompanyById(id);
   if (!company) return null;
 
-  const [activities, files, links, services, logo_url] = await Promise.all([
-    repo.findActivities(id),
-    repo.findCompanyFiles(id),
-    repo.findCompanyLinks(id),
-    repo.findCompanyServices(id),
-    company.logo_storage_path
-      ? repo.getFileSignedUrl(company.logo_storage_path)
-      : Promise.resolve(null),
-  ]);
+  const [activities, files, links, services, credentials, operationItems, logo_url] =
+    await Promise.all([
+      repo.findActivities(id),
+      repo.findCompanyFiles(id),
+      repo.findCompanyLinks(id),
+      repo.findCompanyServices(id),
+      listCredentials(id),
+      listOperationItems(id),
+      company.logo_storage_path
+        ? repo.getFileSignedUrl(company.logo_storage_path)
+        : Promise.resolve(null),
+    ]);
 
   return {
     company: { ...company, logo_url } satisfies CompanyWithLogo,
@@ -132,6 +140,8 @@ export async function getCompany(id: string) {
     files,
     links,
     services,
+    credentials,
+    operationItems,
   };
 }
 
@@ -364,10 +374,18 @@ export async function removeLogo(companyId: string) {
   return { ok: true };
 }
 
-export async function createLink(
-  data: Omit<Parameters<typeof repo.insertCompanyLink>[0], "id" | "created_at">,
-) {
-  return repo.insertCompanyLink(data);
+export async function createLink(input: {
+  companyId: string;
+  type: import("./types").LinkType;
+  label: string;
+  url: string;
+}) {
+  return repo.insertCompanyLink({
+    company_id: input.companyId,
+    type: input.type,
+    label: input.label,
+    url: input.url,
+  });
 }
 
 export async function updateLink(
@@ -381,10 +399,18 @@ export async function deleteLink(id: string) {
   return repo.removeCompanyLink(id);
 }
 
-export async function createService(
-  data: Omit<Parameters<typeof repo.insertCompanyService>[0], "id" | "created_at">,
-) {
-  return repo.insertCompanyService(data);
+export async function createService(input: {
+  companyId: string;
+  name: string;
+  description?: string;
+  status?: import("./types").ServiceStatus;
+}) {
+  return repo.insertCompanyService({
+    company_id: input.companyId,
+    name: input.name,
+    description: input.description ?? null,
+    status: input.status ?? "active",
+  });
 }
 
 export async function updateService(
@@ -396,6 +422,158 @@ export async function updateService(
 
 export async function deleteService(id: string) {
   return repo.removeCompanyService(id);
+}
+
+function toSafeCredential(row: repo.CompanyCredentialRow): CompanyCredential {
+  return {
+    id: row.id,
+    company_id: row.company_id,
+    platform: row.platform,
+    label: row.label,
+    username: row.username,
+    has_secret: !!row.secret_encrypted,
+    url: row.url,
+    notes: row.notes,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  };
+}
+
+export async function listCredentials(companyId: string): Promise<CompanyCredential[]> {
+  const rows = await repo.findCompanyCredentials(companyId);
+  return rows.map(toSafeCredential);
+}
+
+export async function createCredential(input: {
+  companyId: string;
+  platform: CredentialPlatform;
+  label: string;
+  username?: string;
+  password?: string;
+  url?: string;
+  notes?: string;
+}): Promise<CompanyCredential> {
+  const row = await repo.insertCompanyCredential({
+    company_id: input.companyId,
+    platform: input.platform,
+    label: input.label.trim(),
+    username: input.username?.trim() || null,
+    secret_encrypted: input.password?.trim()
+      ? encryptSecret(input.password.trim())
+      : null,
+    url: input.url?.trim() || null,
+    notes: input.notes?.trim() || null,
+  });
+  return toSafeCredential(row);
+}
+
+export async function updateCredential(
+  id: string,
+  companyId: string,
+  patch: {
+    platform?: CredentialPlatform;
+    label?: string;
+    username?: string | null;
+    password?: string;
+    url?: string | null;
+    notes?: string | null;
+  },
+): Promise<CompanyCredential | null> {
+  const existing = await repo.findCompanyCredential(id, companyId);
+  if (!existing) return null;
+
+  const data: Parameters<typeof repo.patchCompanyCredential>[1] = {};
+  if (patch.platform !== undefined) data.platform = patch.platform;
+  if (patch.label !== undefined) data.label = patch.label.trim();
+  if (patch.username !== undefined) data.username = patch.username?.trim() || null;
+  if (patch.url !== undefined) data.url = patch.url?.trim() || null;
+  if (patch.notes !== undefined) data.notes = patch.notes?.trim() || null;
+  if (patch.password !== undefined) {
+    data.secret_encrypted = patch.password.trim()
+      ? encryptSecret(patch.password.trim())
+      : null;
+  }
+
+  const row = await repo.patchCompanyCredential(id, data);
+  return row ? toSafeCredential(row) : null;
+}
+
+export async function deleteCredential(id: string, companyId: string): Promise<boolean> {
+  const existing = await repo.findCompanyCredential(id, companyId);
+  if (!existing) return false;
+  return repo.removeCompanyCredential(id);
+}
+
+export async function revealCredentialPassword(
+  id: string,
+  companyId: string,
+): Promise<{ secret: string }> {
+  const row = await repo.findCompanyCredential(id, companyId);
+  if (!row) throw new Error("Credencial não encontrada.");
+  if (!row.secret_encrypted) throw new Error("Esta credencial não possui senha.");
+  return { secret: decryptSecret(row.secret_encrypted) };
+}
+
+export async function listOperationItems(
+  companyId: string,
+): Promise<CompanyOperationItem[]> {
+  return repo.findCompanyOperationItems(companyId);
+}
+
+export async function createOperationItem(
+  input: {
+    companyId: string;
+    item_type: OperationItemType;
+    title: string;
+    body?: string;
+    url?: string;
+    occurred_at?: string;
+    project_id?: string;
+  },
+  authorId: TeamMember | null,
+): Promise<CompanyOperationItem> {
+  return repo.insertCompanyOperationItem({
+    company_id: input.companyId,
+    project_id: input.project_id ?? null,
+    item_type: input.item_type,
+    title: input.title.trim(),
+    body: input.body?.trim() || null,
+    url: input.url?.trim() || null,
+    occurred_at: input.occurred_at?.trim() || null,
+    author_id: authorId,
+  });
+}
+
+export async function updateOperationItem(
+  id: string,
+  companyId: string,
+  patch: {
+    item_type?: OperationItemType;
+    title?: string;
+    body?: string | null;
+    url?: string | null;
+    occurred_at?: string | null;
+    project_id?: string | null;
+  },
+): Promise<CompanyOperationItem | null> {
+  const existing = await repo.findCompanyOperationItem(id, companyId);
+  if (!existing) return null;
+
+  const data: Parameters<typeof repo.patchCompanyOperationItem>[1] = {};
+  if (patch.item_type !== undefined) data.item_type = patch.item_type;
+  if (patch.title !== undefined) data.title = patch.title.trim();
+  if (patch.body !== undefined) data.body = patch.body?.trim() || null;
+  if (patch.url !== undefined) data.url = patch.url?.trim() || null;
+  if (patch.occurred_at !== undefined) data.occurred_at = patch.occurred_at?.trim() || null;
+  if (patch.project_id !== undefined) data.project_id = patch.project_id;
+
+  return repo.patchCompanyOperationItem(id, data);
+}
+
+export async function deleteOperationItem(id: string, companyId: string): Promise<boolean> {
+  const existing = await repo.findCompanyOperationItem(id, companyId);
+  if (!existing) return false;
+  return repo.removeCompanyOperationItem(id);
 }
 
 export async function getDashboardCompanyStats() {

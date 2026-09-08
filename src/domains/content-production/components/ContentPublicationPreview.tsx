@@ -30,6 +30,7 @@ export type PublicationPreviewProps = PublicationPreviewInput & {
   companyName: string;
   mediaUrl?: string | null;
   mediaMimeType?: string | null;
+  mediaEmbed?: boolean;
 };
 
 function Avatar({
@@ -89,6 +90,7 @@ function PlayableMedia({
   aspect,
   mediaUrl,
   mediaMimeType,
+  mediaEmbed,
   contentType,
   channel,
   className,
@@ -96,6 +98,7 @@ function PlayableMedia({
   aspect: PreviewAspect;
   mediaUrl?: string | null;
   mediaMimeType?: string | null;
+  mediaEmbed?: boolean;
   contentType: ContentType;
   channel: ContentChannel;
   className?: string;
@@ -116,7 +119,7 @@ function PlayableMedia({
 
   const togglePlay = () => {
     const video = videoRef.current;
-    if (!video || !isVideoMedia) return;
+    if (!video || !isVideoMedia || mediaEmbed) return;
     if (video.paused) {
       void video.play();
     } else {
@@ -129,12 +132,12 @@ function PlayableMedia({
       className={cn(
         "relative w-full overflow-hidden bg-zinc-900",
         aspectClass,
-        isVideoMedia && mediaUrl && "cursor-pointer",
+        isVideoMedia && mediaUrl && !mediaEmbed && "cursor-pointer",
         className,
       )}
-      onClick={isVideoMedia && mediaUrl ? togglePlay : undefined}
+      onClick={isVideoMedia && mediaUrl && !mediaEmbed ? togglePlay : undefined}
       onKeyDown={
-        isVideoMedia && mediaUrl
+        isVideoMedia && mediaUrl && !mediaEmbed
           ? (e) => {
               if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
@@ -143,12 +146,26 @@ function PlayableMedia({
             }
           : undefined
       }
-      role={isVideoMedia && mediaUrl ? "button" : undefined}
-      tabIndex={isVideoMedia && mediaUrl ? 0 : undefined}
-      aria-label={isVideoMedia && mediaUrl ? (playing ? "Pausar vídeo" : "Reproduzir vídeo") : undefined}
+      role={isVideoMedia && mediaUrl && !mediaEmbed ? "button" : undefined}
+      tabIndex={isVideoMedia && mediaUrl && !mediaEmbed ? 0 : undefined}
+      aria-label={
+        isVideoMedia && mediaUrl && !mediaEmbed
+          ? playing
+            ? "Pausar vídeo"
+            : "Reproduzir vídeo"
+          : undefined
+      }
     >
       {mediaUrl ? (
-        isVideoMedia ? (
+        mediaEmbed ? (
+          <iframe
+            src={mediaUrl}
+            title="Prévia Drive"
+            className="h-full w-full border-0"
+            allow="autoplay"
+            allowFullScreen
+          />
+        ) : isVideoMedia ? (
           <video
             ref={videoRef}
             src={mediaUrl}
@@ -169,12 +186,12 @@ function PlayableMedia({
             {TYPE_LABELS[contentType]}
           </span>
           <span className="px-4 text-center text-[10px] text-zinc-500">
-            Envie thumbnail ou edição na aba Arquivos
+            Envie thumbnail/edição ou cole o link do Drive no briefing
           </span>
         </div>
       )}
 
-      {isVideoMedia && mediaUrl && !playing && (
+      {isVideoMedia && mediaUrl && !mediaEmbed && !playing && (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/25">
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-black/55 text-white shadow-lg backdrop-blur-sm">
             <Play className="ml-1 h-6 w-6 fill-current" />
@@ -182,7 +199,7 @@ function PlayableMedia({
         </div>
       )}
 
-      {isVideoMedia && mediaUrl && playing && (
+      {isVideoMedia && mediaUrl && !mediaEmbed && playing && (
         <div className="pointer-events-none absolute left-2 top-2 rounded-full bg-black/45 p-1.5 text-white/90">
           <Pause className="h-3.5 w-3.5 fill-current" />
         </div>
@@ -217,6 +234,7 @@ function InstagramReelsPreview(props: PublicationPreviewProps) {
             aspect="portrait"
             mediaUrl={props.mediaUrl}
             mediaMimeType={props.mediaMimeType}
+            mediaEmbed={props.mediaEmbed}
             contentType={props.contentType}
             channel="instagram"
             className="max-h-[420px] min-h-[360px]"
@@ -294,6 +312,7 @@ function InstagramFeedPreview(props: PublicationPreviewProps) {
         aspect={aspect}
         mediaUrl={props.mediaUrl}
         mediaMimeType={props.mediaMimeType}
+        mediaEmbed={props.mediaEmbed}
         contentType={props.contentType}
         channel="instagram"
       />
@@ -354,6 +373,7 @@ function FacebookPreview(props: PublicationPreviewProps) {
         aspect={aspect}
         mediaUrl={props.mediaUrl}
         mediaMimeType={props.mediaMimeType}
+        mediaEmbed={props.mediaEmbed}
         contentType={props.contentType}
         channel="facebook"
       />
@@ -384,6 +404,7 @@ function YouTubePreview(props: PublicationPreviewProps) {
         aspect="landscape"
         mediaUrl={props.mediaUrl}
         mediaMimeType={props.mediaMimeType}
+        mediaEmbed={props.mediaEmbed}
         contentType={props.contentType}
         channel="youtube"
       />
@@ -420,6 +441,7 @@ function TikTokPreview(props: PublicationPreviewProps) {
           aspect="portrait"
           mediaUrl={props.mediaUrl}
           mediaMimeType={props.mediaMimeType}
+        mediaEmbed={props.mediaEmbed}
           contentType={props.contentType}
           channel="tiktok"
           className="max-h-[420px] min-h-[360px]"

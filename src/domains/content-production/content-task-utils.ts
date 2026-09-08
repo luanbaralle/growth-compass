@@ -31,6 +31,7 @@ export function buildDuplicateCreatePayload(task: ContentTaskWithCompany) {
     briefingCta: task.briefing_cta ?? "",
     briefingReferences: task.briefing_references ?? "",
     briefingCaption: task.briefing_caption ?? "",
+    briefingRawMaterialUrl: task.briefing_raw_material_url ?? "",
   };
 }
 

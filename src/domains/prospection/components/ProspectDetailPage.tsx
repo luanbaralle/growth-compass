@@ -220,12 +220,13 @@ export function ProspectDetailPage() {
               <Link
                 to="/os/empresas/$id"
                 params={{ id: prospect.company_id }}
-                className="dashboard-btn-primary"
+                className="dashboard-btn-ghost"
               >
                 <Building2 className="h-4 w-4" />
                 Ver empresa
               </Link>
-            ) : (
+            ) : null}
+            {prospect.status !== "cliente" && !prospect.converted_at ? (
               <button
                 type="button"
                 onClick={() => void handleConvert()}
@@ -239,7 +240,7 @@ export function ProspectDetailPage() {
                 )}
                 Converter em Empresa
               </button>
-            )}
+            ) : null}
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <button
@@ -293,6 +294,16 @@ export function ProspectDetailPage() {
           />
           {STATUS_LABELS[prospect.status]}
         </span>
+        {prospect.company_id && (
+          <Link
+            to="/os/empresas/$id"
+            params={{ id: prospect.company_id }}
+            className="inline-flex items-center gap-1.5 text-xs text-brand hover:underline"
+          >
+            <Building2 className="h-3 w-3" />
+            Ver empresa
+          </Link>
+        )}
         <span className="text-xs text-muted-foreground/50">
           Cadastro {formatProspectDate(prospect.created_at)}
         </span>
@@ -445,6 +456,9 @@ function ProspectInfoForm({
     phone: prospect.phone ?? "",
     whatsapp: prospect.whatsapp ?? "",
     instagram: prospect.instagram ?? "",
+    facebook: prospect.facebook ?? "",
+    tiktok: prospect.tiktok ?? "",
+    youtube: prospect.youtube ?? "",
     website: prospect.website ?? "",
     googleMapsUrl: prospect.google_maps_url ?? "",
     source: prospect.source ?? "",
@@ -463,6 +477,9 @@ function ProspectInfoForm({
       phone: prospect.phone ?? "",
       whatsapp: prospect.whatsapp ?? "",
       instagram: prospect.instagram ?? "",
+      facebook: prospect.facebook ?? "",
+      tiktok: prospect.tiktok ?? "",
+      youtube: prospect.youtube ?? "",
       website: prospect.website ?? "",
       googleMapsUrl: prospect.google_maps_url ?? "",
       source: prospect.source ?? "",
@@ -488,6 +505,9 @@ function ProspectInfoForm({
           phone: next.phone || undefined,
           whatsapp: next.whatsapp || undefined,
           instagram: next.instagram || undefined,
+          facebook: next.facebook || undefined,
+          tiktok: next.tiktok || undefined,
+          youtube: next.youtube || undefined,
           website: next.website || undefined,
           googleMapsUrl: next.googleMapsUrl || undefined,
           source: next.source || undefined,
@@ -539,6 +559,9 @@ function ProspectInfoForm({
           </a>
         )}
         <Field label="Instagram" value={form.instagram} onChange={(v) => save({ instagram: v })} />
+        <Field label="Facebook" value={form.facebook} onChange={(v) => save({ facebook: v })} />
+        <Field label="TikTok" value={form.tiktok} onChange={(v) => save({ tiktok: v })} />
+        <Field label="YouTube" value={form.youtube} onChange={(v) => save({ youtube: v })} />
         <Field label="Website" value={form.website} onChange={(v) => save({ website: v })} />
         <Field
           label="Google Maps"
@@ -549,6 +572,15 @@ function ProspectInfoForm({
           <a href={form.googleMapsUrl} target="_blank" rel="noreferrer" className="prospect-link-action">
             Abrir no Maps <ExternalLink className="h-3 w-3" />
           </a>
+        )}
+        {prospect.company_id && (
+          <Link
+            to="/os/empresas/$id"
+            params={{ id: prospect.company_id }}
+            className="prospect-link-action"
+          >
+            Ver empresa <ExternalLink className="h-3 w-3" />
+          </Link>
         )}
       </FieldGroup>
 

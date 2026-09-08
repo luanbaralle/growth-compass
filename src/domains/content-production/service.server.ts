@@ -43,6 +43,7 @@ export async function createContentTask(
     briefingCta?: string;
     briefingReferences?: string;
     briefingCaption?: string;
+    briefingRawMaterialUrl?: string;
   },
   authorId: TeamMember | null,
 ) {
@@ -64,6 +65,7 @@ export async function createContentTask(
     briefing_cta: input.briefingCta ?? null,
     briefing_references: input.briefingReferences ?? null,
     briefing_caption: input.briefingCaption ?? null,
+    briefing_raw_material_url: input.briefingRawMaterialUrl || null,
     client_approved_at: null,
     client_approved_by: null,
     publication: {},
@@ -96,6 +98,7 @@ export async function updateContentTask(
     briefingCta: string;
     briefingReferences: string;
     briefingCaption: string;
+    briefingRawMaterialUrl: string;
     clientApprovedAt: string | null;
     clientApprovedBy: string;
     publication: ContentPublication;
@@ -130,6 +133,9 @@ export async function updateContentTask(
   }
   if (patch.briefingCaption !== undefined) {
     dbPatch.briefing_caption = patch.briefingCaption || null;
+  }
+  if (patch.briefingRawMaterialUrl !== undefined) {
+    dbPatch.briefing_raw_material_url = patch.briefingRawMaterialUrl || null;
   }
   if (patch.clientApprovedAt !== undefined) {
     dbPatch.client_approved_at = patch.clientApprovedAt || null;
@@ -272,6 +278,53 @@ export async function deleteContentTaskFile(
 export async function getContentTaskFileUrl(taskId: string, fileId: string) {
   const file = await repo.findContentTaskFile(fileId, taskId);
   if (!file) return null;
+
+  if (file.external_url) {
+    const { toDrivePreviewUrl, toDriveOpenUrl } = await import("@/lib/drive-url");
+    const preview = toDrivePreviewUrl(file.external_url);
+    return {
+      url: preview ?? toDriveOpenUrl(file.external_url),
+      name: file.name,
+      external: true as const,
+      sourceUrl: file.external_url,
+    };
+  }
+
+  if (!file.storage_path) return null;
   const url = await repo.getContentTaskFileSignedUrl(file.storage_path);
-  return { url, name: file.name };
+  return { url, name: file.name, external: false as const, sourceUrl: null };
+}
+
+export async function addContentTaskDriveLink(
+  taskId: string,
+  name: string,
+  fileType: ContentTaskFileType,
+  url: string,
+  authorId: TeamMember | null,
+) {
+  const task = await repo.findContentTaskById(taskId);
+  if (!task) throw new Error("Tarefa não encontrada.");
+
+  const file = await repo.insertContentTaskFile({
+    content_task_id: taskId,
+    file_type: fileType,
+    name,
+    storage_path: "",
+    external_url: url.trim(),
+    mime_type: "video/mp4",
+    size_bytes: null,
+    uploaded_by: authorId,
+  });
+
+  const { logEvents } = await import("./content-task-events.server");
+  await logEvents(taskId, authorId, [
+    {
+      type: "file_added",
+      title: "Link do Drive adicionado",
+      body: `${file.name} · ${url}`,
+      metadata: { fileType: file.file_type, fileId: file.id, external: true },
+    },
+  ]);
+
+  return file;
 }

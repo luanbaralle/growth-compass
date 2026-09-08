@@ -41,8 +41,9 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "@tanstack/react-router";
-import { CalendarDays, Clapperboard, LayoutGrid, List } from "lucide-react";
+import { CalendarDays, Clapperboard, EyeOff, LayoutGrid, List } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 
 export function ContentProductionPage({ initialTaskId }: { initialTaskId?: string }) {
   const navigate = useNavigate();
@@ -56,6 +57,11 @@ export function ContentProductionPage({ initialTaskId }: { initialTaskId?: strin
   const [companyId, setCompanyId] = useState("");
   const [productionOwnerId, setProductionOwnerId] = useState<TeamMember | "all">("all");
   const [view, setView] = useState<"kanban" | "calendar" | "list">("kanban");
+  const [hidePublished, setHidePublished] = useState(() => {
+    if (typeof window === "undefined") return true;
+    const stored = window.localStorage.getItem("os.producao.hidePublished");
+    return stored === null ? true : stored === "1";
+  });
   const [sheetOpen, setSheetOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<ContentTaskWithCompany | null>(null);
   const [defaultPostDate, setDefaultPostDate] = useState<string | undefined>();
@@ -339,6 +345,24 @@ export function ContentProductionPage({ initialTaskId }: { initialTaskId?: strin
                   ))}
                 </SelectContent>
               </Select>
+              {view === "kanban" && (
+                <Button
+                  type="button"
+                  variant={hidePublished ? "secondary" : "outline"}
+                  size="sm"
+                  className="h-9 shrink-0 gap-1.5"
+                  onClick={() => {
+                    setHidePublished((prev) => {
+                      const next = !prev;
+                      window.localStorage.setItem("os.producao.hidePublished", next ? "1" : "0");
+                      return next;
+                    });
+                  }}
+                >
+                  <EyeOff className="h-3.5 w-3.5" />
+                  {hidePublished ? "Publicados ocultos" : "Ocultar publicados"}
+                </Button>
+              )}
             </div>
           </div>
 
@@ -355,6 +379,7 @@ export function ContentProductionPage({ initialTaskId }: { initialTaskId?: strin
                 onMoved={load}
                 onTaskClick={openEdit}
                 taskActions={taskActions}
+                hidePublished={hidePublished}
               />
             )}
           </TabsContent>

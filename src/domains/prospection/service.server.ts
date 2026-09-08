@@ -18,15 +18,149 @@ import { SEGMENT_OPTIONS } from "@/domains/prospection/copilot/types";
 import { DB_TO_SCRIPT_TYPE, LEGACY_SCRIPT_TYPES } from "@/domains/prospection/content/db-map";
 import type { TeamMember } from "@/lib/auth/types";
 import * as repo from "./repository.server";
+import type { LinkType } from "@/domains/companies/types";
 import type {
   ChecklistStatus,
   CommercialScript,
   InteractionType,
+  Prospect,
   ProspectStatus,
   ProspectionMetrics,
   ScriptType,
 } from "./types";
 import { CHECKLIST_ITEMS, OPPORTUNITY_ITEMS } from "./types";
+
+type PresenceLinkType = Extract<
+  LinkType,
+  "website" | "instagram" | "facebook" | "tiktok" | "youtube" | "google_business"
+>;
+
+const PRESENCE_LINK_LABELS: Record<PresenceLinkType, string> = {
+  website: "Website",
+  instagram: "Instagram",
+  facebook: "Facebook",
+  tiktok: "TikTok",
+  youtube: "YouTube",
+  google_business: "Google Meu Negócio",
+};
+
+function stripHandle(value: string): string {
+  return value.trim().replace(/^@/, "");
+}
+
+function looksLikeUrl(value: string): boolean {
+  return /^https?:\/\//i.test(value.trim());
+}
+
+/** Normaliza website: URL completa ou domínio → https://… */
+export function normalizeWebsiteUrl(value: string | null | undefined): string | null {
+  const v = value?.trim();
+  if (!v) return null;
+  if (looksLikeUrl(v)) return v;
+  return `https://${v}`;
+}
+
+/** Instagram: URL ou @handle / handle → https://instagram.com/x */
+export function normalizeInstagramUrl(value: string | null | undefined): string | null {
+  const v = value?.trim();
+  if (!v) return null;
+  if (looksLikeUrl(v)) return v;
+  return `https://instagram.com/${stripHandle(v)}`;
+}
+
+/** Facebook: URL ou handle → https://facebook.com/x */
+export function normalizeFacebookUrl(value: string | null | undefined): string | null {
+  const v = value?.trim();
+  if (!v) return null;
+  if (looksLikeUrl(v)) return v;
+  return `https://facebook.com/${stripHandle(v)}`;
+}
+
+/** TikTok: URL ou handle → https://tiktok.com/@x */
+export function normalizeTiktokUrl(value: string | null | undefined): string | null {
+  const v = value?.trim();
+  if (!v) return null;
+  if (looksLikeUrl(v)) return v;
+  return `https://tiktok.com/@${stripHandle(v)}`;
+}
+
+/** YouTube: URL ou @handle / handle → https://youtube.com/@x */
+export function normalizeYoutubeUrl(value: string | null | undefined): string | null {
+  const v = value?.trim();
+  if (!v) return null;
+  if (looksLikeUrl(v)) return v;
+  const handle = stripHandle(v);
+  return `https://youtube.com/@${handle}`;
+}
+
+function presenceLinksFromProspect(input: {
+  website?: string | null;
+  instagram?: string | null;
+  facebook?: string | null;
+  tiktok?: string | null;
+  youtube?: string | null;
+  google_maps_url?: string | null;
+}): Partial<Record<PresenceLinkType, string>> {
+  const links: Partial<Record<PresenceLinkType, string>> = {};
+  const website = normalizeWebsiteUrl(input.website);
+  const instagram = normalizeInstagramUrl(input.instagram);
+  const facebook = normalizeFacebookUrl(input.facebook);
+  const tiktok = normalizeTiktokUrl(input.tiktok);
+  const youtube = normalizeYoutubeUrl(input.youtube);
+  const gmb = input.google_maps_url?.trim();
+  if (website) links.website = website;
+  if (instagram) links.instagram = instagram;
+  if (facebook) links.facebook = facebook;
+  if (tiktok) links.tiktok = tiktok;
+  if (youtube) links.youtube = youtube;
+  if (gmb) links.google_business = gmb;
+  return links;
+}
+
+async function ensureCompanyPresenceLinks(
+  companyId: string,
+  links: Partial<Record<PresenceLinkType, string | null | undefined>>,
+) {
+  const existing = await companyRepo.findCompanyLinks(companyId);
+  const existingTypes = new Set(existing.map((l) => l.type));
+
+  for (const [type, url] of Object.entries(links) as [PresenceLinkType, string | null | undefined][]) {
+    const trimmed = url?.trim();
+    if (!trimmed || existingTypes.has(type)) continue;
+    await companyRepo.insertCompanyLink({
+      company_id: companyId,
+      type,
+      label: PRESENCE_LINK_LABELS[type],
+      url: trimmed,
+    });
+    existingTypes.add(type);
+  }
+}
+
+function buildConversionNotes(
+  prospect: Prospect,
+  checklist: { item_key: string; status: string }[],
+  opportunities: { opportunity_key: string; checked: boolean }[],
+): string {
+  const checklistSummary = checklist
+    .filter((c) => c.status !== "yes")
+    .map((c) => `${c.item_key}: ${c.status}`)
+    .join(", ");
+
+  const oppsSummary = opportunities
+    .filter((o) => o.checked)
+    .map((o) => o.opportunity_key)
+    .join(", ");
+
+  return [
+    prospect.notes,
+    checklistSummary && `Diagnóstico pendente: ${checklistSummary}`,
+    oppsSummary && `Oportunidades: ${oppsSummary}`,
+    `Convertido da Prospecção em ${new Date().toLocaleDateString("pt-BR")}`,
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+}
 
 export async function listProspects(filters: Parameters<typeof repo.findProspects>[0]) {
   const [prospects, counts] = await Promise.all([
@@ -59,6 +193,9 @@ export async function createProspect(
     phone?: string;
     whatsapp?: string;
     instagram?: string;
+    facebook?: string;
+    tiktok?: string;
+    youtube?: string;
     website?: string;
     googleMapsUrl?: string;
     ownerId?: TeamMember;
@@ -73,27 +210,88 @@ export async function createProspect(
   const segmentLabel =
     SEGMENT_OPTIONS.find((s) => s.slug === slug)?.name ?? input.category?.trim() ?? null;
 
+  const name = input.name.trim();
+  const city = input.city?.trim() || null;
+  const state = input.state?.trim() || null;
+  const whatsapp = input.whatsapp?.trim() || null;
+  const website = input.website?.trim() || null;
+  const instagram = input.instagram?.trim() || null;
+  const facebook = input.facebook?.trim() || null;
+  const tiktok = input.tiktok?.trim() || null;
+  const youtube = input.youtube?.trim() || null;
+  const googleMapsUrl = input.googleMapsUrl?.trim() || null;
+  const notes = input.notes?.trim() || null;
+  const source = input.source?.trim() || null;
+
+  const company = await companyRepo.insertCompany({
+    name,
+    legal_name: null,
+    cnpj: null,
+    city,
+    city_state: state,
+    responsible_name: null,
+    whatsapp: whatsapp || input.phone?.trim() || null,
+    email: null,
+    website,
+    origin: source ?? "prospeccao",
+    segment: segmentLabel,
+    stage: "lead",
+    notes,
+    utm_source: null,
+    utm_medium: null,
+    utm_campaign: null,
+    utm_content: null,
+    utm_term: null,
+    template_slug: null,
+    microvertical_id: null,
+    match_level: null,
+  });
+
+  await ensureCompanyPresenceLinks(
+    company.id,
+    presenceLinksFromProspect({
+      website,
+      instagram,
+      facebook,
+      tiktok,
+      youtube,
+      google_maps_url: googleMapsUrl,
+    }),
+  );
+
   const prospect = await repo.insertProspect({
-    name: input.name.trim(),
+    name,
     category: segmentLabel,
     segment_slug: slug,
-    city: input.city?.trim() || null,
-    state: input.state?.trim() || null,
+    city,
+    state,
     phone: input.phone?.trim() || null,
-    whatsapp: input.whatsapp?.trim() || null,
-    instagram: input.instagram?.trim() || null,
-    website: input.website?.trim() || null,
-    google_maps_url: input.googleMapsUrl?.trim() || null,
+    whatsapp,
+    instagram,
+    facebook,
+    tiktok,
+    youtube,
+    website,
+    google_maps_url: googleMapsUrl,
     owner_id: input.ownerId ?? null,
-    source: input.source?.trim() || null,
-    notes: input.notes?.trim() || null,
+    source,
+    notes,
     status: "novo",
     tags: input.tags ?? [],
     next_action: null,
     next_action_date: null,
-    company_id: null,
+    company_id: company.id,
     converted_at: null,
     last_interaction_at: now,
+  });
+
+  await companyRepo.insertActivity({
+    company_id: company.id,
+    type: "system",
+    title: "Empresa criada a partir de prospect",
+    body: `Lead "${prospect.name}" criado automaticamente na prospecção.`,
+    metadata: { prospectId: prospect.id },
+    author_id: authorId,
   });
 
   await repo.insertInteraction({
@@ -127,6 +325,9 @@ export async function updateProspect(
     phone: string;
     whatsapp: string;
     instagram: string;
+    facebook: string;
+    tiktok: string;
+    youtube: string;
     website: string;
     googleMapsUrl: string;
     ownerId: TeamMember;
@@ -156,6 +357,9 @@ export async function updateProspect(
   if (patch.phone !== undefined) data.phone = patch.phone.trim() || null;
   if (patch.whatsapp !== undefined) data.whatsapp = patch.whatsapp.trim() || null;
   if (patch.instagram !== undefined) data.instagram = patch.instagram.trim() || null;
+  if (patch.facebook !== undefined) data.facebook = patch.facebook.trim() || null;
+  if (patch.tiktok !== undefined) data.tiktok = patch.tiktok.trim() || null;
+  if (patch.youtube !== undefined) data.youtube = patch.youtube.trim() || null;
   if (patch.website !== undefined) data.website = patch.website.trim() || null;
   if (patch.googleMapsUrl !== undefined) data.google_maps_url = patch.googleMapsUrl.trim() || null;
   if (patch.ownerId !== undefined) data.owner_id = patch.ownerId;
@@ -182,6 +386,46 @@ export async function updateProspect(
   }
 
   const prospect = await repo.patchProspect(id, data);
+  if (!prospect) return null;
+
+  if (prospect.company_id) {
+    const companyPatch: Parameters<typeof companyRepo.patchCompany>[1] = {};
+    if (patch.name !== undefined) companyPatch.name = prospect.name;
+    if (patch.city !== undefined) companyPatch.city = prospect.city;
+    if (patch.state !== undefined) companyPatch.city_state = prospect.state;
+    if (patch.website !== undefined) companyPatch.website = prospect.website;
+    if (patch.notes !== undefined) companyPatch.notes = prospect.notes;
+    if (patch.whatsapp !== undefined || patch.phone !== undefined) {
+      companyPatch.whatsapp = prospect.whatsapp ?? prospect.phone;
+    }
+    if (Object.keys(companyPatch).length > 0) {
+      await companyRepo.patchCompany(prospect.company_id, companyPatch);
+    }
+
+    const linkUpdates: Partial<Record<PresenceLinkType, string | null>> = {};
+    if (patch.website !== undefined) {
+      linkUpdates.website = normalizeWebsiteUrl(prospect.website);
+    }
+    if (patch.instagram !== undefined) {
+      linkUpdates.instagram = normalizeInstagramUrl(prospect.instagram);
+    }
+    if (patch.facebook !== undefined) {
+      linkUpdates.facebook = normalizeFacebookUrl(prospect.facebook);
+    }
+    if (patch.tiktok !== undefined) {
+      linkUpdates.tiktok = normalizeTiktokUrl(prospect.tiktok);
+    }
+    if (patch.youtube !== undefined) {
+      linkUpdates.youtube = normalizeYoutubeUrl(prospect.youtube);
+    }
+    if (patch.googleMapsUrl !== undefined) {
+      linkUpdates.google_business = prospect.google_maps_url;
+    }
+    if (Object.keys(linkUpdates).length > 0) {
+      await ensureCompanyPresenceLinks(prospect.company_id, linkUpdates);
+    }
+  }
+
   return prospect;
 }
 
@@ -252,27 +496,55 @@ export async function convertProspectToCompany(id: string, authorId: TeamMember 
   if (!detail) throw new Error("Prospect não encontrado.");
   const { prospect, interactions, checklist, opportunities } = detail;
 
-  if (prospect.company_id) {
-    return { companyId: prospect.company_id, alreadyConverted: true };
+  if (prospect.converted_at || prospect.status === "cliente") {
+    if (prospect.company_id) {
+      return { companyId: prospect.company_id, alreadyConverted: true };
+    }
   }
 
-  const checklistSummary = checklist
-    .filter((c) => c.status !== "yes")
-    .map((c) => `${c.item_key}: ${c.status}`)
-    .join(", ");
+  const notes = buildConversionNotes(prospect, checklist, opportunities);
+  const now = new Date().toISOString();
+  const presence = presenceLinksFromProspect(prospect);
 
-  const oppsSummary = opportunities
-    .filter((o) => o.checked)
-    .map((o) => o.opportunity_key)
-    .join(", ");
+  // Prospect already linked to a lead company — promote to ativo
+  if (prospect.company_id) {
+    const companyId = prospect.company_id;
+    await companyRepo.patchCompany(companyId, {
+      stage: "ativo",
+      notes,
+    });
 
-  const notesParts = [
-    prospect.notes,
-    checklistSummary && `Diagnóstico pendente: ${checklistSummary}`,
-    oppsSummary && `Oportunidades: ${oppsSummary}`,
-    `Convertido da Prospecção em ${new Date().toLocaleDateString("pt-BR")}`,
-  ].filter(Boolean);
+    await ensureCompanyPresenceLinks(companyId, presence);
 
+    await companyRepo.insertActivity({
+      company_id: companyId,
+      type: "system",
+      title: "Convertido da Prospecção",
+      body: `Prospect "${prospect.name}" convertido em cliente ativo.`,
+      metadata: { prospectId: prospect.id },
+      author_id: authorId,
+    });
+
+    await repo.patchProspect(id, {
+      status: "cliente",
+      converted_at: now,
+      last_interaction_at: now,
+    });
+
+    await repo.insertInteraction({
+      prospect_id: id,
+      type: "converted",
+      title: "Cliente convertido",
+      body: `Empresa vinculada promovida a cliente ativo.`,
+      direction: "internal",
+      occurred_at: now,
+      author_id: authorId,
+    });
+
+    return { companyId, alreadyConverted: false };
+  }
+
+  // Legacy: no company_id — create company as before
   const company = await companyRepo.insertCompany({
     name: prospect.name,
     legal_name: null,
@@ -286,7 +558,7 @@ export async function convertProspectToCompany(id: string, authorId: TeamMember 
     origin: prospect.source ?? "prospeccao",
     segment: prospect.category,
     stage: "ativo",
-    notes: notesParts.join("\n\n"),
+    notes,
     utm_source: null,
     utm_medium: null,
     utm_campaign: null,
@@ -296,6 +568,8 @@ export async function convertProspectToCompany(id: string, authorId: TeamMember 
     microvertical_id: null,
     match_level: null,
   });
+
+  await ensureCompanyPresenceLinks(company.id, presence);
 
   await companyRepo.insertActivity({
     company_id: company.id,
@@ -323,7 +597,6 @@ export async function convertProspectToCompany(id: string, authorId: TeamMember 
     });
   }
 
-  const now = new Date().toISOString();
   await repo.patchProspect(id, {
     status: "cliente",
     company_id: company.id,
@@ -361,7 +634,7 @@ export async function getProspectionMetrics(): Promise<ProspectionMetrics> {
   const proposals = prospects.filter((p) =>
     ["proposta_enviada", "negociacao", "cliente"].includes(p.status),
   ).length;
-  const clients = prospects.filter((p) => p.status === "cliente" || p.company_id).length;
+  const clients = prospects.filter((p) => p.status === "cliente" || Boolean(p.converted_at)).length;
   const lost = prospects.filter((p) => p.status === "perdido").length;
 
   const contacted = prospects.filter((p) => p.status !== "novo").length;

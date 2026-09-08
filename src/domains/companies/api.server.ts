@@ -5,16 +5,23 @@ import {
   changeStageSchema,
   companyIdSchema,
   createCompanySchema,
+  createCredentialSchema,
   createLinkSchema,
+  createOperationItemSchema,
   createServiceSchema,
+  credentialIdSchema,
   fileIdSchema,
   idSchema,
   linkIdSchema,
   listCompaniesSchema,
+  operationItemIdSchema,
+  revealCredentialSchema,
   serviceIdSchema,
   submitCompanyFormSchema,
   updateCompanySchema,
+  updateCredentialSchema,
   updateLinkSchema,
+  updateOperationItemSchema,
   updateServiceSchema,
   uploadFileSchema,
   uploadLogoSchema,
@@ -181,7 +188,12 @@ export const createCompanyLink = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     return withAuth(async () => {
       const companyService = await import("@/domains/companies/service.server");
-      return companyService.createLink(data);
+      return companyService.createLink({
+        company_id: data.companyId,
+        type: data.type,
+        label: data.label,
+        url: data.url,
+      });
     });
   });
 
@@ -234,6 +246,97 @@ export const deleteCompanyService = createServerFn({ method: "POST" })
     return withAuth(async () => {
       const companyService = await import("@/domains/companies/service.server");
       await companyService.deleteService(data.id);
+      return { ok: true };
+    });
+  });
+
+export const listCompanyCredentials = createServerFn({ method: "GET" })
+  .validator(companyIdSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const companyService = await import("@/domains/companies/service.server");
+      return companyService.listCredentials(data.companyId);
+    });
+  });
+
+export const createCompanyCredential = createServerFn({ method: "POST" })
+  .validator(createCredentialSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const companyService = await import("@/domains/companies/service.server");
+      return companyService.createCredential(data);
+    });
+  });
+
+export const updateCompanyCredential = createServerFn({ method: "POST" })
+  .validator(updateCredentialSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const companyService = await import("@/domains/companies/service.server");
+      const { id, companyId, ...patch } = data;
+      const credential = await companyService.updateCredential(id, companyId, patch);
+      if (!credential) throw new Error("Credencial não encontrada.");
+      return credential;
+    });
+  });
+
+export const deleteCompanyCredential = createServerFn({ method: "POST" })
+  .validator(credentialIdSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const companyService = await import("@/domains/companies/service.server");
+      const removed = await companyService.deleteCredential(data.id, data.companyId);
+      if (!removed) throw new Error("Credencial não encontrada.");
+      return { ok: true };
+    });
+  });
+
+export const revealCompanyCredential = createServerFn({ method: "POST" })
+  .validator(revealCredentialSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const companyService = await import("@/domains/companies/service.server");
+      return companyService.revealCredentialPassword(data.id, data.companyId);
+    });
+  });
+
+export const listCompanyOperationItems = createServerFn({ method: "GET" })
+  .validator(companyIdSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const companyService = await import("@/domains/companies/service.server");
+      return companyService.listOperationItems(data.companyId);
+    });
+  });
+
+export const createCompanyOperationItem = createServerFn({ method: "POST" })
+  .validator(createOperationItemSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async (author) => {
+      const companyService = await import("@/domains/companies/service.server");
+      return companyService.createOperationItem(data, author);
+    });
+  });
+
+export const updateCompanyOperationItem = createServerFn({ method: "POST" })
+  .validator(updateOperationItemSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const companyService = await import("@/domains/companies/service.server");
+      const { id, companyId, ...patch } = data;
+      const item = await companyService.updateOperationItem(id, companyId, patch);
+      if (!item) throw new Error("Item de operação não encontrado.");
+      return item;
+    });
+  });
+
+export const deleteCompanyOperationItem = createServerFn({ method: "POST" })
+  .validator(operationItemIdSchema)
+  .handler(async ({ data }) => {
+    return withAuth(async () => {
+      const companyService = await import("@/domains/companies/service.server");
+      const removed = await companyService.deleteOperationItem(data.id, data.companyId);
+      if (!removed) throw new Error("Item de operação não encontrado.");
       return { ok: true };
     });
   });

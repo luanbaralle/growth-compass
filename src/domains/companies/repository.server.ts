@@ -17,7 +17,9 @@ import type {
   CompanyService,
   CompanyStage,
   CompanyStageCounts,
+  CredentialPlatform,
   FileCategory,
+  OperationItemType,
 } from "./types";
 import { COMPANY_STAGES } from "./types";
 
@@ -382,6 +384,174 @@ export async function patchCompanyService(
 
 export async function removeCompanyService(id: string): Promise<boolean> {
   await dbDelete("company_services", `id=eq.${id}`);
+  return true;
+}
+
+/** Row do banco — inclui secret_encrypted; não expor ao client. */
+export interface CompanyCredentialRow {
+  id: string;
+  company_id: string;
+  platform: CredentialPlatform;
+  label: string;
+  username: string | null;
+  secret_encrypted: string | null;
+  url: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CompanyOperationItemRow {
+  id: string;
+  company_id: string;
+  project_id: string | null;
+  item_type: OperationItemType;
+  title: string;
+  body: string | null;
+  url: string | null;
+  occurred_at: string | null;
+  author_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export async function findCompanyCredentials(
+  companyId: string,
+): Promise<CompanyCredentialRow[]> {
+  return dbSelect<CompanyCredentialRow>(
+    "company_credentials",
+    encodeQuery({
+      select: "*",
+      company_id: `eq.${companyId}`,
+      order: "created_at.desc",
+    }),
+  );
+}
+
+export async function findCompanyCredential(
+  id: string,
+  companyId: string,
+): Promise<CompanyCredentialRow | null> {
+  const rows = await dbSelect<CompanyCredentialRow>(
+    "company_credentials",
+    encodeQuery({ select: "*", id: `eq.${id}`, company_id: `eq.${companyId}` }),
+  );
+  return rows[0] ?? null;
+}
+
+export async function insertCompanyCredential(data: {
+  company_id: string;
+  platform: CredentialPlatform;
+  label: string;
+  username?: string | null;
+  secret_encrypted?: string | null;
+  url?: string | null;
+  notes?: string | null;
+}): Promise<CompanyCredentialRow> {
+  const [row] = await dbInsert<CompanyCredentialRow>("company_credentials", {
+    company_id: data.company_id,
+    platform: data.platform,
+    label: data.label,
+    username: data.username ?? null,
+    secret_encrypted: data.secret_encrypted ?? null,
+    url: data.url ?? null,
+    notes: data.notes ?? null,
+  });
+  return row;
+}
+
+export async function patchCompanyCredential(
+  id: string,
+  data: Partial<{
+    platform: CredentialPlatform;
+    label: string;
+    username: string | null;
+    secret_encrypted: string | null;
+    url: string | null;
+    notes: string | null;
+  }>,
+): Promise<CompanyCredentialRow | null> {
+  const rows = await dbUpdate<CompanyCredentialRow>(
+    "company_credentials",
+    `id=eq.${id}`,
+    { ...data, updated_at: new Date().toISOString() },
+  );
+  return rows[0] ?? null;
+}
+
+export async function removeCompanyCredential(id: string): Promise<boolean> {
+  await dbDelete("company_credentials", `id=eq.${id}`);
+  return true;
+}
+
+export async function findCompanyOperationItems(
+  companyId: string,
+): Promise<CompanyOperationItemRow[]> {
+  return dbSelect<CompanyOperationItemRow>(
+    "company_operation_items",
+    encodeQuery({
+      select: "*",
+      company_id: `eq.${companyId}`,
+      order: "occurred_at.desc.nullslast,created_at.desc",
+    }),
+  );
+}
+
+export async function findCompanyOperationItem(
+  id: string,
+  companyId: string,
+): Promise<CompanyOperationItemRow | null> {
+  const rows = await dbSelect<CompanyOperationItemRow>(
+    "company_operation_items",
+    encodeQuery({ select: "*", id: `eq.${id}`, company_id: `eq.${companyId}` }),
+  );
+  return rows[0] ?? null;
+}
+
+export async function insertCompanyOperationItem(data: {
+  company_id: string;
+  project_id?: string | null;
+  item_type: OperationItemType;
+  title: string;
+  body?: string | null;
+  url?: string | null;
+  occurred_at?: string | null;
+  author_id?: string | null;
+}): Promise<CompanyOperationItemRow> {
+  const [row] = await dbInsert<CompanyOperationItemRow>("company_operation_items", {
+    company_id: data.company_id,
+    project_id: data.project_id ?? null,
+    item_type: data.item_type,
+    title: data.title,
+    body: data.body ?? null,
+    url: data.url ?? null,
+    occurred_at: data.occurred_at ?? null,
+    author_id: data.author_id ?? null,
+  });
+  return row;
+}
+
+export async function patchCompanyOperationItem(
+  id: string,
+  data: Partial<{
+    project_id: string | null;
+    item_type: OperationItemType;
+    title: string;
+    body: string | null;
+    url: string | null;
+    occurred_at: string | null;
+  }>,
+): Promise<CompanyOperationItemRow | null> {
+  const rows = await dbUpdate<CompanyOperationItemRow>(
+    "company_operation_items",
+    `id=eq.${id}`,
+    { ...data, updated_at: new Date().toISOString() },
+  );
+  return rows[0] ?? null;
+}
+
+export async function removeCompanyOperationItem(id: string): Promise<boolean> {
+  await dbDelete("company_operation_items", `id=eq.${id}`);
   return true;
 }
 

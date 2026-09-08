@@ -51,6 +51,14 @@ export const createLinkSchema = z.object({
     "analytics",
     "search_console",
     "google_business",
+    "website",
+    "instagram",
+    "facebook",
+    "tiktok",
+    "youtube",
+    "proposal",
+    "contract",
+    "drive",
     "other",
   ]),
   label: z.string().min(1).max(100),
@@ -83,7 +91,15 @@ export const uploadLogoSchema = z.object({
 export const uploadFileSchema = z.object({
   companyId: z.string().uuid(),
   name: z.string().min(1).max(255),
-  category: z.enum(["contract", "receipt", "invoice", "other"]),
+  category: z.enum([
+    "contract",
+    "receipt",
+    "invoice",
+    "proposal_doc",
+    "analysis",
+    "document",
+    "other",
+  ]),
   mimeType: z.string().max(100),
   base64: z.string().min(1),
   financeEntryId: z.string().uuid().optional(),
@@ -125,6 +141,82 @@ export const linkIdSchema = z.object({
 });
 
 export const serviceIdSchema = z.object({
+  id: z.string().uuid(),
+  companyId: z.string().uuid(),
+});
+
+const credentialPlatformEnum = z.enum([
+  "google",
+  "instagram",
+  "facebook",
+  "tiktok",
+  "youtube",
+  "crm",
+  "ads",
+  "hosting",
+  "other",
+]);
+
+const operationItemTypeEnum = z.enum([
+  "roadmap_note",
+  "report",
+  "analysis",
+  "audit",
+  "alignment_meeting",
+  "scope_change",
+  "other",
+]);
+
+export const createCredentialSchema = z.object({
+  companyId: z.string().uuid(),
+  platform: credentialPlatformEnum,
+  label: z.string().min(1).max(200),
+  username: z.string().max(200).optional(),
+  password: z.string().max(500).optional(),
+  url: z.string().max(500).optional(),
+  notes: z.string().max(2000).optional(),
+});
+
+export const updateCredentialSchema = z.object({
+  id: z.string().uuid(),
+  companyId: z.string().uuid(),
+  platform: credentialPlatformEnum.optional(),
+  label: z.string().min(1).max(200).optional(),
+  username: z.string().max(200).nullable().optional(),
+  password: z.string().max(500).optional(),
+  url: z.string().max(500).nullable().optional(),
+  notes: z.string().max(2000).nullable().optional(),
+});
+
+export const credentialIdSchema = z.object({
+  id: z.string().uuid(),
+  companyId: z.string().uuid(),
+});
+
+export const revealCredentialSchema = credentialIdSchema;
+
+export const createOperationItemSchema = z.object({
+  companyId: z.string().uuid(),
+  item_type: operationItemTypeEnum,
+  title: z.string().min(1).max(200),
+  body: z.string().max(5000).optional(),
+  url: z.string().max(500).optional(),
+  occurred_at: z.string().max(10).optional(),
+  project_id: z.string().uuid().optional(),
+});
+
+export const updateOperationItemSchema = z.object({
+  id: z.string().uuid(),
+  companyId: z.string().uuid(),
+  item_type: operationItemTypeEnum.optional(),
+  title: z.string().min(1).max(200).optional(),
+  body: z.string().max(5000).nullable().optional(),
+  url: z.string().max(500).nullable().optional(),
+  occurred_at: z.string().max(10).nullable().optional(),
+  project_id: z.string().uuid().nullable().optional(),
+});
+
+export const operationItemIdSchema = z.object({
   id: z.string().uuid(),
   companyId: z.string().uuid(),
 });

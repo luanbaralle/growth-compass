@@ -51,6 +51,7 @@ export interface ContentTask {
   briefing_cta: string | null;
   briefing_references: string | null;
   briefing_caption: string | null;
+  briefing_raw_material_url: string | null;
   client_approved_at: string | null;
   client_approved_by: string | null;
   publication: ContentPublication;
@@ -64,7 +65,8 @@ export interface ContentTaskFile {
   content_task_id: string;
   file_type: ContentTaskFileType;
   name: string;
-  storage_path: string;
+  storage_path: string | null;
+  external_url: string | null;
   mime_type: string | null;
   size_bytes: number | null;
   uploaded_by: string | null;

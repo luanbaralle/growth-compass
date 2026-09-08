@@ -17,18 +17,27 @@ export function ContentKanban({
   onTaskClick,
   onDuplicate,
   taskActions,
+  hidePublished = false,
 }: {
   tasks: ContentTaskWithCompany[];
   onMoved: () => void;
   onTaskClick: (task: ContentTaskWithCompany) => void;
   onDuplicate?: (task: ContentTaskWithCompany) => void;
   taskActions?: ContentTaskQuickActions;
+  hidePublished?: boolean;
 }) {
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [overColumn, setOverColumn] = useState<ContentTaskStatus | null>(null);
   const [moving, setMoving] = useState(false);
 
-  const byStatus = CONTENT_PHASES.reduce(
+  const visiblePhases = hidePublished
+    ? CONTENT_PHASES.map((phase) => ({
+        ...phase,
+        statuses: phase.statuses.filter((status) => status !== "publicado"),
+      })).filter((phase) => phase.statuses.length > 0)
+    : CONTENT_PHASES;
+
+  const byStatus = visiblePhases.reduce(
     (acc, phase) => {
       for (const status of phase.statuses) {
         acc[status] = tasks.filter((t) => t.status === status);
@@ -66,7 +75,7 @@ export function ContentKanban({
           <div className="absolute inset-0 rounded-xl bg-background/30 backdrop-blur-[2px]" />
         </div>
       )}
-      {CONTENT_PHASES.map((phase) => (
+      {visiblePhases.map((phase) => (
         <div key={phase.id}>
           <div className="mb-3 flex items-center gap-2 px-1">
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground/70">
