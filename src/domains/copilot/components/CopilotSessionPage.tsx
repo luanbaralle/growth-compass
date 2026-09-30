@@ -39,6 +39,7 @@ import { useMeetingAudioCapture } from "@/domains/copilot/stt/use-meeting-audio-
 import { useMeetingRecorder } from "@/domains/copilot/stt/use-meeting-recorder";
 import { getErrorMessage } from "@/lib/api/client-errors";
 import { scrollOsShellToTop } from "@/os/scroll-os-shell";
+import { useOSMeetingMode } from "@/os/shell/OSMeetingMode";
 import { OSPage, PageHeader, PageSkeleton } from "@/os/ui";
 import {
   DropdownMenu,
@@ -62,6 +63,7 @@ import {
   FileDown,
   FileText,
   Loader2,
+  Mic,
   MoreHorizontal,
   Send,
   Presentation,
@@ -71,6 +73,8 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
+
+type MobileLiveTab = "copilot" | "transcript" | "coverage";
 
 function formatElapsed(seconds: number): string {
   const m = Math.floor(seconds / 60);
@@ -102,6 +106,7 @@ function downloadBase64File(base64: string, filename: string, mimeType: string):
 
 export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
   const navigate = useNavigate();
+  const { setMeetingMode } = useOSMeetingMode();
   const [detail, setDetail] = useState<CopilotSessionDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
@@ -129,6 +134,7 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
   const [diagnosisValidated, setDiagnosisValidated] = useState(false);
   const [highlightSegmentIds, setHighlightSegmentIds] = useState<string[]>([]);
   const [transcriptExpandSignal, setTranscriptExpandSignal] = useState(0);
+  const [mobileTab, setMobileTab] = useState<MobileLiveTab>("copilot");
   const evidenceSectionRef = useRef<HTMLDivElement>(null);
   const transcriptSectionRef = useRef<HTMLDivElement>(null);
 
@@ -268,9 +274,12 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
   const {
     status: audioStatus,
     callAudioConnected,
+    micOnlyMode,
     statusHint,
     isListening,
+    isRequesting,
     isSupported,
+    requiresUserGesture,
     start: startAudioCapture,
     stop: stopAudioCapture,
     toggle: toggleAudioCapture,
@@ -283,17 +292,51 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
     onProcessingChange: setIsTranscribing,
   });
 
+  const handleMicToggle = useCallback(async () => {
+    const result = await toggleAudioCapture();
+    if (result && "error" in result && result.error && result.error !== "busy" && result.error !== "aborted") {
+      if (result.error === "unsupported") {
+        toast.error("Microfone indisponível neste navegador.", {
+          description: "Use HTTPS ou a entrada manual em Mais.",
+        });
+      } else {
+        toast.error("Não foi possível iniciar o microfone.", {
+          description: String(result.error),
+        });
+      }
+    } else if (result && "ok" in result && result.ok && !("stopped" in result && result.stopped)) {
+      toast.success("Microfone ativo", {
+        description: "Fale perto do celular — a 1ª transcrição leva ~6s.",
+      });
+    }
+  }, [toggleAudioCapture]);
+
+  useEffect(() => {
+    const active = Boolean(isLive && !isProcessing);
+    setMeetingMode(active);
+    return () => setMeetingMode(false);
+  }, [isLive, isProcessing, setMeetingMode]);
+
   useEffect(() => {
     if (!isLive) {
       stopAudioCapture();
       autoListenStarted.current = false;
       return;
     }
+    // Mobile / iOS: must start from a user tap — auto-start yields silent AudioContext.
+    if (requiresUserGesture || micOnlyMode) return;
     if (!autoListenStarted.current && isSupported) {
       autoListenStarted.current = true;
       void startAudioCapture();
     }
-  }, [isLive, isSupported, startAudioCapture, stopAudioCapture]);
+  }, [
+    isLive,
+    isSupported,
+    micOnlyMode,
+    requiresUserGesture,
+    startAudioCapture,
+    stopAudioCapture,
+  ]);
 
   const baseStatusLine = useMemo(
     () => (session ? getLiveStatusLine(session) : ""),
@@ -303,7 +346,7 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
   const displayOrb = resolveDisplayOrbState(session?.orbState ?? "idle", {
     isListening,
     isProcessing: analyzing || isTranscribing,
-    isLive,
+    isLive: Boolean(isLive),
   });
 
   const displayStatusLine = resolveStatusLine(baseStatusLine, {
@@ -311,6 +354,7 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
     isProcessing: analyzing,
     isTranscribing,
     lastTranscript,
+    micOnlyMode,
   });
 
   const handleReprocess = async () => {
@@ -495,11 +539,29 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
   }
 
   return (
-    <OSPage className="max-w-7xl">
+    <OSPage
+      className={cn(
+        isLive && !isProcessing
+          ? "flex h-[100dvh] max-h-[100dvh] min-h-0 max-w-none flex-col space-y-0 overflow-hidden pb-0 md:h-auto md:max-h-none md:max-w-7xl md:space-y-6 md:overflow-visible md:pb-2"
+          : "max-w-7xl",
+      )}
+    >
       {/* ── Header ── */}
-      <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex items-start gap-3">
-          <Button variant="ghost" size="icon" className="mt-0.5 shrink-0" asChild>
+      <header
+        className={cn(
+          "flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between",
+          isLive && !isProcessing
+            ? "shrink-0 border-b border-border/40 px-3 py-2 pt-[max(0.5rem,env(safe-area-inset-top))] md:mb-8 md:border-0 md:px-0 md:py-0 md:pt-0"
+            : "mb-8 gap-4",
+        )}
+      >
+        <div className="flex min-w-0 items-center gap-2 sm:items-start sm:gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn("shrink-0", isLive ? "h-9 w-9" : "mt-0.5 h-10 w-10")}
+            asChild
+          >
             <Link
               to={detail.prospectId ? "/os/prospeccao/$id" : "/os/copilot"}
               {...(detail.prospectId ? { params: { id: detail.prospectId } } : {})}
@@ -507,9 +569,17 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
               <ArrowLeft className="h-4 w-4" />
             </Link>
           </Button>
-          <div>
+          <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-xl font-semibold tracking-tight">Raise One Copilot</h1>
+              <h1
+                className={cn(
+                  "truncate font-semibold tracking-tight",
+                  isLive ? "text-base md:text-xl" : "text-lg sm:text-xl",
+                )}
+              >
+                <span className="md:hidden">{isLive ? prospectName : "Raise One Copilot"}</span>
+                <span className="hidden md:inline">Raise One Copilot</span>
+              </h1>
               {isProcessing && (
                 <Badge
                   variant="outline"
@@ -529,7 +599,7 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
               {isLive && (
                 <Badge
                   variant="outline"
-                  className="border-red-500/25 bg-red-500/8 text-red-500 animate-pulse"
+                  className="animate-pulse border-red-500/25 bg-red-500/8 text-red-500"
                 >
                   Ao vivo
                 </Badge>
@@ -540,18 +610,48 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
                 </Badge>
               )}
             </div>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p
+              className={cn(
+                "truncate text-muted-foreground",
+                isLive ? "hidden text-sm md:mt-1 md:block" : "mt-1 text-sm",
+              )}
+            >
               {session.meetingObjective.title}
             </p>
             {session.meetingObjective.companyName && (
-              <p className="mt-0.5 text-xs text-muted-foreground/70">
+              <p className="mt-0.5 hidden text-xs text-muted-foreground/70 md:block">
                 {session.meetingObjective.prospectName} · {session.meetingObjective.companyName}
               </p>
             )}
           </div>
+          {isLive && (
+            <div className="flex shrink-0 items-center gap-1.5 md:hidden">
+              <div className="rounded-md border border-border/50 bg-muted/15 px-2 py-1 text-xs tabular-nums text-muted-foreground">
+                {formatElapsed(session.elapsedSeconds)}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9 px-2.5"
+                onClick={() => void handleEnd()}
+                disabled={analyzing || cancelling}
+              >
+                {analyzing ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Square className="h-3.5 w-3.5" />
+                )}
+              </Button>
+            </div>
+          )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+        <div
+          className={cn(
+            "flex flex-wrap items-center gap-2 sm:justify-end",
+            isLive && "hidden md:flex",
+          )}
+        >
           <div className="flex items-center gap-2 rounded-lg border border-border/50 bg-muted/15 px-3 py-1.5 text-sm tabular-nums text-muted-foreground">
             <Clock className="h-3.5 w-3.5" />
             {formatElapsed(session.elapsedSeconds)}
@@ -687,6 +787,7 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
               <Button
                 variant="ghost"
                 size="sm"
+                className="min-h-10"
                 onClick={() => void handleCancel()}
                 disabled={analyzing || cancelling}
               >
@@ -695,11 +796,12 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
                 ) : (
                   <X className="mr-1.5 h-3.5 w-3.5" />
                 )}
-                Cancelar
+                <span className="hidden sm:inline">Cancelar</span>
               </Button>
               <Button
                 variant="outline"
                 size="sm"
+                className="min-h-10"
                 onClick={() => void handleEnd()}
                 disabled={analyzing || cancelling}
               >
@@ -715,8 +817,13 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
         </div>
       </header>
 
-      {/* ── Meeting objective strip ── */}
-      <Card className="mb-6 border-border/50 bg-muted/10 shadow-sm">
+      {/* ── Meeting objective strip (hidden on mobile live) ── */}
+      <Card
+        className={cn(
+          "mb-6 border-border/50 bg-muted/10 shadow-sm",
+          isLive && "hidden md:block",
+        )}
+      >
         <CardContent className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0 flex-1">
             <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/55">
@@ -821,9 +928,211 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
         </Card>
       )}
 
-      {/* ── Live session ── */}
+      {/* ── Live session: mobile meeting mode ── */}
       {isLive && !isProcessing && (
-        <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_260px]">
+        <div className="relative flex min-h-0 flex-1 flex-col md:hidden">
+          <div className="shrink-0 px-3 pt-2">
+            <div className="grid grid-cols-3 gap-1 rounded-xl border border-border/40 bg-muted/15 p-1">
+              {(
+                [
+                  ["copilot", "Sugestão"],
+                  ["transcript", "Fala"],
+                  ["coverage", "Mais"],
+                ] as const
+              ).map(([id, label]) => (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => setMobileTab(id)}
+                  className={cn(
+                    "min-h-9 rounded-lg px-2 text-xs font-medium transition-colors",
+                    mobileTab === id
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground",
+                  )}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* pb reserves space for the fixed mic dock */}
+          <div className="min-h-0 flex-1 overflow-y-auto px-3 py-2 pb-[calc(5.5rem+env(safe-area-inset-bottom))]">
+            {mobileTab === "copilot" && (
+              <div className="flex min-h-0 flex-col gap-3">
+                {(!isListening || audioStatus === "mic_denied" || audioStatus === "unsupported") && (
+                  <button
+                    type="button"
+                    onClick={() => void handleMicToggle()}
+                    disabled={isRequesting}
+                    className="flex w-full items-center gap-3 rounded-2xl border border-brand/30 bg-brand/10 px-4 py-3 text-left disabled:opacity-70"
+                  >
+                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand text-black">
+                      {isRequesting ? (
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                      ) : (
+                        <Mic className="h-5 w-5" />
+                      )}
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block text-sm font-semibold">
+                        {isRequesting
+                          ? "Pedindo microfone…"
+                          : audioStatus === "mic_denied"
+                            ? "Microfone bloqueado — toque para tentar"
+                            : audioStatus === "unsupported"
+                              ? "Microfone indisponível"
+                              : "Toque para ouvir a sala"}
+                      </span>
+                      <span className="mt-0.5 block text-xs text-muted-foreground">
+                        {statusHint ||
+                          (audioStatus === "unsupported"
+                            ? "Use HTTPS ou entrada manual em Mais"
+                            : "O navegador deve pedir permissão ao tocar")}
+                      </span>
+                    </span>
+                  </button>
+                )}
+                <CopilotChatPanel
+                  messages={session.narratorMessages ?? []}
+                  isLive={isLive}
+                  processing={analyzing || isTranscribing}
+                  onAskSuggestion={(q) => submitSegment(q, "manual_paste")}
+                  onSkipSuggestion={handleSkipSuggestion}
+                  meetingFocus
+                />
+              </div>
+            )}
+            {mobileTab === "transcript" && (
+              <div className="flex min-h-0 flex-col gap-2">
+                {(!isListening || audioStatus === "mic_denied" || audioStatus === "unsupported") && (
+                  <button
+                    type="button"
+                    onClick={() => void handleMicToggle()}
+                    disabled={isRequesting}
+                    className="flex w-full items-center gap-3 rounded-2xl border border-brand/30 bg-brand/10 px-4 py-3 text-left disabled:opacity-70"
+                  >
+                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand text-black">
+                      {isRequesting ? (
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                      ) : (
+                        <Mic className="h-5 w-5" />
+                      )}
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block text-sm font-semibold">
+                        {isRequesting
+                          ? "Pedindo microfone…"
+                          : audioStatus === "mic_denied"
+                            ? "Microfone bloqueado — toque para tentar"
+                            : "Toque para ouvir a sala"}
+                      </span>
+                      <span className="mt-0.5 block text-xs text-muted-foreground">
+                        {statusHint || "Sem isso o Copilot não captura a conversa"}
+                      </span>
+                    </span>
+                  </button>
+                )}
+                {isListening && (
+                  <p className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-2 text-xs text-emerald-700 dark:text-emerald-300">
+                    Ouvindo a sala… {statusHint || "aguarde ~6s pela primeira fala"}
+                  </p>
+                )}
+                {lastTranscript && (
+                  <p className="rounded-xl border border-border/40 bg-muted/15 px-3 py-2 text-sm italic text-muted-foreground">
+                    Último: “{lastTranscript}”
+                  </p>
+                )}
+                <MeetingTranscriptPanel transcript={savedTranscript} prospectName={prospectName} />
+              </div>
+            )}
+            {mobileTab === "coverage" && (
+              <div className="space-y-3 pb-2">
+                <CoveragePanel
+                  coverage={session.coverage}
+                  overall={session.overallCoverage}
+                  knowledgeDepth={session.knowledgeDepth}
+                  proposalReadiness={session.proposalReadiness}
+                  compact
+                />
+                <ProposalReadinessPanel session={session} />
+                <div className="rounded-xl border border-border/40 px-3 py-3">
+                  <p className="text-xs font-medium text-muted-foreground">Entrada manual</p>
+                  <Textarea
+                    className="mt-2"
+                    placeholder="Digite o que foi dito…"
+                    value={draft}
+                    onChange={(e) => setDraft(e.target.value)}
+                    rows={2}
+                  />
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {(["auto", "consultant", "prospect"] as const).map((mode) => (
+                      <Button
+                        key={mode}
+                        size="sm"
+                        className="min-h-9"
+                        variant={speakerMode === mode ? "secondary" : "ghost"}
+                        onClick={() => setSpeakerMode(mode)}
+                      >
+                        {mode === "auto"
+                          ? "Auto"
+                          : mode === "consultant"
+                            ? "Você"
+                            : prospectName.split(" ")[0]}
+                      </Button>
+                    ))}
+                    <Button
+                      size="sm"
+                      className="min-h-9"
+                      onClick={() => submitSegment(draft)}
+                      disabled={!draft.trim()}
+                    >
+                      <Send className="mr-1.5 h-3.5 w-3.5" />
+                      Add
+                    </Button>
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full text-muted-foreground"
+                  onClick={() => void handleCancel()}
+                  disabled={analyzing || cancelling}
+                >
+                  Cancelar sessão
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {/* Fixed dock — always visible above the fold on mobile */}
+          <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border/50 bg-background/95 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2.5 shadow-[0_-8px_24px_oklch(0_0_0/0.25)] backdrop-blur-md md:hidden">
+            <LiveListenBar
+              status={audioStatus}
+              callAudioConnected={callAudioConnected}
+              micOnlyMode={micOnlyMode}
+              statusHint={statusHint}
+              lastTranscript={lastTranscript}
+              speakerLabel={
+                speakerMode === "auto"
+                  ? "Automático"
+                  : speakerMode === "consultant"
+                    ? "Consultor"
+                    : prospectName
+              }
+              onToggle={() => void handleMicToggle()}
+              disabled={false}
+              compact
+              coveragePercent={session.overallCoverage}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* ── Live session: desktop ── */}
+      {isLive && !isProcessing && (
+        <div className="hidden gap-8 md:grid xl:grid-cols-[minmax(0,1fr)_260px]">
           <div className="min-w-0 space-y-6">
             <div className="flex flex-col items-center rounded-2xl border border-border/40 bg-gradient-to-b from-muted/20 to-transparent py-8 text-center">
               <CopilotOrb state={displayOrb} />
@@ -838,6 +1147,7 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
             <LiveListenBar
               status={audioStatus}
               callAudioConnected={callAudioConnected}
+              micOnlyMode={micOnlyMode}
               statusHint={statusHint}
               lastTranscript={lastTranscript}
               speakerLabel={
@@ -847,7 +1157,7 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
                     ? "Consultor"
                     : prospectName
               }
-              onToggle={toggleAudioCapture}
+              onToggle={() => void handleMicToggle()}
               disabled={false}
             />
 
@@ -942,9 +1252,11 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
         </div>
       )}
 
-      {/* ── Live without artifact: readiness ── */}
+      {/* ── Live without artifact: readiness (desktop) ── */}
       {isLive && !detail.artifact && !isProcessing && (
-        <ProposalReadinessPanel session={session} />
+        <div className="hidden md:block">
+          <ProposalReadinessPanel session={session} />
+        </div>
       )}
 
       {/* Mobile metrics for completed */}
@@ -954,7 +1266,7 @@ export function CopilotSessionPage({ sessionId }: { sessionId: string }) {
             coverage={session.coverage}
             overall={session.overallCoverage}
             knowledgeDepth={session.knowledgeDepth}
-            proposalStatus={session.proposalReadiness.status}
+            proposalReadiness={session.proposalReadiness}
           />
           <EvidenceOverridePanel sessionId={sessionId} onUpdated={() => void load()} />
         </div>

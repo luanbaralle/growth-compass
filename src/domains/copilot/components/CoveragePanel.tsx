@@ -18,18 +18,35 @@ export function CoveragePanel({
   knowledgeDepth,
   proposalReadiness,
   className,
+  compact = false,
 }: {
   coverage: DomainCoverage[];
   overall: number;
   knowledgeDepth?: number;
   proposalReadiness?: ProposalReadiness;
   className?: string;
+  compact?: boolean;
 }) {
   const visible = coverage.filter((c) => c.total > 0);
   const sorted = [...visible].sort((a, b) => b.percent - a.percent);
   const readinessPercent = proposalReadiness
     ? computeProposalReadinessPercent(proposalReadiness)
     : 0;
+
+  if (compact) {
+    return (
+      <div
+        className={cn(
+          "grid grid-cols-3 gap-2 rounded-xl border border-border/50 bg-muted/10 p-2.5",
+          className,
+        )}
+      >
+        <CompactMetric label="Cobertura" value={overall} />
+        <CompactMetric label="Confiança" value={knowledgeDepth ?? 0} accent="emerald" />
+        <CompactMetric label="Proposta" value={readinessPercent} accent="amber" />
+      </div>
+    );
+  }
 
   return (
     <Card className={cn("border-border/50 shadow-sm", className)}>
@@ -93,6 +110,33 @@ export function CoveragePanel({
         )}
       </CardContent>
     </Card>
+  );
+}
+
+function CompactMetric({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: number;
+  accent?: "emerald" | "amber";
+}) {
+  return (
+    <div className="rounded-lg bg-background/60 px-2 py-2 text-center">
+      <p className="text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">
+        {label}
+      </p>
+      <p
+        className={cn(
+          "mt-0.5 text-base font-bold tabular-nums",
+          accent === "emerald" && "text-emerald-600 dark:text-emerald-400",
+          accent === "amber" && "text-amber-600 dark:text-amber-400",
+        )}
+      >
+        {value}%
+      </p>
+    </div>
   );
 }
 

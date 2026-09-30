@@ -322,7 +322,7 @@ export function CopilotLandingPage() {
       />
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,360px)_1fr] xl:items-start">
-        <aside className="space-y-5 xl:sticky xl:top-6">
+        <aside className="order-1 space-y-5 xl:sticky xl:top-6">
           <div className="overflow-hidden rounded-2xl border border-border/50 bg-gradient-to-b from-amber-500/[0.07] to-transparent shadow-sm">
             <div className="border-b border-border/40 px-5 py-4">
               <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/70">
@@ -330,7 +330,7 @@ export function CopilotLandingPage() {
               </p>
               <h2 className="mt-1 text-lg font-semibold">Discovery / Qualificação</h2>
               <p className="mt-1.5 text-sm text-muted-foreground">
-                Capture o negócio ao vivo. Ao encerrar, o Copilot gera diagnóstico e rascunho de proposta.
+                Capture o negócio ao vivo — inclusive em reunião presencial pelo celular.
               </p>
             </div>
 
@@ -344,7 +344,8 @@ export function CopilotLandingPage() {
                   value={prospectName}
                   onChange={(e) => setProspectName(e.target.value)}
                   placeholder="Ex.: Angélica"
-                  className="h-10"
+                  className="h-11"
+                  autoComplete="name"
                 />
               </div>
               <div className="space-y-1.5">
@@ -356,11 +357,12 @@ export function CopilotLandingPage() {
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
                   placeholder="Ex.: Saúde & Cia"
-                  className="h-10"
+                  className="h-11"
+                  autoComplete="organization"
                 />
               </div>
               <Button
-                className="h-11 w-full bg-amber-500 text-black hover:bg-amber-400"
+                className="h-12 w-full bg-amber-500 text-base text-black hover:bg-amber-400"
                 onClick={() => void handleStart()}
                 disabled={starting}
               >
@@ -378,7 +380,7 @@ export function CopilotLandingPage() {
           </div>
         </aside>
 
-        <section className="min-w-0">
+        <section className="order-2 min-w-0">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-base font-semibold">Histórico de reuniões</h2>

@@ -1,5 +1,6 @@
 import { useOSContext } from "@/os/shell/use-os-context";
 import { OSLogo } from "@/os/shell/OSLogo";
+import { OSMeetingModeProvider, useOSMeetingMode } from "@/os/shell/OSMeetingMode";
 import { OSGlobalSearch, OSSearchTrigger } from "@/os/components/OSGlobalSearch";
 import { OSNotificationsInbox } from "@/os/components/OSNotificationsInbox";
 import { persistedNotificationToDashboard } from "@/os/dashboard-notifications";
@@ -17,6 +18,7 @@ import {
   LayoutDashboard,
   LogOut,
   Megaphone,
+  Menu,
   Settings,
   Sparkles,
   Target,
@@ -38,10 +40,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 const NAV_ITEMS = [
   { to: "/os", label: "Dashboard", icon: LayoutDashboard, exact: true },
@@ -57,6 +66,16 @@ const NAV_ITEMS = [
   { to: "/os/financeiro", label: "Financeiro", icon: Wallet },
   { to: "/os/configuracoes", label: "Configurações", icon: Settings },
 ] as const;
+
+function isNavActive(pathname: string, item: (typeof NAV_ITEMS)[number]): boolean {
+  if (item.exact) return pathname === item.to;
+  return pathname === item.to || pathname.startsWith(`${item.to}/`);
+}
+
+function resolveActiveNavLabel(pathname: string): string {
+  const match = NAV_ITEMS.find((item) => isNavActive(pathname, item));
+  return match?.label ?? "OS";
+}
 
 export function OSShell() {
   const location = useLocation();
@@ -84,13 +103,14 @@ export function OSShell() {
 
   return (
     <OSInboxProvider activePerson={activePerson}>
-      <OSShellLayout
-        activePerson={activePerson}
-        switchPerson={switchPerson}
-        onLogout={handleLogout}
-        location={location}
-        navigate={navigate}
-      />
+      <OSMeetingModeProvider>
+        <OSShellLayout
+          activePerson={activePerson}
+          switchPerson={switchPerson}
+          onLogout={handleLogout}
+          location={location}
+        />
+      </OSMeetingModeProvider>
     </OSInboxProvider>
   );
 }
@@ -100,19 +120,30 @@ function OSShellLayout({
   switchPerson,
   onLogout,
   location,
-  navigate,
 }: {
   activePerson: TeamMember | null;
   switchPerson: (person: TeamMember, pin?: string) => Promise<void>;
   onLogout: () => Promise<void>;
   location: ReturnType<typeof useLocation>;
-  navigate: ReturnType<typeof useNavigate>;
 }) {
   const { inbox, loading: inboxLoading, markRead } = useOSInbox();
+  const { meetingMode } = useOSMeetingMode();
+  const [navOpen, setNavOpen] = useState(false);
   const shellNotifications = inbox.map(persistedNotificationToDashboard);
+  const activeNavLabel = useMemo(
+    () => resolveActiveNavLabel(location.pathname),
+    [location.pathname],
+  );
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground">
+    <div
+      className={cn(
+        "flex bg-background text-foreground",
+        meetingMode
+          ? "h-dvh max-h-dvh overflow-hidden md:h-auto md:max-h-none md:min-h-dvh md:overflow-visible"
+          : "min-h-dvh",
+      )}
+    >
       <aside className="admin-sidebar hidden w-56 shrink-0 flex-col border-r border-border/60 md:flex">
         <div className="border-b border-border/60 px-4 py-4">
           <div className="flex items-start justify-between gap-2">
@@ -150,9 +181,7 @@ function OSShellLayout({
         </div>
         <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-3">
           {NAV_ITEMS.map((item) => {
-            const active = item.exact
-              ? location.pathname === item.to
-              : location.pathname === item.to || location.pathname.startsWith(`${item.to}/`);
+            const active = isNavActive(location.pathname, item);
             return (
               <Link
                 key={item.to}
@@ -182,17 +211,22 @@ function OSShellLayout({
         </div>
       </aside>
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center justify-between border-b border-border/60 bg-surface/20 px-4 py-3 backdrop-blur-sm md:hidden">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+        <header
+          className={cn(
+            "items-center justify-between border-b border-border/60 bg-surface/20 px-3 py-2.5 backdrop-blur-sm md:hidden",
+            meetingMode ? "hidden" : "flex",
+          )}
+        >
           <div className="min-w-0 flex-1">
             <OSLogo variant="mobile" />
             {activePerson && (
               <p className="truncate text-xs text-muted-foreground">
-                {TEAM_LABELS[activePerson]}
+                {TEAM_LABELS[activePerson]} · {activeNavLabel}
               </p>
             )}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <OSSearchTrigger compact className="md:hidden" />
             {activePerson && (
               <OSNotificationsInbox
@@ -200,28 +234,97 @@ function OSShellLayout({
                 loading={inboxLoading}
                 onMarkRead={(id) => void markRead(id)}
                 emptyHint="Alertas de produção e operação aparecem aqui."
-                triggerClassName="h-9 w-9"
+                triggerClassName="h-10 w-10"
               />
             )}
-            <Select
-            value={location.pathname}
-            onValueChange={(v) => navigate({ to: v })}
-          >
-            <SelectTrigger className="h-8 w-[160px] text-xs">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {NAV_ITEMS.map((item) => (
-                <SelectItem key={item.to} value={item.to}>
-                  {item.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="h-10 w-10 shrink-0"
+              onClick={() => setNavOpen(true)}
+              aria-label="Abrir menu"
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
           </div>
         </header>
-        <main className="dashboard-page-bg flex-1 overflow-auto">
-          <div className="mx-auto max-w-7xl animate-fade-up p-4 sm:p-6 lg:p-8">
+
+        <Sheet open={navOpen} onOpenChange={setNavOpen}>
+          <SheetContent side="left" className="flex w-[min(100vw,20rem)] flex-col gap-0 p-0">
+            <SheetHeader className="border-b border-border/60 px-4 py-4 text-left">
+              <SheetTitle className="sr-only">Navegação</SheetTitle>
+              <SheetDescription className="sr-only">
+                Menu principal do Raise One OS
+              </SheetDescription>
+              <OSLogo variant="mobile" />
+              {activePerson && (
+                <div className="mt-3 space-y-3">
+                  <div className="flex items-center gap-3 rounded-xl border border-border/30 bg-surface/30 p-3">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand/15 text-sm font-bold text-brand">
+                      {TEAM_LABELS[activePerson].charAt(0)}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold">
+                        {TEAM_LABELS[activePerson]}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground">Administrador</p>
+                    </div>
+                  </div>
+                  <PersonSwitcher activePerson={activePerson} onSwitch={switchPerson} />
+                </div>
+              )}
+            </SheetHeader>
+            <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-3">
+              {NAV_ITEMS.map((item) => {
+                const active = isNavActive(location.pathname, item);
+                return (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    onClick={() => setNavOpen(false)}
+                    className={cn(
+                      "flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors",
+                      active
+                        ? "admin-nav-active font-medium"
+                        : "text-muted-foreground hover:bg-surface-elevated/60 hover:text-foreground",
+                    )}
+                  >
+                    <item.icon className="h-4 w-4 shrink-0" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </nav>
+            <div className="border-t border-border/60 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+              <button
+                type="button"
+                onClick={() => {
+                  setNavOpen(false);
+                  void onLogout();
+                }}
+                className="flex min-h-11 w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-surface-elevated hover:text-foreground"
+              >
+                <LogOut className="h-4 w-4" />
+                Sair
+              </button>
+            </div>
+          </SheetContent>
+        </Sheet>
+
+        <main
+          className={cn(
+            "dashboard-page-bg min-h-0 flex-1",
+            meetingMode ? "overflow-hidden md:overflow-auto" : "overflow-auto",
+          )}
+        >
+          <div
+            className={cn(
+              meetingMode
+                ? "flex h-full min-h-0 flex-col p-0 md:mx-auto md:h-auto md:max-w-7xl md:animate-fade-up md:p-6 lg:p-8"
+                : "mx-auto max-w-7xl animate-fade-up p-3 pb-[max(1rem,env(safe-area-inset-bottom))] sm:p-6 lg:p-8",
+            )}
+          >
             <Outlet />
           </div>
         </main>
@@ -265,7 +368,7 @@ function PersonSwitcher({
     <>
       <div className="space-y-1.5">
         <Select value={activePerson} onValueChange={handleSelect}>
-          <SelectTrigger className="h-8 w-full text-xs">
+          <SelectTrigger className="h-10 w-full text-xs">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

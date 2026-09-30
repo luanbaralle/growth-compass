@@ -1,4 +1,4 @@
-/** Converte blob de áudio (webm/ogg) em WAV 16 kHz mono — formato mais compatível com Whisper. */
+/** Converte blob de áudio (webm/ogg/mp4) em WAV 16 kHz mono — formato mais compatível com Whisper. */
 
 function writeString(view: DataView, offset: number, str: string): void {
   for (let i = 0; i < str.length; i++) {
@@ -71,15 +71,31 @@ function bytesToBase64(bytes: ArrayBuffer): string {
 
 const TARGET_SAMPLE_RATE = 16000;
 
+function createDecodeContext(): AudioContext {
+  const AudioCtx =
+    window.AudioContext ||
+    (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+  return new AudioCtx();
+}
+
 export async function blobToWavBase64(
   blob: Blob,
 ): Promise<{ base64: string; format: "wav" } | null> {
-  if (blob.size < 800) return null;
+  if (blob.size < 400) return null;
 
-  const ctx = new AudioContext();
+  const ctx = createDecodeContext();
   try {
+    if (ctx.state === "suspended") {
+      try {
+        await ctx.resume();
+      } catch {
+        // continue — decode may still work
+      }
+    }
     const arrayBuffer = await blob.arrayBuffer();
+    // slice() required: decodeAudioData detaches the buffer on some engines
     const audioBuffer = await ctx.decodeAudioData(arrayBuffer.slice(0));
+    if (!audioBuffer.duration || audioBuffer.length < 32) return null;
     const samples = mixAndResample(audioBuffer, TARGET_SAMPLE_RATE);
     const wav = encodeWavPcm16(samples, TARGET_SAMPLE_RATE);
     return { base64: bytesToBase64(wav), format: "wav" };
