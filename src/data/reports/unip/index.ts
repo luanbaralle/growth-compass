@@ -3,6 +3,7 @@ import printAdsSerp from "@/assets/reports/unip/print-ads-serp.png";
 import printMobile from "@/assets/reports/unip/print-mobile.png";
 import { unipJulho } from "./julho";
 import { unipAgosto } from "./agosto";
+import { unipSetembro } from "./setembro";
 import type { ReportCompany, ReportMonth } from "../types";
 
 export const unipReports: ReportCompany = {
@@ -12,10 +13,10 @@ export const unipReports: ReportCompany = {
   region: "Caraguatatuba · São Sebastião · Ilhabela",
   platform: "Google Ads",
   logo: unipLogo,
-  carouselImages: [printAdsSerp, printMobile],
+  carouselImages: [printMobile, printAdsSerp],
   carouselStyle: "card",
   conversionLabel: "Conversões",
-  months: [unipJulho, unipAgosto],
+  months: [unipJulho, unipAgosto, unipSetembro],
 };
 
 export function getUnipMonth(slug: string): ReportMonth | undefined {
