@@ -143,10 +143,9 @@ export const ARCH_GENIUS_INVESTMENT = {
       { label: "1º mês de gestão de Google Ads", value: "R$ 0,00", tone: "highlight" },
       { label: "Gestão de Google Ads a partir do 2º mês", value: "R$ 997,00/mês", tone: "default" },
       { label: "Verba de mídia, paga diretamente ao Google", value: "R$ 900,00 a R$ 1.500,00/mês", tone: "media" },
-      { label: "Total para a Raise One no primeiro mês", value: "R$ 3.550,00", tone: "highlight" },
       { label: "Desembolso total estimado no primeiro mês, incluindo mídia", value: "R$ 4.450,00 a R$ 5.050,00", tone: "range" },
     ],
-    note: "O total para a Raise One no primeiro mês considera apenas a implantação, porque o primeiro mês de gestão é gratuito. A verba de mídia permanece separada e não constitui receita da Raise One.",
+    note: "O primeiro mês de gestão é gratuito. A verba de mídia é paga diretamente ao Google e permanece separada da remuneração da Raise One.",
   },
   conditions: [
     "A implantação é cobrada uma única vez.",
