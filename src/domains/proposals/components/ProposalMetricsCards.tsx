@@ -78,6 +78,20 @@ const CATEGORY_META: Record<
     glow: "bg-amber-500/10",
     description: "Resultados informados pela operação",
   },
+  Qualificação: {
+    icon: Filter,
+    accent: "text-violet-400",
+    bar: "from-violet-500/70 to-violet-500/15",
+    glow: "bg-violet-500/10",
+    description: "Avaliar a qualidade e a compatibilidade das oportunidades geradas.",
+  },
+  "Resultado comercial": {
+    icon: LineChart,
+    accent: "text-amber-400/90",
+    bar: "from-amber-500/70 to-amber-500/15",
+    glow: "bg-amber-500/10",
+    description: "Acompanhar a evolução das propostas e dos contratos fechados.",
+  },
 };
 
 const METRIC_ICONS: Record<string, LucideIcon> = {

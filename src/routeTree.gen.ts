@@ -9,108 +9,88 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TecnologiaRouteImport } from './routes/tecnologia'
-import { Route as ProgramaDeCrescimentoRouteImport } from './routes/programa-de-crescimento'
-import { Route as ObrigadoRouteImport } from './routes/obrigado'
-import { Route as MetodologiaRouteImport } from './routes/metodologia'
-import { Route as DiagnosticoRouteImport } from './routes/diagnostico'
-import { Route as SegmentRouteImport } from './routes/$segment'
-import { Route as OsRouteRouteImport } from './routes/os/route'
-import { Route as ClientRouteRouteImport } from './routes/client/route'
-import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as SolucoesIndexRouteImport } from './routes/solucoes/index'
-import { Route as OsIndexRouteImport } from './routes/os/index'
-import { Route as ClientIndexRouteImport } from './routes/client/index'
-import { Route as CasesIndexRouteImport } from './routes/cases/index'
-import { Route as BlogIndexRouteImport } from './routes/blog/index'
+import { Route as SegmentRouteImport } from './routes/$segment'
+import { Route as AdminRouteRouteImport } from './routes/admin/route'
+import { Route as ClientRouteRouteImport } from './routes/client/route'
+import { Route as DiagnosticoRouteImport } from './routes/diagnostico'
+import { Route as MetodologiaRouteImport } from './routes/metodologia'
+import { Route as ObrigadoRouteImport } from './routes/obrigado'
+import { Route as OsRouteRouteImport } from './routes/os/route'
+import { Route as ProgramaDeCrescimentoRouteImport } from './routes/programa-de-crescimento'
+import { Route as TecnologiaRouteImport } from './routes/tecnologia'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
-import { Route as SolucoesProducaoDeConteudoRouteImport } from './routes/solucoes/producao-de-conteudo'
-import { Route as SolucoesMetaAdsRouteImport } from './routes/solucoes/meta-ads'
-import { Route as SolucoesLandingPagesRouteImport } from './routes/solucoes/landing-pages'
-import { Route as SolucoesGoogleAdsRouteImport } from './routes/solucoes/google-ads'
-import { Route as PropostasSlugRouteImport } from './routes/propostas/$slug'
-import { Route as ProjetosPousadaRouteImport } from './routes/projetos/pousada'
-import { Route as ProjetosNobreRouteImport } from './routes/projetos/nobre'
-import { Route as OsLoginRouteImport } from './routes/os/login'
-import { Route as ClientLoginRouteImport } from './routes/client/login'
-import { Route as CasesSlugRouteImport } from './routes/cases/$slug'
-import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
-import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminLeadsRouteImport } from './routes/admin/leads'
-import { Route as RelatoriosEmpresaIndexRouteImport } from './routes/relatorios/$empresa/index'
-import { Route as PropostasSlugIndexRouteImport } from './routes/propostas/$slug/index'
-import { Route as OsProspeccaoIndexRouteImport } from './routes/os/prospeccao/index'
-import { Route as OsPropostasIndexRouteImport } from './routes/os/propostas/index'
-import { Route as OsProjetosIndexRouteImport } from './routes/os/projetos/index'
-import { Route as OsProducaoIndexRouteImport } from './routes/os/producao/index'
-import { Route as OsMarketingIndexRouteImport } from './routes/os/marketing/index'
-import { Route as OsFinanceiroIndexRouteImport } from './routes/os/financeiro/index'
-import { Route as OsEmpresasIndexRouteImport } from './routes/os/empresas/index'
-import { Route as OsCopilotIndexRouteImport } from './routes/os/copilot/index'
-import { Route as OsConfiguracoesIndexRouteImport } from './routes/os/configuracoes/index'
-import { Route as OsAtividadeIndexRouteImport } from './routes/os/atividade/index'
-import { Route as OsAgendaIndexRouteImport } from './routes/os/agenda/index'
-import { Route as ClientResultadosIndexRouteImport } from './routes/client/resultados/index'
-import { Route as ClientProjetosIndexRouteImport } from './routes/client/projetos/index'
-import { Route as ClientFinanceiroIndexRouteImport } from './routes/client/financeiro/index'
-import { Route as ClientConteudoIndexRouteImport } from './routes/client/conteudo/index'
-import { Route as RelatoriosEmpresaMesRouteImport } from './routes/relatorios/$empresa/$mes'
-import { Route as PropostasSlugConteudoRouteImport } from './routes/propostas/$slug/conteudo'
-import { Route as PropostasSlugAquisicaoRouteImport } from './routes/propostas/$slug/aquisicao'
-import { Route as PlaygroundCasesDecisionLanguageRouteImport } from './routes/playground/cases/decision-language'
-import { Route as OsProspeccaoIdRouteImport } from './routes/os/prospeccao/$id'
-import { Route as OsPropostasIdRouteImport } from './routes/os/propostas/$id'
-import { Route as OsProjetosIdRouteImport } from './routes/os/projetos/$id'
-import { Route as OsEmpresasIdRouteImport } from './routes/os/empresas/$id'
-import { Route as OsCopilotSessionIdRouteImport } from './routes/os/copilot/$sessionId'
-import { Route as ClientProjetosProjectIdRouteImport } from './routes/client/projetos/$projectId'
-import { Route as ClientConteudoTaskIdRouteImport } from './routes/client/conteudo/$taskId'
-import { Route as ClientAuthVerifyRouteImport } from './routes/client/auth/verify'
-import { Route as BlogCategoriaCategoryRouteImport } from './routes/blog/categoria/$category'
-import { Route as ApiCronPublishScheduledContentRouteImport } from './routes/api/cron/publish-scheduled-content'
-import { Route as AdminExecucaoReferenciaRouteImport } from './routes/admin/execucao/referencia'
-import { Route as AdminExecucaoProducaoRouteImport } from './routes/admin/execucao/producao'
-import { Route as AdminExecucaoPlanejamentoRouteImport } from './routes/admin/execucao/planejamento'
-import { Route as AdminExecucaoHojeRouteImport } from './routes/admin/execucao/hoje'
-import { Route as AdminExecucaoClientesRouteImport } from './routes/admin/execucao/clientes'
+import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as BlogIndexRouteImport } from './routes/blog/index'
+import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
+import { Route as CasesIndexRouteImport } from './routes/cases/index'
+import { Route as CasesSlugRouteImport } from './routes/cases/$slug'
+import { Route as ClientIndexRouteImport } from './routes/client/index'
+import { Route as ClientLoginRouteImport } from './routes/client/login'
+import { Route as OsIndexRouteImport } from './routes/os/index'
+import { Route as OsLoginRouteImport } from './routes/os/login'
+import { Route as ProjetosNobreRouteImport } from './routes/projetos/nobre'
+import { Route as ProjetosPousadaRouteImport } from './routes/projetos/pousada'
+import { Route as PropostasSlugRouteImport } from './routes/propostas/$slug'
+import { Route as SolucoesIndexRouteImport } from './routes/solucoes/index'
+import { Route as SolucoesGoogleAdsRouteImport } from './routes/solucoes/google-ads'
+import { Route as SolucoesLandingPagesRouteImport } from './routes/solucoes/landing-pages'
+import { Route as SolucoesMetaAdsRouteImport } from './routes/solucoes/meta-ads'
+import { Route as SolucoesProducaoDeConteudoRouteImport } from './routes/solucoes/producao-de-conteudo'
 import { Route as AdminExecucaoCapacidadeRouteImport } from './routes/admin/execucao/capacidade'
-import { Route as OsProspeccaoBibliotecaIndexRouteImport } from './routes/os/prospeccao/biblioteca/index'
-import { Route as OsPropostasIdIndexRouteImport } from './routes/os/propostas/$id/index'
-import { Route as OsProjetosTemplatesIndexRouteImport } from './routes/os/projetos/templates/index'
-import { Route as OsCopilotSessionIdIndexRouteImport } from './routes/os/copilot/$sessionId/index'
+import { Route as AdminExecucaoClientesRouteImport } from './routes/admin/execucao/clientes'
+import { Route as AdminExecucaoHojeRouteImport } from './routes/admin/execucao/hoje'
+import { Route as AdminExecucaoPlanejamentoRouteImport } from './routes/admin/execucao/planejamento'
+import { Route as AdminExecucaoProducaoRouteImport } from './routes/admin/execucao/producao'
+import { Route as AdminExecucaoReferenciaRouteImport } from './routes/admin/execucao/referencia'
+import { Route as ApiCronPublishScheduledContentRouteImport } from './routes/api/cron/publish-scheduled-content'
+import { Route as BlogCategoriaCategoryRouteImport } from './routes/blog/categoria/$category'
+import { Route as ClientAuthVerifyRouteImport } from './routes/client/auth/verify'
+import { Route as ClientConteudoIndexRouteImport } from './routes/client/conteudo/index'
+import { Route as ClientConteudoTaskIdRouteImport } from './routes/client/conteudo/$taskId'
+import { Route as ClientFinanceiroIndexRouteImport } from './routes/client/financeiro/index'
+import { Route as ClientProjetosIndexRouteImport } from './routes/client/projetos/index'
+import { Route as ClientProjetosProjectIdRouteImport } from './routes/client/projetos/$projectId'
+import { Route as ClientResultadosIndexRouteImport } from './routes/client/resultados/index'
+import { Route as OsAgendaIndexRouteImport } from './routes/os/agenda/index'
+import { Route as OsAtividadeIndexRouteImport } from './routes/os/atividade/index'
+import { Route as OsConfiguracoesIndexRouteImport } from './routes/os/configuracoes/index'
+import { Route as OsCopilotIndexRouteImport } from './routes/os/copilot/index'
+import { Route as OsCopilotSessionIdRouteImport } from './routes/os/copilot/$sessionId'
+import { Route as OsEmpresasIndexRouteImport } from './routes/os/empresas/index'
+import { Route as OsEmpresasIdRouteImport } from './routes/os/empresas/$id'
+import { Route as OsFinanceiroIndexRouteImport } from './routes/os/financeiro/index'
+import { Route as OsMarketingIndexRouteImport } from './routes/os/marketing/index'
+import { Route as OsProducaoIndexRouteImport } from './routes/os/producao/index'
+import { Route as OsProjetosIndexRouteImport } from './routes/os/projetos/index'
+import { Route as OsProjetosIdRouteImport } from './routes/os/projetos/$id'
+import { Route as OsPropostasIndexRouteImport } from './routes/os/propostas/index'
+import { Route as OsPropostasIdRouteImport } from './routes/os/propostas/$id'
+import { Route as OsProspeccaoIndexRouteImport } from './routes/os/prospeccao/index'
+import { Route as OsProspeccaoIdRouteImport } from './routes/os/prospeccao/$id'
+import { Route as PlaygroundCasesDecisionLanguageRouteImport } from './routes/playground/cases/decision-language'
+import { Route as PropostasSlugIndexRouteImport } from './routes/propostas/$slug/index'
+import { Route as PropostasSlugAquisicaoRouteImport } from './routes/propostas/$slug/aquisicao'
+import { Route as PropostasSlugConteudoRouteImport } from './routes/propostas/$slug/conteudo'
+import { Route as RelatoriosEmpresaIndexRouteImport } from './routes/relatorios/$empresa/index'
+import { Route as RelatoriosEmpresaMesRouteImport } from './routes/relatorios/$empresa/$mes'
 import { Route as AdminExecucaoRituaisIndexRouteImport } from './routes/admin/execucao/rituais/index'
-import { Route as OsPropostasBlueprintIdRouteImport } from './routes/os/propostas/blueprint/$id'
-import { Route as OsPropostasIdApresentacaoRouteImport } from './routes/os/propostas/$id/apresentacao'
-import { Route as OsProjetosTemplatesIdRouteImport } from './routes/os/projetos/templates/$id'
-import { Route as OsCopilotSessionIdBlueprintRouteImport } from './routes/os/copilot/$sessionId/blueprint'
-import { Route as AdminExecucaoRituaisReviewRouteImport } from './routes/admin/execucao/rituais/review'
-import { Route as AdminExecucaoRituaisPlanningRouteImport } from './routes/admin/execucao/rituais/planning'
 import { Route as AdminExecucaoRituaisCheckinRouteImport } from './routes/admin/execucao/rituais/checkin'
+import { Route as AdminExecucaoRituaisPlanningRouteImport } from './routes/admin/execucao/rituais/planning'
+import { Route as AdminExecucaoRituaisReviewRouteImport } from './routes/admin/execucao/rituais/review'
+import { Route as OsCopilotSessionIdIndexRouteImport } from './routes/os/copilot/$sessionId/index'
+import { Route as OsCopilotSessionIdBlueprintRouteImport } from './routes/os/copilot/$sessionId/blueprint'
+import { Route as OsProjetosTemplatesIndexRouteImport } from './routes/os/projetos/templates/index'
+import { Route as OsProjetosTemplatesIdRouteImport } from './routes/os/projetos/templates/$id'
+import { Route as OsPropostasIdIndexRouteImport } from './routes/os/propostas/$id/index'
+import { Route as OsPropostasIdApresentacaoRouteImport } from './routes/os/propostas/$id/apresentacao'
+import { Route as OsPropostasBlueprintIdRouteImport } from './routes/os/propostas/blueprint/$id'
+import { Route as OsProspeccaoBibliotecaIndexRouteImport } from './routes/os/prospeccao/biblioteca/index'
 
-const TecnologiaRoute = TecnologiaRouteImport.update({
-  id: '/tecnologia',
-  path: '/tecnologia',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProgramaDeCrescimentoRoute = ProgramaDeCrescimentoRouteImport.update({
-  id: '/programa-de-crescimento',
-  path: '/programa-de-crescimento',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ObrigadoRoute = ObrigadoRouteImport.update({
-  id: '/obrigado',
-  path: '/obrigado',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MetodologiaRoute = MetodologiaRouteImport.update({
-  id: '/metodologia',
-  path: '/metodologia',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DiagnosticoRoute = DiagnosticoRouteImport.update({
-  id: '/diagnostico',
-  path: '/diagnostico',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SegmentRoute = SegmentRouteImport.update({
@@ -118,9 +98,9 @@ const SegmentRoute = SegmentRouteImport.update({
   path: '/$segment',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OsRouteRoute = OsRouteRouteImport.update({
-  id: '/os',
-  path: '/os',
+const AdminRouteRoute = AdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ClientRouteRoute = ClientRouteRouteImport.update({
@@ -128,39 +108,34 @@ const ClientRouteRoute = ClientRouteRouteImport.update({
   path: '/client',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminRouteRoute = AdminRouteRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+const DiagnosticoRoute = DiagnosticoRouteImport.update({
+  id: '/diagnostico',
+  path: '/diagnostico',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const MetodologiaRoute = MetodologiaRouteImport.update({
+  id: '/metodologia',
+  path: '/metodologia',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SolucoesIndexRoute = SolucoesIndexRouteImport.update({
-  id: '/solucoes/',
-  path: '/solucoes/',
+const ObrigadoRoute = ObrigadoRouteImport.update({
+  id: '/obrigado',
+  path: '/obrigado',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OsIndexRoute = OsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => OsRouteRoute,
-} as any)
-const ClientIndexRoute = ClientIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => ClientRouteRoute,
-} as any)
-const CasesIndexRoute = CasesIndexRouteImport.update({
-  id: '/cases/',
-  path: '/cases/',
+const OsRouteRoute = OsRouteRouteImport.update({
+  id: '/os',
+  path: '/os',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BlogIndexRoute = BlogIndexRouteImport.update({
-  id: '/blog/',
-  path: '/blog/',
+const ProgramaDeCrescimentoRoute = ProgramaDeCrescimentoRouteImport.update({
+  id: '/programa-de-crescimento',
+  path: '/programa-de-crescimento',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TecnologiaRoute = TecnologiaRouteImport.update({
+  id: '/tecnologia',
+  path: '/tecnologia',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -168,55 +143,19 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-const SolucoesProducaoDeConteudoRoute =
-  SolucoesProducaoDeConteudoRouteImport.update({
-    id: '/solucoes/producao-de-conteudo',
-    path: '/solucoes/producao-de-conteudo',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const SolucoesMetaAdsRoute = SolucoesMetaAdsRouteImport.update({
-  id: '/solucoes/meta-ads',
-  path: '/solucoes/meta-ads',
-  getParentRoute: () => rootRouteImport,
+const AdminLeadsRoute = AdminLeadsRouteImport.update({
+  id: '/leads',
+  path: '/leads',
+  getParentRoute: () => AdminRouteRoute,
 } as any)
-const SolucoesLandingPagesRoute = SolucoesLandingPagesRouteImport.update({
-  id: '/solucoes/landing-pages',
-  path: '/solucoes/landing-pages',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SolucoesGoogleAdsRoute = SolucoesGoogleAdsRouteImport.update({
-  id: '/solucoes/google-ads',
-  path: '/solucoes/google-ads',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PropostasSlugRoute = PropostasSlugRouteImport.update({
-  id: '/propostas/$slug',
-  path: '/propostas/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProjetosPousadaRoute = ProjetosPousadaRouteImport.update({
-  id: '/projetos/pousada',
-  path: '/projetos/pousada',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProjetosNobreRoute = ProjetosNobreRouteImport.update({
-  id: '/projetos/nobre',
-  path: '/projetos/nobre',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OsLoginRoute = OsLoginRouteImport.update({
+const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/login',
   path: '/login',
-  getParentRoute: () => OsRouteRoute,
+  getParentRoute: () => AdminRouteRoute,
 } as any)
-const ClientLoginRoute = ClientLoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => ClientRouteRoute,
-} as any)
-const CasesSlugRoute = CasesSlugRouteImport.update({
-  id: '/cases/$slug',
-  path: '/cases/$slug',
+const BlogIndexRoute = BlogIndexRouteImport.update({
+  id: '/blog/',
+  path: '/blog/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogSlugRoute = BlogSlugRouteImport.update({
@@ -224,181 +163,90 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/blog/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminLoginRoute = AdminLoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
-const AdminLeadsRoute = AdminLeadsRouteImport.update({
-  id: '/leads',
-  path: '/leads',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
-const RelatoriosEmpresaIndexRoute = RelatoriosEmpresaIndexRouteImport.update({
-  id: '/relatorios/$empresa/',
-  path: '/relatorios/$empresa/',
+const CasesIndexRoute = CasesIndexRouteImport.update({
+  id: '/cases/',
+  path: '/cases/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PropostasSlugIndexRoute = PropostasSlugIndexRouteImport.update({
+const CasesSlugRoute = CasesSlugRouteImport.update({
+  id: '/cases/$slug',
+  path: '/cases/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClientIndexRoute = ClientIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => PropostasSlugRoute,
-} as any)
-const OsProspeccaoIndexRoute = OsProspeccaoIndexRouteImport.update({
-  id: '/prospeccao/',
-  path: '/prospeccao/',
-  getParentRoute: () => OsRouteRoute,
-} as any)
-const OsPropostasIndexRoute = OsPropostasIndexRouteImport.update({
-  id: '/propostas/',
-  path: '/propostas/',
-  getParentRoute: () => OsRouteRoute,
-} as any)
-const OsProjetosIndexRoute = OsProjetosIndexRouteImport.update({
-  id: '/projetos/',
-  path: '/projetos/',
-  getParentRoute: () => OsRouteRoute,
-} as any)
-const OsProducaoIndexRoute = OsProducaoIndexRouteImport.update({
-  id: '/producao/',
-  path: '/producao/',
-  getParentRoute: () => OsRouteRoute,
-} as any)
-const OsMarketingIndexRoute = OsMarketingIndexRouteImport.update({
-  id: '/marketing/',
-  path: '/marketing/',
-  getParentRoute: () => OsRouteRoute,
-} as any)
-const OsFinanceiroIndexRoute = OsFinanceiroIndexRouteImport.update({
-  id: '/financeiro/',
-  path: '/financeiro/',
-  getParentRoute: () => OsRouteRoute,
-} as any)
-const OsEmpresasIndexRoute = OsEmpresasIndexRouteImport.update({
-  id: '/empresas/',
-  path: '/empresas/',
-  getParentRoute: () => OsRouteRoute,
-} as any)
-const OsCopilotIndexRoute = OsCopilotIndexRouteImport.update({
-  id: '/copilot/',
-  path: '/copilot/',
-  getParentRoute: () => OsRouteRoute,
-} as any)
-const OsConfiguracoesIndexRoute = OsConfiguracoesIndexRouteImport.update({
-  id: '/configuracoes/',
-  path: '/configuracoes/',
-  getParentRoute: () => OsRouteRoute,
-} as any)
-const OsAtividadeIndexRoute = OsAtividadeIndexRouteImport.update({
-  id: '/atividade/',
-  path: '/atividade/',
-  getParentRoute: () => OsRouteRoute,
-} as any)
-const OsAgendaIndexRoute = OsAgendaIndexRouteImport.update({
-  id: '/agenda/',
-  path: '/agenda/',
-  getParentRoute: () => OsRouteRoute,
-} as any)
-const ClientResultadosIndexRoute = ClientResultadosIndexRouteImport.update({
-  id: '/resultados/',
-  path: '/resultados/',
   getParentRoute: () => ClientRouteRoute,
 } as any)
-const ClientProjetosIndexRoute = ClientProjetosIndexRouteImport.update({
-  id: '/projetos/',
-  path: '/projetos/',
+const ClientLoginRoute = ClientLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => ClientRouteRoute,
 } as any)
-const ClientFinanceiroIndexRoute = ClientFinanceiroIndexRouteImport.update({
-  id: '/financeiro/',
-  path: '/financeiro/',
-  getParentRoute: () => ClientRouteRoute,
+const OsIndexRoute = OsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => OsRouteRoute,
 } as any)
-const ClientConteudoIndexRoute = ClientConteudoIndexRouteImport.update({
-  id: '/conteudo/',
-  path: '/conteudo/',
-  getParentRoute: () => ClientRouteRoute,
+const OsLoginRoute = OsLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => OsRouteRoute,
 } as any)
-const RelatoriosEmpresaMesRoute = RelatoriosEmpresaMesRouteImport.update({
-  id: '/relatorios/$empresa/$mes',
-  path: '/relatorios/$empresa/$mes',
+const ProjetosNobreRoute = ProjetosNobreRouteImport.update({
+  id: '/projetos/nobre',
+  path: '/projetos/nobre',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PropostasSlugConteudoRoute = PropostasSlugConteudoRouteImport.update({
-  id: '/conteudo',
-  path: '/conteudo',
-  getParentRoute: () => PropostasSlugRoute,
-} as any)
-const PropostasSlugAquisicaoRoute = PropostasSlugAquisicaoRouteImport.update({
-  id: '/aquisicao',
-  path: '/aquisicao',
-  getParentRoute: () => PropostasSlugRoute,
-} as any)
-const PlaygroundCasesDecisionLanguageRoute =
-  PlaygroundCasesDecisionLanguageRouteImport.update({
-    id: '/playground/cases/decision-language',
-    path: '/playground/cases/decision-language',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const OsProspeccaoIdRoute = OsProspeccaoIdRouteImport.update({
-  id: '/prospeccao/$id',
-  path: '/prospeccao/$id',
-  getParentRoute: () => OsRouteRoute,
-} as any)
-const OsPropostasIdRoute = OsPropostasIdRouteImport.update({
-  id: '/propostas/$id',
-  path: '/propostas/$id',
-  getParentRoute: () => OsRouteRoute,
-} as any)
-const OsProjetosIdRoute = OsProjetosIdRouteImport.update({
-  id: '/projetos/$id',
-  path: '/projetos/$id',
-  getParentRoute: () => OsRouteRoute,
-} as any)
-const OsEmpresasIdRoute = OsEmpresasIdRouteImport.update({
-  id: '/empresas/$id',
-  path: '/empresas/$id',
-  getParentRoute: () => OsRouteRoute,
-} as any)
-const OsCopilotSessionIdRoute = OsCopilotSessionIdRouteImport.update({
-  id: '/copilot/$sessionId',
-  path: '/copilot/$sessionId',
-  getParentRoute: () => OsRouteRoute,
-} as any)
-const ClientProjetosProjectIdRoute = ClientProjetosProjectIdRouteImport.update({
-  id: '/projetos/$projectId',
-  path: '/projetos/$projectId',
-  getParentRoute: () => ClientRouteRoute,
-} as any)
-const ClientConteudoTaskIdRoute = ClientConteudoTaskIdRouteImport.update({
-  id: '/conteudo/$taskId',
-  path: '/conteudo/$taskId',
-  getParentRoute: () => ClientRouteRoute,
-} as any)
-const ClientAuthVerifyRoute = ClientAuthVerifyRouteImport.update({
-  id: '/auth/verify',
-  path: '/auth/verify',
-  getParentRoute: () => ClientRouteRoute,
-} as any)
-const BlogCategoriaCategoryRoute = BlogCategoriaCategoryRouteImport.update({
-  id: '/blog/categoria/$category',
-  path: '/blog/categoria/$category',
+const ProjetosPousadaRoute = ProjetosPousadaRouteImport.update({
+  id: '/projetos/pousada',
+  path: '/projetos/pousada',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiCronPublishScheduledContentRoute =
-  ApiCronPublishScheduledContentRouteImport.update({
-    id: '/api/cron/publish-scheduled-content',
-    path: '/api/cron/publish-scheduled-content',
+const PropostasSlugRoute = PropostasSlugRouteImport.update({
+  id: '/propostas/$slug',
+  path: '/propostas/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SolucoesIndexRoute = SolucoesIndexRouteImport.update({
+  id: '/solucoes/',
+  path: '/solucoes/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SolucoesGoogleAdsRoute = SolucoesGoogleAdsRouteImport.update({
+  id: '/solucoes/google-ads',
+  path: '/solucoes/google-ads',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SolucoesLandingPagesRoute = SolucoesLandingPagesRouteImport.update({
+  id: '/solucoes/landing-pages',
+  path: '/solucoes/landing-pages',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SolucoesMetaAdsRoute = SolucoesMetaAdsRouteImport.update({
+  id: '/solucoes/meta-ads',
+  path: '/solucoes/meta-ads',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SolucoesProducaoDeConteudoRoute =
+  SolucoesProducaoDeConteudoRouteImport.update({
+    id: '/solucoes/producao-de-conteudo',
+    path: '/solucoes/producao-de-conteudo',
     getParentRoute: () => rootRouteImport,
   } as any)
-const AdminExecucaoReferenciaRoute = AdminExecucaoReferenciaRouteImport.update({
-  id: '/execucao/referencia',
-  path: '/execucao/referencia',
+const AdminExecucaoCapacidadeRoute = AdminExecucaoCapacidadeRouteImport.update({
+  id: '/execucao/capacidade',
+  path: '/execucao/capacidade',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-const AdminExecucaoProducaoRoute = AdminExecucaoProducaoRouteImport.update({
-  id: '/execucao/producao',
-  path: '/execucao/producao',
+const AdminExecucaoClientesRoute = AdminExecucaoClientesRouteImport.update({
+  id: '/execucao/clientes',
+  path: '/execucao/clientes',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminExecucaoHojeRoute = AdminExecucaoHojeRouteImport.update({
+  id: '/execucao/hoje',
+  path: '/execucao/hoje',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminExecucaoPlanejamentoRoute =
@@ -407,42 +255,172 @@ const AdminExecucaoPlanejamentoRoute =
     path: '/execucao/planejamento',
     getParentRoute: () => AdminRouteRoute,
   } as any)
-const AdminExecucaoHojeRoute = AdminExecucaoHojeRouteImport.update({
-  id: '/execucao/hoje',
-  path: '/execucao/hoje',
+const AdminExecucaoProducaoRoute = AdminExecucaoProducaoRouteImport.update({
+  id: '/execucao/producao',
+  path: '/execucao/producao',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-const AdminExecucaoClientesRoute = AdminExecucaoClientesRouteImport.update({
-  id: '/execucao/clientes',
-  path: '/execucao/clientes',
+const AdminExecucaoReferenciaRoute = AdminExecucaoReferenciaRouteImport.update({
+  id: '/execucao/referencia',
+  path: '/execucao/referencia',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-const AdminExecucaoCapacidadeRoute = AdminExecucaoCapacidadeRouteImport.update({
-  id: '/execucao/capacidade',
-  path: '/execucao/capacidade',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
-const OsProspeccaoBibliotecaIndexRoute =
-  OsProspeccaoBibliotecaIndexRouteImport.update({
-    id: '/prospeccao/biblioteca/',
-    path: '/prospeccao/biblioteca/',
-    getParentRoute: () => OsRouteRoute,
+const ApiCronPublishScheduledContentRoute =
+  ApiCronPublishScheduledContentRouteImport.update({
+    id: '/api/cron/publish-scheduled-content',
+    path: '/api/cron/publish-scheduled-content',
+    getParentRoute: () => rootRouteImport,
   } as any)
-const OsPropostasIdIndexRoute = OsPropostasIdIndexRouteImport.update({
+const BlogCategoriaCategoryRoute = BlogCategoriaCategoryRouteImport.update({
+  id: '/blog/categoria/$category',
+  path: '/blog/categoria/$category',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClientAuthVerifyRoute = ClientAuthVerifyRouteImport.update({
+  id: '/auth/verify',
+  path: '/auth/verify',
+  getParentRoute: () => ClientRouteRoute,
+} as any)
+const ClientConteudoIndexRoute = ClientConteudoIndexRouteImport.update({
+  id: '/conteudo/',
+  path: '/conteudo/',
+  getParentRoute: () => ClientRouteRoute,
+} as any)
+const ClientConteudoTaskIdRoute = ClientConteudoTaskIdRouteImport.update({
+  id: '/conteudo/$taskId',
+  path: '/conteudo/$taskId',
+  getParentRoute: () => ClientRouteRoute,
+} as any)
+const ClientFinanceiroIndexRoute = ClientFinanceiroIndexRouteImport.update({
+  id: '/financeiro/',
+  path: '/financeiro/',
+  getParentRoute: () => ClientRouteRoute,
+} as any)
+const ClientProjetosIndexRoute = ClientProjetosIndexRouteImport.update({
+  id: '/projetos/',
+  path: '/projetos/',
+  getParentRoute: () => ClientRouteRoute,
+} as any)
+const ClientProjetosProjectIdRoute = ClientProjetosProjectIdRouteImport.update({
+  id: '/projetos/$projectId',
+  path: '/projetos/$projectId',
+  getParentRoute: () => ClientRouteRoute,
+} as any)
+const ClientResultadosIndexRoute = ClientResultadosIndexRouteImport.update({
+  id: '/resultados/',
+  path: '/resultados/',
+  getParentRoute: () => ClientRouteRoute,
+} as any)
+const OsAgendaIndexRoute = OsAgendaIndexRouteImport.update({
+  id: '/agenda/',
+  path: '/agenda/',
+  getParentRoute: () => OsRouteRoute,
+} as any)
+const OsAtividadeIndexRoute = OsAtividadeIndexRouteImport.update({
+  id: '/atividade/',
+  path: '/atividade/',
+  getParentRoute: () => OsRouteRoute,
+} as any)
+const OsConfiguracoesIndexRoute = OsConfiguracoesIndexRouteImport.update({
+  id: '/configuracoes/',
+  path: '/configuracoes/',
+  getParentRoute: () => OsRouteRoute,
+} as any)
+const OsCopilotIndexRoute = OsCopilotIndexRouteImport.update({
+  id: '/copilot/',
+  path: '/copilot/',
+  getParentRoute: () => OsRouteRoute,
+} as any)
+const OsCopilotSessionIdRoute = OsCopilotSessionIdRouteImport.update({
+  id: '/copilot/$sessionId',
+  path: '/copilot/$sessionId',
+  getParentRoute: () => OsRouteRoute,
+} as any)
+const OsEmpresasIndexRoute = OsEmpresasIndexRouteImport.update({
+  id: '/empresas/',
+  path: '/empresas/',
+  getParentRoute: () => OsRouteRoute,
+} as any)
+const OsEmpresasIdRoute = OsEmpresasIdRouteImport.update({
+  id: '/empresas/$id',
+  path: '/empresas/$id',
+  getParentRoute: () => OsRouteRoute,
+} as any)
+const OsFinanceiroIndexRoute = OsFinanceiroIndexRouteImport.update({
+  id: '/financeiro/',
+  path: '/financeiro/',
+  getParentRoute: () => OsRouteRoute,
+} as any)
+const OsMarketingIndexRoute = OsMarketingIndexRouteImport.update({
+  id: '/marketing/',
+  path: '/marketing/',
+  getParentRoute: () => OsRouteRoute,
+} as any)
+const OsProducaoIndexRoute = OsProducaoIndexRouteImport.update({
+  id: '/producao/',
+  path: '/producao/',
+  getParentRoute: () => OsRouteRoute,
+} as any)
+const OsProjetosIndexRoute = OsProjetosIndexRouteImport.update({
+  id: '/projetos/',
+  path: '/projetos/',
+  getParentRoute: () => OsRouteRoute,
+} as any)
+const OsProjetosIdRoute = OsProjetosIdRouteImport.update({
+  id: '/projetos/$id',
+  path: '/projetos/$id',
+  getParentRoute: () => OsRouteRoute,
+} as any)
+const OsPropostasIndexRoute = OsPropostasIndexRouteImport.update({
+  id: '/propostas/',
+  path: '/propostas/',
+  getParentRoute: () => OsRouteRoute,
+} as any)
+const OsPropostasIdRoute = OsPropostasIdRouteImport.update({
+  id: '/propostas/$id',
+  path: '/propostas/$id',
+  getParentRoute: () => OsRouteRoute,
+} as any)
+const OsProspeccaoIndexRoute = OsProspeccaoIndexRouteImport.update({
+  id: '/prospeccao/',
+  path: '/prospeccao/',
+  getParentRoute: () => OsRouteRoute,
+} as any)
+const OsProspeccaoIdRoute = OsProspeccaoIdRouteImport.update({
+  id: '/prospeccao/$id',
+  path: '/prospeccao/$id',
+  getParentRoute: () => OsRouteRoute,
+} as any)
+const PlaygroundCasesDecisionLanguageRoute =
+  PlaygroundCasesDecisionLanguageRouteImport.update({
+    id: '/playground/cases/decision-language',
+    path: '/playground/cases/decision-language',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const PropostasSlugIndexRoute = PropostasSlugIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => OsPropostasIdRoute,
+  getParentRoute: () => PropostasSlugRoute,
 } as any)
-const OsProjetosTemplatesIndexRoute =
-  OsProjetosTemplatesIndexRouteImport.update({
-    id: '/projetos/templates/',
-    path: '/projetos/templates/',
-    getParentRoute: () => OsRouteRoute,
-  } as any)
-const OsCopilotSessionIdIndexRoute = OsCopilotSessionIdIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => OsCopilotSessionIdRoute,
+const PropostasSlugAquisicaoRoute = PropostasSlugAquisicaoRouteImport.update({
+  id: '/aquisicao',
+  path: '/aquisicao',
+  getParentRoute: () => PropostasSlugRoute,
+} as any)
+const PropostasSlugConteudoRoute = PropostasSlugConteudoRouteImport.update({
+  id: '/conteudo',
+  path: '/conteudo',
+  getParentRoute: () => PropostasSlugRoute,
+} as any)
+const RelatoriosEmpresaIndexRoute = RelatoriosEmpresaIndexRouteImport.update({
+  id: '/relatorios/$empresa/',
+  path: '/relatorios/$empresa/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RelatoriosEmpresaMesRoute = RelatoriosEmpresaMesRouteImport.update({
+  id: '/relatorios/$empresa/$mes',
+  path: '/relatorios/$empresa/$mes',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminExecucaoRituaisIndexRoute =
   AdminExecucaoRituaisIndexRouteImport.update({
@@ -450,32 +428,10 @@ const AdminExecucaoRituaisIndexRoute =
     path: '/execucao/rituais/',
     getParentRoute: () => AdminRouteRoute,
   } as any)
-const OsPropostasBlueprintIdRoute = OsPropostasBlueprintIdRouteImport.update({
-  id: '/propostas/blueprint/$id',
-  path: '/propostas/blueprint/$id',
-  getParentRoute: () => OsRouteRoute,
-} as any)
-const OsPropostasIdApresentacaoRoute =
-  OsPropostasIdApresentacaoRouteImport.update({
-    id: '/apresentacao',
-    path: '/apresentacao',
-    getParentRoute: () => OsPropostasIdRoute,
-  } as any)
-const OsProjetosTemplatesIdRoute = OsProjetosTemplatesIdRouteImport.update({
-  id: '/projetos/templates/$id',
-  path: '/projetos/templates/$id',
-  getParentRoute: () => OsRouteRoute,
-} as any)
-const OsCopilotSessionIdBlueprintRoute =
-  OsCopilotSessionIdBlueprintRouteImport.update({
-    id: '/blueprint',
-    path: '/blueprint',
-    getParentRoute: () => OsCopilotSessionIdRoute,
-  } as any)
-const AdminExecucaoRituaisReviewRoute =
-  AdminExecucaoRituaisReviewRouteImport.update({
-    id: '/execucao/rituais/review',
-    path: '/execucao/rituais/review',
+const AdminExecucaoRituaisCheckinRoute =
+  AdminExecucaoRituaisCheckinRouteImport.update({
+    id: '/execucao/rituais/checkin',
+    path: '/execucao/rituais/checkin',
     getParentRoute: () => AdminRouteRoute,
   } as any)
 const AdminExecucaoRituaisPlanningRoute =
@@ -484,11 +440,55 @@ const AdminExecucaoRituaisPlanningRoute =
     path: '/execucao/rituais/planning',
     getParentRoute: () => AdminRouteRoute,
   } as any)
-const AdminExecucaoRituaisCheckinRoute =
-  AdminExecucaoRituaisCheckinRouteImport.update({
-    id: '/execucao/rituais/checkin',
-    path: '/execucao/rituais/checkin',
+const AdminExecucaoRituaisReviewRoute =
+  AdminExecucaoRituaisReviewRouteImport.update({
+    id: '/execucao/rituais/review',
+    path: '/execucao/rituais/review',
     getParentRoute: () => AdminRouteRoute,
+  } as any)
+const OsCopilotSessionIdIndexRoute = OsCopilotSessionIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => OsCopilotSessionIdRoute,
+} as any)
+const OsCopilotSessionIdBlueprintRoute =
+  OsCopilotSessionIdBlueprintRouteImport.update({
+    id: '/blueprint',
+    path: '/blueprint',
+    getParentRoute: () => OsCopilotSessionIdRoute,
+  } as any)
+const OsProjetosTemplatesIndexRoute =
+  OsProjetosTemplatesIndexRouteImport.update({
+    id: '/projetos/templates/',
+    path: '/projetos/templates/',
+    getParentRoute: () => OsRouteRoute,
+  } as any)
+const OsProjetosTemplatesIdRoute = OsProjetosTemplatesIdRouteImport.update({
+  id: '/projetos/templates/$id',
+  path: '/projetos/templates/$id',
+  getParentRoute: () => OsRouteRoute,
+} as any)
+const OsPropostasIdIndexRoute = OsPropostasIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => OsPropostasIdRoute,
+} as any)
+const OsPropostasIdApresentacaoRoute =
+  OsPropostasIdApresentacaoRouteImport.update({
+    id: '/apresentacao',
+    path: '/apresentacao',
+    getParentRoute: () => OsPropostasIdRoute,
+  } as any)
+const OsPropostasBlueprintIdRoute = OsPropostasBlueprintIdRouteImport.update({
+  id: '/propostas/blueprint/$id',
+  path: '/propostas/blueprint/$id',
+  getParentRoute: () => OsRouteRoute,
+} as any)
+const OsProspeccaoBibliotecaIndexRoute =
+  OsProspeccaoBibliotecaIndexRouteImport.update({
+    id: '/prospeccao/biblioteca/',
+    path: '/prospeccao/biblioteca/',
+    getParentRoute: () => OsRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -995,39 +995,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/tecnologia': {
-      id: '/tecnologia'
-      path: '/tecnologia'
-      fullPath: '/tecnologia'
-      preLoaderRoute: typeof TecnologiaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/programa-de-crescimento': {
-      id: '/programa-de-crescimento'
-      path: '/programa-de-crescimento'
-      fullPath: '/programa-de-crescimento'
-      preLoaderRoute: typeof ProgramaDeCrescimentoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/obrigado': {
-      id: '/obrigado'
-      path: '/obrigado'
-      fullPath: '/obrigado'
-      preLoaderRoute: typeof ObrigadoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/metodologia': {
-      id: '/metodologia'
-      path: '/metodologia'
-      fullPath: '/metodologia'
-      preLoaderRoute: typeof MetodologiaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/diagnostico': {
-      id: '/diagnostico'
-      path: '/diagnostico'
-      fullPath: '/diagnostico'
-      preLoaderRoute: typeof DiagnosticoRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$segment': {
@@ -1037,11 +1009,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SegmentRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/os': {
-      id: '/os'
-      path: '/os'
-      fullPath: '/os'
-      preLoaderRoute: typeof OsRouteRouteImport
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/client': {
@@ -1051,53 +1023,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ClientRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteRouteImport
+    '/diagnostico': {
+      id: '/diagnostico'
+      path: '/diagnostico'
+      fullPath: '/diagnostico'
+      preLoaderRoute: typeof DiagnosticoRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/metodologia': {
+      id: '/metodologia'
+      path: '/metodologia'
+      fullPath: '/metodologia'
+      preLoaderRoute: typeof MetodologiaRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/solucoes/': {
-      id: '/solucoes/'
-      path: '/solucoes'
-      fullPath: '/solucoes/'
-      preLoaderRoute: typeof SolucoesIndexRouteImport
+    '/obrigado': {
+      id: '/obrigado'
+      path: '/obrigado'
+      fullPath: '/obrigado'
+      preLoaderRoute: typeof ObrigadoRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/os/': {
-      id: '/os/'
-      path: '/'
-      fullPath: '/os/'
-      preLoaderRoute: typeof OsIndexRouteImport
-      parentRoute: typeof OsRouteRoute
-    }
-    '/client/': {
-      id: '/client/'
-      path: '/'
-      fullPath: '/client/'
-      preLoaderRoute: typeof ClientIndexRouteImport
-      parentRoute: typeof ClientRouteRoute
-    }
-    '/cases/': {
-      id: '/cases/'
-      path: '/cases'
-      fullPath: '/cases/'
-      preLoaderRoute: typeof CasesIndexRouteImport
+    '/os': {
+      id: '/os'
+      path: '/os'
+      fullPath: '/os'
+      preLoaderRoute: typeof OsRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/blog/': {
-      id: '/blog/'
-      path: '/blog'
-      fullPath: '/blog/'
-      preLoaderRoute: typeof BlogIndexRouteImport
+    '/programa-de-crescimento': {
+      id: '/programa-de-crescimento'
+      path: '/programa-de-crescimento'
+      fullPath: '/programa-de-crescimento'
+      preLoaderRoute: typeof ProgramaDeCrescimentoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tecnologia': {
+      id: '/tecnologia'
+      path: '/tecnologia'
+      fullPath: '/tecnologia'
+      preLoaderRoute: typeof TecnologiaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -1107,74 +1072,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
-    '/solucoes/producao-de-conteudo': {
-      id: '/solucoes/producao-de-conteudo'
-      path: '/solucoes/producao-de-conteudo'
-      fullPath: '/solucoes/producao-de-conteudo'
-      preLoaderRoute: typeof SolucoesProducaoDeConteudoRouteImport
-      parentRoute: typeof rootRouteImport
+    '/admin/leads': {
+      id: '/admin/leads'
+      path: '/leads'
+      fullPath: '/admin/leads'
+      preLoaderRoute: typeof AdminLeadsRouteImport
+      parentRoute: typeof AdminRouteRoute
     }
-    '/solucoes/meta-ads': {
-      id: '/solucoes/meta-ads'
-      path: '/solucoes/meta-ads'
-      fullPath: '/solucoes/meta-ads'
-      preLoaderRoute: typeof SolucoesMetaAdsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/solucoes/landing-pages': {
-      id: '/solucoes/landing-pages'
-      path: '/solucoes/landing-pages'
-      fullPath: '/solucoes/landing-pages'
-      preLoaderRoute: typeof SolucoesLandingPagesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/solucoes/google-ads': {
-      id: '/solucoes/google-ads'
-      path: '/solucoes/google-ads'
-      fullPath: '/solucoes/google-ads'
-      preLoaderRoute: typeof SolucoesGoogleAdsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/propostas/$slug': {
-      id: '/propostas/$slug'
-      path: '/propostas/$slug'
-      fullPath: '/propostas/$slug'
-      preLoaderRoute: typeof PropostasSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/projetos/pousada': {
-      id: '/projetos/pousada'
-      path: '/projetos/pousada'
-      fullPath: '/projetos/pousada'
-      preLoaderRoute: typeof ProjetosPousadaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/projetos/nobre': {
-      id: '/projetos/nobre'
-      path: '/projetos/nobre'
-      fullPath: '/projetos/nobre'
-      preLoaderRoute: typeof ProjetosNobreRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/os/login': {
-      id: '/os/login'
+    '/admin/login': {
+      id: '/admin/login'
       path: '/login'
-      fullPath: '/os/login'
-      preLoaderRoute: typeof OsLoginRouteImport
-      parentRoute: typeof OsRouteRoute
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof AdminRouteRoute
     }
-    '/client/login': {
-      id: '/client/login'
-      path: '/login'
-      fullPath: '/client/login'
-      preLoaderRoute: typeof ClientLoginRouteImport
-      parentRoute: typeof ClientRouteRoute
-    }
-    '/cases/$slug': {
-      id: '/cases/$slug'
-      path: '/cases/$slug'
-      fullPath: '/cases/$slug'
-      preLoaderRoute: typeof CasesSlugRouteImport
+    '/blog/': {
+      id: '/blog/'
+      path: '/blog'
+      fullPath: '/blog/'
+      preLoaderRoute: typeof BlogIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blog/$slug': {
@@ -1184,263 +1100,109 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/login': {
-      id: '/admin/login'
-      path: '/login'
-      fullPath: '/admin/login'
-      preLoaderRoute: typeof AdminLoginRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/admin/leads': {
-      id: '/admin/leads'
-      path: '/leads'
-      fullPath: '/admin/leads'
-      preLoaderRoute: typeof AdminLeadsRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/relatorios/$empresa/': {
-      id: '/relatorios/$empresa/'
-      path: '/relatorios/$empresa'
-      fullPath: '/relatorios/$empresa/'
-      preLoaderRoute: typeof RelatoriosEmpresaIndexRouteImport
+    '/cases/': {
+      id: '/cases/'
+      path: '/cases'
+      fullPath: '/cases/'
+      preLoaderRoute: typeof CasesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/propostas/$slug/': {
-      id: '/propostas/$slug/'
+    '/cases/$slug': {
+      id: '/cases/$slug'
+      path: '/cases/$slug'
+      fullPath: '/cases/$slug'
+      preLoaderRoute: typeof CasesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/client/': {
+      id: '/client/'
       path: '/'
-      fullPath: '/propostas/$slug/'
-      preLoaderRoute: typeof PropostasSlugIndexRouteImport
-      parentRoute: typeof PropostasSlugRoute
-    }
-    '/os/prospeccao/': {
-      id: '/os/prospeccao/'
-      path: '/prospeccao'
-      fullPath: '/os/prospeccao/'
-      preLoaderRoute: typeof OsProspeccaoIndexRouteImport
-      parentRoute: typeof OsRouteRoute
-    }
-    '/os/propostas/': {
-      id: '/os/propostas/'
-      path: '/propostas'
-      fullPath: '/os/propostas/'
-      preLoaderRoute: typeof OsPropostasIndexRouteImport
-      parentRoute: typeof OsRouteRoute
-    }
-    '/os/projetos/': {
-      id: '/os/projetos/'
-      path: '/projetos'
-      fullPath: '/os/projetos/'
-      preLoaderRoute: typeof OsProjetosIndexRouteImport
-      parentRoute: typeof OsRouteRoute
-    }
-    '/os/producao/': {
-      id: '/os/producao/'
-      path: '/producao'
-      fullPath: '/os/producao/'
-      preLoaderRoute: typeof OsProducaoIndexRouteImport
-      parentRoute: typeof OsRouteRoute
-    }
-    '/os/marketing/': {
-      id: '/os/marketing/'
-      path: '/marketing'
-      fullPath: '/os/marketing/'
-      preLoaderRoute: typeof OsMarketingIndexRouteImport
-      parentRoute: typeof OsRouteRoute
-    }
-    '/os/financeiro/': {
-      id: '/os/financeiro/'
-      path: '/financeiro'
-      fullPath: '/os/financeiro/'
-      preLoaderRoute: typeof OsFinanceiroIndexRouteImport
-      parentRoute: typeof OsRouteRoute
-    }
-    '/os/empresas/': {
-      id: '/os/empresas/'
-      path: '/empresas'
-      fullPath: '/os/empresas/'
-      preLoaderRoute: typeof OsEmpresasIndexRouteImport
-      parentRoute: typeof OsRouteRoute
-    }
-    '/os/copilot/': {
-      id: '/os/copilot/'
-      path: '/copilot'
-      fullPath: '/os/copilot/'
-      preLoaderRoute: typeof OsCopilotIndexRouteImport
-      parentRoute: typeof OsRouteRoute
-    }
-    '/os/configuracoes/': {
-      id: '/os/configuracoes/'
-      path: '/configuracoes'
-      fullPath: '/os/configuracoes/'
-      preLoaderRoute: typeof OsConfiguracoesIndexRouteImport
-      parentRoute: typeof OsRouteRoute
-    }
-    '/os/atividade/': {
-      id: '/os/atividade/'
-      path: '/atividade'
-      fullPath: '/os/atividade/'
-      preLoaderRoute: typeof OsAtividadeIndexRouteImport
-      parentRoute: typeof OsRouteRoute
-    }
-    '/os/agenda/': {
-      id: '/os/agenda/'
-      path: '/agenda'
-      fullPath: '/os/agenda/'
-      preLoaderRoute: typeof OsAgendaIndexRouteImport
-      parentRoute: typeof OsRouteRoute
-    }
-    '/client/resultados/': {
-      id: '/client/resultados/'
-      path: '/resultados'
-      fullPath: '/client/resultados/'
-      preLoaderRoute: typeof ClientResultadosIndexRouteImport
+      fullPath: '/client/'
+      preLoaderRoute: typeof ClientIndexRouteImport
       parentRoute: typeof ClientRouteRoute
     }
-    '/client/projetos/': {
-      id: '/client/projetos/'
-      path: '/projetos'
-      fullPath: '/client/projetos/'
-      preLoaderRoute: typeof ClientProjetosIndexRouteImport
+    '/client/login': {
+      id: '/client/login'
+      path: '/login'
+      fullPath: '/client/login'
+      preLoaderRoute: typeof ClientLoginRouteImport
       parentRoute: typeof ClientRouteRoute
     }
-    '/client/financeiro/': {
-      id: '/client/financeiro/'
-      path: '/financeiro'
-      fullPath: '/client/financeiro/'
-      preLoaderRoute: typeof ClientFinanceiroIndexRouteImport
-      parentRoute: typeof ClientRouteRoute
+    '/os/': {
+      id: '/os/'
+      path: '/'
+      fullPath: '/os/'
+      preLoaderRoute: typeof OsIndexRouteImport
+      parentRoute: typeof OsRouteRoute
     }
-    '/client/conteudo/': {
-      id: '/client/conteudo/'
-      path: '/conteudo'
-      fullPath: '/client/conteudo/'
-      preLoaderRoute: typeof ClientConteudoIndexRouteImport
-      parentRoute: typeof ClientRouteRoute
+    '/os/login': {
+      id: '/os/login'
+      path: '/login'
+      fullPath: '/os/login'
+      preLoaderRoute: typeof OsLoginRouteImport
+      parentRoute: typeof OsRouteRoute
     }
-    '/relatorios/$empresa/$mes': {
-      id: '/relatorios/$empresa/$mes'
-      path: '/relatorios/$empresa/$mes'
-      fullPath: '/relatorios/$empresa/$mes'
-      preLoaderRoute: typeof RelatoriosEmpresaMesRouteImport
+    '/projetos/nobre': {
+      id: '/projetos/nobre'
+      path: '/projetos/nobre'
+      fullPath: '/projetos/nobre'
+      preLoaderRoute: typeof ProjetosNobreRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/propostas/$slug/conteudo': {
-      id: '/propostas/$slug/conteudo'
-      path: '/conteudo'
-      fullPath: '/propostas/$slug/conteudo'
-      preLoaderRoute: typeof PropostasSlugConteudoRouteImport
-      parentRoute: typeof PropostasSlugRoute
-    }
-    '/propostas/$slug/aquisicao': {
-      id: '/propostas/$slug/aquisicao'
-      path: '/aquisicao'
-      fullPath: '/propostas/$slug/aquisicao'
-      preLoaderRoute: typeof PropostasSlugAquisicaoRouteImport
-      parentRoute: typeof PropostasSlugRoute
-    }
-    '/playground/cases/decision-language': {
-      id: '/playground/cases/decision-language'
-      path: '/playground/cases/decision-language'
-      fullPath: '/playground/cases/decision-language'
-      preLoaderRoute: typeof PlaygroundCasesDecisionLanguageRouteImport
+    '/projetos/pousada': {
+      id: '/projetos/pousada'
+      path: '/projetos/pousada'
+      fullPath: '/projetos/pousada'
+      preLoaderRoute: typeof ProjetosPousadaRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/os/prospeccao/$id': {
-      id: '/os/prospeccao/$id'
-      path: '/prospeccao/$id'
-      fullPath: '/os/prospeccao/$id'
-      preLoaderRoute: typeof OsProspeccaoIdRouteImport
-      parentRoute: typeof OsRouteRoute
-    }
-    '/os/propostas/$id': {
-      id: '/os/propostas/$id'
-      path: '/propostas/$id'
-      fullPath: '/os/propostas/$id'
-      preLoaderRoute: typeof OsPropostasIdRouteImport
-      parentRoute: typeof OsRouteRoute
-    }
-    '/os/projetos/$id': {
-      id: '/os/projetos/$id'
-      path: '/projetos/$id'
-      fullPath: '/os/projetos/$id'
-      preLoaderRoute: typeof OsProjetosIdRouteImport
-      parentRoute: typeof OsRouteRoute
-    }
-    '/os/empresas/$id': {
-      id: '/os/empresas/$id'
-      path: '/empresas/$id'
-      fullPath: '/os/empresas/$id'
-      preLoaderRoute: typeof OsEmpresasIdRouteImport
-      parentRoute: typeof OsRouteRoute
-    }
-    '/os/copilot/$sessionId': {
-      id: '/os/copilot/$sessionId'
-      path: '/copilot/$sessionId'
-      fullPath: '/os/copilot/$sessionId'
-      preLoaderRoute: typeof OsCopilotSessionIdRouteImport
-      parentRoute: typeof OsRouteRoute
-    }
-    '/client/projetos/$projectId': {
-      id: '/client/projetos/$projectId'
-      path: '/projetos/$projectId'
-      fullPath: '/client/projetos/$projectId'
-      preLoaderRoute: typeof ClientProjetosProjectIdRouteImport
-      parentRoute: typeof ClientRouteRoute
-    }
-    '/client/conteudo/$taskId': {
-      id: '/client/conteudo/$taskId'
-      path: '/conteudo/$taskId'
-      fullPath: '/client/conteudo/$taskId'
-      preLoaderRoute: typeof ClientConteudoTaskIdRouteImport
-      parentRoute: typeof ClientRouteRoute
-    }
-    '/client/auth/verify': {
-      id: '/client/auth/verify'
-      path: '/auth/verify'
-      fullPath: '/client/auth/verify'
-      preLoaderRoute: typeof ClientAuthVerifyRouteImport
-      parentRoute: typeof ClientRouteRoute
-    }
-    '/blog/categoria/$category': {
-      id: '/blog/categoria/$category'
-      path: '/blog/categoria/$category'
-      fullPath: '/blog/categoria/$category'
-      preLoaderRoute: typeof BlogCategoriaCategoryRouteImport
+    '/propostas/$slug': {
+      id: '/propostas/$slug'
+      path: '/propostas/$slug'
+      fullPath: '/propostas/$slug'
+      preLoaderRoute: typeof PropostasSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/cron/publish-scheduled-content': {
-      id: '/api/cron/publish-scheduled-content'
-      path: '/api/cron/publish-scheduled-content'
-      fullPath: '/api/cron/publish-scheduled-content'
-      preLoaderRoute: typeof ApiCronPublishScheduledContentRouteImport
+    '/solucoes/': {
+      id: '/solucoes/'
+      path: '/solucoes'
+      fullPath: '/solucoes/'
+      preLoaderRoute: typeof SolucoesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/execucao/referencia': {
-      id: '/admin/execucao/referencia'
-      path: '/execucao/referencia'
-      fullPath: '/admin/execucao/referencia'
-      preLoaderRoute: typeof AdminExecucaoReferenciaRouteImport
-      parentRoute: typeof AdminRouteRoute
+    '/solucoes/google-ads': {
+      id: '/solucoes/google-ads'
+      path: '/solucoes/google-ads'
+      fullPath: '/solucoes/google-ads'
+      preLoaderRoute: typeof SolucoesGoogleAdsRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/execucao/producao': {
-      id: '/admin/execucao/producao'
-      path: '/execucao/producao'
-      fullPath: '/admin/execucao/producao'
-      preLoaderRoute: typeof AdminExecucaoProducaoRouteImport
-      parentRoute: typeof AdminRouteRoute
+    '/solucoes/landing-pages': {
+      id: '/solucoes/landing-pages'
+      path: '/solucoes/landing-pages'
+      fullPath: '/solucoes/landing-pages'
+      preLoaderRoute: typeof SolucoesLandingPagesRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/execucao/planejamento': {
-      id: '/admin/execucao/planejamento'
-      path: '/execucao/planejamento'
-      fullPath: '/admin/execucao/planejamento'
-      preLoaderRoute: typeof AdminExecucaoPlanejamentoRouteImport
-      parentRoute: typeof AdminRouteRoute
+    '/solucoes/meta-ads': {
+      id: '/solucoes/meta-ads'
+      path: '/solucoes/meta-ads'
+      fullPath: '/solucoes/meta-ads'
+      preLoaderRoute: typeof SolucoesMetaAdsRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/execucao/hoje': {
-      id: '/admin/execucao/hoje'
-      path: '/execucao/hoje'
-      fullPath: '/admin/execucao/hoje'
-      preLoaderRoute: typeof AdminExecucaoHojeRouteImport
+    '/solucoes/producao-de-conteudo': {
+      id: '/solucoes/producao-de-conteudo'
+      path: '/solucoes/producao-de-conteudo'
+      fullPath: '/solucoes/producao-de-conteudo'
+      preLoaderRoute: typeof SolucoesProducaoDeConteudoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/execucao/capacidade': {
+      id: '/admin/execucao/capacidade'
+      path: '/execucao/capacidade'
+      fullPath: '/admin/execucao/capacidade'
+      preLoaderRoute: typeof AdminExecucaoCapacidadeRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/admin/execucao/clientes': {
@@ -1450,40 +1212,250 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminExecucaoClientesRouteImport
       parentRoute: typeof AdminRouteRoute
     }
-    '/admin/execucao/capacidade': {
-      id: '/admin/execucao/capacidade'
-      path: '/execucao/capacidade'
-      fullPath: '/admin/execucao/capacidade'
-      preLoaderRoute: typeof AdminExecucaoCapacidadeRouteImport
+    '/admin/execucao/hoje': {
+      id: '/admin/execucao/hoje'
+      path: '/execucao/hoje'
+      fullPath: '/admin/execucao/hoje'
+      preLoaderRoute: typeof AdminExecucaoHojeRouteImport
       parentRoute: typeof AdminRouteRoute
     }
-    '/os/prospeccao/biblioteca/': {
-      id: '/os/prospeccao/biblioteca/'
-      path: '/prospeccao/biblioteca'
-      fullPath: '/os/prospeccao/biblioteca/'
-      preLoaderRoute: typeof OsProspeccaoBibliotecaIndexRouteImport
+    '/admin/execucao/planejamento': {
+      id: '/admin/execucao/planejamento'
+      path: '/execucao/planejamento'
+      fullPath: '/admin/execucao/planejamento'
+      preLoaderRoute: typeof AdminExecucaoPlanejamentoRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/execucao/producao': {
+      id: '/admin/execucao/producao'
+      path: '/execucao/producao'
+      fullPath: '/admin/execucao/producao'
+      preLoaderRoute: typeof AdminExecucaoProducaoRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/execucao/referencia': {
+      id: '/admin/execucao/referencia'
+      path: '/execucao/referencia'
+      fullPath: '/admin/execucao/referencia'
+      preLoaderRoute: typeof AdminExecucaoReferenciaRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/api/cron/publish-scheduled-content': {
+      id: '/api/cron/publish-scheduled-content'
+      path: '/api/cron/publish-scheduled-content'
+      fullPath: '/api/cron/publish-scheduled-content'
+      preLoaderRoute: typeof ApiCronPublishScheduledContentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/categoria/$category': {
+      id: '/blog/categoria/$category'
+      path: '/blog/categoria/$category'
+      fullPath: '/blog/categoria/$category'
+      preLoaderRoute: typeof BlogCategoriaCategoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/client/auth/verify': {
+      id: '/client/auth/verify'
+      path: '/auth/verify'
+      fullPath: '/client/auth/verify'
+      preLoaderRoute: typeof ClientAuthVerifyRouteImport
+      parentRoute: typeof ClientRouteRoute
+    }
+    '/client/conteudo/': {
+      id: '/client/conteudo/'
+      path: '/conteudo'
+      fullPath: '/client/conteudo/'
+      preLoaderRoute: typeof ClientConteudoIndexRouteImport
+      parentRoute: typeof ClientRouteRoute
+    }
+    '/client/conteudo/$taskId': {
+      id: '/client/conteudo/$taskId'
+      path: '/conteudo/$taskId'
+      fullPath: '/client/conteudo/$taskId'
+      preLoaderRoute: typeof ClientConteudoTaskIdRouteImport
+      parentRoute: typeof ClientRouteRoute
+    }
+    '/client/financeiro/': {
+      id: '/client/financeiro/'
+      path: '/financeiro'
+      fullPath: '/client/financeiro/'
+      preLoaderRoute: typeof ClientFinanceiroIndexRouteImport
+      parentRoute: typeof ClientRouteRoute
+    }
+    '/client/projetos/': {
+      id: '/client/projetos/'
+      path: '/projetos'
+      fullPath: '/client/projetos/'
+      preLoaderRoute: typeof ClientProjetosIndexRouteImport
+      parentRoute: typeof ClientRouteRoute
+    }
+    '/client/projetos/$projectId': {
+      id: '/client/projetos/$projectId'
+      path: '/projetos/$projectId'
+      fullPath: '/client/projetos/$projectId'
+      preLoaderRoute: typeof ClientProjetosProjectIdRouteImport
+      parentRoute: typeof ClientRouteRoute
+    }
+    '/client/resultados/': {
+      id: '/client/resultados/'
+      path: '/resultados'
+      fullPath: '/client/resultados/'
+      preLoaderRoute: typeof ClientResultadosIndexRouteImport
+      parentRoute: typeof ClientRouteRoute
+    }
+    '/os/agenda/': {
+      id: '/os/agenda/'
+      path: '/agenda'
+      fullPath: '/os/agenda/'
+      preLoaderRoute: typeof OsAgendaIndexRouteImport
       parentRoute: typeof OsRouteRoute
     }
-    '/os/propostas/$id/': {
-      id: '/os/propostas/$id/'
-      path: '/'
-      fullPath: '/os/propostas/$id/'
-      preLoaderRoute: typeof OsPropostasIdIndexRouteImport
-      parentRoute: typeof OsPropostasIdRoute
-    }
-    '/os/projetos/templates/': {
-      id: '/os/projetos/templates/'
-      path: '/projetos/templates'
-      fullPath: '/os/projetos/templates/'
-      preLoaderRoute: typeof OsProjetosTemplatesIndexRouteImport
+    '/os/atividade/': {
+      id: '/os/atividade/'
+      path: '/atividade'
+      fullPath: '/os/atividade/'
+      preLoaderRoute: typeof OsAtividadeIndexRouteImport
       parentRoute: typeof OsRouteRoute
     }
-    '/os/copilot/$sessionId/': {
-      id: '/os/copilot/$sessionId/'
+    '/os/configuracoes/': {
+      id: '/os/configuracoes/'
+      path: '/configuracoes'
+      fullPath: '/os/configuracoes/'
+      preLoaderRoute: typeof OsConfiguracoesIndexRouteImport
+      parentRoute: typeof OsRouteRoute
+    }
+    '/os/copilot/': {
+      id: '/os/copilot/'
+      path: '/copilot'
+      fullPath: '/os/copilot/'
+      preLoaderRoute: typeof OsCopilotIndexRouteImport
+      parentRoute: typeof OsRouteRoute
+    }
+    '/os/copilot/$sessionId': {
+      id: '/os/copilot/$sessionId'
+      path: '/copilot/$sessionId'
+      fullPath: '/os/copilot/$sessionId'
+      preLoaderRoute: typeof OsCopilotSessionIdRouteImport
+      parentRoute: typeof OsRouteRoute
+    }
+    '/os/empresas/': {
+      id: '/os/empresas/'
+      path: '/empresas'
+      fullPath: '/os/empresas/'
+      preLoaderRoute: typeof OsEmpresasIndexRouteImport
+      parentRoute: typeof OsRouteRoute
+    }
+    '/os/empresas/$id': {
+      id: '/os/empresas/$id'
+      path: '/empresas/$id'
+      fullPath: '/os/empresas/$id'
+      preLoaderRoute: typeof OsEmpresasIdRouteImport
+      parentRoute: typeof OsRouteRoute
+    }
+    '/os/financeiro/': {
+      id: '/os/financeiro/'
+      path: '/financeiro'
+      fullPath: '/os/financeiro/'
+      preLoaderRoute: typeof OsFinanceiroIndexRouteImport
+      parentRoute: typeof OsRouteRoute
+    }
+    '/os/marketing/': {
+      id: '/os/marketing/'
+      path: '/marketing'
+      fullPath: '/os/marketing/'
+      preLoaderRoute: typeof OsMarketingIndexRouteImport
+      parentRoute: typeof OsRouteRoute
+    }
+    '/os/producao/': {
+      id: '/os/producao/'
+      path: '/producao'
+      fullPath: '/os/producao/'
+      preLoaderRoute: typeof OsProducaoIndexRouteImport
+      parentRoute: typeof OsRouteRoute
+    }
+    '/os/projetos/': {
+      id: '/os/projetos/'
+      path: '/projetos'
+      fullPath: '/os/projetos/'
+      preLoaderRoute: typeof OsProjetosIndexRouteImport
+      parentRoute: typeof OsRouteRoute
+    }
+    '/os/projetos/$id': {
+      id: '/os/projetos/$id'
+      path: '/projetos/$id'
+      fullPath: '/os/projetos/$id'
+      preLoaderRoute: typeof OsProjetosIdRouteImport
+      parentRoute: typeof OsRouteRoute
+    }
+    '/os/propostas/': {
+      id: '/os/propostas/'
+      path: '/propostas'
+      fullPath: '/os/propostas/'
+      preLoaderRoute: typeof OsPropostasIndexRouteImport
+      parentRoute: typeof OsRouteRoute
+    }
+    '/os/propostas/$id': {
+      id: '/os/propostas/$id'
+      path: '/propostas/$id'
+      fullPath: '/os/propostas/$id'
+      preLoaderRoute: typeof OsPropostasIdRouteImport
+      parentRoute: typeof OsRouteRoute
+    }
+    '/os/prospeccao/': {
+      id: '/os/prospeccao/'
+      path: '/prospeccao'
+      fullPath: '/os/prospeccao/'
+      preLoaderRoute: typeof OsProspeccaoIndexRouteImport
+      parentRoute: typeof OsRouteRoute
+    }
+    '/os/prospeccao/$id': {
+      id: '/os/prospeccao/$id'
+      path: '/prospeccao/$id'
+      fullPath: '/os/prospeccao/$id'
+      preLoaderRoute: typeof OsProspeccaoIdRouteImport
+      parentRoute: typeof OsRouteRoute
+    }
+    '/playground/cases/decision-language': {
+      id: '/playground/cases/decision-language'
+      path: '/playground/cases/decision-language'
+      fullPath: '/playground/cases/decision-language'
+      preLoaderRoute: typeof PlaygroundCasesDecisionLanguageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/propostas/$slug/': {
+      id: '/propostas/$slug/'
       path: '/'
-      fullPath: '/os/copilot/$sessionId/'
-      preLoaderRoute: typeof OsCopilotSessionIdIndexRouteImport
-      parentRoute: typeof OsCopilotSessionIdRoute
+      fullPath: '/propostas/$slug/'
+      preLoaderRoute: typeof PropostasSlugIndexRouteImport
+      parentRoute: typeof PropostasSlugRoute
+    }
+    '/propostas/$slug/aquisicao': {
+      id: '/propostas/$slug/aquisicao'
+      path: '/aquisicao'
+      fullPath: '/propostas/$slug/aquisicao'
+      preLoaderRoute: typeof PropostasSlugAquisicaoRouteImport
+      parentRoute: typeof PropostasSlugRoute
+    }
+    '/propostas/$slug/conteudo': {
+      id: '/propostas/$slug/conteudo'
+      path: '/conteudo'
+      fullPath: '/propostas/$slug/conteudo'
+      preLoaderRoute: typeof PropostasSlugConteudoRouteImport
+      parentRoute: typeof PropostasSlugRoute
+    }
+    '/relatorios/$empresa/': {
+      id: '/relatorios/$empresa/'
+      path: '/relatorios/$empresa'
+      fullPath: '/relatorios/$empresa/'
+      preLoaderRoute: typeof RelatoriosEmpresaIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/relatorios/$empresa/$mes': {
+      id: '/relatorios/$empresa/$mes'
+      path: '/relatorios/$empresa/$mes'
+      fullPath: '/relatorios/$empresa/$mes'
+      preLoaderRoute: typeof RelatoriosEmpresaMesRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/admin/execucao/rituais/': {
       id: '/admin/execucao/rituais/'
@@ -1492,39 +1464,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminExecucaoRituaisIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
-    '/os/propostas/blueprint/$id': {
-      id: '/os/propostas/blueprint/$id'
-      path: '/propostas/blueprint/$id'
-      fullPath: '/os/propostas/blueprint/$id'
-      preLoaderRoute: typeof OsPropostasBlueprintIdRouteImport
-      parentRoute: typeof OsRouteRoute
-    }
-    '/os/propostas/$id/apresentacao': {
-      id: '/os/propostas/$id/apresentacao'
-      path: '/apresentacao'
-      fullPath: '/os/propostas/$id/apresentacao'
-      preLoaderRoute: typeof OsPropostasIdApresentacaoRouteImport
-      parentRoute: typeof OsPropostasIdRoute
-    }
-    '/os/projetos/templates/$id': {
-      id: '/os/projetos/templates/$id'
-      path: '/projetos/templates/$id'
-      fullPath: '/os/projetos/templates/$id'
-      preLoaderRoute: typeof OsProjetosTemplatesIdRouteImport
-      parentRoute: typeof OsRouteRoute
-    }
-    '/os/copilot/$sessionId/blueprint': {
-      id: '/os/copilot/$sessionId/blueprint'
-      path: '/blueprint'
-      fullPath: '/os/copilot/$sessionId/blueprint'
-      preLoaderRoute: typeof OsCopilotSessionIdBlueprintRouteImport
-      parentRoute: typeof OsCopilotSessionIdRoute
-    }
-    '/admin/execucao/rituais/review': {
-      id: '/admin/execucao/rituais/review'
-      path: '/execucao/rituais/review'
-      fullPath: '/admin/execucao/rituais/review'
-      preLoaderRoute: typeof AdminExecucaoRituaisReviewRouteImport
+    '/admin/execucao/rituais/checkin': {
+      id: '/admin/execucao/rituais/checkin'
+      path: '/execucao/rituais/checkin'
+      fullPath: '/admin/execucao/rituais/checkin'
+      preLoaderRoute: typeof AdminExecucaoRituaisCheckinRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/admin/execucao/rituais/planning': {
@@ -1534,12 +1478,68 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminExecucaoRituaisPlanningRouteImport
       parentRoute: typeof AdminRouteRoute
     }
-    '/admin/execucao/rituais/checkin': {
-      id: '/admin/execucao/rituais/checkin'
-      path: '/execucao/rituais/checkin'
-      fullPath: '/admin/execucao/rituais/checkin'
-      preLoaderRoute: typeof AdminExecucaoRituaisCheckinRouteImport
+    '/admin/execucao/rituais/review': {
+      id: '/admin/execucao/rituais/review'
+      path: '/execucao/rituais/review'
+      fullPath: '/admin/execucao/rituais/review'
+      preLoaderRoute: typeof AdminExecucaoRituaisReviewRouteImport
       parentRoute: typeof AdminRouteRoute
+    }
+    '/os/copilot/$sessionId/': {
+      id: '/os/copilot/$sessionId/'
+      path: '/'
+      fullPath: '/os/copilot/$sessionId/'
+      preLoaderRoute: typeof OsCopilotSessionIdIndexRouteImport
+      parentRoute: typeof OsCopilotSessionIdRoute
+    }
+    '/os/copilot/$sessionId/blueprint': {
+      id: '/os/copilot/$sessionId/blueprint'
+      path: '/blueprint'
+      fullPath: '/os/copilot/$sessionId/blueprint'
+      preLoaderRoute: typeof OsCopilotSessionIdBlueprintRouteImport
+      parentRoute: typeof OsCopilotSessionIdRoute
+    }
+    '/os/projetos/templates/': {
+      id: '/os/projetos/templates/'
+      path: '/projetos/templates'
+      fullPath: '/os/projetos/templates/'
+      preLoaderRoute: typeof OsProjetosTemplatesIndexRouteImport
+      parentRoute: typeof OsRouteRoute
+    }
+    '/os/projetos/templates/$id': {
+      id: '/os/projetos/templates/$id'
+      path: '/projetos/templates/$id'
+      fullPath: '/os/projetos/templates/$id'
+      preLoaderRoute: typeof OsProjetosTemplatesIdRouteImport
+      parentRoute: typeof OsRouteRoute
+    }
+    '/os/propostas/$id/': {
+      id: '/os/propostas/$id/'
+      path: '/'
+      fullPath: '/os/propostas/$id/'
+      preLoaderRoute: typeof OsPropostasIdIndexRouteImport
+      parentRoute: typeof OsPropostasIdRoute
+    }
+    '/os/propostas/$id/apresentacao': {
+      id: '/os/propostas/$id/apresentacao'
+      path: '/apresentacao'
+      fullPath: '/os/propostas/$id/apresentacao'
+      preLoaderRoute: typeof OsPropostasIdApresentacaoRouteImport
+      parentRoute: typeof OsPropostasIdRoute
+    }
+    '/os/propostas/blueprint/$id': {
+      id: '/os/propostas/blueprint/$id'
+      path: '/propostas/blueprint/$id'
+      fullPath: '/os/propostas/blueprint/$id'
+      preLoaderRoute: typeof OsPropostasBlueprintIdRouteImport
+      parentRoute: typeof OsRouteRoute
+    }
+    '/os/prospeccao/biblioteca/': {
+      id: '/os/prospeccao/biblioteca/'
+      path: '/prospeccao/biblioteca'
+      fullPath: '/os/prospeccao/biblioteca/'
+      preLoaderRoute: typeof OsProspeccaoBibliotecaIndexRouteImport
+      parentRoute: typeof OsRouteRoute
     }
   }
 }

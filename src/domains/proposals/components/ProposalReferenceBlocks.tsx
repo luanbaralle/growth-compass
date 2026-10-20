@@ -444,6 +444,7 @@ const ROADMAP_GRADIENTS = [
   "from-sky-500/60 to-sky-500/10",
   "from-violet-500/50 to-violet-500/10",
   "from-amber-500/50 to-amber-500/10",
+  "from-rose-500/40 to-rose-500/10",
 ] as const;
 
 export function ProposalRoadmapTimeline({
@@ -459,7 +460,11 @@ export function ProposalRoadmapTimeline({
       <div
         className={cn(
           "grid gap-4 sm:grid-cols-2",
-          phases.length <= 3 ? "lg:grid-cols-3" : "lg:grid-cols-4",
+          phases.length >= 5
+            ? "lg:grid-cols-5"
+            : phases.length <= 3
+              ? "lg:grid-cols-3"
+              : "lg:grid-cols-4",
         )}
       >
         {phases.map((phase, i) => (
@@ -502,6 +507,8 @@ const DELIVERABLE_ICONS: Record<string, LucideIcon> = {
   Conteúdo: Play,
   "Landing Page": LayoutGrid,
   "Presença digital": Building2,
+  "Site institucional": Building2,
+  "Landing pages": LayoutGrid,
   "Mídia Kit": Play,
   "Google Ads": Megaphone,
 };

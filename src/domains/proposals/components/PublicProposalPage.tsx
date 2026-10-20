@@ -1,5 +1,9 @@
 import type { Proposal } from "../types";
 import {
+  ArchGeniusReferenceProposalPage,
+  isArchGeniusReferenceProposal,
+} from "./ArchGeniusReferenceProposalPage";
+import {
   ColoniaFemReferenceProposalPage,
   isColoniaFemReferenceProposal,
 } from "./ColoniaFemReferenceProposalPage";
@@ -17,6 +21,9 @@ export function PublicProposalPage({ proposal }: { proposal: Proposal }) {
   }
   if (isColoniaFemReferenceProposal(proposal)) {
     return <ColoniaFemReferenceProposalPage proposal={proposal} />;
+  }
+  if (isArchGeniusReferenceProposal(proposal)) {
+    return <ArchGeniusReferenceProposalPage proposal={proposal} />;
   }
   return <R1PublicProposalPage proposal={proposal} />;
 }
