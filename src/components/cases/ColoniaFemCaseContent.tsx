@@ -6,6 +6,7 @@ import heroLp from "@/assets/case-colonia-fem/hero-lp.png";
 import lpDesktop from "@/assets/case-colonia-fem/lp-desktop.webp";
 import lpMobile from "@/assets/case-colonia-fem/lp-mobile.png";
 import coloniaLogo from "@/assets/case-colonia-fem/logo-horizontal.webp";
+import videoPoster from "@/assets/case-colonia-fem/video-poster.webp";
 import { CaseCTA } from "./CaseCTA";
 import { CaseHero } from "./CaseHero";
 import { ColoniaFemIdentitySection } from "./ColoniaFemIdentitySection";
@@ -25,10 +26,8 @@ import {
   CaseSection,
 } from "./shared/CaseSection";
 
-const LIVE_HORIZONTAL = "https://pousadacoloniafem.com.br/assets/video/comercial-horizontal.mp4";
-const LIVE_VERTICAL = "https://pousadacoloniafem.com.br/assets/video/comercial-vertical.mp4";
-const LOCAL_HORIZONTAL = "/colonia-fem-video/comercial-horizontal.mp4";
-const LOCAL_VERTICAL = "/colonia-fem-video/comercial-vertical.mp4";
+const VIDEO_HORIZONTAL = "/colonia-fem-video/comercial-horizontal.mp4";
+const VIDEO_VERTICAL = "/colonia-fem-video/comercial-vertical.mp4";
 
 function usePousadaVideoSrc() {
   const [vertical, setVertical] = useState(false);
@@ -41,9 +40,7 @@ function usePousadaVideoSrc() {
     return () => mq.removeEventListener("change", apply);
   }, []);
 
-  const local = vertical ? LOCAL_VERTICAL : LOCAL_HORIZONTAL;
-  const live = vertical ? LIVE_VERTICAL : LIVE_HORIZONTAL;
-  return { local, live, preferred: import.meta.env.DEV ? local : live };
+  return vertical ? VIDEO_VERTICAL : VIDEO_HORIZONTAL;
 }
 
 interface ColoniaFemCaseContentProps {
@@ -71,8 +68,7 @@ function withColoniaFemAssets(caseData: Case): Case {
 }
 
 function CommercialVideo() {
-  const { local, live, preferred } = usePousadaVideoSrc();
-  const [src, setSrc] = useState(preferred);
+  const src = usePousadaVideoSrc();
   const stageRef = useRef<HTMLDivElement>(null);
   const previewRef = useRef<HTMLVideoElement>(null);
   const cinemaRef = useRef<HTMLVideoElement>(null);
@@ -86,9 +82,8 @@ function CommercialVideo() {
   }, []);
 
   useEffect(() => {
-    setSrc(preferred);
     setPreviewReady(false);
-  }, [preferred]);
+  }, [src]);
 
   useEffect(() => {
     const video = previewRef.current;
@@ -162,9 +157,6 @@ function CommercialVideo() {
   }, [cinemaOpen, src]);
 
   const closeCinema = () => setCinemaOpen(false);
-  const fallbackToLive = () => {
-    if (src !== live) setSrc(live);
-  };
 
   return (
     <>
@@ -177,13 +169,13 @@ function CommercialVideo() {
           className="absolute inset-0 h-full w-full object-cover transition-opacity duration-500"
           style={{ opacity: previewReady && !cinemaOpen ? 1 : 0.35 }}
           src={src}
+          poster={videoPoster}
           muted
           loop
           playsInline
           autoPlay
           preload="auto"
           aria-hidden
-          onError={fallbackToLive}
         />
 
         <button
@@ -216,11 +208,11 @@ function CommercialVideo() {
               className="relative z-[2] h-full w-full object-cover transition-opacity duration-700"
               style={{ opacity: cinemaReady ? 1 : 0 }}
               src={src}
+              poster={videoPoster}
               playsInline
               autoPlay
               preload="auto"
               onEnded={closeCinema}
-              onError={fallbackToLive}
             />
             <button
               type="button"

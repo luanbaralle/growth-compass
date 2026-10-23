@@ -34,6 +34,3 @@ dist-ssr
 *.sln
 *.sw?
 .env*
-
-# Commercial video served locally for the Colônia FEM case
-/public/colonia-fem-video/
