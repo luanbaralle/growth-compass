@@ -1,9 +1,4 @@
-import {
-  SectionDescription,
-  SectionEyebrow,
-  SectionShell,
-  SectionTitle,
-} from "@/components/home/shared/SectionShell";
+import { SectionShell } from "@/components/home/shared/SectionShell";
 import { MarketingLayout } from "@/components/marketing/MarketingLayout";
 import { NextSteps } from "@/components/marketing/shared/NextSteps";
 import { PageCTA } from "@/components/marketing/shared/PageCTA";
@@ -134,17 +129,6 @@ export function CasesListingPage() {
             Nenhum case nesta categoria ainda.
           </p>
         )}
-      </SectionShell>
-
-      <SectionShell className="border-b border-border/60 py-16 lg:py-20">
-        <div className="max-w-2xl">
-          <SectionEyebrow>Resultados</SectionEyebrow>
-          <SectionTitle>Cases fecham contrato</SectionTitle>
-          <SectionDescription>
-            TODO: Texto introdutório da listagem. Cada case é gerado dinamicamente a partir do
-            objeto de dados correspondente.
-          </SectionDescription>
-        </div>
       </SectionShell>
 
       <NextSteps steps={casesNextSteps} />
