@@ -92,36 +92,44 @@ function HeroPreviewPanel({
   alt,
   className,
   fillColumn = false,
+  layout = "portrait",
 }: {
   src: string;
   alt: string;
   className?: string;
   fillColumn?: boolean;
+  layout?: "portrait" | "wide";
 }) {
+  const isWide = layout === "wide";
+
   return (
     <div
       className={cn(
         "relative mx-auto w-full",
-        fillColumn ? "max-w-none" : "max-w-[340px] sm:max-w-[380px] lg:max-w-[420px]",
+        fillColumn
+          ? "max-w-none"
+          : isWide
+            ? "max-w-[520px]"
+            : "max-w-[340px] sm:max-w-[380px] lg:max-w-[420px]",
         className,
       )}
     >
       <div
         className={cn(
           "pointer-events-none absolute rounded-[2.5rem] bg-brand/20 blur-[72px]",
-          fillColumn ? "-inset-4" : "-inset-6",
+          fillColumn || isWide ? "-inset-4" : "-inset-6",
         )}
         aria-hidden
       />
       <div
         className={cn(
           "pointer-events-none absolute rounded-[2.25rem] border border-brand/15",
-          fillColumn ? "-inset-2" : "-inset-3",
+          fillColumn || isWide ? "-inset-2" : "-inset-3",
         )}
         aria-hidden
       />
 
-      <div className="relative overflow-hidden rounded-[1.35rem] border border-white/[0.1] bg-surface/50 shadow-[0_32px_80px_-32px_rgba(0,0,0,0.85)] backdrop-blur-xl ring-1 ring-inset ring-brand/15 sm:rounded-[1.5rem]">
+      <div className="relative overflow-hidden rounded-[1.35rem] border border-white/[0.1] bg-[#F8F5EE] shadow-[0_32px_80px_-32px_rgba(0,0,0,0.85)] backdrop-blur-xl ring-1 ring-inset ring-brand/15 sm:rounded-[1.5rem]">
         <div
           className="pointer-events-none absolute inset-x-0 top-0 z-10 h-px bg-gradient-to-r from-transparent via-brand/50 to-transparent"
           aria-hidden
@@ -135,22 +143,26 @@ function HeroPreviewPanel({
           aria-hidden
         />
 
-        <div
-          className={cn(
-            "relative overflow-hidden",
-            fillColumn ? "aspect-[4/5] w-full" : "aspect-[4/5]",
-          )}
-        >
-          <img
-            src={src}
-            alt={alt}
-            className="h-full w-full object-cover object-top"
-          />
+        {isWide ? (
+          <img src={src} alt={alt} className="relative z-[1] h-auto w-full" />
+        ) : (
           <div
-            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"
-            aria-hidden
-          />
-        </div>
+            className={cn(
+              "relative overflow-hidden",
+              fillColumn ? "aspect-[4/5] w-full" : "aspect-[4/5]",
+            )}
+          >
+            <img
+              src={src}
+              alt={alt}
+              className="h-full w-full object-cover object-top"
+            />
+            <div
+              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"
+              aria-hidden
+            />
+          </div>
+        )}
       </div>
     </div>
   );
@@ -247,6 +259,7 @@ export function CaseHero({ caseData }: CaseHeroProps) {
   const useSplitHero = Boolean(
     useAmbient && ext?.headlineLines && (ext?.logo || ext?.panelImage),
   );
+  const panelLayout = ext?.panelLayout ?? "portrait";
   const panelAlt = ext?.metaSheet?.client[0] ?? caseData.title;
 
   return (
@@ -339,7 +352,9 @@ export function CaseHero({ caseData }: CaseHeroProps) {
             className={cn(
               "mt-2 lg:mt-4",
               useSplitHero
-                ? "lg:grid lg:grid-cols-[minmax(0,7fr)_minmax(0,3fr)] lg:items-start lg:gap-x-10 xl:grid-cols-[minmax(0,13fr)_minmax(0,7fr)] xl:gap-x-12"
+                ? panelLayout === "wide"
+                  ? "lg:grid lg:grid-cols-[minmax(0,6fr)_minmax(0,5fr)] lg:items-start lg:gap-x-8 xl:grid-cols-[minmax(0,11fr)_minmax(0,10fr)] xl:gap-x-10"
+                  : "lg:grid lg:grid-cols-[minmax(0,7fr)_minmax(0,3fr)] lg:items-start lg:gap-x-10 xl:grid-cols-[minmax(0,13fr)_minmax(0,7fr)] xl:gap-x-12"
                 : ext?.headlineLines
                   ? "max-w-3xl"
                   : "max-w-4xl",
@@ -361,7 +376,12 @@ export function CaseHero({ caseData }: CaseHeroProps) {
                       <HeroPreviewPanel
                         src={ext.panelImage}
                         alt={`Landing page — ${panelAlt}`}
-                        className="max-w-[280px] sm:max-w-[320px]"
+                        layout={panelLayout}
+                        className={
+                          panelLayout === "wide"
+                            ? "max-w-[min(100%,520px)]"
+                            : "max-w-[280px] sm:max-w-[320px]"
+                        }
                       />
                     ) : (
                       <HeroLogoPanel
@@ -389,6 +409,18 @@ export function CaseHero({ caseData }: CaseHeroProps) {
                     </span>
                   ))}
                 </motion.h1>
+
+                {ext.lead && (
+                  <motion.p
+                    variants={fadeUp}
+                    className={cn(
+                      "max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-[17px] sm:leading-relaxed",
+                      useSplitHero ? "mt-5" : "mt-6",
+                    )}
+                  >
+                    {ext.lead}
+                  </motion.p>
+                )}
 
                 {ext.metaSheet && (
                   <motion.div variants={fadeUp}>
@@ -578,7 +610,12 @@ export function CaseHero({ caseData }: CaseHeroProps) {
                     src={ext.panelImage}
                     alt={`Landing page — ${panelAlt}`}
                     fillColumn
-                    className="ml-auto max-w-[min(100%,320px)] xl:max-w-[min(100%,360px)]"
+                    layout={panelLayout}
+                    className={
+                      panelLayout === "wide"
+                        ? "ml-auto w-full max-w-none"
+                        : "ml-auto max-w-[min(100%,320px)] xl:max-w-[min(100%,360px)]"
+                    }
                   />
                 ) : (
                   <HeroLogoPanel

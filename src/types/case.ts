@@ -192,6 +192,8 @@ export interface CaseHeroExtended {
   caseNumber?: string;
   caseVertical?: string;
   headlineLines?: string[];
+  /** Lead editorial abaixo do título — usado quando o h1 vem de `headlineLines` */
+  lead?: string;
   heroMetrics?: CaseMetric[];
   ctaLabel?: string;
   ctaHref?: string;
@@ -200,6 +202,8 @@ export interface CaseHeroExtended {
   background?: "image" | "ambient";
   /** Preview da LP ou site no painel direito do split hero */
   panelImage?: string;
+  /** `wide` mostra a captura da LP sem recorte retrato */
+  panelLayout?: "portrait" | "wide";
 }
 
 /* ─── Resultados estendidos ─── */

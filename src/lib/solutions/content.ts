@@ -590,7 +590,7 @@ export const solutionPages: Record<string, SolutionPageContent> = {
       title: "Cases de conteúdo",
       items: [
         { name: "Studio 21", description: "Posicionamento de marca com conteúdo estratégico e campanhas.", tag: "Serviços" },
-        { name: "Pousada (case interno)", description: "Produção completa: fotos, vídeos e conteúdo para funil de reservas.", tag: "Hospitalidade" },
+        { name: "Pousada Colônia FEM", description: "Landing page, vídeo, fotografia e captação de contatos na primeira semana.", tag: "Hospedagem" },
       ],
     },
     faq: [

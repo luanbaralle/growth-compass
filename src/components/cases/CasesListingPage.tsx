@@ -20,12 +20,14 @@ import { CaseImage } from "./CaseImage";
 import nobreLogo from "@/assets/case-nobre/logo.png";
 import heroLpDesktop from "@/assets/case-unip/hero-lp-desktop.png";
 import studio21HeroLp from "@/assets/case-studio21/hero-lp.png";
+import coloniaFemHeroLp from "@/assets/case-colonia-fem/hero-lp.png";
 import type { Case } from "@/types/case";
 
 function getCaseCoverImage(caseItem: Case): string {
   if (caseItem.slug === "unip") return heroLpDesktop;
   if (caseItem.slug === "studio21") return studio21HeroLp;
   if (caseItem.slug === "nobre") return nobreLogo;
+  if (caseItem.slug === "colonia-fem") return coloniaFemHeroLp;
   return caseItem.coverImage;
 }
 

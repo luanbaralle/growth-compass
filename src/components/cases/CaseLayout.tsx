@@ -12,6 +12,7 @@ import { GoalsSection } from "./GoalsSection";
 import { NextProjectsSection } from "./NextProjectsSection";
 import { ProcessTimeline } from "./ProcessTimeline";
 import { ResultsSection } from "./ResultsSection";
+import { ColoniaFemCaseContent } from "./ColoniaFemCaseContent";
 import { NobreCaseContent } from "./NobreCaseContent";
 import { Studio21CaseContent } from "./Studio21CaseContent";
 import { UnipCaseContent } from "./UnipCaseContent";
@@ -51,6 +52,14 @@ export function CaseLayout({ caseData }: CaseLayoutProps) {
     return (
       <MarketingLayout schemas={caseSchemas("nobre")}>
         <NobreCaseContent caseData={caseData} />
+      </MarketingLayout>
+    );
+  }
+
+  if (caseData.slug === "colonia-fem") {
+    return (
+      <MarketingLayout schemas={caseSchemas("colonia-fem")}>
+        <ColoniaFemCaseContent caseData={caseData} />
       </MarketingLayout>
     );
   }

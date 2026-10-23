@@ -18,6 +18,7 @@ export const caseCategories: { id: string; label: string }[] = [
   { id: "marketing", label: "Marketing" },
   { id: "tecnologia", label: "Tecnologia" },
   { id: "imobiliario", label: "Imobiliário" },
+  { id: "hospedagem", label: "Hospedagem" },
   { id: "ia", label: "IA" },
 ];
 

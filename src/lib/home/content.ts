@@ -139,6 +139,13 @@ export const projects: HomeProject[] = [
     tagTone: "blue",
     gradient: "from-zinc-900 via-neutral-800 to-amber-950/30",
   },
+  {
+    name: "Colônia FEM",
+    description: "Landing page, vídeo, fotografia e captação de contatos em Itanhaém.",
+    tag: "Hospedagem",
+    tagTone: "blue",
+    gradient: "from-red-950 via-stone-900 to-amber-950/30",
+  },
 ];
 
 export const portfolioSectionDescription =
@@ -297,6 +304,7 @@ export const footerLinks = {
   ],
   produtos: [
     { label: "Nobre Imóveis", href: "/cases/nobre" },
+    { label: "Colônia FEM", href: "/cases/colonia-fem" },
     { label: "Tecnologia", href: "/tecnologia" },
     { label: "Diagnóstico Inteligente", href: "/diagnostico" },
   ],

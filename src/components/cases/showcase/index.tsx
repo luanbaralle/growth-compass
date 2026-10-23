@@ -327,3 +327,4 @@ export function ShowcaseDetail({ src, alt, label, className }: ShowcaseDetailPro
 }
 
 export { ReputationShowcase } from "./ReputationShowcase";
+export { LiveSiteShowcase } from "./LiveSiteShowcase";

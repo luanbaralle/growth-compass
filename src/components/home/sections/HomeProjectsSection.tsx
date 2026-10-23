@@ -11,11 +11,13 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import unipLogo from "@/assets/case-unip/Logo.jpg";
 import nobreLogo from "@/assets/case-nobre/logo.png";
 import studio21Logo from "@/assets/case-studio21/logo metálico.png";
+import coloniaFemLogo from "@/assets/case-colonia-fem/logo-horizontal.webp";
 
 const projectSlugs: Record<string, string> = {
   "Nobre Imóveis": "nobre",
   UNIP: "unip",
   "Studio 21": "studio21",
+  "Colônia FEM": "colonia-fem",
 };
 
 function ProjectCardBackground({ project }: { project: HomeProject }) {
@@ -123,6 +125,42 @@ function ProjectCardBackground({ project }: { project: HomeProject }) {
     );
   }
 
+  if (project.name === "Colônia FEM") {
+    return (
+      <>
+        <div className="absolute inset-0 bg-[#140808]" aria-hidden />
+        <div
+          className="absolute inset-0 bg-gradient-to-b from-[#7A1B1B] via-[#4a1010] to-black"
+          aria-hidden
+        />
+        <div
+          className="absolute inset-0 opacity-40"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 50% 45%, rgba(196,163,90,0.18), transparent 52%)",
+          }}
+          aria-hidden
+        />
+        <div
+          className="absolute inset-0 bg-[linear-gradient(to_right,oklch(1_0_0/0.04)_1px,transparent_1px),linear-gradient(to_bottom,oklch(1_0_0/0.04)_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_at_center,black,transparent_75%)]"
+          aria-hidden
+        />
+        <div className="absolute inset-x-0 top-12 bottom-[5.5rem] flex -translate-y-2 items-center justify-center px-6">
+          <div className="w-full max-w-[min(88%,11rem)] rounded-xl bg-[#F8F5EE] p-4 shadow-[0_24px_48px_rgba(0,0,0,0.45)] ring-1 ring-white/80">
+            <img
+              src={coloniaFemLogo}
+              alt="Pousada Colônia FEM"
+              className="mx-auto h-auto w-full object-contain object-center transition-transform duration-700 group-hover:scale-[1.03]"
+              loading="lazy"
+            />
+          </div>
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent" />
+        <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/[0.06]" />
+      </>
+    );
+  }
+
   return (
     <>
       <div className={cn("absolute inset-0 bg-gradient-to-br", project.gradient)} />
@@ -150,7 +188,7 @@ export function HomeProjectsSection() {
         </Link>
       </div>
 
-      <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+      <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {projects.map((project) => {
           const slug = projectSlugs[project.name];
           const card = (
