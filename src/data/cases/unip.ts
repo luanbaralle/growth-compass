@@ -15,16 +15,16 @@ export const unipCaseDataPolicy = {
 export const unip: Case = {
   slug: "unip",
   title: "UNIP Caraguatatuba",
-  subtitle: "Landing Page · Google Ads · Mensuração — em 30 dias.",
+  subtitle: "Landing Page · Google Ads · Mensuração — 3 meses de captação.",
   client: "UNIP EAD · Polo Caraguatatuba",
   industry: "Educação",
   category: "Educação",
-  year: 2024,
+  year: 2026,
   website: "https://faculdadelitoral.com.br",
   coverImage: "/images/cases/placeholder-cover.jpg",
   heroImage: "/images/cases/placeholder-hero.jpg",
   description:
-    "De demanda espontânea a um canal previsível de captação de alunos — landing page, campanhas e mensuração integradas.",
+    "De demanda espontânea a um canal previsível de captação de alunos no Litoral Norte — landing page, campanhas e mensuração integradas ao longo de três ciclos.",
   challenge: "A procura existia. Mas ninguém controlava.",
   solution: "Um sistema. Não peças soltas.",
   goals: ["Sem previsibilidade.", "Sem controle.", "Sem escala."],
@@ -40,22 +40,22 @@ export const unip: Case = {
   typography: { heading: "Arial", body: "Arial" },
   metrics: [
     {
-      value: "+90",
-      label: "Conversões no primeiro ciclo",
+      value: "600+",
+      label: "Conversões em 3 meses",
       context:
-        "Contatos qualificados via WhatsApp originados do funil digital, no primeiro mês de operação estruturada.",
+        "Contatos originados do funil digital no Litoral Norte, em três ciclos de operação. O volume cresceu a cada mês — do primeiro contato à captação contínua.",
     },
     {
-      value: "300+",
-      label: "Novos visitantes",
+      value: "1.800+",
+      label: "Acessos qualificados",
       context:
-        "Pessoas que acessaram a landing page após clicar em anúncios ou encontrar a página, sinal de interesse ativo na região.",
+        "Pessoas que chegaram à landing page depois de buscar graduação, cursos e UNIP na região. Interesse ativo, não alcance frio.",
     },
     {
-      value: "30 dias",
-      label: "Primeiro ciclo validado",
+      value: "3 meses",
+      label: "Captação contínua",
       context:
-        "Tempo para diagnosticar, construir a landing, lançar campanhas e começar a mensurar resultados de forma consistente.",
+        "Tempo para validar a demanda no primeiro ciclo e transformar o funil em um canal previsível de oportunidades para o polo.",
     },
   ],
   testimonial: {
@@ -65,7 +65,7 @@ export const unip: Case = {
   },
   nextProjects: [],
   process: [
-    { phase: "01", title: "Google", description: "Demanda qualificada contínua" },
+    { phase: "01", title: "Google", description: "Demanda qualificada no Litoral Norte" },
     { phase: "02", title: "Landing Page", description: "Conversão orientada a contato" },
     { phase: "03", title: "WhatsApp", description: "Canal direto com o interessado" },
     { phase: "04", title: "Secretaria", description: "Atendimento e follow-up" },
@@ -86,17 +86,17 @@ export const unip: Case = {
       { label: "Landing Page", hint: "Captação centralizada" },
       { label: "Google Ads", hint: "Demanda qualificada na região" },
       { label: "Mensuração", hint: "Origem e conversão rastreadas" },
-      { label: "Acompanhamento", hint: "Ajustes com base em dados" },
+      { label: "Acompanhamento", hint: "Ajustes com base em três ciclos" },
     ],
     deliverablesIntro:
       "O que a Raise One estruturou neste projeto. Cada peça conectada no funil, não entrega isolada.",
     problemChannels: ["Instagram", "Rádio", "Indicação"],
     problemClosing: "Esperar alguém aparecer não é estratégia de crescimento.",
     resultsIntro:
-      "Números do primeiro ciclo de 30 dias, período em que landing page, campanhas e mensuração foram estruturadas e validadas.",
+      "Números de três ciclos de operação — de julho a setembro de 2026. O primeiro mês validou a demanda; os seguintes transformaram o funil em um canal contínuo de captação no Litoral Norte.",
     whyItWorkedTitle: "Como conseguimos",
     whyItWorkedIntro:
-      "O resultado não veio de uma peça isolada. Veio da combinação de decisões abaixo, aplicadas de forma integrada no primeiro ciclo.",
+      "O resultado não veio de uma peça isolada. Veio da combinação de decisões abaixo, aplicadas de forma integrada ao longo de três meses.",
     whyItWorked: [
       {
         title: "Funil único",
@@ -106,27 +106,27 @@ export const unip: Case = {
       {
         title: "Landing orientada a contato",
         description:
-          "Página com uma única conversão clara, contato via WhatsApp, com informações locais do polo e identidade da marca UNIP.",
+          "Página com uma única conversão clara — contato via WhatsApp — com informações locais do polo e identidade da marca UNIP.",
       },
       {
         title: "Campanhas de intenção",
         description:
-          "Anúncios configurados para captar quem já busca matrícula na região, não tráfego curioso sem intenção de converter.",
+          "Anúncios para quem já busca matrícula na região. Graduação EAD concentra o volume; cursos específicos e pós capturam intenções mais pontuais.",
+      },
+      {
+        title: "Três cidades, um polo",
+        description:
+          "Caraguatatuba, São Sebastião e Ilhabela no mesmo sistema. A cidade-sede lidera o volume; as vizinhas entram com intenção alta e sem desperdício fora da área de atuação.",
       },
       {
         title: "WhatsApp como conversão",
         description:
-          "Canal direto entre interesse e conversa com a secretaria, sem formulários longos que interrompem a intenção.",
+          "Canal direto entre interesse e conversa com a secretaria, sem formulários longos que interrompem a intenção — e com jornada majoritariamente no celular.",
       },
       {
-        title: "Mensuração ponta a ponta",
+        title: "Crescimento ciclo a ciclo",
         description:
-          "Origem do clique, visita à página e contato passaram a ser rastreados, permitindo ajustes com base em dados reais.",
-      },
-      {
-        title: "Acompanhamento transparente",
-        description:
-          "Monitoramento contínuo e comunicação clara sobre fases de aprendizado, especialmente relevante nos primeiros 30 dias.",
+          "O primeiro mês validou a demanda. Os dois seguintes aumentaram o volume de contatos com a mesma estrutura, sem reinventar o funil a cada ciclo.",
       },
     ],
     systemFlowIntro: "Da busca por curso ao contato com a secretaria.",
@@ -140,33 +140,38 @@ export const unip: Case = {
     ],
     lessonsTitle: "O que aprendemos",
     lessonsIntro:
-      "Projetos reais geram aprendizado acumulado. Estes são os insights que levamos para os próximos funis de captação.",
+      "Três ciclos de captação geram aprendizado acumulado. Estes são os insights que levamos para os próximos funis de educação.",
     lessonsLearned: [
       {
-        title: "Primeiro ciclo é fase de aprendizado",
+        title: "O primeiro ciclo valida. Os seguintes escalam.",
         description:
-          "Em educação, matrícula leva tempo. Nos primeiros 30 dias, o funil valida demanda e volume de contatos antes de fechar matrículas.",
+          "Em educação, matrícula leva tempo. Os primeiros 30 dias provam demanda e volume de contatos. Com a estrutura no ar, o segundo e o terceiro ciclo aumentaram as oportunidades sem mudar o sistema.",
+      },
+      {
+        title: "Graduação EAD puxa o volume",
+        description:
+          "Quem busca faculdade EAD com polo local é o principal vetor de demanda. Cursos específicos e pós convertem bem, mas em escala complementar — o orçamento deve seguir essa hierarquia.",
       },
       {
         title: "Regionalização importa",
         description:
-          "Campanhas restritas à área de atuação do polo evitam cliques de fora da região e melhoram a qualidade dos contatos.",
+          "Campanhas restritas a Caraguatatuba, São Sebastião e Ilhabela evitam cliques de fora da região e melhoram a qualidade dos contatos que a secretaria recebe.",
       },
       {
         title: "Landing local converte melhor",
         description:
-          "Informações do polo, localização e contato direto na página reduzem dúvidas antes da primeira mensagem no WhatsApp.",
+          "Informações do polo, localização e contato direto na página reduzem dúvidas antes da primeira mensagem — especialmente no celular, de onde vem a maior parte da jornada.",
       },
       {
         title: "Secretaria como etapa final",
         description:
-          "O funil digital entrega o interessado. A matrícula depende de como a secretaria conduz a conversa, e isso precisa estar alinhado desde o início.",
+          "O funil digital entrega o interessado. A matrícula depende de como a secretaria conduz a conversa, e isso precisa estar alinhado desde o primeiro ciclo.",
       },
     ],
-    quoteContext: "12 dias após o início do projeto",
+    quoteContext: "No início do primeiro ciclo",
     landingTitle: "A estrutura que passou a receber toda a aquisição.",
     landingDescription:
-      "Página com foco em uma única conversão, contato via WhatsApp, com informações locais do polo e identidade UNIP para quem busca matrícula na região.",
+      "Página com foco em uma única conversão, contato via WhatsApp, com informações locais do polo e identidade UNIP para quem busca matrícula no Litoral Norte.",
     landingScrollHint: "Role para explorar a página",
     transformIntro: "De dependência de mídia tradicional a um funil digital mensurável.",
     transformBefore: {
@@ -180,9 +185,9 @@ export const unip: Case = {
     transformAfter: {
       outcome: "Aquisição com origem conhecida",
       items: [
-        { label: "Demanda captada no Google", hint: "Intenção ativa na região" },
+        { label: "Demanda no Google", hint: "Intenção ativa em três cidades" },
         { label: "Landing como hub", hint: "Um ponto de entrada para todo contato" },
-        { label: "WhatsApp direto", hint: "Menos atrito entre interesse e conversa" },
+        { label: "Volume crescente", hint: "600+ conversões em três ciclos" },
         { label: "Secretaria integrada", hint: "Atendimento alinhado ao que chega" },
       ],
     },
@@ -192,7 +197,7 @@ export const unip: Case = {
       {
         question: "Diagnóstico e estrutura",
         answer:
-          "Mapeamos os canais existentes e desenhamos um funil único: anúncio, página, contato, atendimento.",
+          "Mapeamos os canais existentes e desenhamos um funil único: anúncio, página, contato, atendimento — com foco no Litoral Norte.",
       },
       {
         question: "Landing page",
@@ -202,12 +207,12 @@ export const unip: Case = {
       {
         question: "Campanhas de demanda",
         answer:
-          "Anúncios configurados para captar intenção real de matrícula, com mensuração de ponta a ponta.",
+          "Anúncios para captar intenção real de matrícula: graduação EAD como motor de volume, cursos e pós como intenções complementares.",
       },
       {
         question: "Acompanhamento",
         answer:
-          "Monitoramento contínuo, ajustes graduais e comunicação transparente sobre fases de aprendizado.",
+          "Três ciclos de monitoramento, ajustes graduais e comunicação transparente — da validação da demanda à captação contínua.",
       },
     ],
   },
@@ -221,9 +226,9 @@ export const unip: Case = {
       "de captação de alunos.",
     ],
     heroMetrics: [
-      { value: "+90", label: "Conversões" },
-      { value: "300+", label: "Novos visitantes" },
-      { value: "30 dias", label: "Primeiro ciclo" },
+      { value: "600+", label: "Conversões" },
+      { value: "1.800+", label: "Acessos qualificados" },
+      { value: "3 meses", label: "Captação contínua" },
     ],
     ctaLabel: "Quero um sistema previsível de aquisição",
     ctaHref: "/diagnostico",
@@ -231,7 +236,7 @@ export const unip: Case = {
       client: ["UNIP EAD", "Polo Caraguatatuba"],
       segment: "Educação",
       services: ["Landing Page", "Google Ads", "Mensuração"],
-      period: "Primeiro ciclo",
+      period: "3 meses",
     },
   },
 };

@@ -15,7 +15,7 @@ export const studio21CaseDataPolicy = {
 export const studio21: Case = {
   slug: "studio21",
   title: "Studio 21",
-  subtitle: "Landing Page · Google Ads · Estratégia de Conversão · 3 meses.",
+  subtitle: "Landing Page · Google Ads · Estratégia de Conversão · 6 meses.",
   client: "Studio 21 · Itanhaém",
   industry: "Beleza",
   category: "Beleza",
@@ -24,7 +24,7 @@ export const studio21: Case = {
   coverImage: "/images/cases/placeholder-cover.jpg",
   heroImage: "/images/cases/placeholder-hero.jpg",
   description:
-    "Como estruturamos um funil digital para transformar intenção de busca em novos atendimentos para um salão premium.",
+    "Como um salão premium no litoral paulista passou a captar demanda toda semana — seis meses transformando busca no Google em contatos no WhatsApp.",
   challenge:
     "O salão tinha reputação local, mas a aquisição dependia de fatores que não escalam.",
   solution:
@@ -49,22 +49,22 @@ export const studio21: Case = {
   typography: { heading: "Serif display", body: "Sans-serif" },
   metrics: [
     {
-      value: "180+",
-      label: "Conversões em 3 meses",
+      value: "370+",
+      label: "Conversões em 6 meses",
       context:
-        "Contatos qualificados via WhatsApp, originados de busca no Google. Demanda recorrente ao longo dos 90 dias, com mais de 180 oportunidades no trimestre, sem depender de indicação ou picos no Instagram.",
+        "Contatos no WhatsApp originados de busca no Google, de abril a outubro. Demanda recorrente na região — sem depender de indicação ou picos no Instagram.",
     },
     {
-      value: "2.500+",
+      value: "4.900+",
       label: "Cliques qualificados",
       context:
-        "Pessoas que clicaram no anúncio após buscar serviços específicos, sinal de intenção real, não apenas impressão.",
+        "Pessoas que clicaram no anúncio depois de buscar serviços específicos: corte, salão, mechas e mega hair. Intenção real, não impressão.",
     },
     {
-      value: "90 dias",
-      label: "Período validado",
+      value: "6 meses",
+      label: "Operação contínua",
       context:
-        "Tempo necessário para estruturar, lançar e otimizar o funil, do diagnóstico inicial aos primeiros resultados consistentes.",
+        "Tempo para estruturar, lançar e amadurecer o funil. O sexto mês foi o de maior volume, com dezenas de novos contatos em uma única semana de alta demanda.",
     },
   ],
   nextProjects: [],
@@ -73,13 +73,13 @@ export const studio21: Case = {
       phase: "01",
       title: "Diagnóstico",
       description:
-        "Mapeamos quais serviços tinham busca ativa na região, priorizando onde a intenção de compra já existia.",
+        "Mapeamos quais serviços tinham busca ativa em Itanhaém, Mongaguá e Peruíbe — priorizando onde a intenção de agendar já existia.",
     },
     {
       phase: "02",
       title: "Google Ads",
       description:
-        "Campanhas estruturadas para interceptar quem pesquisa, não para interromper quem navega.",
+        "Campanhas para interceptar quem pesquisa: do serviço do dia a dia aos procedimentos premium, no momento em que a decisão acontece.",
     },
     {
       phase: "03",
@@ -91,7 +91,7 @@ export const studio21: Case = {
       phase: "04",
       title: "WhatsApp",
       description:
-        "Canal direto entre intenção e agendamento, sem formulários longos nem etapas desnecessárias.",
+        "Canal direto entre intenção e agendamento, com mensuração contínua para ajustar o que gera contato de verdade.",
     },
   ],
   marketing: {
@@ -114,20 +114,25 @@ export const studio21: Case = {
       "Fotografia em destaque, hierarquia clara e copy orientada à confiança, para que quem chega via Google entenda o posicionamento do salão antes de abrir o WhatsApp.",
     landingScrollHint: "Explore a página completa",
     resultsIntro:
-      "Números do primeiro ciclo de operação, período em que o funil foi estruturado, lançado e otimizado.",
+      "Números de seis meses de operação — de abril a outubro de 2026. O funil foi estruturado, lançado e otimizado ciclo a ciclo, até a demanda se tornar recorrente na região.",
     whyItWorkedTitle: "Como conseguimos",
     whyItWorkedIntro:
-      "O resultado não veio de uma táctica isolada. Veio da combinação de fatores abaixo, aplicados de forma consistente durante os 90 dias.",
+      "O resultado não veio de uma tática isolada. Veio da combinação abaixo, aplicada de forma consistente ao longo de seis meses.",
     whyItWorked: [
       {
         title: "Intenção de busca",
         description:
-          "Priorizamos serviços com demanda ativa no Google, como Mega Hair, mechas e tratamentos premium, onde a pessoa já decidiu que quer contratar.",
+          "Priorizamos quem já pesquisa o serviço: salão, cabeleireiro, mechas e mega hair. A pessoa chega decidida a contratar, não a descobrir o salão por acaso.",
       },
       {
-        title: "Segmentação correta",
+        title: "Dois tipos de demanda",
         description:
-          "Campanhas restritas à região de atuação e aos termos com intenção comercial, evitando cliques curiosos que não convertem.",
+          "Cobertura do dia a dia e dos procedimentos de maior valor. Serviços gerais trazem volume; mechas e mega hair concentram quem busca um ticket mais alto — e convertem com mais força.",
+      },
+      {
+        title: "Região certa",
+        description:
+          "Presença restrita a Itanhaém, Mongaguá e Peruíbe. Quem clica está a uma distância real de agendar — sem desperdício com quem mora longe demais para virar cliente.",
       },
       {
         title: "Landing Page focada em conversão",
@@ -140,14 +145,9 @@ export const studio21: Case = {
           "Do anúncio ao WhatsApp em dois toques, sem cadastro, sem espera e sem formulário que interrompe a intenção.",
       },
       {
-        title: "Velocidade no WhatsApp",
-        description:
-          "Quem busca serviço de beleza decide rápido. Resposta ágil no canal certo aumenta a chance de agendar antes da concorrência.",
-      },
-      {
         title: "Atendimento como etapa final",
         description:
-          "O funil digital entrega a oportunidade. O agendamento depende de como o salão conduz a conversa, e isso foi considerado desde o início.",
+          "O funil digital entrega a oportunidade. O agendamento depende de como o salão conduz a conversa — e isso foi considerado desde o primeiro ciclo.",
       },
     ],
     systemFlowIntro: "Da busca ao agendamento em seis etapas.",
@@ -161,32 +161,32 @@ export const studio21: Case = {
     ],
     lessonsTitle: "O que aprendemos",
     lessonsIntro:
-      "Projetos reais geram aprendizado acumulado. Estes são os insights que levamos para os próximos funis de aquisição.",
+      "Seis meses de operação geram aprendizado acumulado. Estes são os insights que levamos para os próximos funis de aquisição.",
     lessonsLearned: [
       {
-        title: "Serviços com maior intenção",
+        title: "Procedimentos premium convertem melhor",
         description:
-          "Procedimentos premium e de maior ticket tinham busca mais qualificada do que serviços genéricos. O budget deve seguir a intenção, não o volume.",
+          "Mechas e mega hair geram menos cliques, mas uma proporção maior vira WhatsApp. O budget deve seguir a intenção — não só o volume de busca genérica.",
       },
       {
-        title: "Comportamento do usuário",
+        title: "Público certo, no raio certo",
         description:
-          "Quem vem do Google compara rápido. A Landing Page precisa comunicar posicionamento nos primeiros segundos, antes de qualquer scroll.",
+          "Mulheres de 35 a 54 anos, nas três cidades de atuação, buscando ativamente no Google. Quando região e perfil batem, o contato chega mais próximo de agendar.",
       },
       {
-        title: "Papel da Landing Page",
+        title: "Continuidade libera o teto",
         description:
-          "A página não substitui o atendimento. Ela filtra e prepara. Quem chega no WhatsApp já entende o nível do salão.",
+          "O melhor mês da operação coincidiu com mais presença nos dias de alta busca. Quando o salão aparece no momento em que a região pesquisa, o volume sobe — não é sorte, é consistência.",
       },
       {
-        title: "Velocidade de resposta",
+        title: "A Landing Page prepara, não substitui",
         description:
-          "O gargalo mais comum após o clique não é a campanha: é o tempo até a primeira resposta no WhatsApp.",
+          "Quem vem do Google compara rápido. A página comunica posicionamento nos primeiros segundos. Quem chega no WhatsApp já entende o nível do salão.",
       },
       {
-        title: "Mensuração contínua",
+        title: "Velocidade de resposta fecha o funil",
         description:
-          "Sem acompanhar termos de busca, conversões e origem dos contatos, otimização vira achismo. Dados orientaram cada ajuste.",
+          "O gargalo mais comum após o clique não é a campanha: é o tempo até a primeira resposta no WhatsApp. Quem busca serviço de beleza decide rápido.",
       },
     ],
     transformIntro: "De reputação local a um processo que gera contatos toda semana.",
@@ -206,16 +206,16 @@ export const studio21: Case = {
           hint: "Quem busca encontra o salão no momento certo",
         },
         {
-          label: "Origem rastreada",
-          hint: "Cada contato com canal e campanha identificados",
+          label: "Três cidades cobertas",
+          hint: "Itanhaém, Mongaguá e Peruíbe no mesmo sistema",
         },
         {
           label: "Volume mensurável",
-          hint: "180+ conversões no primeiro ciclo",
+          hint: "370+ conversões em seis meses de operação",
         },
         {
-          label: "Planejamento",
-          hint: "Equipe e investimento com base em dados, não achismo",
+          label: "Canal maduro",
+          hint: "O sexto mês foi o de maior volume da operação",
         },
       ],
     },
@@ -240,11 +240,11 @@ export const studio21: Case = {
       },
       {
         label: "Mensuração",
-        hint: "Origem, conversão e custo por contato",
+        hint: "Origem, conversão e qualidade do contato",
       },
       {
         label: "Otimizações contínuas",
-        hint: "Ajustes com base em dados reais",
+        hint: "Ajustes com base em seis meses de dados reais",
       },
     ],
     deliverablesIntro:
@@ -260,9 +260,9 @@ export const studio21: Case = {
       "para um salão de beleza.",
     ],
     heroMetrics: [
-      { value: "180+", label: "Conversões" },
-      { value: "2.500+", label: "Cliques qualificados" },
-      { value: "90 dias", label: "Período" },
+      { value: "370+", label: "Conversões" },
+      { value: "4.900+", label: "Cliques qualificados" },
+      { value: "6 meses", label: "Período" },
     ],
     ctaLabel: "Quero um sistema previsível de aquisição",
     ctaHref: "/diagnostico",
@@ -270,7 +270,7 @@ export const studio21: Case = {
       client: ["Studio 21"],
       segment: "Beleza · Salão Premium",
       services: ["Landing Page", "Google Ads", "Estratégia"],
-      period: "3 meses",
+      period: "6 meses",
     },
   },
 };

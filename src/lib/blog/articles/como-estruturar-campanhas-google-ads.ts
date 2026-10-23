@@ -134,15 +134,15 @@ const sections = [
     href: "/cases/unip",
     type: "case",
     description:
-      "Como estruturamos landing page, Google Ads e mensuração para captação previsível de alunos em 30 dias.",
+      "Como estruturamos landing page, Google Ads e mensuração para captação previsível de alunos no Litoral Norte.",
   }),
 
   h2("Case UNIP: de demanda espontânea a canal previsível", "case-unip"),
   p(
-    "O polo UNIP EAD em Caraguatatuba tinha demanda — indicação, Instagram, rádio — mas zero previsibilidade. Não havia controle sobre quantos interessados chegariam na próxima semana, qual canal performava ou quanto custava gerar uma conversa qualificada. Em 30 dias, implementamos um sistema integrado: campanhas Google Ads segmentadas por curso e intenção, landing page dedicada substituindo dispersão em canais offline, tracking de conversões do clique ao WhatsApp e acompanhamento semanal com a secretaria.",
+    "O polo UNIP EAD em Caraguatatuba tinha demanda — indicação, Instagram, rádio — mas zero previsibilidade. Não havia controle sobre quantos interessados chegariam na próxima semana, qual canal performava ou quanto custava gerar uma conversa qualificada. Em três meses, o sistema integrado ficou no ar: campanhas Google Ads segmentadas por curso e intenção, landing page dedicada substituindo dispersão em canais offline, tracking de conversões do clique ao WhatsApp e acompanhamento contínuo com a secretaria.",
   ),
   p(
-    "A estrutura de conta priorizou Search transacional para cursos com maior procura local e remarketing para visitantes que não converteram na primeira visita. A LP recebeu 100% do tráfego pago — eliminando vazamento para páginas genéricas. Resultado do primeiro ciclo: mais de 90 conversões registradas, 300+ novos visitantes qualificados e, principalmente, visibilidade sobre o que funcionava. Como disse o próprio polo: 'A procura aumentou consideravelmente' — e pela primeira vez era possível medir de onde vinha.",
+    "A estrutura priorizou Search transacional para graduação EAD — o principal vetor de demanda — com cursos específicos e pós como intenções complementares. A LP recebeu 100% do tráfego pago, eliminando vazamento para páginas genéricas. Em três ciclos no Litoral Norte: 600+ conversões e 1.800+ acessos qualificados. No início, o próprio polo registrou: 'A procura aumentou consideravelmente' — e pela primeira vez era possível medir de onde vinha.",
   ),
   quote(
     "Esperar alguém aparecer não é estratégia de crescimento. Marketing estruturado transforma demanda esporádica em pipeline.",
@@ -284,7 +284,7 @@ export const comoEstruturarCampanhasGoogleAds: BlogArticle = {
       label: "Case UNIP Caraguatatuba",
       href: "/cases/unip",
       type: "case",
-      description: "Landing page, Google Ads e mensuração em 30 dias.",
+      description: "Landing page, Google Ads e mensuração em 3 meses de captação.",
     },
   ],
 };

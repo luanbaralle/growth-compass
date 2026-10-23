@@ -145,7 +145,7 @@ const sections = [
   ),
   h3("Conversão"),
   p(
-    "Google Ads Search separado por serviço de alto valor: 'escova progressiva [cidade]', 'balayage [cidade] preço'. LP com galeria, depoimentos e botão WhatsApp + formulário. Meta de conversão LP: 4%+. Resultado observado em operação similar: 180+ conversões em 90 dias, 2.500+ cliques qualificados.",
+    "Google Ads Search separado por serviço de alto valor: 'escova progressiva [cidade]', 'balayage [cidade] preço'. LP com galeria, depoimentos e botão WhatsApp + formulário. Meta de conversão LP: 4%+. Resultado observado em operação similar: 370+ conversões em 6 meses, 4.900+ cliques qualificados."
   ),
   h3("Venda e retenção"),
   p(
@@ -279,7 +279,7 @@ export const funilDeAquisicaoGuia: BlogArticle = {
       label: "Case Studio 21",
       href: "/cases/studio21",
       type: "case",
-      description: "Funil digital para salão premium — 180+ conversões em 90 dias.",
+      description: "Funil digital para salão premium — 370+ conversões em 6 meses.",
     },
     {
       label: "Tecnologia",

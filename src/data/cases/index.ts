@@ -1,10 +1,9 @@
 import type { Case } from "@/types/case";
-import { kbconcept } from "./kbconcept";
 import { nobre } from "./nobre";
 import { studio21 } from "./studio21";
 import { unip } from "./unip";
 
-const rawCases: Case[] = [studio21, unip, nobre, kbconcept];
+const rawCases: Case[] = [studio21, unip, nobre];
 
 function attachNextProjects(cases: Case[]): Case[] {
   return cases.map((current) => ({
