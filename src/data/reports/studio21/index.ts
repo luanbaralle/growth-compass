@@ -7,6 +7,7 @@ import { studio21Junho } from "./junho";
 import { studio21Julho } from "./julho";
 import { studio21Agosto } from "./agosto";
 import { studio21Setembro } from "./setembro";
+import { studio21Outubro } from "./outubro";
 import type { ReportCompany, ReportMonth } from "../types";
 
 export const studio21Reports: ReportCompany = {
@@ -18,7 +19,14 @@ export const studio21Reports: ReportCompany = {
   logo: studio21Logo,
   carouselImages: [print1, print2, print3],
   conversionLabel: "WhatsApp",
-  months: [studio21Maio, studio21Junho, studio21Julho, studio21Agosto, studio21Setembro],
+  months: [
+    studio21Maio,
+    studio21Junho,
+    studio21Julho,
+    studio21Agosto,
+    studio21Setembro,
+    studio21Outubro,
+  ],
 };
 
 export function getStudio21Month(slug: string): ReportMonth | undefined {

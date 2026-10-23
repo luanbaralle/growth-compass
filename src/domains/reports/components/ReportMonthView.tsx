@@ -13,6 +13,7 @@ import {
   Sparkles,
   TrendingDown,
   TrendingUp,
+  Trophy,
   Wallet,
   Wrench,
   XCircle,
@@ -591,6 +592,48 @@ export function ReportMonthView({
               <p className="text-sm leading-relaxed text-white/80">{month.comparison.warning}</p>
             </motion.div>
           ) : null}
+        </ReportSection>
+      ) : null}
+
+      {/* Marco / semestre */}
+      {month.milestone ? (
+        <ReportSection
+          eyebrow={`${next()} · 1º semestre`}
+          title={
+            <>
+              {month.milestone.title} <Soft>{month.milestone.titleSoft}</Soft>
+            </>
+          }
+          intro={month.milestone.intro}
+          elevated
+        >
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {month.milestone.kpis.map((kpi, i) => (
+              <motion.div
+                key={kpi.label}
+                {...fadeUp}
+                transition={{ ...fadeUp.transition, delay: i * 0.08 }}
+                className="rounded-2xl border border-white/[0.06] bg-white/[0.03] p-6"
+              >
+                <div className="text-[11px] uppercase tracking-[0.18em] text-white/35">
+                  {kpi.label}
+                </div>
+                <div className="font-display mt-3 text-4xl tracking-tight text-white md:text-5xl">
+                  {kpi.value}
+                </div>
+                <p className="mt-4 text-sm leading-relaxed text-white/50">{kpi.note}</p>
+              </motion.div>
+            ))}
+          </div>
+          <motion.blockquote
+            {...fadeUp}
+            className="mt-10 rounded-3xl border border-white/15 bg-white p-8 text-[#090909] md:p-12"
+          >
+            <Trophy className="h-6 w-6 text-black/40" />
+            <p className="font-display mt-6 text-2xl leading-[1.15] md:text-3xl">
+              “{month.milestone.quote.replace(/^["“]|["”]$/g, "")}”
+            </p>
+          </motion.blockquote>
         </ReportSection>
       ) : null}
 

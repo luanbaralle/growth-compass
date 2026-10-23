@@ -144,6 +144,14 @@ export type ReportMonth = {
     creditsTitle: string;
     creditsText: string;
   };
+  /** Recap de marco (ex.: 1º semestre). Opcional, não quebra meses anteriores. */
+  milestone?: {
+    title: string;
+    titleSoft: string;
+    intro: string;
+    kpis: { value: string; label: string; note: string }[];
+    quote: string;
+  };
   conclusion: {
     title: string;
     titleSoft: string;
