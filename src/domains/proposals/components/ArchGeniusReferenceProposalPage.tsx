@@ -10,10 +10,7 @@ import {
 } from "../reference/arch-genius-content";
 import { ProposalMetricsCards } from "../components/ProposalMetricsCards";
 import {
-  ProposalDeliverableGrid,
   ProposalExclusionsPanel,
-  ProposalExpansionCard,
-  ProposalMovementCards,
   ProposalRoadmapTimeline,
   polishedCard,
 } from "../components/ProposalReferenceBlocks";
@@ -46,7 +43,6 @@ import {
   Home,
   Layers,
   LayoutTemplate,
-  LineChart,
   Megaphone,
   MessageCircle,
   MousePointerClick,
@@ -59,7 +55,7 @@ import {
 } from "lucide-react";
 import type { ReactNode } from "react";
 
-const CLOSING_FLOW_ICONS = [Target, LayoutTemplate, Megaphone, MessageCircle, FileCheck2] as const;
+const FLOW_ICONS = [Search, Megaphone, LayoutTemplate, MessageCircle, FileCheck2] as const;
 
 function OperationFlowDiagram({
   label,
@@ -76,7 +72,7 @@ function OperationFlowDiagram({
 
       <ol className="mx-auto flex max-w-[220px] flex-col items-center gap-0 sm:hidden">
         {steps.map((step, i) => {
-          const Icon = CLOSING_FLOW_ICONS[i] ?? Sparkles;
+          const Icon = FLOW_ICONS[i] ?? Sparkles;
           const isLast = i === steps.length - 1;
           return (
             <li key={step.label} className="flex w-full flex-col items-center">
@@ -99,7 +95,7 @@ function OperationFlowDiagram({
 
       <ol className="mx-auto hidden max-w-4xl items-stretch justify-center gap-0 sm:flex">
         {steps.map((step, i) => {
-          const Icon = CLOSING_FLOW_ICONS[i] ?? Sparkles;
+          const Icon = FLOW_ICONS[i] ?? Sparkles;
           const isLast = i === steps.length - 1;
           return (
             <li key={step.label} className="flex min-w-0 flex-1 items-center">
@@ -285,10 +281,6 @@ export function ArchGeniusReferenceProposalPage({ proposal }: { proposal: Propos
                 ))}
               </ul>
 
-              <p className="mt-6 max-w-md text-[13px] leading-relaxed text-white/48">
-                {C.hero.footnote}
-              </p>
-
               <a
                 href="#arquitetura"
                 className="mt-7 inline-flex items-center gap-2 rounded-lg border border-emerald-500/25 bg-emerald-500/10 px-4 py-2.5 text-sm font-medium text-emerald-300 transition-colors hover:bg-emerald-500/15"
@@ -339,64 +331,21 @@ export function ArchGeniusReferenceProposalPage({ proposal }: { proposal: Propos
       </nav>
 
       <main>
-        <Section id="partida" label="01. O ponto de partida" title={C.diagnosis.headline} icon={Building2}>
+        <Section
+          id="partida"
+          label="01. Ponto de partida e diagnóstico"
+          title={C.diagnosis.headline}
+          icon={Building2}
+        >
           <p className="mb-8 max-w-3xl text-lg leading-relaxed text-white/80 sm:text-xl">
-            {C.diagnosis.subheadline}
+            {C.diagnosis.lead}
           </p>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            {C.diagnosis.findings.map((item, i) => (
-              <article key={item.title} className={polishedCard}>
-                <div
-                  className={cn(
-                    "h-1 bg-gradient-to-r",
-                    i % 2 === 0 ? "from-emerald-500/70 to-transparent" : "from-sky-500/60 to-transparent",
-                  )}
-                />
-                <div className="p-5 sm:p-6">
-                  <span className="font-mono text-[10px] font-semibold text-white/30">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <h3 className="mt-1 text-base font-semibold text-white">{item.title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-white/55">{item.body}</p>
-                </div>
-              </article>
-            ))}
-          </div>
-
-          <p className="mb-4 mt-10 text-[10px] font-bold uppercase tracking-[0.16em] text-white/38">
-            Áreas de atuação identificadas
+          <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.16em] text-white/38">
+            {C.diagnosis.challengesTitle}
           </p>
-          <ul className="grid gap-2 sm:grid-cols-2">
-            {C.diagnosis.practiceAreas.map((item, i) => {
-              const Icon = AREA_ICONS[i] ?? Check;
-              return (
-                <li
-                  key={item}
-                  className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3.5 py-3 text-[13px] font-medium text-white/75"
-                >
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10">
-                    <Icon className="h-3.5 w-3.5 text-emerald-400/85" strokeWidth={2} />
-                  </span>
-                  {item}
-                </li>
-              );
-            })}
-          </ul>
-          <p className="mt-4 text-xs leading-relaxed text-white/40">{C.diagnosis.practiceNote}</p>
-
-          <div className={cn(polishedCard, "mt-8")}>
-            <div className="h-1 bg-gradient-to-r from-emerald-500/60 to-transparent" />
-            <div className="flex gap-4 p-5 sm:p-6">
-              <IconPill icon={Target} className="mt-0.5 bg-emerald-500/10" />
-              <p className="text-base font-semibold leading-relaxed text-white">{C.diagnosis.closing}</p>
-            </div>
-          </div>
-        </Section>
-
-        <Section id="desafio" label="02. O desafio" title={C.challenge.headline} alt icon={Eye}>
           <div className="grid gap-4 sm:grid-cols-2">
-            {C.challenge.items.map((item) => {
+            {C.diagnosis.challenges.map((item) => {
               const Icon = CHALLENGE_ICONS[item.title] ?? Sparkles;
               return (
                 <article key={item.title} className={polishedCard}>
@@ -414,40 +363,48 @@ export function ArchGeniusReferenceProposalPage({ proposal }: { proposal: Propos
               );
             })}
           </div>
-          <p className="mt-8 max-w-3xl rounded-xl border border-emerald-500/15 bg-emerald-500/[0.04] px-4 py-3.5 text-base font-semibold leading-relaxed text-white/85">
-            {C.challenge.closing}
+
+          <p className="mb-4 mt-10 text-[10px] font-bold uppercase tracking-[0.16em] text-white/38">
+            {C.diagnosis.practiceTitle}
           </p>
+          <ul className="grid gap-2 sm:grid-cols-2">
+            {C.diagnosis.practiceAreas.map((item, i) => {
+              const Icon = AREA_ICONS[i] ?? Check;
+              return (
+                <li
+                  key={item}
+                  className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3.5 py-3 text-[13px] font-medium text-white/75"
+                >
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10">
+                    <Icon className="h-3.5 w-3.5 text-emerald-400/85" strokeWidth={2} />
+                  </span>
+                  {item}
+                </li>
+              );
+            })}
+          </ul>
+
+          <div className={cn(polishedCard, "mt-8")}>
+            <div className="h-1 bg-gradient-to-r from-emerald-500/60 to-transparent" />
+            <div className="flex gap-4 p-5 sm:p-6">
+              <IconPill icon={Target} className="mt-0.5 bg-emerald-500/10" />
+              <p className="text-base font-semibold leading-relaxed text-white">{C.diagnosis.closing}</p>
+            </div>
+          </div>
         </Section>
 
         <Section
           id="oportunidade"
-          label="03. A oportunidade"
+          label="02. Oportunidade e direcionamento"
           title={C.opportunity.headline}
+          alt
           icon={Search}
         >
-          <div className="mb-10 overflow-hidden rounded-2xl border border-emerald-500/25 bg-gradient-to-br from-emerald-500/[0.12] via-white/[0.03] to-transparent">
-            <div className="h-1 bg-gradient-to-r from-emerald-500/80 to-emerald-500/20" />
-            <div className="p-5 sm:p-6 lg:p-7">
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-400/80">
-                {C.opportunity.recommendation.eyebrow}
-              </p>
-              <h3 className="mt-3 max-w-3xl text-xl font-bold tracking-tight text-white sm:text-2xl">
-                {C.opportunity.recommendation.headline}
-              </h3>
-              <p className="mt-4 max-w-3xl text-sm leading-relaxed text-white/70 sm:text-[15px]">
-                {C.opportunity.recommendation.body}
-              </p>
-              <p className="mt-4 max-w-3xl text-xs leading-relaxed text-white/45">
-                {C.opportunity.recommendation.method}
-              </p>
-            </div>
-          </div>
+          <p className="mb-8 max-w-3xl text-base leading-relaxed text-white/65">{C.opportunity.lead}</p>
 
-          <p className="mb-6 max-w-3xl text-base leading-relaxed text-white/65">{C.opportunity.lead}</p>
-          <p className="mb-8 max-w-3xl rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3.5 text-sm leading-relaxed text-white/70">
-            {C.opportunity.isolatedLp}
+          <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.16em] text-white/38">
+            {C.opportunity.frontsTitle}
           </p>
-
           <div className="grid gap-3 sm:grid-cols-2">
             {C.opportunity.fronts.map((front) => {
               const Icon = FRONT_ICONS[front.title] ?? Megaphone;
@@ -483,14 +440,26 @@ export function ArchGeniusReferenceProposalPage({ proposal }: { proposal: Propos
             ))}
           </div>
 
-          <OperationFlowDiagram label={C.opportunity.flowLabel} steps={C.opportunity.flow} />
+          <div className="mt-10 overflow-hidden rounded-2xl border border-emerald-500/25 bg-gradient-to-br from-emerald-500/[0.12] via-white/[0.03] to-transparent">
+            <div className="h-1 bg-gradient-to-r from-emerald-500/80 to-emerald-500/20" />
+            <div className="p-5 sm:p-6 lg:p-7">
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-400/80">
+                {C.opportunity.strategyEyebrow}
+              </p>
+              <h3 className="mt-3 max-w-3xl text-xl font-bold tracking-tight text-white sm:text-2xl">
+                {C.opportunity.strategyHeadline}
+              </h3>
+              <p className="mt-4 max-w-3xl text-sm leading-relaxed text-white/70 sm:text-[15px]">
+                {C.opportunity.strategyBody}
+              </p>
+            </div>
+          </div>
         </Section>
 
         <Section
           id="arquitetura"
-          label="04. Arquitetura da presença digital"
+          label="03. Arquitetura da solução"
           title={C.architecture.headline}
-          alt
           icon={Layers}
         >
           <p className="mb-8 max-w-3xl text-base leading-relaxed text-white/65">{C.architecture.lead}</p>
@@ -522,149 +491,43 @@ export function ArchGeniusReferenceProposalPage({ proposal }: { proposal: Propos
                       </li>
                     ))}
                   </ul>
-                  <p className="mt-4 text-xs leading-relaxed text-white/40">{layer.note}</p>
                 </div>
               </article>
             ))}
           </div>
           <OperationFlowDiagram label={C.architecture.diagramLabel} steps={C.architecture.diagram} />
+          <p className="mt-5 text-center text-sm leading-relaxed text-white/50">
+            {C.architecture.diagramNote}
+          </p>
         </Section>
 
         <Section
-          id="solucao"
-          label="05. A solução proposta"
-          title="O que vamos construir e como as partes se conectam."
-          icon={Sparkles}
+          id="entregas"
+          label="04. Entregas e implantação"
+          title={C.delivery.headline}
+          alt
+          icon={FileCheck2}
         >
-          <div className="mb-8 flex flex-wrap gap-2">
-            {C.pillars.map((step, i) => (
-              <div key={step.badge} className="flex items-center gap-2">
-                {i > 0 && <ArrowRight className="h-3.5 w-3.5 text-emerald-400/40" />}
-                <span className="rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-emerald-300/90">
-                  {step.number} · {step.badge}
-                </span>
-              </div>
-            ))}
-          </div>
-          <ProposalMovementCards movements={C.pillars} />
-
-          <div className="mt-10">
-            <div className="flex items-start gap-3">
-              <IconPill icon={Megaphone} />
-              <div>
-                <p className={r1LabelClass}>Aquisição</p>
-                <h3 className="mt-2 max-w-3xl text-xl font-bold tracking-tight text-white sm:text-2xl">
-                  {C.ads.headline}
-                </h3>
-              </div>
-            </div>
-            <p className="mt-4 max-w-3xl text-sm leading-relaxed text-white/60">{C.ads.lead}</p>
-            <ol className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-              {C.ads.logic.map((item, i) => (
-                <li
-                  key={item}
-                  className="flex gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3.5 py-3"
-                >
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 font-mono text-[11px] font-semibold text-emerald-400/80">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <p className="text-sm font-medium text-white/75">{item}</p>
-                </li>
-              ))}
-            </ol>
-            <p className="mt-5 max-w-3xl rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3.5 text-sm font-medium text-white/80">
-              {C.ads.principle}
-            </p>
-          </div>
+          <p className="mb-8 max-w-3xl text-base leading-relaxed text-white/65">{C.delivery.lead}</p>
+          <ProposalRoadmapTimeline phases={C.delivery.phases} />
 
           <div className="mt-12">
-            <div className="flex items-start gap-3">
-              <IconPill icon={MousePointerClick} />
-              <div>
-                <p className={r1LabelClass}>Conversão</p>
-                <h3 className="mt-2 max-w-3xl text-xl font-bold tracking-tight text-white sm:text-2xl">
-                  {C.funnel.headline}
-                </h3>
-              </div>
-            </div>
-            <p className="mt-4 max-w-3xl text-sm leading-relaxed text-white/60">{C.funnel.lead}</p>
-            <ol className="mt-6 flex flex-wrap items-stretch gap-2">
-              {C.funnel.steps.map((step, i) => (
-                <li key={step} className="flex items-center gap-2">
-                  {i > 0 && <ArrowRight className="hidden h-3.5 w-3.5 shrink-0 text-emerald-400/40 sm:block" />}
-                  <div className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3 py-2">
-                    <span className="font-mono text-[10px] text-emerald-400/70">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <span className="text-[13px] font-medium text-white/80">{step}</span>
-                  </div>
-                </li>
-              ))}
-            </ol>
-            <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {C.funnel.distinctions.map((item) => (
-                <div
-                  key={item.label}
-                  className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4"
-                >
-                  <p className="text-sm font-semibold text-white">{item.label}</p>
-                  <p className="mt-1.5 text-xs leading-relaxed text-white/50">{item.detail}</p>
-                </div>
-              ))}
-            </div>
-            <p className="mt-4 text-xs leading-relaxed text-white/40">{C.funnel.opsNote}</p>
-          </div>
-        </Section>
-
-        <Section id="projeto" label="06. O projeto" title="Como a reconstrução será entregue." alt icon={FileCheck2}>
-          <ProposalDeliverableGrid blocks={C.project} />
-          <div className="mt-12">
-            <div className="flex items-start gap-3">
-              <IconPill icon={Sparkles} />
-              <div>
-                <p className={r1LabelClass}>Fases de implantação</p>
-                <h3 className="mt-2 text-xl font-bold tracking-tight text-white sm:text-2xl">
-                  Começamos pelo essencial. Evoluímos conforme os dados.
-                </h3>
-              </div>
-            </div>
-            <div className="mt-8">
-              <ProposalRoadmapTimeline phases={C.roadmap} />
-            </div>
-            <ProposalExpansionCard
-              number={C.expansion.number}
-              title={C.expansion.title}
-              subtitle={C.expansion.subtitle}
-              items={C.expansion.items}
-            />
-            <p className="mt-4 max-w-3xl text-xs leading-relaxed text-white/40">{C.expansion.aiNote}</p>
-          </div>
-
-          <div className="mt-12">
-            <div className="flex items-start gap-3">
-              <IconPill icon={LineChart} />
-              <div>
-                <p className={r1LabelClass}>O que acompanhamos na gestão</p>
-                <h3 className="mt-2 text-xl font-bold tracking-tight text-white sm:text-2xl">
-                  {C.metrics.headline}
-                </h3>
-              </div>
-            </div>
-            <div className="mt-8">
+            <p className={r1LabelClass}>{C.delivery.metricsHeadline}</p>
+            <div className="mt-6">
               <ProposalMetricsCards
                 categories={[
-                  { title: "Aquisição", items: C.metrics.acquisition },
-                  { title: "Interesse", items: C.metrics.interest },
-                  { title: "Qualificação", items: C.metrics.qualification },
-                  { title: "Resultado comercial", items: C.metrics.result },
+                  { title: "Aquisição", items: C.delivery.metrics.acquisition },
+                  { title: "Conversão", items: C.delivery.metrics.conversion },
+                  { title: "Qualificação", items: C.delivery.metrics.qualification },
+                  { title: "Resultado comercial", items: C.delivery.metrics.result },
                 ]}
-                note={C.metrics.note}
+                note={C.delivery.metrics.note}
               />
             </div>
           </div>
         </Section>
 
-        <Section id="investimento" label="07. Investimento" title={inv.title} icon={CircleDollarSign}>
+        <Section id="investimento" label="05. Investimento" title={inv.title} icon={CircleDollarSign}>
           <p className="mb-8 max-w-3xl text-base leading-relaxed text-white/65">{inv.intro}</p>
 
           <div className={cn(polishedCard, "border-emerald-500/20")}>
@@ -709,31 +572,6 @@ export function ArchGeniusReferenceProposalPage({ proposal }: { proposal: Propos
                   <p className="text-base font-bold text-white">{inv.implementation.totalAmount}</p>
                 </div>
               </div>
-
-              <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                {inv.implementation.breakdown.map((front) => (
-                  <article
-                    key={front.title}
-                    className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <h4 className="text-sm font-semibold text-white">{front.title}</h4>
-                      <span className="shrink-0 text-xs font-semibold text-emerald-300/80">
-                        {front.amount}
-                      </span>
-                    </div>
-                    <ul className="mt-3 space-y-1.5">
-                      {front.items.map((item) => (
-                        <li key={item} className="flex items-start gap-2 text-xs leading-relaxed text-white/55">
-                          <Check className="mt-0.5 h-3 w-3 shrink-0 text-emerald-400/70" strokeWidth={2.5} />
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </article>
-                ))}
-              </div>
-              <p className="mt-5 text-xs leading-relaxed text-white/40">{inv.implementation.boundary}</p>
             </div>
           </div>
 
@@ -756,9 +594,6 @@ export function ArchGeniusReferenceProposalPage({ proposal }: { proposal: Propos
                   </div>
                   <p className="mt-2 text-[11px] leading-relaxed text-white/45">
                     {inv.management.firstCycleNote}
-                  </p>
-                  <p className="mt-2 text-[11px] leading-relaxed text-white/45">
-                    {inv.management.scopeNote}
                   </p>
                 </div>
                 <ul className="mt-5 space-y-2">
@@ -787,10 +622,7 @@ export function ArchGeniusReferenceProposalPage({ proposal }: { proposal: Propos
                   <p className="mt-1 text-sm font-semibold text-sky-300/90">{inv.media.monthlyApprox}</p>
                 </div>
                 <p className="mt-3 text-sm leading-relaxed text-white/55">{inv.media.lead}</p>
-                <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.12em] text-sky-400/70">
-                  {inv.media.recommendLabel}
-                </p>
-                <ul className="mt-3 space-y-2">
+                <ul className="mt-5 space-y-2">
                   {mediaTier.items.map((item) => (
                     <li
                       key={item}
@@ -839,47 +671,20 @@ export function ArchGeniusReferenceProposalPage({ proposal }: { proposal: Propos
             </div>
           </div>
 
-          <div className="mt-6 overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.02]">
-            <div className="h-1 bg-white/15" />
-            <div className="p-5 sm:p-6">
-              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/38">
-                Condições e limites de escopo
-              </p>
-              <ul className="mt-4 space-y-2">
-                {inv.conditions.map((item) => (
-                  <li key={item} className="flex items-start gap-2.5 text-sm leading-relaxed text-white/65">
-                    <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400/70" strokeWidth={2.5} />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          <div className={cn(polishedCard, "mt-6")}>
-            <div className="h-1 bg-gradient-to-r from-emerald-500/60 to-transparent" />
-            <div className="p-5 sm:p-6">
-              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-400/70">
-                {inv.direction.title}
-              </p>
-              <p className="mt-3 text-sm leading-relaxed text-white/70">{inv.direction.body}</p>
-              <p className="mt-3 text-xs leading-relaxed text-white/40">{inv.direction.caution}</p>
-            </div>
-          </div>
-
-          <div className="mt-6 rounded-xl border border-white/[0.08] bg-white/[0.03] px-5 py-4 sm:px-6">
-            <p className="text-sm font-semibold text-white/85">{inv.leanTitle}</p>
-            <p className="mt-1.5 text-sm leading-relaxed text-white/55">{inv.leanBody}</p>
-            <p className="mt-3 text-xs leading-relaxed text-white/40">{inv.materialsNote}</p>
-            <p className="mt-2 text-xs leading-relaxed text-white/40">{inv.timelineNote}</p>
-            <p className="mt-3 text-xs leading-relaxed text-white/40">{inv.footer}</p>
-          </div>
+          <ul className="mt-6 space-y-2 rounded-xl border border-white/[0.08] bg-white/[0.02] px-5 py-4 sm:px-6">
+            {inv.conditions.map((item) => (
+              <li key={item} className="flex items-start gap-2.5 text-sm leading-relaxed text-white/65">
+                <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400/70" strokeWidth={2.5} />
+                {item}
+              </li>
+            ))}
+          </ul>
         </Section>
 
         <Section
           id="escopo"
-          label="08. Escopo e limites"
-          title="O que entra na implantação e o que fica de fora."
+          label="06. Escopo e limites"
+          title="O que está incluído e o que será contratado separadamente."
           alt
           icon={Target}
         >
@@ -903,23 +708,21 @@ export function ArchGeniusReferenceProposalPage({ proposal }: { proposal: Propos
             </div>
           </article>
           <ProposalExclusionsPanel wont={C.exclusions.wont} will={C.exclusions.will} />
+          <div className="mt-6 space-y-3 rounded-xl border border-white/[0.08] bg-white/[0.02] px-5 py-4 sm:px-6">
+            <p className="text-sm leading-relaxed text-white/65">{C.exclusions.extras}</p>
+            <p className="text-sm leading-relaxed text-white/65">{C.exclusions.materials}</p>
+            <p className="text-sm leading-relaxed text-white/65">{C.exclusions.timeline}</p>
+            <p className="text-sm leading-relaxed text-white/50">{C.exclusions.expectation}</p>
+          </div>
         </Section>
 
-        <Section
-          id="visao"
-          label="09. Por que a Raise One"
-          title={C.whyRaiseOne.headline}
-          icon={Handshake}
-        >
+        <Section id="visao" label="07. Por que a Raise One" title={C.whyRaiseOne.headline} icon={Handshake}>
           <p className="mb-8 max-w-3xl text-base leading-relaxed text-white/65">{C.whyRaiseOne.lead}</p>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {C.whyRaiseOne.pillars.map((p) => {
               const Icon = WHY_ICONS[p.title] ?? Sparkles;
               return (
-                <div
-                  key={p.title}
-                  className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4"
-                >
+                <div key={p.title} className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4">
                   <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10">
                     <Icon className="h-4 w-4 text-emerald-400" strokeWidth={2} />
                   </span>
@@ -929,12 +732,15 @@ export function ArchGeniusReferenceProposalPage({ proposal }: { proposal: Propos
               );
             })}
           </div>
-          <p className="mt-6 max-w-3xl text-xs leading-relaxed text-white/40">{C.outcome.caution}</p>
+          <p className="mt-8 max-w-3xl text-sm leading-relaxed text-white/65">{C.whyRaiseOne.roles}</p>
+          <p className="mt-3 max-w-3xl text-sm font-medium leading-relaxed text-white/80">
+            {C.whyRaiseOne.result}
+          </p>
         </Section>
 
         <Section
           id="proximos-passos"
-          label="10. Próximos passos"
+          label="08. Próximos passos"
           title="Como avançamos a partir daqui."
           alt
           icon={FileCheck2}
@@ -950,7 +756,7 @@ export function ArchGeniusReferenceProposalPage({ proposal }: { proposal: Propos
                     </span>
                     {!isLast && (
                       <span
-                        className="mt-1 w-px flex-1 min-h-[0.75rem] bg-gradient-to-b from-emerald-500/40 to-emerald-500/15"
+                        className="mt-1 min-h-[0.75rem] w-px flex-1 bg-gradient-to-b from-emerald-500/40 to-emerald-500/15"
                         aria-hidden
                       />
                     )}
@@ -981,9 +787,7 @@ export function ArchGeniusReferenceProposalPage({ proposal }: { proposal: Propos
             <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-white/65">
               {C.closing.body}
             </p>
-
-            <OperationFlowDiagram label={C.closing.flowLabel} steps={C.closing.flowSteps} />
-
+            <p className="mx-auto mt-6 text-base font-semibold text-white/85">{C.closing.line}</p>
             <p className="mt-10 text-sm font-medium text-emerald-400/80">{C.closing.brandLine}</p>
           </div>
         </section>
@@ -1008,7 +812,7 @@ export function ArchGeniusReferenceProposalPage({ proposal }: { proposal: Propos
             </a>
           )}
           <p className="mt-8 text-[11px] text-white/30">
-            {C.company} e Raise One Soluções
+            {C.company} × Raise One Soluções
           </p>
         </div>
       </footer>

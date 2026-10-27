@@ -2,10 +2,10 @@ import type { ProposalPricingTier } from "../types";
 
 /**
  * Proposta referência: Arch Genius Arquitetura.
- * Narrativa: reestruturação digital + aquisição: site institucional,
- * landing pages por frente e Google Ads progressivo.
- * Valores comerciais: implantação R$ 3.550, 1º mês de gestão gratuito,
- * gestão R$ 997/mês a partir do 2º mês, mídia R$ 900 a R$ 1.500/mês.
+ * Oito blocos comerciais: diagnóstico, oportunidade, arquitetura,
+ * entregas, investimento, escopo, Raise One e próximos passos.
+ * Valores: implantação R$ 3.550, 1º mês de gestão gratuito após o
+ * lançamento, gestão R$ 997/mês a partir do 2º mês, mídia R$ 900 a R$ 1.500/mês.
  */
 
 export const ARCH_GENIUS_PRICES_READY = true;
@@ -33,14 +33,13 @@ export const ARCH_GENIUS_PRICING: ProposalPricingTier[] = [
     frequency: "monthly",
     items: [
       "Pesquisa e refinamento de palavras-chave",
-      "Configuração e gestão das campanhas contratadas",
+      "Gestão das campanhas contratadas",
       "Otimização de anúncios, segmentações e orçamento",
       "Acompanhamento das conversões",
       "Análise da qualidade dos contatos e das oportunidades",
-      "Relatórios e recomendações de melhoria",
-      "Avaliação da expansão ou pausa das frentes de aquisição",
+      "Recomendações de melhoria e de expansão",
     ],
-    note: "O primeiro mês de gestão é gratuito. A partir do segundo mês, R$ 997,00/mês. Não inclui desenvolvimento contínuo de novas páginas, manutenção ilimitada do site ou alterações irrestritas de escopo.",
+    note: "O primeiro mês de gestão é gratuito e corresponde ao primeiro mês de operação das campanhas após o lançamento.",
   },
   {
     id: "media",
@@ -52,68 +51,27 @@ export const ARCH_GENIUS_PRICING: ProposalPricingTier[] = [
       "Verba paga diretamente à plataforma de anúncios",
       "Separada da remuneração da Raise One",
       "Concentrada em uma ou duas frentes prioritárias no início",
-      "Expansão gradual conforme dados e capacidade de atendimento",
     ],
-    note: "A verba de mídia não constitui receita da Raise One.",
+    note: "Estimativa inicial. A verba será definida e ajustada conforme as prioridades aprovadas.",
   },
 ];
 
 export const ARCH_GENIUS_INVESTMENT = {
-  title: "Investimento para reconstruir a presença digital e operar a aquisição.",
+  title: "Investimento para implantar a estrutura e operar a aquisição.",
   intro:
-    "A implantação remunera o planejamento, o novo site, até três landing pages e a preparação técnica. O primeiro mês de gestão de Google Ads é gratuito. A partir do segundo mês, a gestão é R$ 997,00. A verba de mídia é paga ao Google.",
+    "A implantação é pagamento único. O primeiro mês de gestão é gratuito. A verba de mídia é paga ao Google.",
   implementation: {
     code: "01",
     title: "Implantação digital",
     priceLine: "R$ 3.550,00",
     priceNote: "Pagamento único",
-    lead: "Quatro frentes integradas: planejamento, site institucional, landing pages comerciais e preparação técnica para aquisição.",
-    boundary:
-      "O site será reconstruído no escopo institucional aprovado. Estão incluídas até três landing pages. A identidade visual existente será aproveitada; rebranding completo não está incluído.",
+    lead: "Planejamento, site institucional, até três landing pages e preparação técnica para as campanhas contratadas.",
     breakdownTitle: "Composição da implantação",
     breakdown: [
-      {
-        title: "Planejamento e arquitetura digital",
-        amount: "R$ 700,00",
-        items: [
-          "Definição das prioridades comerciais",
-          "Organização da arquitetura do site",
-          "Estruturação das categorias de serviços",
-          "Definição das primeiras frentes de aquisição",
-        ],
-      },
-      {
-        title: "Reconstrução do site institucional",
-        amount: "R$ 1.500,00",
-        items: [
-          "Reconstrução da presença digital institucional",
-          "Aproveitamento da identidade visual existente",
-          "Organização da apresentação do escritório, serviços e portfólio",
-          "Navegação responsiva",
-          "Integração de contatos e chamadas para ação",
-        ],
-      },
-      {
-        title: "Até 3 landing pages comerciais",
-        amount: "R$ 750,00",
-        items: [
-          "Criação de até três páginas específicas por serviço",
-          "Conteúdo comercial orientado à conversão",
-          "Apresentação dos diferenciais e materiais fornecidos",
-          "Formulários, CTAs e integração com WhatsApp, quando aplicável",
-          "Integração visual e de navegação com o site institucional",
-        ],
-      },
-      {
-        title: "Conversões, integrações e preparação técnica",
-        amount: "R$ 600,00",
-        items: [
-          "Configuração inicial dos eventos de conversão acordados",
-          "Integração dos pontos de contato previstos",
-          "Validação técnica do rastreamento",
-          "Preparação da estrutura para as campanhas iniciais de Google Ads",
-        ],
-      },
+      { title: "Planejamento e arquitetura digital", amount: "R$ 700,00" },
+      { title: "Reconstrução do site institucional", amount: "R$ 1.500,00" },
+      { title: "Até 3 landing pages comerciais", amount: "R$ 750,00" },
+      { title: "Conversões, integrações e preparação técnica", amount: "R$ 600,00" },
     ],
     totalLabel: "Total da implantação",
     totalAmount: "R$ 3.550,00",
@@ -122,58 +80,36 @@ export const ARCH_GENIUS_INVESTMENT = {
     code: "02",
     title: "Gestão mensal de Google Ads",
     priceLine: "R$ 997,00/mês",
-    lead: "Operação contínua das campanhas contratadas, com análise de desempenho e recomendações de evolução.",
+    lead: "Operação das campanhas contratadas, com análise de desempenho e recomendações de evolução.",
     firstCycleBadge: "1º mês de gestão gratuito",
-    firstCycleNote: "A cobrança de R$ 997,00/mês começa a partir do segundo mês.",
-    scopeNote:
-      "A gestão mensal não inclui desenvolvimento contínuo de novas páginas, manutenção ilimitada do site ou alterações irrestritas de escopo.",
+    firstCycleNote:
+      "O mês gratuito começa com a ativação das campanhas, após o lançamento. A cobrança de R$ 997,00/mês começa no segundo mês de operação.",
   },
   media: {
     code: "03",
     title: "Investimento em mídia",
     dailyAmount: "R$ 900,00 a R$ 1.500,00/mês",
     monthlyApprox: "Pago diretamente ao Google",
-    lead: "Referência inicial de verba. O orçamento começa em uma ou duas frentes prioritárias, definidas conforme demanda, região, concorrência, margem e capacidade operacional.",
-    recommendLabel: "Princípios para a verba inicial",
+    lead: "Estimativa inicial, não um compromisso de gasto obrigatório dentro de uma faixa fixa. A verba começa em uma ou duas frentes prioritárias e será ajustada conforme as prioridades aprovadas.",
   },
   summary: {
-    title: "Resumo do investimento",
+    title: "Resumo financeiro",
     rows: [
-      { label: "Implantação digital, pagamento único", value: "R$ 3.550,00", tone: "default" },
-      { label: "1º mês de gestão de Google Ads", value: "R$ 0,00", tone: "highlight" },
-      { label: "Gestão de Google Ads a partir do 2º mês", value: "R$ 997,00/mês", tone: "default" },
-      { label: "Verba de mídia, paga diretamente ao Google", value: "R$ 900,00 a R$ 1.500,00/mês", tone: "media" },
-      { label: "Investimento total estimado no primeiro mês, incluindo mídia", value: "R$ 4.450,00 a R$ 5.050,00", tone: "range" },
+      { label: "Implantação, pagamento único", value: "R$ 3.550,00", tone: "default" },
+      { label: "Gestão no primeiro mês", value: "R$ 0,00", tone: "highlight" },
+      { label: "Mídia no primeiro mês", value: "R$ 900,00 a R$ 1.500,00", tone: "media" },
+      { label: "Investimento total estimado no primeiro mês", value: "R$ 4.450,00 a R$ 5.050,00", tone: "range" },
+      { label: "Gestão a partir do segundo mês", value: "R$ 997,00/mês", tone: "default" },
+      { label: "Mídia a partir do segundo mês", value: "R$ 900,00 a R$ 1.500,00/mês", tone: "media" },
+      { label: "Investimento recorrente estimado a partir do segundo mês", value: "R$ 1.897,00 a R$ 2.497,00/mês", tone: "range" },
     ],
-    note: "O primeiro mês de gestão é gratuito. A verba de mídia é paga diretamente ao Google e permanece separada da remuneração da Raise One.",
+    note: "Os valores de mídia são estimativas iniciais. A verba é paga diretamente ao Google e permanece separada da remuneração da Raise One.",
   },
   conditions: [
     "A implantação é cobrada uma única vez.",
-    "O primeiro mês de gestão de Google Ads é gratuito.",
-    "A partir do segundo mês, a gestão de Google Ads é cobrada em R$ 997,00 por mês, conforme as condições do contrato.",
-    "O site será reconstruído dentro do escopo institucional aprovado.",
-    "Estão incluídas até três landing pages comerciais.",
-    "Páginas adicionais, funcionalidades especiais e integrações complexas serão orçadas separadamente.",
-    "A identidade visual existente será aproveitada; um projeto completo de rebranding não está incluído.",
-    "Fotografias, projetos, informações técnicas e autorizações de divulgação serão fornecidos pela Arch Genius.",
-    "Produção audiovisual, gestão de redes sociais, Meta Ads, automações avançadas, sistemas próprios, licenças de terceiros e verba de mídia não estão incluídos na implantação.",
-    "O prazo será definido após a aprovação do escopo, a disponibilização dos materiais e a liberação dos acessos.",
+    "O primeiro mês de gestão é gratuito e corresponde ao primeiro mês de operação das campanhas após o lançamento.",
+    "A partir do segundo mês de operação, a gestão é cobrada em R$ 997,00 por mês.",
   ],
-  direction: {
-    title: "Direcionamento estratégico",
-    body: "A proposta combina uma base institucional reconstruída, páginas comerciais específicas e aquisição digital mensurável. O objetivo é apresentar melhor as competências da Arch Genius, conectar cada serviço à demanda correspondente e criar uma estrutura que possa crescer progressivamente, sem anunciar todas as frentes ao mesmo tempo.",
-    caution:
-      "Não há promessa de volume específico de leads ou contratos. O compromisso é entregar a estrutura definida, preparar a mensuração e otimizar as campanhas contratadas com base nos dados disponíveis.",
-  },
-  leanTitle: "Base institucional reconstruída. Aquisição progressiva.",
-  leanBody:
-    "A implantação entrega o site, até três landing pages e a preparação técnica. O primeiro mês de gestão é gratuito. A partir do segundo mês, a gestão opera as campanhas por R$ 997,00. Novas páginas e novas frentes entram como expansão, com escopo e aprovação próprios.",
-  materialsNote:
-    "Fotografias, projetos e autorizações de divulgação são fornecidos pela Arch Genius. A Raise One organiza a apresentação comercial desses materiais na nova estrutura.",
-  timelineNote:
-    "O prazo de implantação é definido após a aprovação do escopo, a disponibilização dos materiais e a liberação dos acessos.",
-  footer:
-    "Produções audiovisuais, gestão de redes sociais, Meta Ads, páginas ou campanhas adicionais, automações avançadas ou soluções de IA poderão ser contratados separadamente, mediante definição e aprovação de escopo.",
 };
 
 export const ARCH_GENIUS_REFERENCE = {
@@ -184,36 +120,35 @@ export const ARCH_GENIUS_REFERENCE = {
     eyebrow: "Proposta comercial",
     headline: "Reestruturação Digital e Aquisição de Clientes",
     headlineLines: ["Reestruturação Digital", "e Aquisição de Clientes"] as const,
-    lead: "Uma nova estrutura digital para conectar a identidade, o portfólio e os serviços da Arch Genius a uma estratégia de aquisição de clientes orientada por intenção de busca.",
+    lead: "Uma estrutura digital integrada para fortalecer a presença da Arch Genius, organizar o portfólio e transformar a intenção de busca em oportunidades comerciais mensuráveis.",
     strategyLine: "Marketing + Tecnologia + IA",
-    pillars: ["Site institucional", "Landing pages", "Google Ads", "Conversão e mensuração"],
-    footnote:
-      "Uma presença digital integrada, não uma atualização visual isolada nem um conjunto de páginas soltas ao lado do site atual.",
+    pillars: ["Site institucional", "Até 3 landing pages", "Google Ads", "Conversão e mensuração"],
     cta: "Conhecer o projeto",
   },
 
   diagnosis: {
     headline: "Uma operação com diferentes competências e oportunidades de crescimento.",
-    subheadline:
-      "O escritório já possui identidade visual, site, portfólio e experiência em frentes da arquitetura e da engenharia. A aquisição ocorre predominantemente por indicação. O próximo passo é reconstruir a presença digital para apresentar essas competências com consistência e gerar oportunidades comerciais mensuráveis.",
-    findings: [
+    lead: "A Arch Genius já possui identidade visual, site, portfólio e experiência em diferentes frentes da arquitetura, engenharia e serviços técnicos. Hoje, a aquisição de clientes ocorre predominantemente por indicação e networking. O próximo passo é organizar essa estrutura digital para comunicar melhor as competências do escritório e ampliar a captação de oportunidades.",
+    challengesTitle: "Principais desafios identificados",
+    challenges: [
       {
-        title: "Identidade e presença",
-        body: "Identidade visual estabelecida, site e portfólio existentes, uma base aproveitável para uma reconstrução orientada à conversão.",
+        title: "Comunicação",
+        body: "Diferentes serviços competem pela mesma mensagem, dificultando a identificação da solução ideal para cada cliente.",
       },
       {
-        title: "Competências amplas",
-        body: "Experiência em diferentes frentes de arquitetura, engenharia e serviços técnicos relacionados.",
+        title: "Aquisição",
+        body: "A dependência de indicações limita a previsibilidade de novas oportunidades.",
       },
       {
-        title: "Aquisição por relacionamento",
-        body: "Clientes chegam principalmente por indicação e networking profissional, com interesse em ampliar a captação digital.",
+        title: "Conversão",
+        body: "O site precisa conduzir cada visitante a um caminho claro de contato e orçamento.",
       },
       {
-        title: "Materiais aproveitáveis",
-        body: "Projetos e materiais existentes que podem fortalecer a apresentação comercial quando bem organizados.",
+        title: "Capacidade operacional",
+        body: "A aquisição deve priorizar serviços compatíveis com a margem, a estrutura de atendimento e a capacidade de execução do escritório.",
       },
     ],
+    practiceTitle: "Áreas de atuação identificadas",
     practiceAreas: [
       "Arquitetura e urbanismo",
       "Projetos residenciais e comerciais",
@@ -224,469 +159,263 @@ export const ARCH_GENIUS_REFERENCE = {
       "Vistorias e avaliações",
       "Segurança contra incêndio e serviços técnicos",
     ],
-    practiceNote:
-      "Síntese inicial do diagnóstico. Não significa que todas as frentes serão anunciadas ou desenvolvidas como landing page na primeira implantação.",
     closing:
-      "O desafio não é a ausência de capacidade técnica. É organizar o que já existe em uma estrutura digital consistente.",
-  },
-
-  challenge: {
-    headline: "Um portfólio amplo precisa de uma estratégia comercial igualmente organizada.",
-    items: [
-      {
-        title: "Comunicação",
-        body: "Muitos serviços competem pela mesma mensagem. O visitante precisa interpretar o portfólio, em vez de reconhecer a solução para o próprio problema.",
-      },
-      {
-        title: "Aquisição",
-        body: "A captação depende de indicações. Sem um canal digital organizado, novas oportunidades não têm previsibilidade.",
-      },
-      {
-        title: "Conversão",
-        body: "O site apresenta competências, mas ainda não conduz cada perfil a um caminho claro de contato.",
-      },
-      {
-        title: "Capacidade operacional",
-        body: "Mais contatos sem filtro aumentam visitas e orçamentos sem garantir margem. A aquisição precisa respeitar o que o escritório consegue atender bem.",
-      },
-    ],
-    closing:
-      "O objetivo não é simplesmente gerar mais contatos. É criar uma presença digital capaz de atrair oportunidades compatíveis com o negócio.",
+      "O desafio não é a ausência de capacidade técnica. É organizar essa diversidade em uma estrutura digital e comercial mais eficiente.",
   },
 
   opportunity: {
-    headline: "Existem diferentes demandas. Precisamos escolher onde competir primeiro.",
-    lead: "Pessoas e empresas procuram soluções específicas. Cada demanda pode exigir uma oferta, uma comunicação e uma página próprias, em vez de concentrar tudo em uma mensagem genérica.",
-    isolatedLp:
-      "Uma landing page isolada pode atender a uma campanha específica, mas não resolve a necessidade de uma presença digital institucional consistente. Por isso, a proposta contempla a reconstrução do site e a criação de páginas comerciais conectadas, mantendo uma experiência uniforme para quem conhece a Arch Genius por diferentes canais.",
+    headline: "Uma base integrada. Diferentes frentes de aquisição.",
+    lead: "A recomendação é reconstruir o site institucional e conectá-lo a páginas comerciais específicas, cada uma direcionada a uma demanda e a uma estratégia de aquisição. Pessoas e empresas procuram soluções diferentes. Cada serviço prioritário precisa apresentar proposta de valor, diferenciais e um caminho objetivo para contato.",
+    frontsTitle: "Frentes potenciais para aquisição",
     fronts: [
       {
         title: "Projetos e reformas residenciais",
-        body: "Demanda com intenção de busca relevante; combina com crescimento via Google. Ainda precisamos validar ticket, região e capacidade.",
+        body: "Demanda a validar conforme região, ticket e capacidade de atendimento.",
       },
       {
         title: "Projetos comerciais e industriais",
-        body: "Frente com potencial de trabalhos de maior porte; exige clareza sobre o que se entrega diretamente e o que depende de parceiros.",
+        body: "Potencial para trabalhos de maior porte, condicionado à definição dos serviços executados diretamente e daqueles que dependem de parceiros.",
       },
       {
         title: "Regularização imobiliária",
-        body: "Serviço específico, com público e jornada próprios. Pode ser candidato a página e campanha dedicadas se houver prioridade.",
+        body: "Serviço com público e jornada próprios, candidato a uma página e campanha dedicadas.",
       },
       {
         title: "Segurança contra incêndio e serviços técnicos",
-        body: "Operação mencionada com tração e rede de parceiros; antes de anunciar, confirmar quem contrata, executa e responde tecnicamente.",
+        body: "Frente a avaliar conforme o modelo de contratação, a execução e as responsabilidades técnicas envolvidas.",
       },
     ],
     frontsNote:
-      "Hipóteses de arquitetura comercial. Nem todas precisam ser desenvolvidas ou anunciadas na primeira implantação.",
-    recommendation: {
-      eyebrow: "Direcionamento recomendado",
-      headline: "Base digital integrada. Aquisição progressiva.",
-      body: "Reconstruímos o site institucional e as páginas comerciais previstas no contrato. A aquisição começa por uma ou duas frentes de Google Ads e evolui conforme a demanda, a capacidade operacional e os dados justificarem.",
-      method:
-        "A arquitetura pode comportar outras frentes. A ativação das campanhas não precisa, e não deve, acontecer toda de uma vez.",
-    },
-    criteriaTitle: "A escolha das primeiras frentes de aquisição deverá considerar",
+      "Hipóteses comerciais, não uma definição de que todas serão anunciadas no lançamento. A implantação inclui até três landing pages, escolhidas em conjunto após a validação das prioridades.",
+    criteriaTitle: "Critérios para definir as prioridades",
     criteria: [
       "Demanda de pesquisa",
-      "Valor e margem dos serviços",
       "Concorrência",
       "Região atendida",
+      "Valor e margem dos serviços",
       "Capacidade de entrega",
       "Disponibilidade de profissionais e parceiros",
     ],
-    flowLabel: "Jornada comercial integrada",
-    flow: [
-      { label: "Site institucional", hint: "Marca e credibilidade" },
-      { label: "Página do serviço", hint: "Oferta específica" },
-      { label: "Google Ads", hint: "Intenção de busca" },
-      { label: "Contato", hint: "Formulário ou WhatsApp" },
-      { label: "Oportunidade", hint: "Orçamento e contrato" },
-    ] as const,
+    strategyEyebrow: "A estratégia",
+    strategyHeadline: "Começar por uma ou duas frentes. Ampliar com dados.",
+    strategyBody:
+      "Validamos as primeiras frentes, observamos os resultados e a capacidade operacional, e só então expandimos a aquisição. A estrutura pode comportar outras páginas. A ativação das campanhas não precisa acontecer toda de uma vez.",
   },
 
   architecture: {
-    headline: "Uma estrutura. Diferentes frentes de aquisição.",
-    lead: "O projeto é composto por três camadas integradas. A identidade visual existente é preservada e aplicada de forma consistente em toda a experiência.",
+    headline: "Três camadas conectadas em uma única experiência digital.",
+    lead: "O site constrói credibilidade. As landing pages convertem demandas específicas. O Google Ads leva a intenção de busca até a oferta correspondente.",
     layers: [
       {
         number: "01",
         title: "Site institucional",
-        subtitle: "Base do projeto",
-        body: "Reconstrução da presença institucional da Arch Genius: marca, credibilidade, portfólio e visão geral.",
+        subtitle: "Credibilidade e posicionamento",
+        body: "Reconstrução da presença institucional, aproveitando a identidade visual existente.",
         items: [
-          "Página inicial com posicionamento claro",
-          "Apresentação institucional e equipe",
+          "Apresentação do escritório e da equipe",
           "Organização das categorias de serviços",
-          "Portfólio de projetos",
-          "Contato, orçamento e CTAs",
-          "Navegação e experiência responsiva",
+          "Portfólio de projetos e materiais disponíveis",
+          "Navegação responsiva, contatos e chamadas para ação",
         ],
-        note: "As páginas institucionais definitivas serão delimitadas no escopo comercial final.",
       },
       {
         number: "02",
-        title: "Landing pages por serviço",
-        subtitle: "Expansão comercial",
-        body: "Páginas específicas para apresentar ofertas e receber tráfego das campanhas relacionadas.",
+        title: "Landing pages comerciais",
+        subtitle: "Foco em conversão",
+        body: "Até três páginas específicas para os serviços definidos como prioritários.",
         items: [
-          "Projetos e reformas residenciais",
-          "Projetos comerciais e industriais",
-          "Regularização imobiliária",
-          "Segurança contra incêndio e serviços técnicos",
+          "Comunicação direcionada à necessidade do cliente",
+          "Proposta de valor, diferenciais e materiais de apoio",
+          "Formulários, CTAs e integração com WhatsApp, quando aplicável",
+          "Identidade visual consistente com o site institucional",
         ],
-        note: "A implantação inclui até três landing pages. As demais frentes da arquitetura podem ser desenvolvidas depois, com escopo próprio.",
       },
       {
         number: "03",
-        title: "Aquisição e conversão",
-        subtitle: "Operação recorrente",
-        body: "Campanhas de Google Ads conectadas às páginas correspondentes, com mensuração e otimização contínua.",
+        title: "Google Ads",
+        subtitle: "Aquisição por intenção de busca",
+        body: "Campanhas contratadas direcionadas à página relacionada a cada demanda.",
         items: [
-          "Campanhas direcionadas às páginas relevantes",
-          "CTAs, formulários e WhatsApp",
-          "Rastreamento dos eventos previstos",
-          "Registro básico de oportunidades",
+          "Pesquisa e refinamento de palavras-chave",
+          "Segmentação por serviço e região",
+          "Otimização de anúncios, campanhas e orçamento",
+          "Rastreamento de conversões e análise das oportunidades",
         ],
-        note: "As campanhas serão ativadas progressivamente, conforme prioridades e capacidade de atendimento.",
       },
     ],
-    diagramLabel: "Como as camadas se conectam",
+    diagramLabel: "Como a estrutura funciona",
     diagram: [
-      { label: "Institucional", hint: "Marca e portfólio" },
-      { label: "Landing page", hint: "Serviço específico" },
-      { label: "Google Ads", hint: "Intenção de busca" },
+      { label: "Busca", hint: "Intenção de serviço" },
+      { label: "Anúncio", hint: "Google Ads" },
+      { label: "Página específica", hint: "Oferta correspondente" },
       { label: "Contato", hint: "Qualificação" },
       { label: "Contrato", hint: "Resultado comercial" },
     ] as const,
+    diagramNote:
+      "O objetivo é conectar a intenção de busca à oferta correspondente e acompanhar o caminho até a oportunidade comercial.",
   },
 
-  pillars: [
-    {
-      number: "01",
-      badge: "Estratégia",
-      title: "Estratégia e arquitetura digital",
-      subtitle: "Organizar a oferta, a navegação e as categorias comerciais.",
-      objective:
-        "Definir prioridades e transformar o diagnóstico em uma arquitetura de informação compreensível.",
-      items: [
-        "Validação das prioridades",
-        "Arquitetura do site",
-        "Organização do portfólio",
-        "Definição das frentes comerciais",
-      ],
-    },
-    {
-      number: "02",
-      badge: "Site",
-      title: "Reconstrução do site institucional",
-      subtitle: "Nova estrutura institucional, aproveitando a identidade visual existente.",
-      objective:
-        "Substituir o site atual por uma experiência consistente, não apenas ajustar o que já existe.",
-      items: [
-        "Novo layout e navegação",
-        "Apresentação institucional revisada",
-        "Organização dos serviços",
-        "Portfólio, contato e responsividade",
-      ],
-    },
-    {
-      number: "03",
-      badge: "Landing pages",
-      title: "Landing pages comerciais",
-      subtitle: "Páginas por serviço, conectadas ao site institucional.",
-      objective:
-        "Cada frente contratada ganha uma página com proposta de valor, provas e CTA adequados àquela demanda.",
-      items: [
-        "Estrutura orientada à conversão",
-        "Copy comercial e diferenciais",
-        "Projetos e materiais disponíveis",
-        "Formulários, CTAs e WhatsApp",
-      ],
-    },
-    {
-      number: "04",
-      badge: "Aquisição",
-      title: "Aquisição e mensuração",
-      subtitle: "Campanhas de Google Ads previstas no contrato, ligadas às páginas correspondentes.",
-      objective:
-        "Ativar a aquisição nas frentes prioritárias e medir o caminho até a oportunidade, sem anunciar tudo no primeiro dia.",
-      items: [
-        "Pesquisa de palavras-chave",
-        "Campanhas das frentes contratadas",
-        "Direcionamento para a página relacionada",
-        "Conversões e otimização contínua",
-      ],
-    },
-  ],
-
-  ads: {
-    headline: "Construímos a base. Ativamos a aquisição por frentes.",
-    lead: "A estrutura digital poderá comportar outras páginas conforme o escopo. As campanhas começam pelas frentes prioritárias e evoluem conforme a demanda, a capacidade operacional e os dados justificarem.",
-    logic: [
-      "Validação das frentes iniciais",
-      "Pesquisa de palavras-chave",
-      "Campanhas ligadas às páginas correspondentes",
-      "Mensuração dos contatos",
-      "Otimização com os primeiros dados",
-      "Ativação gradual de novas frentes",
+  delivery: {
+    headline: "Como o projeto será executado.",
+    lead: "Cinco fases, da validação das prioridades à gestão contínua das campanhas.",
+    phases: [
+      {
+        period: "Fase 01",
+        title: "Planejamento",
+        items: [
+          "Validação dos serviços prioritários, públicos e regiões",
+          "Arquitetura do site e do portfólio",
+          "Definição das primeiras frentes de aquisição",
+          "Organização dos materiais necessários",
+        ],
+      },
+      {
+        period: "Fase 02",
+        title: "Site institucional",
+        items: [
+          "Desenvolvimento da nova estrutura institucional",
+          "Aplicação da identidade visual existente",
+          "Organização de serviços, portfólio e contatos",
+          "Navegação responsiva e chamadas para ação",
+        ],
+      },
+      {
+        period: "Fase 03",
+        title: "Landing pages",
+        items: [
+          "Desenvolvimento de até três páginas",
+          "Conteúdo orientado à conversão",
+          "Integração visual e funcional com o site",
+          "Formulários e pontos de contato previstos",
+        ],
+      },
+      {
+        period: "Fase 04",
+        title: "Lançamento",
+        items: [
+          "Configuração das campanhas iniciais de Google Ads",
+          "Vinculação dos anúncios às páginas correspondentes",
+          "Validação dos eventos de conversão",
+          "Publicação após aprovação técnica",
+        ],
+      },
+      {
+        period: "Fase 05",
+        title: "Gestão",
+        items: [
+          "Acompanhamento dos indicadores",
+          "Otimização das campanhas e segmentações",
+          "Análise da qualidade dos contatos",
+          "Recomendações de melhoria e expansão",
+        ],
+      },
     ],
-    principle:
-      "Nem todas as landing pages receberão investimento de mídia no lançamento. Publicar a estrutura não é o mesmo que anunciar todas as frentes.",
-    closing:
-      "Não projetamos volume de pesquisas, custo por lead ou número de clientes. O investimento acompanha a validação e a capacidade de atendimento.",
-  },
-
-  funnel: {
-    headline: "Do clique à oportunidade",
-    lead: "A aquisição não termina no contato. Distinguimos clique, oportunidade, proposta e contrato.",
-    steps: [
-      "Pesquisa o serviço",
-      "Encontra a Arch Genius",
-      "Acessa a página da necessidade",
-      "Entra em contato",
-      "A equipe qualifica",
-      "Segue para orçamento",
-      "O resultado é registrado",
-    ],
-    distinctionTitle: "O que realmente importa",
-    distinctions: [
-      { label: "Contatos", detail: "Quem chegou pelos canais digitais" },
-      { label: "Oportunidades", detail: "Demandas compatíveis com o negócio" },
-      { label: "Propostas", detail: "Orçamentos enviados" },
-      { label: "Contratos", detail: "Negócios fechados" },
-    ],
-    opsNote:
-      "Organização comercial básica entra nesta etapa. CRM completo, automações ou sistemas próprios só entram com escopo próprio.",
-  },
-
-  metrics: {
-    headline: "Decisões orientadas por dados comerciais.",
-    acquisition: ["Impressões", "Cliques", "Custo de mídia"],
-    interest: ["Visitas às páginas", "Cliques no WhatsApp", "Formulários enviados"],
-    qualification: [
-      "Contatos relacionados aos serviços",
-      "Oportunidades qualificadas",
-      "Solicitações de orçamento",
-    ],
-    result: ["Propostas enviadas", "Contratos fechados", "Receita informada pelo cliente"],
-    note: "O acompanhamento depende da disponibilidade dos dados comerciais e das integrações viáveis. Não atribuímos vendas à mídia sem evidência suficiente.",
-    businessLabel: "Leitura comercial do funil",
-    businessLine: "Investimento → Interesse → Qualificação → Resultado",
-    optimization:
-      "Esses indicadores orientam ajustes de campanha, priorização de frentes e decisões sobre onde ampliar ou pausar o investimento.",
-  },
-
-  roadmap: [
-    {
-      period: "Fase 01",
-      title: "Planejamento",
-      items: [
-        "Validação dos serviços prioritários",
-        "Público e região",
-        "Arquitetura de informação",
-        "Landing pages incluídas",
-        "Organização dos materiais",
+    metricsHeadline: "O que será acompanhado",
+    metrics: {
+      acquisition: ["Impressões", "Cliques", "Custo de mídia", "Eficiência do tráfego"],
+      conversion: ["Visitas às páginas", "Cliques no WhatsApp", "Formulários enviados"],
+      qualification: [
+        "Contatos compatíveis com os serviços",
+        "Oportunidades qualificadas",
+        "Solicitações de orçamento",
       ],
+      result: ["Propostas enviadas", "Contratos fechados", "Receita informada pelo cliente"],
+      note: "A mensuração depende dos dados comerciais disponibilizados pela Arch Genius e das integrações tecnicamente viáveis. Não serão atribuídas vendas à mídia sem evidências suficientes. O acompanhamento comercial desta implantação é básico. CRM completo, automações ou sistemas próprios não estão incluídos.",
     },
-    {
-      period: "Fase 02",
-      title: "Site institucional",
-      items: [
-        "Desenvolvimento do novo site",
-        "Identidade visual existente",
-        "Serviços e portfólio",
-        "Navegação, CTAs e contato",
-      ],
-    },
-    {
-      period: "Fase 03",
-      title: "Landing pages",
-      items: [
-        "Páginas comerciais contratadas",
-        "Conteúdo de conversão",
-        "Integração com o institucional",
-        "Formulários e eventos",
-      ],
-    },
-    {
-      period: "Fase 04",
-      title: "Aquisição",
-      items: [
-        "Campanhas iniciais de Google Ads",
-        "Direcionamento às páginas",
-        "Validação das conversões",
-        "Publicação aprovada",
-      ],
-    },
-    {
-      period: "Fase 05",
-      title: "Gestão",
-      items: [
-        "Acompanhamento dos indicadores",
-        "Otimização das campanhas",
-        "Análise das oportunidades",
-        "Recomendações de expansão",
-      ],
-    },
-  ],
-
-  project: [
-    {
-      title: "Estratégia",
-      items: [
-        "Diagnóstico de prioridades e serviços",
-        "Arquitetura da presença digital",
-        "Definição das primeiras frentes de aquisição",
-      ],
-    },
-    {
-      title: "Site institucional",
-      items: [
-        "Reconstrução no escopo aprovado",
-        "Identidade visual existente aplicada",
-        "Portfólio, serviços, contato e CTAs",
-      ],
-    },
-    {
-      title: "Landing pages",
-      items: [
-        "Até 3 landing pages comerciais",
-        "Conteúdo e prova por frente",
-        "Integração com o site institucional",
-      ],
-    },
-    {
-      title: "Aquisição",
-      items: [
-        "Campanhas iniciais de Google Ads",
-        "Rastreamento de contatos e oportunidades",
-        "Relatório e acompanhamento",
-      ],
-    },
-  ],
-
-  expansion: {
-    number: "Depois",
-    title: "A estrutura pode evoluir conforme o negócio amadurece.",
-    subtitle:
-      "Possibilidades futuras, sem incorporá-las automaticamente ao investimento inicial:",
-    items: [
-      "Landing pages adicionais",
-      "Novas campanhas por segmento",
-      "Produção audiovisual dos projetos",
-      "Conteúdo técnico e institucional",
-      "Automação do acompanhamento comercial",
-      "Ferramentas internas e soluções com IA para processos técnicos",
-    ],
-    aiNote:
-      "O interesse em IA aplicada à arquitetura, engenharia e processos técnicos é uma oportunidade de diagnóstico futuro. Não é uma entrega já contratada nesta proposta.",
   },
 
   exclusions: {
     included: [
       "Reconstrução do site institucional no escopo aprovado",
-      "Até 3 landing pages comerciais",
+      "Até 3 landing pages comerciais, escolhidas em conjunto",
       "Aplicação da identidade visual existente",
       "Organização do portfólio e das categorias de serviços",
-      "CTAs e formulários previstos",
-      "Configuração inicial de mensuração",
-      "Preparação das campanhas contratadas",
+      "CTAs, formulários e pontos de contato previstos",
+      "Configuração inicial da mensuração acordada",
+      "Preparação técnica das campanhas contratadas",
     ],
     wont: [
-      "Gestão recorrente de redes sociais",
-      "Calendário mensal de conteúdo",
-      "Produção mensal de posts",
-      "Captação audiovisual",
-      "Gestão de Meta Ads",
+      "Rebranding completo",
       "Landing pages além das 3 incluídas",
       "Campanhas adicionais não previstas",
-      "Manutenção ilimitada do site",
-      "Desenvolvimento de sistemas próprios",
-      "Automações avançadas e soluções de IA",
+      "Gestão de redes sociais ou calendário de conteúdo",
+      "Captação e produção audiovisual",
+      "Gestão de Meta Ads",
+      "Automações avançadas, sistemas próprios ou soluções de IA",
       "Licenças de softwares de terceiros",
-      "Verba de mídia (paga à plataforma)",
+      "Manutenção ilimitada do site",
+      "Verba de mídia, paga à plataforma",
     ],
     will: "Reconstruir a presença digital da Arch Genius e operar a aquisição nas frentes contratadas, com identidade consistente e limites comerciais explícitos.",
+    extras:
+      "Páginas adicionais, funcionalidades especiais, integrações complexas e novas frentes de aquisição serão orçadas separadamente, mediante aprovação de escopo.",
+    materials:
+      "A Arch Genius fornecerá fotografias, projetos, informações técnicas, autorizações de divulgação e os acessos necessários. A Raise One organiza a apresentação comercial desses materiais na nova estrutura.",
+    timeline:
+      "O cronograma será definido após a aprovação do escopo, a disponibilização dos materiais e a liberação dos acessos.",
+    expectation:
+      "A proposta não estabelece garantia de volume específico de leads ou contratos. O compromisso da Raise One é entregar a estrutura acordada, preparar a mensuração e otimizar as campanhas contratadas com base nos dados disponíveis.",
   },
 
   whyRaiseOne: {
     headline: "Marketing, tecnologia e estratégia trabalhando juntos.",
-    lead: "A Raise One conduz a recomendação e entrega a estrutura. O cliente confirma as decisões sobre a própria operação: prioridades, capacidade e quais frentes ativar primeiro.",
+    lead: "A Raise One integra quatro competências para conectar a estrutura digital aos objetivos comerciais da Arch Genius.",
     pillars: [
       {
         title: "Estratégia",
-        body: "Organizar as prioridades e transformar o diagnóstico em arquitetura digital.",
+        body: "Organização das prioridades e da arquitetura digital.",
       },
       {
         title: "Marketing",
-        body: "Conectar a oferta às pessoas que procuram os serviços selecionados.",
+        body: "Conexão entre serviços e pessoas com intenção de contratação.",
       },
       {
         title: "Tecnologia",
-        body: "Reconstruir o site e as páginas comerciais em uma experiência integrada.",
+        body: "Desenvolvimento de uma experiência integrada entre site e páginas comerciais.",
       },
       {
         title: "Dados",
-        body: "Mensurar o desempenho e orientar as próximas decisões.",
+        body: "Mensuração do desempenho e orientação das próximas decisões.",
       },
     ],
-  },
-
-  outcome: {
-    headline: "O objetivo",
-    body: "Uma presença digital integrada, preparada para apresentar os serviços da Arch Genius e transformar intenção de busca em oportunidades comerciais.",
-    via: [
-      "Site institucional reconstruído",
-      "Landing pages conectadas",
-      "Identidade visual consistente",
-      "Aquisição por intenção de busca",
-      "Contatos mais qualificados",
-      "Mensuração de oportunidades",
-    ],
-    caution:
-      "Sem promessa de volume específico de clientes ou contratos. O compromisso é uma estrutura definida, rastreável e expansível.",
+    roles:
+      "A Raise One conduz a estratégia e a execução da estrutura contratada. A Arch Genius participa das decisões sobre prioridades, capacidade operacional e serviços a serem ativados.",
+    result:
+      "O resultado esperado é uma presença digital consistente, mensurável e preparada para evoluir conforme o negócio.",
   },
 
   nextSteps: [
     {
       title: "Aprovação da proposta",
-      detail: "Validação do investimento, das até 3 landing pages e das primeiras frentes de aquisição.",
+      detail: "Validação do investimento, do escopo e das primeiras frentes de aquisição.",
     },
     {
       title: "Formalização e alinhamento",
-      detail: "Contrato, cronograma e definição das frentes iniciais de Google Ads.",
+      detail: "Contrato, cronograma e definição das prioridades iniciais.",
     },
     {
       title: "Organização dos materiais e acessos",
-      detail: "Conteúdos, projetos, acessos digitais e referências da identidade visual.",
+      detail: "Recebimento dos conteúdos, projetos, referências e acessos digitais.",
     },
     {
-      title: "Desenvolvimento da estrutura",
-      detail: "Site institucional, até 3 landing pages, conversões e preparação das campanhas.",
+      title: "Desenvolvimento e preparação",
+      detail: "Reconstrução do site, criação das landing pages e configuração da mensuração.",
     },
     {
       title: "Validação e lançamento",
-      detail: "Publicação da estrutura e ativação das frentes de mídia aprovadas.",
+      detail: "Aprovação da estrutura e ativação das campanhas acordadas.",
     },
     {
-      title: "Acompanhamento e otimização",
-      detail: "Indicadores, ajustes e recomendações de expansão.",
+      title: "Gestão e otimização",
+      detail: "Acompanhamento dos indicadores, ajustes e recomendações de evolução.",
     },
   ],
 
   closing: {
-    title: "Uma presença digital única: institucional, comercial e preparada para crescer.",
-    body: "A Arch Genius já tem competência técnica e um portfólio amplo. O projeto reconstruirá a forma de apresentar isso e ligará cada página à aquisição, sem anunciar tudo no primeiro dia.",
+    title: "Uma presença digital única. Diferentes caminhos para crescer.",
+    body: "A Arch Genius já possui competências técnicas e um portfólio amplo. Este projeto organiza a forma de apresentar esse potencial e conecta os serviços prioritários a uma estratégia de aquisição mensurável.",
+    line: "Base institucional reconstruída. Aquisição progressiva.",
     brandLine: "Raise One · Marketing + Tecnologia + IA",
-    flowLabel: "Operação planejada",
-    flowSteps: [
-      { label: "Institucional", hint: "Credibilidade" },
-      { label: "Landing page", hint: "Oferta específica" },
-      { label: "Google Ads", hint: "Intenção de busca" },
-      { label: "Contato", hint: "Qualificação" },
-      { label: "Contrato", hint: "Resultado" },
-    ] as const,
   },
 
   cta: {
@@ -700,13 +429,13 @@ export const ARCH_GENIUS_REFERENCE = {
 } as const;
 
 export const ARCH_GENIUS_NAV = [
-  { id: "partida", label: "Partida" },
-  { id: "desafio", label: "Desafio" },
+  { id: "partida", label: "Diagnóstico" },
   { id: "oportunidade", label: "Oportunidade" },
   { id: "arquitetura", label: "Arquitetura" },
-  { id: "solucao", label: "Solução" },
-  { id: "projeto", label: "Projeto" },
+  { id: "entregas", label: "Entregas" },
   { id: "investimento", label: "Investimento" },
+  { id: "escopo", label: "Escopo" },
+  { id: "visao", label: "Raise One" },
   { id: "proximos-passos", label: "Próximos passos" },
 ];
 
