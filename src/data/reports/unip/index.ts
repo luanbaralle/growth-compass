@@ -4,6 +4,7 @@ import printMobile from "@/assets/reports/unip/print-mobile.png";
 import { unipJulho } from "./julho";
 import { unipAgosto } from "./agosto";
 import { unipSetembro } from "./setembro";
+import { unipOutubro } from "./outubro";
 import type { ReportCompany, ReportMonth } from "../types";
 
 export const unipReports: ReportCompany = {
@@ -16,7 +17,7 @@ export const unipReports: ReportCompany = {
   carouselImages: [printMobile, printAdsSerp],
   carouselStyle: "card",
   conversionLabel: "Conversões",
-  months: [unipJulho, unipAgosto, unipSetembro],
+  months: [unipJulho, unipAgosto, unipSetembro, unipOutubro],
 };
 
 export function getUnipMonth(slug: string): ReportMonth | undefined {
