@@ -1,8 +1,10 @@
+import { coloniaFemReports } from "./colonia-fem";
 import { studio21Reports } from "./studio21";
 import { unipReports } from "./unip";
 import type { ReportCompany, ReportMonth } from "./types";
 
 const COMPANIES: Record<string, ReportCompany> = {
+  [coloniaFemReports.slug]: coloniaFemReports,
   [studio21Reports.slug]: studio21Reports,
   [unipReports.slug]: unipReports,
 };
